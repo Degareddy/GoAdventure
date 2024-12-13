@@ -5,6 +5,10 @@
       <b class="ml-1">Projects & Ventures</b>
     </div>
     <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="multiClient()" 
+        [disabled]="vtrDetForm.get('mode')!.value == 'Add' || vtrDetForm.invalid"><mat-icon>persons</mat-icon>
+        Stake Holders
+      </button>
       <button mat-raised-button color="accent" class="btnUp" type="button"
         [disabled]="vtrDetForm.get('mode')!.value == 'Add' || vtrDetForm.invalid"
         (click)="direction()"><mat-icon>my_location</mat-icon>Directions</button>

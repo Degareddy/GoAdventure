@@ -19,6 +19,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { StakeholderDetailsComponent } from './stakeholder-details/stakeholder-details.component';
 
 @Component({
   selector: 'app-venture-details',
@@ -38,6 +39,7 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
   private subSink: SubSink;
   private ventureCls!: venturnClass;
   public disableDetail: boolean = true;
+  
   dialogOpen = false;
   public fetchStatus: boolean = true;
   ventureDetails!: string;
@@ -61,6 +63,23 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
+  }
+  multiClient() {
+    
+    const dialogRef: MatDialogRef<StakeholderDetailsComponent> = this.dialog.open(StakeholderDetailsComponent, {
+      width: '90%',
+      disableClose: false,
+      data: {
+        type: '',
+        Trantype: "",
+        Project: this.vtrDetForm.get('ventureName')?.value,
+        Code:this.vtrDetForm.get('code')!.value ,
+        Flat: '',
+        mode: this.vtrDetForm.get('mode')?.value,
+        status: ''
+      }
+    });
+
   }
 
   formInit() {

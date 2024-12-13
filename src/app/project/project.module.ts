@@ -40,6 +40,7 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { FilteredUnitsComponent } from './property-reports/filtered-units/filtered-units.component';
 import { ProjectsComponent } from './projects.component';
+import { StakeholderDetailsComponent } from './venture-details/stakeholder-details/stakeholder-details.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { ProjectsComponent } from './projects.component';
     VacantNoticeComponent,
     MulticlientsAllocationComponent,
     FilteredUnitsComponent,
-    ProjectsComponent
+    ProjectsComponent,
+    StakeholderDetailsComponent
   ],
   imports: [
     CommonModule,

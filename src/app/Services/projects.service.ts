@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MasterParams } from '../Masters/Modules/masters.module';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { FlatClass, ProjectClass, venturnClass, plotClass, BlockClass, plotSaleClass, PropertyCls, BudgetCls, BudgetDetailsCls, finacialsClass, serviceClass, equipmentClass, unitLandLordClass, invoiceClass, invoiceDetailClass, unitCharges, propertyReportData, waterReading, unitSalesClass, unitSalesDetailsClass, workdetails, TransactionDetails, TransferDetails, multiClients } from '../project/Project.class';
+import { FlatClass, ProjectClass, venturnClass, plotClass, BlockClass, plotSaleClass, PropertyCls, BudgetCls, BudgetDetailsCls, finacialsClass, serviceClass, equipmentClass, unitLandLordClass, invoiceClass, invoiceDetailClass, unitCharges, propertyReportData, waterReading, unitSalesClass, unitSalesDetailsClass, workdetails, TransactionDetails, TransferDetails, multiClients, stakeHolder } from '../project/Project.class';
 import { Observable } from 'rxjs';
 import { PropertyDetailsResponse } from '../project/property.interface';
 import { getResponse, SaveApiResponse } from '../general/Interface/admin/admin';
@@ -44,6 +44,9 @@ export class ProjectsService {
 
   updateVentureDetails(vtr: venturnClass): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'venture/UpdateVentureDetails', vtr)
+  }
+  GetProjectStakersDetails(vtr: any):Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'venture/GetProjectStakersDetails', vtr)
   }
 
   GetProjectCostsHeader(pro: MasterParams): Observable<any> {
@@ -272,6 +275,9 @@ export class ProjectsService {
 
   GetReportTenantInvoicesData(body: any): Observable<any> {
     return this.http.post(environment.Url + 'property/GetReportTenantInvoicesData/', body)
+  }
+  UpdateProjectStakersDetails(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'venture/UpdateProjectStakersDetails', body)
   }
 
   UpdateInvoicePlotFlatHdr(body: unitSalesClass): Observable<SaveApiResponse> {

@@ -501,7 +501,20 @@ export class unitCharges {
   plexType:string="";
 }
 
-
+export class stakeHolder{
+  public Mode!:string;
+  public Company!:string;
+  public Location!:string;
+  public Project!:string;
+  public Code!:string;
+  public Position!:string;
+  public Share!:string;
+  public DateJoined!:string;
+  public StakeStatus!:string;
+  public Remarks!:string;
+  public User!:string;
+  public RefNo!:string;
+}
 export class propertyReportData {
   public Company!: string;
   public Location!: string;

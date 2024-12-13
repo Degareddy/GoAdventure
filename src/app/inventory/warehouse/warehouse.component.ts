@@ -234,7 +234,8 @@ export class WarehouseComponent implements OnInit, OnDestroy {
           if (res.retVal > 100 && res.retVal < 200) {
             this.wareHouseList.push({ itemCode: res.tranNoNew, itemName: this.warehouseForm.get('whName')!.value })
             if (this.warehouseForm.controls['mode'].value == "Add") {
-              this.modeChange("Modify");
+              // this.modeChange("Modify");
+              this.warehouseForm.controls['mode'].patchValue('Modify');
             }
             this.newTranMsg = res.message;
             this.textMessageClass = "green";

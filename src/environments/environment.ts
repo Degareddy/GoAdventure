@@ -7,5 +7,4 @@ export const environment = {
    //Url:'https://localhost:5000/api/'
 };
 
-
 // ng build --configuration=production --base-href=/dega/
