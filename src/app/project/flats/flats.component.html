@@ -403,7 +403,16 @@
 
           </div>
           <div class="col-md-4">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" style="width: 110px;">
+              <mat-label class="mat-label-class">furnished Type</mat-label>
+              <mat-select formControlName="furnish"
+                [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''"
+                >
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of unitTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="width: 110px;">
               <mat-label class="mat-label-class">Rent Type</mat-label>
               <mat-select formControlName="rentType"
                 [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''"
@@ -430,30 +439,30 @@
         </div>
         <div class="row  myCustomClass">
           <div class="col-md-2">
-            <mat-checkbox formControlName="studyRoom" 
+            <mat-checkbox formControlName="studyRoom"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Study Room</mat-checkbox>
           </div>
           <div class="col-md-2">
-            <mat-checkbox formControlName="servantRoom" 
+            <mat-checkbox formControlName="servantRoom"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Servant
               Room</mat-checkbox>
           </div>
           <div class="col-md-2">
-            <mat-checkbox formControlName="servantToilet" 
+            <mat-checkbox formControlName="servantToilet"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Servant
               Toilet</mat-checkbox>
 
           </div>
           <div class="col-md-2">
-            <mat-checkbox formControlName="utility" 
+            <mat-checkbox formControlName="utility"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Utility</mat-checkbox>
           </div>
           <div class="col-md-2">
-            <mat-checkbox formControlName="store" 
+            <mat-checkbox formControlName="store"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Store</mat-checkbox>
           </div>
           <div class="col-md-2">
-            <mat-checkbox formControlName="extraHall" 
+            <mat-checkbox formControlName="extraHall"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Extra Hall</mat-checkbox>
           </div>
         </div>
@@ -462,13 +471,13 @@
             <mat-checkbox formControlName="payWhenVacant">Pay When Vacant</mat-checkbox>
           </div>
           <div class="col-md-3">
-            <mat-checkbox formControlName="petsAllowed" 
+            <mat-checkbox formControlName="petsAllowed"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Pets
               Allowed</mat-checkbox>
 
           </div>
           <div class="col-md-3">
-            <mat-checkbox formControlName="smokingAllowed" 
+            <mat-checkbox formControlName="smokingAllowed"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Smoking
               Allowed</mat-checkbox>
           </div>
@@ -486,7 +495,7 @@
               <div>
                 <mat-form-field appearance="outline" class="w-full" >
                   <mat-label>Currency</mat-label>
-                  <mat-select formControlName="currency" 
+                  <mat-select formControlName="currency"
                     [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">
                     <mat-option value="">--Select--</mat-option>
                     <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
@@ -498,7 +507,7 @@
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Unit Rate</mat-label>
                 <input matInput placeholder="Unit Rate" min="0" formControlName="unitRate" separator appNumberFormat
-                  type="text " 
+                  type="text "
                   [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">
               </mat-form-field>
             </div>
@@ -521,7 +530,7 @@
         <div class="row"
           style="background-color: rgb(240, 218, 195); width: 220px; border-radius: 50px;border: 1px solid;">
           <div class="col-md-12 offset-md-2 myCustomClass">
-            <mat-checkbox formControlName="updateAll" 
+            <mat-checkbox formControlName="updateAll"
               [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">Update All</mat-checkbox>
           </div>
           <div style="text-align: center;">

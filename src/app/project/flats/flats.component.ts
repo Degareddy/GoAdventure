@@ -101,6 +101,7 @@ export interface UnitData {
   currency: any;
   unitCost: any;
   llCount: any;
+  furnish: string
 }
 export interface flatApiResponse {
   status: string;
@@ -165,6 +166,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     { itemCode: "HY", itemName: 'Half Yearly' },
     { itemCode: "YY", itemName: 'Yearly' }
   ]
+  unitTypeList: Item[] = [];
   comfortsList: Item[] = [];
   logoPath: string = "";
   isRentSelected: boolean = false;
@@ -266,7 +268,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       discType: [{ value: '', disabled: true }],
       discRate: [{ value: '0.00', disabled: true }],
       currency: ['', [Validators.required]],
-      unitRate: ['0']
+      unitRate: ['0'],
+      furnish: ['', Validators.required]
     })
   }
 
@@ -291,7 +294,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     return this.currencyList.filter((option: any) => option.itemCode.toLowerCase().includes(filterValue));
   }
   private handleDataLoadSuccess(modesRes: getResponse, propertyRes: getResponse, floorRes: getResponse, useTypeRes: getResponse,
-    flatTypeRes: getResponse, comfortRes: getResponse, bedRes: getResponse, currency: getResponse) {
+    flatTypeRes: getResponse, comfortRes: getResponse, bedRes: getResponse, currency: getResponse, unitType: getResponse) {
     if (modesRes.status.toUpperCase() === "SUCCESS") {
       this.modes = modesRes.data;
     } else {
@@ -342,19 +345,22 @@ export class FlatsComponent implements OnInit, OnDestroy {
         this.unitDetForm.get('flatType')!.patchValue(this.flatTypes[0].itemCode);
       }
     }
+    if (unitType.status.toUpperCase() === "SUCCESS") {
+      this.unitTypeList = unitType.data;
+      if (this.unitTypeList.length === 1) {
+        this.unitDetForm.get('furnish')!.patchValue(this.unitTypeList[0].itemCode);
+      }
+    }
     else {
-      this.retMessage = "Flattype list empty!";
+      this.retMessage = "Furnish list empty!";
       this.textMessageClass = "red";
       return;
     }
-
-
     if (comfortRes.status.toUpperCase() === "SUCCESS") {
       this.comfortsList = comfortRes.data;
       if (this.comfortsList.length === 1) {
         this.unitDetForm.get('luxuryType')!.patchValue(this.comfortsList[0].itemCode);
       }
-
     }
     else {
       this.retMessage = "Comfort list empty!";
@@ -386,7 +392,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
       return;
     }
   }
-  ifCmpUser(){
+  ifCmpUser() {
     if (this.loggedInUserProfile === 'cmpuser') {
       this.unitDetForm.get('floorNo')?.disable();
       this.unitDetForm.get('size')?.disable();
@@ -421,7 +427,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     }
   }
   async loadData() {
-   this.ifCmpUser();
+    this.ifCmpUser();
 
     const modeBody = this.createRequestData('SM806');
     const propertyBody = this.createRequestData('PROPERTY');
@@ -430,6 +436,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     const useTypeBody = this.createRequestData('USAGETYPE');
     const flatTypeBody = this.createRequestData('FLATTYPE');
     const bedroomBody = this.createRequestData('BEDROOM');
+    const unitTypeBody = this.createRequestData('FURNISH');
     try {
       const modes$ = this.masterService.getModesList(modeBody);
       const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', })
@@ -439,9 +446,10 @@ export class FlatsComponent implements OnInit, OnDestroy {
       const flatType$ = this.masterService.GetMasterItemsList(flatTypeBody);
       const comfort$ = this.masterService.GetMasterItemsList(comfortBody);
       const bedroom$ = this.masterService.GetMasterItemsList(bedroomBody);
-      this.subSink.sink = await forkJoin([modes$, property$, floor$, useType$, flatType$, comfort$, bedroom$, currency$]).subscribe(
-        ([modesRes, propertyRes, floorRes, useTypeRes, flatTypeRes, comfortRes, bedRes, currency]: any) => {
-          this.handleDataLoadSuccess(modesRes, propertyRes, floorRes, useTypeRes, flatTypeRes, comfortRes, bedRes, currency);
+      const unitTypes$ = this.masterService.GetMasterItemsList(unitTypeBody);
+      this.subSink.sink = await forkJoin([modes$, property$, floor$, useType$, flatType$, comfort$, bedroom$, currency$, unitTypes$]).subscribe(
+        ([modesRes, propertyRes, floorRes, useTypeRes, flatTypeRes, comfortRes, bedRes, currency, unitType]: any) => {
+          this.handleDataLoadSuccess(modesRes, propertyRes, floorRes, useTypeRes, flatTypeRes, comfortRes, bedRes, currency, unitType);
         },
         error => {
           this.handleError(error.message);
@@ -453,7 +461,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
   refreshData() {
-    
+
     this.unitDetForm.get('landLordName')?.clearValidators();
     this.ifCmpUser();
     this.unitDetForm.get('updateAll')?.valueChanges.subscribe((ch: any) => {
@@ -468,7 +476,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
         this.landlordCode = "";
         this.empCode = "";
         this.tenantCode = "";
-        
+
       }
       else {
         this.unitDetForm.get('tenantName')?.enable();
@@ -620,7 +628,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
 
   populateFlatData(result: flatApiResponse) {
-    
+
     const flatCls = result.data;
     const formControls = this.unitDetForm.controls;
     formControls.rentType.patchValue(flatCls.rentType);
@@ -684,19 +692,20 @@ export class FlatsComponent implements OnInit, OnDestroy {
     formControls.currency.patchValue(flatCls.currency);
     formControls.unitRate.patchValue(flatCls.unitCost);
 
+    formControls.furnish.patchValue(flatCls.furnish);
     this.llCount = parseInt(flatCls.llCount);
     if (this.llCount > 1) {
-      
+
       this.unitDetForm.get('landLordName')?.disable();
     }
-    else{
+    else {
       this.unitDetForm.get('landLordName')?.clearValidators();
     }
   }
 
 
   async onSelectedFlatChanged(unitId: string, mode: string) {
-    
+
     this.clearMsgs();
     this.masterParams.type = 'UNIT';
     this.masterParams.item = unitId;
@@ -905,7 +914,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       discType: formControls.discType.value,
       discRate: formControls.discRate.value,
       currency: formControls.currency.value,
-      unitCost: formControls.unitRate.value
+      unitCost: formControls.unitRate.value,
+      furnish: formControls.furnish.value
     } as FlatClass;
   }
 

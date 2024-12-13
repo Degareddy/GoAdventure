@@ -123,6 +123,7 @@ export class FlatClass {
   public totalRooms!: number
   public floorType!: string
   public usageType!: string
+  public furnish!: string
   public size!: number
   public flinthArea!: number
   public carpetArea!: number
