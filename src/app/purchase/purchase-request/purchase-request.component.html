@@ -1,0 +1,143 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">request_quote</mat-icon>
+      <b>Purchase Request</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" type="button" class="btnUp"
+        (click)="onDetailsCilcked(purReqHdrForm.get('tranNo')!.value)" [disabled]="purReqHdrForm.invalid">
+        <mat-icon>info</mat-icon>Details
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button" [matMenuTriggerFor]="menu"
+        [disabled]="purReqHdrForm.invalid">
+        <mat-icon>more_vert</mat-icon>Actions
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(purReqHdrForm.get('tranNo')!.value )"
+        [disabled]="purReqHdrForm.get('tranNo')!.value === '' || purReqHdrForm.get('tranNo')!.value === null">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+      <mat-menu #menu="matMenu" class="custom-menu">
+
+        <button mat-menu-item (click)="onDocsCilcked(purReqHdrForm.get('tranNo')!.value)"
+          [disabled]="purReqHdrForm.invalid" class="custom-button">
+          <mat-icon>cloud_upload</mat-icon><span class="data">Docs</span>
+        </button>
+
+
+        <button mat-menu-item (click)="onDocsCilcked(purReqHdrForm.get('tranNo')!.value)"
+          [disabled]="purReqHdrForm.invalid" class="custom-button">
+          <mat-icon>picture_as_pdf</mat-icon><span class="data">PDF</span>
+        </button>
+        <button mat-menu-item (click)="generateExcel()" [disabled]="purReqHdrForm.invalid" class="custom-button">
+          <mat-icon>description</mat-icon><span class="data">Excel</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <div class="flex flex-col lg:flex-row gap-4">
+    <div class="lg:w-3/4">
+      <form [formGroup]="purReqHdrForm" (ngSubmit)="onSubmit()" class="space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(purReqHdrForm.controls['mode'].value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Tran No</mat-label>
+              <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+              <button mat-button *ngIf="purReqHdrForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="purReqHdrForm.get('tranNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+                [disabled]="purReqHdrForm.get('mode')!.value === 'Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Tran Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Purpose</mat-label>
+              <input matInput placeholder="Purpose" formControlName="purpose" type="text" [matTooltipPosition]="'right'"
+                [matTooltip]="purReqHdrForm.get('purpose')!.invalid && (purReqHdrForm.get('purpose')!.dirty || purReqHdrForm.get('purpose')!.touched) ? 'Enter purpose' : 'Purpose'">
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-label class="myCustomClass">Status: <b class="data">{{tranStatus}}</b></mat-label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><mat-label class="myCustomClass">Approved By: <b class="data">{{approvedBy}}</b></mat-label></div>
+          <div><mat-label class="myCustomClass">Approved On: <b class="data">{{approvedOn | date:'dd-MM-yyyy'}}</b></mat-label></div>
+          <div><mat-label class="myCustomClass">Issued By: <b class="data">{{issuedBy}}</b></mat-label></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><mat-label class="myCustomClass">Issued On: <b class="data">{{issuedOn | date:'dd-MM-yyyy'}}</b></mat-label></div>
+          <div><mat-label class="myCustomClass">Received By: <b class="data">{{receivedBy}}</b></mat-label></div>
+          <div><mat-label class="myCustomClass">Received On: <b class="data">{{receivedOn | date:'dd-MM-yyyy'}}</b></mat-label></div>
+        </div>
+
+        <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+        <div class="flex justify-center gap-1 btnAlignment">
+          <button mat-raised-button color="primary" class="btnUp" [disabled]="purReqHdrForm.get('mode')!.value === 'View' || purReqHdrForm.invalid">
+            <mat-icon>done</mat-icon> Apply
+          </button>
+          <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+            <mat-icon>clear_all</mat-icon> Clear
+          </button>
+          <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+            <mat-icon>cancel</mat-icon> Close
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="lg:w-1/4 bg-[#F0ECD5] custom-table text-sm bg-[#F0ECD5] rounded-lg border border-gray-400 p-2">
+      <table class="w-full text-sm">
+        <tr >
+          <td class="myCustomClass">Item Count:</td>
+          <td class="text-right data">{{itemCount | number}}</td>
+        </tr>
+        <tr >
+          <td colspan="2">
+            <div class="border-t border-black my-1"></div>
+          </td>
+        </tr>
+        <tr >
+          <td class="myCustomClass">Total Amount:</td>
+          <td class="text-right data">{{totalAmount | number: '1.2-2'}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+

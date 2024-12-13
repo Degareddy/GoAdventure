@@ -1,0 +1,7 @@
+.mat-menu-item{
+  height: 20px;
+  line-height: 20px;
+}
+ .mat-menu-item:hover {
+  background-color: #2cadee !important;
+}

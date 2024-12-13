@@ -1,0 +1,142 @@
+<div class="container mx-auto p-1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">storage</mat-icon>
+      <b class="ml-1">Authorize Invoice</b>
+    </div>
+  </div>
+</div>
+
+<div class="container mx-auto bg-zinc-100 rounded-sm p-4 mt-2">
+  <form [formGroup]="authoriseInvoiceForm" (ngSubmit)="submit()">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <!-- Transaction Type -->
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Tran Type</mat-label>
+          <mat-select formControlName="tranType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of invoiceType" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Sub-Transaction Type -->
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>SubTran Type</mat-label>
+          <mat-select formControlName="subTranType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of subTrantype" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Property -->
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Property</mat-label>
+          <mat-select formControlName="property" (selectionChange)="propertyChnaged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of properytList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Block -->
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Block</mat-label>
+          <mat-select formControlName="block">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="ALL">ALL</mat-option>
+            <mat-option *ngFor="let x of blocksList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- From Date -->
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- To Date -->
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="toDate">
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Message Box -->
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass" class="my-4"></app-message-box>
+
+    <!-- Buttons Section -->
+    <div class="flex flex-wrap gap-2 justify-center mt-4">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="authoriseInvoiceForm.invalid || !buttonEnable">
+        <mat-icon>done</mat-icon>Get
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="authoriseSelectedInvoice()" [disabled]=buttonEnable>
+        <mat-icon>check_circle</mat-icon>Authorize
+      </button>
+    </div>
+  </form>
+
+  <!-- Filter and Table -->
+  <div class="my-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+    </mat-form-field>
+    <div class="overflow-auto" style="max-height: 300px;">
+      <table mat-table matSort [dataSource]="dataSource" class="w-full">
+        <ng-container matColumnDef="mapped">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="toggleAllRows($event.checked)" [disabled]=checkBoxEnable></mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [checked]="row.mapped" (change)="updateMapStatus(row, $event.checked)"></mat-checkbox>
+          </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="slNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>S.No</th>
+          <td mat-cell *matCellDef="let row">{{row.slNo}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="tranNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tran No</th>
+          <td mat-cell *matCellDef="let row">{{row.tranNo}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="tranDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tran Date</th>
+          <td mat-cell *matCellDef="let row">{{row.tranDate | date: 'dd/MM/yyyy'}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="tenantName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Party Name</th>
+          <td mat-cell *matCellDef="let row">{{row.tenantName}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayColumns;"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[25, 50, 100, 150]"></mat-paginator>
+  </div>
+</div>

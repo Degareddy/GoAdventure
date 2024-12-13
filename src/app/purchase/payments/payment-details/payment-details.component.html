@@ -1,0 +1,113 @@
+<!-- <div class="mat-card-header" style="display: flex; justify-content: space-between;">
+  <div class="col-3">
+    <div class="left adj">Payment Details</div>
+  </div>
+  <div class="right">
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon style="font-size: 14px;  color: #000;">close</mat-icon>
+    </button>
+  </div>
+</div> -->
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Payment Details</div>
+  <!-- <div class="right">
+    <button mat-icon-button mat-dialog-close class="small-button">
+      <mat-icon class="small-icon">close</mat-icon>
+    </button>
+  </div> -->
+</div>
+<mat-card>
+  <form [formGroup]="pmtDetailsForm">
+    <div class="row  justify-content-center">
+      <div class="col-3">
+        <mat-label style="margin-left: 28px;">SlNo:<b style="padding-left: 10px;">{{slNo}}</b></mat-label>
+      </div>
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline">
+            <mat-label>Ref Doc</mat-label>
+            <input matInput placeholder="refDocNo" formControlName="refDocNo" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Doc Date</mat-label>
+          <input type="text" matInput formControlName="refDocDate" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Due Date</mat-label>
+          <input matInput placeholder="payDueDate" formControlName="payDueDate" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-3"></div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Currency</mat-label>
+          <input matInput placeholder="currency" formControlName="currency" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Exch Rate</mat-label>
+          <input matInput placeholder="exchRate" formControlName="exchRate" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Doc Amount</mat-label>
+          <input matInput placeholder="docAmt" formControlName="docAmt" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-3"></div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Balance</mat-label>
+          <input matInput placeholder="balAmt" formControlName="balAmt" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Paid</mat-label>
+          <input matInput placeholder="payAmt" formControlName="payAmt" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <!-- <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div> -->
+    <div class="btnAlignment">
+      <!-- <button mat-raised-button color="primary" [disabled]="purReqHdrForm.get('mode').value === 'View'"
+          class=btnUp>Update</button> -->
+      <button mat-raised-button color="accent" class=btnUp>
+        <mat-icon>save</mat-icon><b>Apply</b>
+      </button>
+      <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="ClearAll()">
+        <mat-icon>add</mat-icon><b>New</b>
+      </button> -->
+
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+      <!-- <button mat-raised-button color="warn" type="button" (click)="reset()" class=btnUp>Reset</button> -->
+    </div>
+  </form>
+
+</mat-card>
+
+<!-- </section> -->

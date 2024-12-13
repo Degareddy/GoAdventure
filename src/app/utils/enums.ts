@@ -1,0 +1,15 @@
+export enum Role {
+  CMPADMIN = 'CMPADMIN',
+  CMPUSER = 'CMPUSER',
+  GADMIN = 'GADMIN',
+  ADMIN = 'ADMIN',
+  GUSER = 'GUSER',
+  LADMIN = 'LADMIN',
+  LUSER = 'LUSER',
+  CADMIN = 'CADMIN',
+  CUSER = 'CUSER',
+  SADMIN = 'SADMIN',
+  SUSER = 'SUSER',
+  LANDLORD = 'LANDLORD',
+  TENANT = 'TENANT'
+}

@@ -1,0 +1,229 @@
+<!-- <div class="mat-card container-fluid">
+  <div class="left data">Expenses</div>
+  <div class="right"><b>Total Expenses: </b><b class="data">{{totalExpense | currency:'Ksh':'symbol':'1.2-2' }}</b>
+  </div>
+
+
+</div>
+<mat-card>
+
+  <form [formGroup]="expenseForm">
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class">Client Type</mat-label>
+          <mat-select formControlName="clientType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of clientTypes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2" *ngIf="expenseForm.get('clientType')!.value !='PROPERTY'">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class">Client</mat-label>
+          <input matInput type="text" placeholder="Client" formControlName="client" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="expenseForm.get('client')!.value"
+            (click)="expenseForm.get('client')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="onClientSearch()" type="button"
+            [disabled]="expenseForm.get('clientType')!.value===''">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-2" *ngIf="expenseForm.get('clientType')!.value==='PROPERTY'">
+        <mat-form-field appearance="outline" class="search">
+          <mat-label for="propertyName" class="mat-label-class">Property</mat-label>
+          <input matInput type="text" placeholder="Property Name" id="propertyName" formControlName="propertyName" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="expenseForm.get('propertyName')!.value"
+            (click)="expenseForm.get('propertyName')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="propertySearch()" type="button">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class">Category</mat-label>
+          <input matInput formControlName="category" placeholder="Category">
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class">Amount</mat-label>
+          <input matInput type="text" formControlName="amount" placeholder="Amount" class="right-align-input" separator
+            appNumberFormat>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class" for="acquiredDate">Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="date" id="acquiredDate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class">Description</mat-label>
+          <input matInput formControlName="description" placeholder="Description">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button (click)="openOverlay()" type="button"
+        class="btnUp"><mat-icon>add</mat-icon>Supplier</button>
+      <button mat-raised-button color="primary" class="btnUp" [disabled]="expenseForm.invalid"
+        (click)="addExpense()"><mat-icon>add</mat-icon>Add Expenses</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+
+</mat-card>
+<app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true" [totals]="totals"
+  [gridHeight]="'280px'" [globalSearch]="true" [paginationPageSize]="25" [showToolPanel]="true" [reportName]="rprtName"
+  (columnVisibilityChanged)="onColumnVisibilityChanged($event)" [showRecordCount]="true"></app-access-grid>
+
+<app-side-overlay #overlay></app-side-overlay> -->
+
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">payment</mat-icon>
+      <b>Utility Bills</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" type="button" class="btnUp" (click)="onDetCilcked()"
+      [disabled]="waterReadingForm.get('mode')!.value == 'Add' || waterReadingForm.invalid || waterReadingForm.get('tranNo')?.value === ''"><mat-icon>info</mat-icon>
+      Details
+    </button>
+      <button mat-raised-button color="accent" type="button" class="btnUp" (click)="onDocsCilcked()"
+        [disabled]="waterReadingForm.get('mode')!.value == 'Add' || waterReadingForm.invalid || waterReadingForm.get('tranNo')?.value === ''"><mat-icon>cloud_upload</mat-icon>
+        Docs
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(waterReadingForm.get('tranNo')!.value )"
+        [disabled]="waterReadingForm.get('tranNo')!.value === '' || waterReadingForm.get('tranNo')!.value === null">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="logDetails(waterReadingForm.get('tranNo')!.value )"
+        [disabled]="waterReadingForm.get('tranNo')!.value === '' || waterReadingForm.get('tranNo')!.value === null">
+        <mat-icon>comment</mat-icon>
+        Log
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="waterReadingForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline"style="width:100%">
+          <mat-label class="mat-label-class">Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChanged($event.value)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Tran No</mat-label>
+          <input matInput type="text" placeholder="Tran No" formControlName="tranNo" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="waterReadingForm.get('tranNo')!.value"
+            (click)="waterReadingForm.get('tranNo')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search"
+            [disabled]="waterReadingForm.controls['mode'].value==='Add'" (click)="onTranSearch()" type="button">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Property</mat-label>
+          <mat-select formControlName="property" (selectionChange)="onSelectedPropertyChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of props" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Block</mat-label>
+          <mat-select formControlName="block">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of blocks" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline"style="width:100%">
+          <mat-label class="mat-label-class">Flat</mat-label>
+          <input matInput type="text" placeholder="Flat" formControlName="flat" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="waterReadingForm.get('flat')!.value"
+            (click)="waterReadingForm.get('flat')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="onFlatSearch()" type="button">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row myCustomClass">
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="tranDate" [max]="today"
+            (blur)="dateChanged($event,'tranDate')" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Notes</mat-label>
+          <textarea matInput formControlName="notes" placeholder="Notes"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-label>Status:&nbsp;</mat-label><b class="data">{{status | uppercase}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Total Amount:&nbsp;</mat-label><b class="data">{{totalAmount | currency:'Ksh':'symbol':'1.2-2'}}</b>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="waterReadingForm.get('mode')!.value === 'View' || waterReadingForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,11 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">search</mat-icon>
+  Property:<b class="data">&nbsp;&nbsp;{{data.propertyName}}</b>&nbsp;&nbsp;-&nbsp;&nbsp; Unit Status:&nbsp;&nbsp;<b class="data">{{data.label | titlecase}}</b>
+</div>
+<app-access-grid [columnDefs]="columnDefs1" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+  [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)" [gridHeight]="'280px'"
+  [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'" [showRecordCount]="true">
+</app-access-grid>

@@ -1,0 +1,44 @@
+
+<mat-card>
+  <mat-carousel
+    timings="250ms ease-in"
+    [autoplay]="true"
+    [interval]="5000"
+    color="warn"
+    maxWidth="auto"
+    [proportion]="45"
+    [slides]="5"
+    [loop]="true"
+    [hideArrows]="false"
+    [hideIndicators]="true"
+    [useKeyboard]="true"
+    [useMouseWheel]="true"
+    orientation="rtl"
+  >
+    <mat-carousel-slide
+      #matCarouselSlide
+      *ngFor="let slide of images; let i = index"
+      [image]="slide"
+      overlayColor="#00000040"
+      [hideOverlay]="true"
+      class="carousel-slide"
+    >
+    <div class="dashboard-container">
+      <div class="dashboard-widget"    *ngFor="let item of dashboardData; let j = index"
+      [@fadeInScale]>
+        <mat-card class="widget-card"  [ngClass]="widgetColors[j]">
+          <mat-card-content>
+            <div class="icon-container">
+              <mat-icon class="status-icon">{{ getIconForStatus(item.unitStatus) }}</mat-icon>
+            </div>
+            <div class="text-container">
+              <mat-card-title>{{ item.unitStatus }}</mat-card-title>
+              <h2>{{ item.unitCount }}</h2>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    </mat-carousel-slide>
+  </mat-carousel>
+</mat-card>

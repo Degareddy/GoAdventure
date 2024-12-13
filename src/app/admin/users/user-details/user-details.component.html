@@ -1,0 +1,52 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Allowed IPS For :&nbsp;<b class="data">{{data.userId}}</b></div>
+</div>
+<mat-card>
+  <form [formGroup]="aipDetForm">
+    <div class="row justify-content-center myCustomClass">
+      <!-- <div style="text-align: center;">
+        <mat-label>S.No:&nbsp;<b class="data">{{slNum}}</b></mat-label>
+      </div> -->
+      <div style="text-align: center;">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">IP Number</mat-label>
+          <input matInput placeholder="IPNo" formControlName="iPNo" type="text">
+        </mat-form-field>
+      </div>
+      <div style="text-align: center;">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" (click)="onUpdate()"
+        [disabled]="data.mode==='View' || aipDetForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Delete()"
+        [disabled]="rowData.length === 0">
+        <mat-icon>delete</mat-icon>Delete
+      </button>
+    </div>
+  </form>
+</mat-card>
+<ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:180px;"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)"
+  [gridOptions]="gridOptions">
+</ag-grid-angular>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>

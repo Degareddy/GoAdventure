@@ -1,0 +1,62 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">groups</mat-icon>
+      Group Company
+    </div>
+  </div>
+</div>
+<div class="p-3 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="groupCompany">
+    <mat-form-field appearance="outline">
+      <mat-label class="mat-label-class">Select Group Company</mat-label>
+      <mat-select formControlName="groupCompany" (selectionChange)="groupCompanyChange($event)">
+        <mat-option value="">--Select--</mat-option>
+        <mat-option *ngFor="let x of groupcompany" [value]="x.itemCode">{{
+          x.itemName
+          }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+<div class="p-2 bg-zinc-100 container rounded-sm">
+  <div class="excont">
+    <table mat-table matSort [dataSource]="dataSource" style=" height: 230px; overflow: auto;">
+      <ng-container matColumnDef="slNo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>S.No</th>
+        <td mat-cell *matCellDef="let row">{{row.slNo}} </td>
+      </ng-container>
+      <ng-container matColumnDef="company">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Company</th>
+        <td mat-cell *matCellDef="let row">{{row.company}} </td>
+      </ng-container>
+      <ng-container matColumnDef="country">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
+        <td mat-cell *matCellDef="let row">{{row.country}} </td>
+      </ng-container>
+      <ng-container matColumnDef="mapped">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Mapped</th>
+        <td mat-cell *matCellDef="let row ;let i=index">
+          <mat-checkbox [checked]="row.mapStatus === 'Mapped'"
+            (change)="updateMapStatus(row, $event.checked,i)"></mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="update">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Update</th>
+        <td mat-cell *matCellDef="let row;let i=index">
+          <button mat-raised-button class="btnUp" color="primary" (click)="update(row,i)"
+            [disabled]="row.mapStatus === 'UnMap' || row.mapStatus === 'Mapped'  || row.mapStatus === 'UnMapped'">
+            <mat-icon>done</mat-icon>Apply
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayColumns; sticky:true"></tr>
+      <tr mat-row [class.selected]="selectedRowIndex === i" *matRowDef="let row; columns: displayColumns; let i=index;"
+        (click)="onRowClick(row,i)"></tr>
+    </table>
+    <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[10,25,50,100]">
+    </mat-paginator>
+  </div>
+
+  <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+</div>

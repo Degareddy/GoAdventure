@@ -1,0 +1,199 @@
+<mat-accordion multi="false">
+  <mat-sidenav-container class="sidenav-container" [ngClass]="isDarkTheme ? 'theme-dark' : 'theme-light'">
+    <mat-sidenav mode="side" opened class="sidenav" [ngClass]="isDarkTheme ? 'theme-dark' : 'theme-light'">
+      <mat-nav-list class="mat-list1">
+        <mat-toolbar color="primary" routerLinkActive="router-link-active" routerLink="/home">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </mat-toolbar>
+        <mat-expansion-panel *ngIf="isLandlord" [expanded]="true">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/landlord') }">
+            <mat-panel-title>
+              <mat-icon>person</mat-icon>Landlord
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of lnlrdMenu">
+            <a mat-list-item routerLinkActive="router-link-active" [routerLink]="x.function_url">
+              <mat-icon>{{ x.menuItemIcon }}</mat-icon>
+              {{ x.text }}
+            </a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+        <!-- Tenant pannel -->
+        <mat-expansion-panel *ngIf="isTenant" [expanded]="true">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/tenant') }">
+            <mat-panel-title>
+              <mat-icon>person</mat-icon>Tenant
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of tenantMenu">
+            <a mat-list-item routerLinkActive="router-link-active" [routerLink]="x.function_url">
+              <mat-icon>{{ x.menuItemIcon }}</mat-icon>
+              {{ x.text }}
+            </a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+        <!-- admin pannel -->
+        <mat-expansion-panel *ngIf="isAdmin" [expanded]="isRouteActive('/admin')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/admin') }">
+            <mat-panel-title>
+              <mat-icon>person</mat-icon>Admin
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of adminMenu">
+            <a mat-list-item routerLinkActive="router-link-active" [routerLink]="x.function_url">
+              <mat-icon>{{ x.menuItemIcon }}</mat-icon>
+              {{ x.text }}
+            </a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+        <!-- Properties pannel -->
+        <mat-expansion-panel *ngIf="isProperty" [expanded]="isRouteActive('/property')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/property') }">
+            <mat-panel-title>
+              <mat-icon>apartment</mat-icon>Properties
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of propertyMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+        <!-- Saleas pannel -->
+        <mat-expansion-panel *ngIf="isSale" [expanded]="isRouteActive('/sales')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/sales') }">
+            <mat-panel-title>
+              <mat-icon>attach_money</mat-icon>Sales
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of salesMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+
+        <!-- master menu -->
+        <mat-expansion-panel *ngIf="isUtil" [expanded]="isRouteActive('/utilities')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/utilities') }">
+            <mat-panel-title>
+              <mat-icon>settings</mat-icon>Utilities
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of utilMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+        <!-- Project Menu -->
+        <mat-expansion-panel *ngIf="isPay" [expanded]="isRouteActive('/projects')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/projects') }">
+            <mat-panel-title>
+              <mat-icon>engineering</mat-icon>Construction
+
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of projectsMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+        <!-- Purchase pannel -->
+        <mat-expansion-panel *ngIf="isPurchase" [expanded]="isRouteActive('/purchase')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/purchase') }">
+            <mat-panel-title>
+              <mat-icon>shopping_cart</mat-icon>Purchase
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of purchaseMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+        <!-- Inventory pannel -->
+        <mat-expansion-panel *ngIf="isInvent" [expanded]="isRouteActive('/inventory')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/inventory') }">
+            <mat-panel-title>
+              <mat-icon>inventory</mat-icon>Inventory
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of invMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+
+
+        <!-- GL pannel -->
+        <mat-expansion-panel *ngIf="isGl" [expanded]="isRouteActive('/gl')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/gl') }">
+            <mat-panel-title>
+              <mat-icon>account_balance</mat-icon>General Ledger
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of glMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+
+
+        <!-- Payroll menu -->
+        <mat-expansion-panel *ngIf="isPay" [expanded]="isRouteActive('/payroll')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/payroll') }">
+            <mat-panel-title>
+              <mat-icon>account_circle</mat-icon>Payroll
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of payrollMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+
+        <!-- Assets menu -->
+        <mat-expansion-panel *ngIf="isAsset" [expanded]="isRouteActive('/assets')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/assets') }">
+            <mat-panel-title>
+              <mat-icon>storage</mat-icon>Assets
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of assetsMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+
+        <!-- Report Menu -->
+        <mat-expansion-panel *ngIf="isReport" [expanded]="isRouteActive('/reports')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/reports') }">
+            <mat-panel-title>
+              <mat-icon>assessment</mat-icon>Reports
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of reportMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+      </mat-nav-list>
+    </mat-sidenav>
+  </mat-sidenav-container>
+</mat-accordion>

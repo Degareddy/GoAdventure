@@ -1,0 +1,172 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Loan Details</div>
+  <!-- <div class="right">
+    <button mat-icon-button mat-dialog-close class="small-button">
+      <mat-icon class="small-icon">close</mat-icon>
+    </button>
+  </div> -->
+</div>
+<mat-card>
+  <form [formGroup]="pldetForm" (submit)="onSubmit()">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-label style="padding-left: 25px; font-size: 12px;">SlNo:</mat-label>
+        <b style="padding-left: 10px;">{{slNum}}</b>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Tran No</mat-label>
+          <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>InstNo</mat-label>
+          <input matInput placeholder="InstNo" formControlName="instNo" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>InstMonth</mat-label>
+          <input matInput placeholder="InstMonth" formControlName="instMonth" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>InstYear</mat-label>
+          <input matInput placeholder="InstYear" formControlName="instYear" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>InstAmt</mat-label>
+          <input matInput placeholder="InstAmt" formControlName="instAmt" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>Adjustments</mat-label>
+          <input matInput placeholder="Adjustments" formControlName="adjustments" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>PaidAmt</mat-label>
+          <input matInput placeholder="PaidAmt" formControlName="paidAmt" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <!-- <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <input matInput placeholder="PaidOn" formControlName="paidOn" type="date">
+        </mat-form-field>
+      </div> -->
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>PaidOn</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="paidOn" [max]="tomorrow"/>
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>InstStatus</mat-label>
+          <input matInput placeholder="InstStatus" formControlName="instStatus" type="number">
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-3">
+        <mat-form-field  appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center" [ngStyle]="{
+      'text-align': 'center',
+      'font-size': '10px',
+      'background-color': textMessageClass === 'green' ? 'green' : 'red',
+      color: 'white'}">
+      <b>{{ retMessage }}</b>
+    </div>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" class="btnUp" type="submit" [disabled]="mode !='Modify'">Apply</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="addRequest()">New</button>
+    </div>
+  </form>
+</mat-card>
+<div class="container">
+  <table mat-table matSort [dataSource]="dataSource" class="tbl-dataList">
+    <ng-container matColumnDef="tranNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>TranNo</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.tranNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="slNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>SlNo</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.slNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="instNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>InstNo</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.instNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="instMonth">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>InstMonth</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.instMonth}} </td>
+    </ng-container>
+    <ng-container matColumnDef="instYear">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>InstYear</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.instYear}} </td>
+    </ng-container>
+    <ng-container matColumnDef="instAmt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>InstAmt</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.instAmt}} </td>
+    </ng-container>
+    <ng-container matColumnDef="adjustments">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Adjustments</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.adjustments}} </td>
+    </ng-container>
+    <ng-container matColumnDef="paidAmt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>PaidAmt</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.paidAmt}} </td>
+    </ng-container>
+    <ng-container matColumnDef="paidOn">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>PaidOn</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.paidOn| date:'dd-MM-YYYY' }} </td>
+    </ng-container>
+    <ng-container matColumnDef="instStatus">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>InstStatus</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.instStatus}} </td>
+    </ng-container>
+    <ng-container matColumnDef="remarks">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Remarks</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.remarks}} </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let cust"> <button class="btn" mat-raised-button color="accent"
+          (click)="onViewClicked()">View</button> <button class="btn" mat-raised-button color="primary"
+          (click)="onEditClicked()">Edit</button> <button class="btn" mat-raised-button color="warn"
+          (click)="onDeleteClicked()">Delete</button> </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayColumns; sticky:true"></tr>
+    <tr mat-row [class.selected]="selectedRowIndex === i" *matRowDef="let row; columns: displayColumns; let i=index;"
+      class="clickable-row" (click)="onRowClick(row,i)"></tr> COG LotNo ExStock
+  </table> <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5,10,25,50,100]"> </mat-paginator>
+</div>

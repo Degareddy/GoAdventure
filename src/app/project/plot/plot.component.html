@@ -1,0 +1,159 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">map</mat-icon>
+      <b>Plot</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="direction()"
+      [disabled]="pltDetForm.get('mode')!.value! == 'Add' || pltDetForm.invalid"><mat-icon>
+        my_location</mat-icon>
+      Directions
+    </button>
+    <button mat-raised-button color="primary" type="button" class="btnUp"
+      [disabled]="pltDetForm.get('mode')!.value! == 'Add' || pltDetForm.invalid"
+      (click)="onDocsCilcked(pltDetForm.get('plotNo')!.value)"><mat-icon>cloud_upload</mat-icon>Docs
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(pltDetForm.get('plot')!.value )"
+      [disabled]="pltDetForm.get('plot')!.value === '' || pltDetForm.get('plot')!.value === null">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(pltDetForm.get('plot')!.value )"
+      [disabled]="pltDetForm.get('plot')!.value === '' || pltDetForm.get('plot')!.value === null">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+    <form [formGroup]="pltDetForm" (ngSubmit)="onUpdate()">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(pltDetForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Venture</mat-label>
+          <mat-select formControlName="venture" (selectionChange)="onSelectedVentureChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of ventureList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Plot</mat-label>
+          <mat-select formControlName="plot" (selectionChange)="onSelectedPlotChanged(pltDetForm.get('plot')!.value)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of plotsList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Plot No</mat-label>
+          <input matInput placeholder="Plot No" formControlName="plotNo" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Plot Name</mat-label>
+          <input matInput placeholder="Plot Name" formControlName="plotName" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Latitude</mat-label>
+          <input matInput placeholder="Latitude" formControlName="latitude" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Longitude</mat-label>
+          <input matInput placeholder="Longitude" formControlName="longitude" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Extent_M2</mat-label>
+          <input matInput placeholder="Extent_M2" formControlName="extent_M2" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Client</mat-label>
+          <input matInput placeholder="Client" formControlName="client" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Available From</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="availableFrom" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3"></div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-label>Sale Date: </mat-label><b class="data">{{saleDate | date:'dd-MM-yyyy'}}</b>
+      </div>
+
+      <div class="col-3">
+        <mat-label>Regn Date: </mat-label><b class="data">{{regnDate | date:'dd-MM-yyyy'}}</b>
+      </div>
+
+      <div class="col-3">
+        <mat-label>Status: </mat-label><b class="data">{{plotStatus | uppercase}}</b>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="pltDetForm.invalid || pltDetForm.get('mode')!.value==='View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+
+    </div>
+  </form>
+</div>

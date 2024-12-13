@@ -1,0 +1,140 @@
+<section>
+
+  <div class="mat-card container-fluid">
+    <div class="left">Stock Merging</div>
+    <div class="right">
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(mergingForm.get('tranNo')!.value )"
+      [disabled]="mergingForm.get('tranNo')!.value === '' || mergingForm.get('tranNo')!.value === null">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(mergingForm.get('tranNo')!.value )"
+        [disabled]="mergingForm.get('tranNo')!.value === '' || mergingForm.get('tranNo')!.value === null">
+        <mat-icon>comment</mat-icon>
+        Log
+      </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+  <mat-card>
+    <form [formGroup]="mergingForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-3">
+          <div class="input-with-button">
+            <mat-form-field appearance="outline" aria-colspan="2">
+              <mat-label>TranNo</mat-label>
+              <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+            </mat-form-field>
+            <span style="padding-bottom: 10px;">
+              <button mat-raised-button color="primary" [disabled]="mergingForm.get('mode')!.value === 'Add'"
+                type="button" (click)="searchData()" class="btnUp search-button">
+                <mat-icon>search</mat-icon>
+              </button>
+            </span>
+
+          </div>
+        </div> -->
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="search">
+            <mat-label for="tranNo" class="mat-label-class">TranNo</mat-label>
+            <input matInput type="text" placeholder="TranNo" id="tranNo" formControlName="tranNo" />
+            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="mergingForm.get('tranNo')!.value"
+              (click)="mergingForm.get('tranNo')!.setValue('')" type="button">
+              <mat-icon class="mat-clear-icon">clear</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search"
+              [disabled]="mergingForm.get('mode')!.value === 'Add'" (click)="searchData()" type="button">
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+
+
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>From Item</mat-label>
+            <mat-select formControlName="fromItem">
+              <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                                    x.itemName
+                                    }}</mat-option> -->
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>To Item</mat-label>
+            <mat-select formControlName="toItem">
+              <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                                    x.itemName
+                                    }}</mat-option> -->
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date"  [max]="tomorrow"/>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <div class="col-3">
+            <mat-label style="margin-left: 30px;">Status:</mat-label><b style="margin-left: 10px;">{{tranStatus}}</b>
+          </div>
+        </div>
+
+      </div>
+      <div class="row justify-content-center">
+        <!-- <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Notes</mat-label>
+            <textarea matInput placeholder="Notes" rows="5" formControlName="notes"></textarea>
+          </mat-form-field>
+        </div> -->
+        <div class="col-9">
+          <mat-form-field appearance="outline" style="width:100%;">
+            <mat-label for="notes">Notes</mat-label>
+            <input matInput placeholder="Notes" id="notes" rows="5" formControlName="notes" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp">
+          <mat-icon>save</mat-icon>Apply
+        </button>
+
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+          <mat-icon>autorenew</mat-icon>Reset
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</section>

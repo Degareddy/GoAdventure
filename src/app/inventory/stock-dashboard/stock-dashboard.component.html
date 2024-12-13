@@ -1,0 +1,72 @@
+<div class="container-fluid">
+  <div class="left data">Dashboard</div>
+  <!-- <div class="btnPanel">
+    <mat-form-field appearance="outline">
+      <mat-label>Property</mat-label>
+      <mat-select>
+        <mat-option value="">--Select--</mat-option>
+        <mat-option *ngFor="let x of locationList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div> -->
+</div>
+<mat-card>
+  <form  [formGroup]="dashboardForm">
+    <div class="row">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Report</mat-label>
+          <input type="text" matInput formControlName="report" placeholder="Report" />
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Report Type</mat-label>
+          <mat-select formControlName="reportType">
+            <mat-option>--Select--</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field class="full-width" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="formDate" placeholder="From Date" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field class="full-width" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">To Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="toDate" placeholder="To Date"  />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Project</mat-label>
+          <mat-select formControlName="project">
+            <mat-option>--Select--</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+
+</mat-card>
+<div class="row">
+  <div class="col-lg-6 col-6">
+    <div class="small-box bg-info">
+      <ag-charts-angular [options]="chartOptions">
+      </ag-charts-angular>
+    </div>
+  </div>
+  <div class="col-lg-6 col-6">
+    <div class="small-box bg-info">
+      <ag-charts-angular [options]="chartOptions1">
+      </ag-charts-angular>
+    </div>
+
+  </div>
+</div>

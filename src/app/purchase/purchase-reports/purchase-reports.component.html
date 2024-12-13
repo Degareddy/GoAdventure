@@ -1,0 +1,114 @@
+<div class="mat-card container-fluid">
+    <div class="left">Purchase Report</div>
+  </div>
+  <mat-card>
+    <form [formGroup]="purRptFrom" >
+      <div class="row row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="padding-top: 8px;">
+            <mat-label>Company</mat-label>
+            <mat-select formControlName="company">
+              <mat-option *ngFor="let x of companyList" [value]="x.itemCode">{{x.itemName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <div class="input-with-button">
+            <mat-form-field appearance="outline" style="padding-top: 8px;">
+                <mat-label>Branch</mat-label>
+                <mat-select formControlName="branch">
+                  <mat-option *ngFor="let x of branchList" [value]="x.itemCode">{{x.itemName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+          </div>
+        </div>
+    </div>
+    <div class="row row justify-content-center">
+        <div class="col-3">
+          <div class="input-with-button">
+            <mat-form-field appearance="outline">
+              <mat-label>Supplier</mat-label>
+              <input matInput placeholder="Supplier" formControlName="supplier" type="text" >
+            </mat-form-field>
+            <span style="padding-bottom: 14px;">
+              <button mat-raised-button color="primary" class="btnUp search-button" type="button"
+                (click)="onSupplierSearch()">
+                <mat-icon>search</mat-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <div class="col-3">
+            <div class="input-with-button">
+              <mat-form-field appearance="outline">
+                <mat-label>Product</mat-label>
+                <input matInput placeholder="Product" formControlName="product" type="text" >
+              </mat-form-field>
+              <span style="padding-bottom: 14px;">
+                <button mat-raised-button color="primary" class="btnUp search-button" type="button"
+                  (click)="onProductSearch()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </span>
+            </div>
+          </div>
+      </div>
+      <div class="row row justify-content-center">
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Period Type</mat-label>
+            <mat-select matInput placeholder="Period Type" formControlName="periodType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="Monthly">Monthly</mat-option>
+              <mat-option value="HalfYearly">HalfYearly</mat-option>
+              <mat-option value="Annual">Annual</mat-option>
+            </mat-select>
+            <!-- <input matInput placeholder="ItemCategory" formControlName="itemCategory" type="text"> -->
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+            <mat-form-field appearance="outline" aria-colspan="2">
+              <mat-label>Report Type</mat-label>
+              <mat-select matInput placeholder="Report Type" formControlName="reportType">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option value="Details">Details</mat-option>
+                <mat-option value="Summary">Summary</mat-option>
+              </mat-select>
+              <!-- <input matInput placeholder="ItemCategory" formControlName="itemCategory" type="text"> -->
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row row justify-content-center">
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="padding-top: 8px;">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="picker2" formControlName="fromDate" />
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <div class="col-3">
+            <mat-form-field appearance="outline" style="padding-top: 8px;">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="picker2" formControlName="ToDate" />
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+        </div>
+      </div>
+
+      <!-- <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box> -->
+      <div class="btnAlignment">
+        <!-- <button mat-raised-button color="primary" class=btnUp>Update</button> -->
+        <button mat-raised-button color="primary" type="submit" class="btnUp"> <b>Excel</b></button>
+        <button mat-raised-button color="primary" type="button" (click)="reset()"
+        class=btnUp><mat-icon>autorenew</mat-icon>Reset</button>
+      </div>
+    </form>
+  </mat-card>

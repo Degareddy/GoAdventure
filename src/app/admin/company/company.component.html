@@ -1,0 +1,252 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">business</mat-icon>
+      <b>Company</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button [disabled]="companyForm.get('companyID')!.value===''" color="primary" class="btnUp"
+        type="button" (click)="GetBranches(companyForm.get('companyList')!.value)">
+        <mat-icon>call_split</mat-icon>Properties
+      </button>
+      <button mat-raised-button [disabled]="companyForm.get('companyID')!.value===''" color="accent" class="btnUp"
+        type="button" (click)="onDocsCilcked(companyForm.get('companyID')!.value)">
+        <mat-icon>cloud_upload</mat-icon>Docs
+      </button>
+      <button mat-raised-button class="btnUp" type="button"
+        (click)="NotesDetails(companyForm.get('companyList')!.value)"
+        [disabled]="companyForm.get('companyList')!.value === ''">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="logDetails(companyForm.get('companyList')!.value )"
+        [disabled]="companyForm.get('companyList')!.value === '' || companyForm.get('companyList')!.value === null">
+        <mat-icon>comment</mat-icon>
+        Log
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div>
+  <div class="p-4 bg-zinc-100 container">
+    <!-- <mat-card class="container  mx-auto p-0.1  bg-zinc-100  rounded"> -->
+    <!-- <div class="container-fluid"> -->
+    <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" (selectionChange)="modeChange($event.value)">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Company List</mat-label>
+            <mat-select formControlName="companyList"
+              (selectionChange)="companyChange(companyForm.get('companyList')!.value)">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of companyList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3"></div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Company</mat-label>
+            <input matInput placeholder="Company" formControlName="companyID" type="text" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Name</mat-label>
+            <input matInput placeholder="Name" formControlName="name" type="text" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="cmpDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Address1</mat-label>
+            <input matInput placeholder="Address1" formControlName="address1" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Address2</mat-label>
+            <input matInput placeholder="Address2" formControlName="address2" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Address3</mat-label>
+            <input matInput placeholder="Address3" formControlName="address3" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">PO_PIN_ZIP</mat-label>
+            <input matInput placeholder="PO_PIN_ZIP" formControlName="pO_PIN_ZIP" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">City</mat-label>
+            <input matInput placeholder="City" formControlName="city" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>State</mat-label>
+            <input matInput placeholder="State" formControlName="state" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Country</mat-label>
+            <input matInput placeholder="Country" formControlName="country" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Phone1</mat-label>
+            <input matInput placeholder="Phone1" formControlName="phone1" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Phone2</mat-label>
+            <input matInput placeholder="Phone2" formControlName="phone2" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Phone3</mat-label>
+            <input matInput placeholder="Phone3" formControlName="phone3" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>Fax</mat-label>
+            <input matInput placeholder="Fax" formControlName="fax" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">Email</mat-label>
+            <input matInput placeholder="Email" formControlName="email" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>URL</mat-label>
+            <input matInput placeholder="URL" formControlName="uRL" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">VATNo</mat-label>
+            <input matInput placeholder="VATNo" formControlName="vATNo" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label class="mat-label-class">PINNo</mat-label>
+            <input matInput placeholder="PINNo" formControlName="pINNo" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>facebook</mat-label>
+            <input matInput placeholder="facebook" formControlName="facebook" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>twitter</mat-label>
+            <input matInput placeholder="twitter" formControlName="twitter" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>instagram</mat-label>
+            <input matInput placeholder="instagram" formControlName="instagram" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>youtube</mat-label>
+            <input matInput placeholder="youtube" formControlName="youtube" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="full-width" appearance="outline">
+            <mat-label>pinterest</mat-label>
+            <input matInput placeholder="pinterest" formControlName="pinterest" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+        </div>
+      </div>
+      <div class="row justify-content-center myCustomClass">
+        <div class="col-6">
+          <mat-form-field class="full-width" appearance="outline" class="mat-notes">
+            <mat-label>Notes</mat-label>
+            <input type="text" matInput formControlName="notes" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-label>Status:&nbsp;</mat-label><b class="data">{{status | uppercase}}</b>
+        </div>
+
+      </div>
+
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+      <div class="btnAlignment highlighted-strip">
+        <button mat-raised-button color="primary" type="submit" class="btnUp"
+          [disabled]="companyForm.get('mode')!.value === 'View' || companyForm.invalid">
+          <mat-icon>done</mat-icon>Apply
+        </button>
+        <!-- <button mat-raised-button color="accent" class="btnUp" type="button"
+            (click)="reset()"><mat-icon>autorenew</mat-icon>Reset</button> -->
+        <button mat-raised-button color="accent" class="btnUp" type="button"
+          (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+        <button mat-raised-button color="warn" class="btnUp" type="button"
+          (click)="Close()"><mat-icon>cancel</mat-icon>Close</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- <app-side-overlay #overlay></app-side-overlay> -->

@@ -1,0 +1,152 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">account_balance_wallet</mat-icon>
+      <b>Budgets</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+      [disabled]="bgtForm.get('mode')!.value == 'Add' || bgtForm.invalid"
+      (click)="onDetailsCilcked(bgtForm.get('tranNo')!.value)">
+      <mat-icon>info</mat-icon>Details
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(bgtForm.get('tranNo')!.value )"
+      [disabled]="bgtForm.get('tranNo')!.value === '' || bgtForm.get('tranNo')!.value === null">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(bgtForm.get('tranNo')!.value )"
+      [disabled]="bgtForm.get('tranNo')!.value === '' || bgtForm.get('tranNo')!.value === null">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="bgtForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(bgtForm.controls['mode'].value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label for="tranNo">Tran No</mat-label>
+          <input matInput type="text" placeholder="Tran No" id="tranNo" formControlName="tranNo" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bgtForm.get('tranNo')!.value"
+            (click)="bgtForm.get('tranNo')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" [disabled]="bgtForm.get('mode')!.value === 'Add'"
+            (click)="searchData()" type="button">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Project Type</mat-label>
+          <mat-select formControlName="projectType" (selectionChange)="typeChange($event)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="Property">Property</mat-option>
+            <mat-option value="Venture">Venture</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Project</mat-label>
+          <mat-select formControlName="projectName">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of projectList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-4">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Currency</mat-label>
+          <mat-select matInput placeholder="Currency" formControlName="currency">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+
+      <div class="col-9">
+        <mat-form-field aria-colspan="6" appearance="outline" style="width: 100%;">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-label>Budget Amount :&nbsp;</mat-label><b class="data">{{budgetAmt | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Actual Amount :&nbsp;</mat-label><b class="data">{{actualAmt | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Diff Amount :&nbsp;</mat-label><b class="data">{{diffAmt | number:'1.2-2'}}</b>
+      </div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-3 offset-md-1">
+        <mat-label>Scheduled Date :&nbsp;</mat-label><b class="data">{{schCmpldDate | date:'dd-MM-yyyy'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Actual Date :&nbsp;</mat-label><b class="data">{{actCmplDate | date:'dd-MM-yyyy'}}</b>
+      </div>
+      <div class="col-2">
+        <mat-label>Diff Days :&nbsp;</mat-label><b class="data">{{diffDays | number:'1.0-2'}}</b>
+      </div>
+      <div class="col-2">
+        <mat-label>Status :&nbsp;</mat-label><b class="data">{{tranStatus}}</b>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="bgtForm.invalid || bgtForm.get('mode')!.value === 'View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

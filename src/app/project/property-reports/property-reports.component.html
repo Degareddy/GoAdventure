@@ -1,0 +1,144 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">show_chart</mat-icon>
+      <b>Property Reports</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="reoprtForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Report</mat-label>
+          <mat-select formControlName="Report">
+            <mat-option value="">--Select--</mat-option>
+            <!-- <mat-option value="All">All</mat-option> -->
+            <mat-option *ngFor="let x of reoprttList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Property</mat-label>
+          <mat-select formControlName="PropCode" (selectionChange)="onSelectedPropertyChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of properytList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Block</mat-label>
+          <mat-select formControlName="BlockCode" (selectionChange)="onSelectedBlockChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of blocksList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Flat</mat-label>
+          <mat-select formControlName="UnitID">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of flatsList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Status</mat-label>
+          <mat-select formControlName="UnitStatus">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of statusList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-left" *ngIf="reoprtForm.controls['Report'].value==='Technician History'">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="search">
+          <mat-label>Technician</mat-label>
+          <input matInput type="text" placeholder="Technician" formControlName="customer" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="reoprtForm.get('customer')!.value"
+            (click)="this.reoprtForm.get('customer')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="onCustomerSearch()" type="button">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field class="mat-date" appearance="outline">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="FromDate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="mat-date" appearance="outline">
+          <mat-label class="mat-label-class">To Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="ToDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="reoprtForm.invalid">
+        <mat-icon>download</mat-icon>Fetch
+      </button>
+      <button mat-raised-button color="accent" type="button" (click)="clear()" class="btnUp">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" type="button" (click)="close()" class="btnUp">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <mat-slide-toggle
+      class="ml-2"
+      [(ngModel)]="checked"  color="primary"  [ngModelOptions]="{standalone: true}"
+      (change)="onToggleChange($event)">
+      View Chart
+    </mat-slide-toggle>
+    </div>
+  </form>
+  <div style="margin-top: -30px;" *ngIf="reoprtForm.controls['Report'].value != 'Technician History' && !checked">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+    (columnVisibilityChanged)="onColumnVisibilityChanged($event)" [totals]="totals"
+      (gridReady)="onGridReady($event)" [paginationPageSize]="100" [gridHeight]="'300px'" [globalSearch]="true" (filterChanges)="onFilterData($event)" [reportName]="'Property'"
+      [showToolPanel]="true" [showRecordCount]="true"></app-access-grid>
+  </div>
+  <div style="margin-top: -30px;" *ngIf="reoprtForm.controls['Report'].value === 'Technician History' && !checked">
+    <app-access-grid [columnDefs]="columnDefs1" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+      (gridReady)="onGridReady($event)" [paginationPageSize]="100" [gridHeight]="'300px'" [globalSearch]="true"
+      [showToolPanel]="true" [showRecordCount]="true"></app-access-grid>
+  </div>
+  <div class="report-container" *ngIf="reoprtForm.controls['Report'].value != 'Technician History' && !checked">
+    <span class="report-label" *ngIf="!rentTmp">Total Rent:&nbsp;</span>
+    <span class="report-amount" *ngIf="!rentTmp">{{ totalRent | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+    <span class="report-label" *ngIf="!serviceTmp">&nbsp;Total Service:&nbsp;</span>
+    <span class="balance-credit" *ngIf="!serviceTmp">{{ totalService | number: '1.2-2' }}</span>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4  mx-auto p-0.1 bg-gray-100 shadow rounded"  *ngIf="checked">
+  <div *ngFor="let chart of chartData" class="mb-4">
+    <p-card header="{{ chart.datasets[0].label }}" class="shadow-lg rounded-lg border border-gray-200">
+      <p-chart type="bar" [data]="chart" [options]="chartOptions" (onDataSelect)="onChartClick($event, chart.datasets[0].label)"></p-chart>
+    </p-card>
+  </div>
+
+</div>

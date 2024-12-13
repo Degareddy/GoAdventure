@@ -1,0 +1,124 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Asset Group</div>
+  <div class="right">
+    <button mat-raised-button class="btnUp" type="button"
+      (click)="logDetails(assetgrpForm.get('itemGroupList')!.value )"
+      [disabled]="assetgrpForm.get('itemGroupList')!.value === '' || assetgrpForm.get('itemGroupList')!.value === null">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+    <button mat-raised-button color="primary" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="assetgrpForm" (ngSubmit)="onSubmit()">
+    <div class="row  justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(assetgrpForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" aria-colspan="2">
+          <mat-label>Asset GroupID</mat-label>
+          <mat-select placeholder="Asset GroupID"
+            formControlName="itemGroupList" (selectionChange)="getAssetGroupChange()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of itemGroupID" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- <mat-form-field appearance="outline">
+                <mat-label>Item Group ID</mat-label>
+                <input matInput placeholder="Item GroupID" formControlName="itemGroupCode" type="text" />
+            </mat-form-field> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Effective Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="effectiveDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Group Code</mat-label>
+          <input matInput placeholder="Asset group code" formControlName="itemGroupCode" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Asset Group Desc</mat-label>
+          <input matInput placeholder="Asset Group Desc" formControlName="itemGroupDesc" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Depreciation Method</mat-label>
+          <mat-select matInput placeholder="Dep Method" formControlName="depType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="Strightline">Strightline</mat-option>
+            <mat-option value="Diminishing">Diminishing</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Dep On</mat-label>
+          <mat-select matInput placeholder="Dep On" formControlName="depOn">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="Percentage">Percentage</mat-option>
+            <mat-option value="Flat">Flat</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Value</mat-label>
+          <input matInput placeholder="Value" class="right-align-input" separator formControlName="depValue" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:&nbsp;<b class="data">{{groupStatus | uppercase}}</b></mat-label>
+      </div>
+    </div>
+
+    <div class="row  justify-content-center">
+
+      <div class="col-9" >
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="notes" type="text">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="assetgrpForm.get('mode')!.value === 'View' || assetgrpForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" type="button" class=btnUp (click)="reset()">
+        <mat-icon>clear_all</mat-icon>Clear</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Delete()" [disabled]="assetgrpForm.get('mode')!.value === 'View' || assetgrpForm.invalid">
+        <mat-icon>delete</mat-icon><b>Delete</b>
+      </button>
+    </div>
+  </form>
+</mat-card>
+<!--  -->

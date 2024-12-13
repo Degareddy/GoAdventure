@@ -1,0 +1,155 @@
+<section>
+  <div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+    <div class="flex justify-between items-center mb-0.1 h-8">
+      <div class="flex items-center text-white">
+        <mat-icon class="mr-1">tune</mat-icon>
+        <b>Stock Adjustments</b>
+      </div>
+      <div class="flex items-end space-x-1 mb-2.5">
+        <button mat-raised-button color="accent" type="button" class="btnUp"
+        (click)="onDetailsCilcked(stockAdjForm.get('tranNo')!.value)"
+        [disabled]="stockAdjForm.get('mode')!.value === 'Add' || stockAdjForm.invalid">
+        <mat-icon>info</mat-icon>Details</button>
+      <button mat-raised-button color="primary" type="button" class="btnUp"
+        (click)="onDocsCilcked(stockAdjForm.get('tranNo')!.value)" [disabled]="disableDetail && fetchStatus"
+        [ngClass]="{'custom-disabled-button': disableDetail && fetchStatus}"><mat-icon>cloud_upload</mat-icon>Docs
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(stockAdjForm.get('tranNo')!.value )"
+        [disabled]="stockAdjForm.get('mode')!.value === 'Add' || stockAdjForm.invalid">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="logDetails(stockAdjForm.get('tranNo')!.value )"
+        [disabled]="stockAdjForm.get('tranNo')!.value === '' || stockAdjForm.get('tranNo')!.value === null">
+        <mat-icon>comment</mat-icon>
+        Log
+      </button>
+      <button mat-raised-button class="btnUp" color="accent" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+      </div>
+    </div>
+  </div>
+  <div class="p-4 bg-zinc-100 container rounded-sm">
+
+    <form [formGroup]="stockAdjForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center myCustomClass ">
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" (selectionChange)="modeChange(stockAdjForm.get('mode')!.value)">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-3">
+          <mat-form-field appearance="outline" class="search">
+            <mat-label for="tranNo">Tran No</mat-label>
+            <input matInput type="text" placeholder="Tran No" id="tranNo" formControlName="tranNo" />
+            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="stockAdjForm.get('tranNo')!.value"
+              (click)="stockAdjForm.get('tranNo')!.setValue('')" type="button">
+              <mat-icon class="mat-clear-icon">clear</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search" [disabled]="stockAdjForm.get('mode')!.value === 'Add'"
+              (click)="searchData()" type="button">
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div> -->
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width: 85%;">
+            <mat-label>TranNo</mat-label>
+            <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+            <button mat-button *ngIf="stockAdjForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+              aria-label="Clear" (click)="stockAdjForm.get('tranNo')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+              [disabled]="stockAdjForm.get('mode')!.value === 'Add'">
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Conversion Type</mat-label>
+            <input matInput placeholder="ConversionType" formControlName="conversionType" type="text" />
+          </mat-form-field>
+        </div> -->
+      </div>
+      <div class="row justify-content-center myCustomClass">
+
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Tran Type</mat-label>
+            <mat-select formControlName="tranType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="STORAGE">Storage</mat-option>
+              <mat-option value="CONVERSION">Conversion</mat-option>
+              <mat-option value="MERGE">Merge</mat-option>
+              <mat-option value="TRANSPORT">Transport</mat-option>
+              <mat-option value="PILFERAGE">Pilferage</mat-option>
+              <mat-option value="UNITS">Units</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Adjustment Type</mat-label>
+            <mat-select formControlName="adjustmentType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="GAIN">Gain</mat-option>
+              <mat-option value="LOSS">Loss</mat-option>
+              <mat-option value="UPGRADE">Upgrade</mat-option>
+              <mat-option value="DOWNGRADE">Downgrade</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Referance Tran No</mat-label>
+            <input matInput placeholder="Referance Tran No" formControlName="refTranNo" type="text" />
+          </mat-form-field>
+        </div>
+
+
+      </div>
+      <div class="row justify-content-center myCustomClass">
+        <!-- <div class="col-2">
+        </div> -->
+        <div class="col-5">
+          <mat-form-field appearance="outline" style="width:100%;">
+            <mat-label for="notes">Notes</mat-label>
+            <textarea matInput placeholder="Notes" rows="1" formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-2 myCustomClass">
+          <mat-label>Status:&nbsp;</mat-label><b class="data">{{tranStatus}}</b>
+        </div>
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="stockAdjForm.invalid">
+          <mat-icon>done</mat-icon><b>Apply</b>
+        </button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+          <mat-icon>clear_all</mat-icon><b>Clear</b>
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()" [mat-dialog-close]="true">
+          <mat-icon>cancel</mat-icon><b>Close</b>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

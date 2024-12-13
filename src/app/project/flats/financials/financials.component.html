@@ -1,0 +1,162 @@
+<div [@dialogAnimation]>
+  <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+    <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+  </button>
+  <div class="flex items-center text-white rounded-sm bg-blue-400 ">
+    <mat-icon class="mr-1">assessment</mat-icon>
+    <b>Financials Details For Flat:</b><b class="data ml-2">{{data.Flat}}</b>
+  </div>
+
+  <div class="p-4 bg-zinc-100 container rounded-sm">
+
+
+    <form [formGroup]="financeForm1" (submit)="onSubmit()">
+      <div class="row  justify-content-left myCustomClass">
+        <div class="col-2">
+          <mat-label>Sl.No:&nbsp;</mat-label><b class="data">{{slNum}}</b>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Charge Type</mat-label>
+            <mat-select matInput formControlName="chargeType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of charges" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Amount</mat-label>
+            <input type="text" matInput placeholder="Amount" separator formControlName="amount"
+              class="right-align-input" (focusout)="onAmountChanged()">
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Disc Type</mat-label>
+            <mat-select matInput formControlName="discType" (selectionChange)="onDiscTypeChanged($event.value)">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="PERCENTAGE">Percentage</mat-option>
+              <mat-option value="FLAT">Flat</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Disc Rate</mat-label>
+            <input type="text" matInput placeholder="Disc Rate" formControlName="discRate" class="right-align-input"
+              (focusout)="onDiscountRateChanged()">
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Disc Amount</mat-label>
+            <input type="text" matInput placeholder="Disc Amount" formControlName="discAmount"
+              class="right-align-input">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row  justify-content-center">
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Vat</mat-label>
+            <mat-select matInput formControlName="vatRate" (selectionChange)="onVatRateChanged($event.value)">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of vats" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Vat Amount</mat-label>
+            <input type="text" matInput placeholder="Vat Amount" formControlName="vatAmount" class="right-align-input">
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Net Amount</mat-label>
+            <input type="text" matInput placeholder="Net Amount" separator formControlName="netAmount"
+              class="right-align-input">
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">Last Reviewed</mat-label>
+            <input matInput [matDatepicker]="picker" [max]="today" placeholder="Last Reviewed on"
+              formControlName="lastReviewed" type="Datepicker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">Next Review</mat-label>
+            <input matInput [matDatepicker]="picker1" placeholder="Next Reviewed on" formControlName="nextReviewed"
+              type="Datepicker">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Revenue To</mat-label>
+            <mat-select formControlName="revenueTo">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of revenueList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row  justify-content-center myCustomClass">
+        <div class="col-2">
+          <!-- <mat-label>Recurring</mat-label>
+        <mat-checkbox formControlName="IsRecurring"></mat-checkbox> -->
+          <mat-label class="custom-label">Recurring</mat-label>
+          <mat-checkbox class="custom-checkbox" formControlName="IsRecurring"></mat-checkbox>
+
+        </div>
+        <div class="col-2">
+          <mat-label class="custom-label">Refundable</mat-label>
+          <mat-checkbox class="custom-checkbox" formControlName="IsRefundable"></mat-checkbox>
+        </div>
+      </div>
+
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" class="btnUp" type="submit"
+          [disabled]="data.mode==='View' || financeForm1.invalid || data.mode ==='Delete'">
+          <mat-icon>done</mat-icon><b>Save</b>
+        </button>
+
+        <button mat-raised-button color="accent" type="button" (click)="addNew()" class="btnUp"
+          [disabled]="data.mode==='View'"><mat-icon>add</mat-icon><b>New</b>
+        </button>
+        <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Delete()" [disabled]="data.mode !='Delete' ||
+       data.status=='Closed' || financeForm1.invalid || slNum ==0">
+          <mat-icon>delete</mat-icon><b>Delete</b>
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+          <mat-icon>cancel</mat-icon><b>Close</b>
+        </button>
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    </form>
+  </div>
+  <div class="grid">
+    <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+      style="width: 100%; height:230px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs"
+      [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+      (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+    </ag-grid-angular>
+  </div>
+  <div class="pageSizectrl" style="margin-top:-20px;">
+    <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+      [ngModelOptions]="{standalone: true}">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+  <div style="text-align: right;">
+    <span class="myCustomClass">Total Amount:&nbsp;</span><span><b class="data">{{ totalAmount |
+        number: '1.2-2' }}</b></span>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<!-- <div class="mat-card container-fluid">
+  <div class="left">File Upload:&nbsp;<b class="data">{{data.search | titlecase}}&nbsp;-&nbsp;{{data.tranNo}}</b></div>
+</div> -->
+
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">upload</mat-icon>File Upload:&nbsp;&nbsp;
+  <b class="data ml-2">{{data.search | titlecase}}&nbsp;-&nbsp;{{data.tranNo}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <div class="flex flex-wrap items-center justify-between">
+    <div class="w-full md:w-1/2">
+      <div class="flex items-center space-x-1">
+        <div class="flex items-center">
+          <span class="material-icons mr-2">upload</span> <!-- Add your desired icon here -->
+          <input type="file" (change)="onFileSelected($event)" #fileInput accept="image/*, application/pdf"
+            [disabled]="mode == 'View'" class="block w-full text-sm text-gray-500 file:mr-1
+              file:py-1 file:px-1 file:rounded-full file:border-0 file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+        </div>
+
+      </div>
+      <div>
+        <button (click)="upload()" mat-raised-button color="primary" class="btnUp" type="button"
+          [disabled]="!selectedFile || mode=='View'">
+          <mat-icon>cloud_upload</mat-icon>Upload
+        </button>
+
+        <button (click)="reset()" mat-raised-button color="accent" class="btnUp" type="button"
+          [disabled]="mode == 'View'">
+          <mat-icon>refresh</mat-icon>Reset
+        </button>
+
+        <button (click)="deleteFile()" mat-raised-button color="primary" class="btnUp" type="button"
+          [disabled]="rowData.length <= 0 || fileName === ''">
+          <mat-icon>delete</mat-icon>Delete
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full md:w-1/2 flex justify-center md:justify-center mt-1 md:mt-0">
+      <div class="relative">
+        <div class="relative h-40 w-40 bg-white border-4 border-blue-300 rounded-lg overflow-hidden shadow-lg">
+          <img *ngIf="imageBlob" [src]="imageBlob" alt="Downloaded Image"
+            class="object-cover w-full h-full cursor-pointer" />
+          <img *ngIf="imageView" [src]="imagePreview" alt="File Preview" class="object-cover w-full h-full" />
+
+          <iframe *ngIf="pdfView" [src]="pdfPreview" type="application/pdf" class="w-full h-full"></iframe>
+        </div>
+
+        <span *ngIf="uploadProgressview[0]" [style.color]="msg[0] ? 'green' : 'green'"
+          class="text-xs font-semibold block text-center mt-2">
+          {{ uploadProgressview[0] }}
+        </span>
+
+        <button *ngIf="imageBlob || pdfPreview" (click)="downloadImage()" mat-raised-button color="primary"
+          class="absolute top-0 right-0">
+          <mat-icon>download</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <app-message-box [msg]="retMessage" [classtype]="textMessageClass" class="mt-4">
+  </app-message-box>
+</div>
+<div class="grid">
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:210px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs1"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+     [gridOptions]="gridOptions">
+  </ag-grid-angular>
+</div>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>
+
+<!-- [disabled]="mode != 'Delete'" -->

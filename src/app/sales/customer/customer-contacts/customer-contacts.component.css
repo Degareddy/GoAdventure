@@ -1,0 +1,18 @@
+.msgBackColorSuccess{
+    background-color: darkgreen;
+    color: white;
+    height: 25px;
+}
+
+.msgBackColorDefault{
+    background-color:lightblue;
+    color: white;
+    height: 25px;
+}
+
+.msgBackColorWarn{
+    background-color:red;
+    color: white;
+    height: 25px;
+}
+ 

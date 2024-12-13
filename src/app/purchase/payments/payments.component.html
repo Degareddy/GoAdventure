@@ -1,0 +1,369 @@
+<!-- <section>
+  <div class="mat-card container-fluid">
+    <div class="left">Payments</div>
+    <div class="right">
+      <button mat-raised-button color="accent" type="button" class="btnUp"
+      (click)="onDetailsCilcked(paymentForm.get('tranNo')!.value)"
+      [disabled]="paymentForm.get('tranNo')!.value === ''">Details
+    </button>
+
+    <button mat-raised-button color="primary" type="button" class="btnUp"
+    (click)="onDocsCilcked(paymentForm.get('tranNo')!.value)"
+    [ngClass]="{'custom-disabled-button': disableDetail && fetchStatus}">Docs</button>
+    </div>
+  </div>
+  <mat-card>
+    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" placeholder="Mode">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <div class="input-with-button">
+            <mat-form-field appearance="outline">
+              <mat-label>Payment No</mat-label>
+              <input matInput placeholder="tranNo" formControlName="tranNo" type="text" />
+            </mat-form-field>
+            <span style=" margin-left:0px;padding-bottom: 10px">
+              <button mat-raised-button color="primary" [disabled]="paymentForm.get('tranNo')!.value === ''" type="button"
+                (click)="get()" class="btnUp search-button">
+                <mat-icon>search</mat-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="col-3">
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <mat-select formControlName="currency" placeholder="Currency">
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Supplier</mat-label>
+            <mat-select formControlName="supplier" placeholder="Supplier">
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Bank</mat-label>
+            <mat-select formControlName="banker" placeholder="banker">
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width: 250px">
+            <mat-label>Tran Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="payDate" [max]="tomorrow"/>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Account No</mat-label>
+            <mat-select placeholder="account" formControlName="account">
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Pay Mode</mat-label>
+            <mat-select placeholder="payMode" formControlName="payMode">
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="3">
+            <mat-label>Cheque/Ref No</mat-label>
+            <input matInput placeholder="chequeRefNo" formControlName="chequeRefNo" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width: 250px">
+            <mat-label>Cheque Date</mat-label>
+            <input matInput [matDatepicker]="pickerCheck" formControlName="chequeDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="pickerCheck"></mat-datepicker-toggle>
+            <mat-datepicker #pickerCheck></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Check Status</mat-label>
+            <input matInput placeholder="checkStatus" formControlName="checkStatus" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Status</mat-label>
+            <input matInput placeholder="status" formControlName="status" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Paid Amount</mat-label>
+            <input matInput placeholder="paidAmount" formControlName="paidAmount" type="number " />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Notes</mat-label>
+            <textarea matInput placeholder="notes" rows="4" formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp"
+          [disabled]="paymentForm.get('mode')!.value === 'View'"><mat-icon>done</mat-icon>Apply</button>
+
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="refresh()"><mat-icon>refresh</mat-icon>Refresh</button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()"><mat-icon>cancel</mat-icon>Clear</button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="close()"><mat-icon>cancel</mat-icon>Close</button>
+        <button mat-raised-button color="warn" class="btnUp" type="button"><mat-icon>info</mat-icon>Info</button>
+      </div>
+    </form>
+  </mat-card>
+</section> -->
+<div class="mat-card container-fluid">
+  <div class="left data">Payments</div>
+  <div class="right">
+    <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(paymentForm.get('payNo')!.value )"
+      [disabled]="paymentForm.get('payNo')!.value === '' || paymentForm.get('payNo')!.value === null">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(paymentForm.get('payNo')!.value )"
+      [disabled]="paymentForm.get('payNo')!.value === '' || paymentForm.get('payNo')!.value === null">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+    <button mat-raised-button color="primary" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="col-12 row justify-content-center">
+      <div class="col-3 custom-border" style="background: linear-gradient(to bottom, antiquewhite, #f7f7f7);">
+        <div style="margin-top: 10px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" (selectionChange)="modeChange(paymentForm.controls['mode'].value)">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+          <mat-form-field appearance="outline">
+            <mat-label>Payment No</mat-label>
+            <input matInput placeholder="Payment No" formControlName="payNo" type="text" />
+          </mat-form-field>
+          <button mat-raised-button color="primary" [disabled]="paymentForm.get('mode')!.value == 'Add'" type="button"
+            (click)="onSearchCilcked()" class="search-button">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+            </div>
+          </button>
+        </div>
+        <div>
+          <mat-form-field appearance="outline" class="mat-date" Mstyle="margin-top: 3px;">
+            <mat-label class="mat-label-class">Pay Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="payDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Supplier/Landlord/Others</mat-label>
+            <input matInput placeholder="Supplier/Landlord/Others" formControlName="supplier" type="text" />
+          </mat-form-field>
+          <button mat-raised-button color="primary" [disabled]="paymentForm.get('mode')!.value == 'View'" type="button"
+            (click)="onSearchCustomer()" class="search-button">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="col-3 custom-border" style="background: linear-gradient(to bottom, rgb(175, 216, 202), #f0f8f7);">
+        <div style="margin-top: 10px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Pay Mode</mat-label>
+            <mat-select formControlName="payMode">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of payMode" [value]="x.itemCode">{{ x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Institute/Bank</mat-label>
+            <mat-select formControlName="bank">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of bank" [value]="x.itemCode">{{x.itemName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Account</mat-label>
+            <input matInput placeholder="Account" formControlName="accNumber" type="text" />
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline">
+            <mat-label>Account Name</mat-label>
+            <input matInput placeholder="Account Name" type="text" />
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Cheque/Ref No</mat-label>
+            <input matInput placeholder="ChequeRefNo" formControlName="instrumentNo" type="text" />
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">Cheque Date</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="instrumentDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Currency</mat-label>
+            <mat-select formControlName="currency">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Pay Amount</mat-label>
+            <input matInput placeholder="Pay Amount" class="right-align-input" formControlName="tranAmount"
+              type="number" />
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Pay Status</mat-label>
+            <mat-select formControlName="instrumentStatus">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of StatusList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-3 custom-border" style="background: linear-gradient(to bottom, rgb(229, 216, 244), #f7f7f7);">
+
+        <div style="display: flex; align-items: flex-end;margin-top: 10px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Supplier Bank</mat-label>
+            <mat-select formControlName="supplierBank">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of bank" [value]="x.itemCode">{{x.itemName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Supplier Bank</mat-label>
+            <input matInput placeholder="Supplier Bank" formControlName="supplierBank" type="text" />
+          </mat-form-field>
+          <button mat-raised-button color="primary" [disabled]="paymentForm.get('mode')!.value == 'Add'" type="button"
+             class="search-button">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+            </div>
+          </button> -->
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Supplier Account</mat-label>
+            <input matInput placeholder="Supplier Account" formControlName="supplierAccount" type="text" />
+          </mat-form-field>
+          <button mat-raised-button color="primary" [disabled]="paymentForm.get('mode')!.value == 'Add'" type="button"
+            class="search-button">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+            </div>
+          </button>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">Paid Date</mat-label>
+            <input matInput [matDatepicker]="picker3" formControlName="paidDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+            <mat-datepicker #picker3></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div style="margin-top: 3px;">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Status</mat-label>
+            <mat-select formControlName="transferStatus">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of StatusList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row  justify-content-center">
+        <div class="col-7">
+          <mat-form-field appearance="outline" style="width: 100%;margin-left: -20px;">
+            <mat-label>Notes</mat-label>
+            <input matInput placeholder="Notes" formControlName="remarks" type="text" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-2 myCustomClass">
+          <mat-label style="margin-left: -20px;">Pay Status:&nbsp;</mat-label><b class="data">{{payStatus}}</b>
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="paymentForm.get('mode')!.value === 'View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>autorenew</mat-icon>Reset
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <!-- <button mat-raised-button color="warn" class="btnUp" type="button">
+        <mat-icon>help</mat-icon>Help
+      </button> -->
+    </div>
+  </form>
+</mat-card>

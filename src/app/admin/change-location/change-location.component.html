@@ -1,0 +1,54 @@
+<div class="max-w-lg mx-auto py-32">
+  <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="flex justify-between items-center mb-0.1 h-8 bg-blue-400">
+      <div class="flex items-center text-white">
+        <mat-icon class="mr-2">location_on</mat-icon>
+        <b>Change Location</b>
+      </div>
+    </div>
+    <div class="p-4 bg-zinc-100">
+      <form [formGroup]="changeLocationForm" (ngSubmit)="onSubmit()" class="flex flex-col space-y-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">Company</mat-label>
+              <mat-select formControlName="company" (selectionChange)="companyChanged($event.value)">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of companyList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">Location</mat-label>
+              <mat-select formControlName="location" (selectionChange)="locationChanged($event.value)">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of locationList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="flex-grow justify-center space-x-4 py-2">
+          <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+        </div>
+
+        <div class="flex justify-center space-x-2 py-2">
+          <button mat-raised-button color="primary" type="submit" class="btnUp"
+            [disabled]="changeLocationForm.invalid || (userData.location.toUpperCase() === changeLocationForm.get('location')!.value.toUpperCase())">
+            <mat-icon>done</mat-icon> Apply
+          </button>
+
+          <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+            <mat-icon>clear_all</mat-icon> Clear
+          </button>
+
+          <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+            <mat-icon>cancel</mat-icon> Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

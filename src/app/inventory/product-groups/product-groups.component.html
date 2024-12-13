@@ -1,0 +1,111 @@
+
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">widgets</mat-icon>
+      <b>Product Groups</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button class="btnUp" type="button"
+      (click)="NotesDetails(productGroupForm.get('typeName')!.value)"
+      [disabled]="productGroupForm.get('typeName')!.value === ''">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(productGroupForm.get('typeName')!.value )"
+    [disabled]="productGroupForm.get('typeName')!.value === '' || productGroupForm.get('typeName')!.value === null">
+     <mat-icon>comment</mat-icon>
+        Log
+  </button>
+    <button mat-raised-button class="btnUp" type="button" color="primary"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="productGroupForm" (ngSubmit)="onUpdate()">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" appearance="outline" (selectionChange)="modeChanged($event.value)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Group</mat-label>
+          <mat-select formControlName="typeName">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let y of typeNamesList" [value]="y.itemCode">{{y.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Group Type</mat-label>
+          <mat-select formControlName="groupType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="Stock">Stock</mat-option>
+            <mat-option value="Service">Service</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Group Code</mat-label>
+          <input matInput placeholder="Group Code" formControlName="groupCode" type="text" id="itemCode">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Group Name</mat-label>
+          <input type="text" matInput placeholder="Group Name" #input formControlName="groupName" id="itemName">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="effectiveDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-label>Group Status:&nbsp;<b class="data">{{itemStatus}}</b></mat-label>
+      </div>
+
+
+      <div class="col-6">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Notes</mat-label>
+          <input matInput type="text" id="notes" formControlName="notes" placeholder="Notes">
+          <!-- <textarea matInput formControlName="notes" rows="5" placeholder="Notes"></textarea> -->
+        </mat-form-field>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="productGroupForm.get('mode')!.value === 'View' || productGroupForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+    </div>
+  </form>
+</div>

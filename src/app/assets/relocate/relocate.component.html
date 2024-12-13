@@ -1,0 +1,200 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Relocate</div>
+</div>
+
+<mat-card>
+  <form [formGroup]="assetInvoiceForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline" >
+                  <mat-label >Invoice No</mat-label>
+                  <input matInput placeholder="Invoice No" formControlName="tranNo" type="text"
+                    [disabled]="assetInvoiceForm.get('mode')!.value == 'Add'">
+                  <button mat-button *ngIf="assetInvoiceForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                    aria-label="Clear" (click)="assetInvoiceForm.get('tranNo')!.setValue('')">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-form-field>
+                <button mat-raised-button color="primary" [disabled]="assetInvoiceForm.get('mode')!.value == 'Add'" type="button"
+                  (click)="searchData()" class="search-button">
+                  <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+                    <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+                  </div>
+                </button> -->
+                <mat-form-field appearance="outline" style="width: 95%;">
+                  <mat-label>Invoice No</mat-label>
+                  <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+                  <button mat-button *ngIf="assetInvoiceForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                    aria-label="Clear" (click)="assetInvoiceForm.get('tranNo')!.setValue('')">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                  <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+                    [disabled]="assetInvoiceForm.get('mode')!.value === 'Add'">
+                    <mat-icon class="mat-search-icon">search</mat-icon>
+                  </button>
+                </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Sale Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="saleDate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Customer/Tenent</mat-label>
+          <input matInput placeholder="Customer" formControlName="customer" type="text">
+          <button mat-button *ngIf="assetInvoiceForm.get('customer')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="assetInvoiceForm.get('customer')!.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+            [disabled]="assetInvoiceForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Currency</mat-label>
+          <mat-select matInput  formControlName="currency">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Exchange Rate</mat-label>
+          <input matInput placeholder="Exchange Rate" class="right-align-input" appExchange formControlName="exchRate" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Excutive</mat-label>
+          <input matInput placeholder="Excutive" formControlName="excutive" type="text">
+          <button mat-button *ngIf="assetInvoiceForm.get('excutive')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="assetInvoiceForm.get('excutive')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="search-button" type="button" (click)="onEmployeeSearch()"
+          [disabled]="assetInvoiceForm.get('mode')!.value != 'Add'">
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+            <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+          </div>
+        </button> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">LPO No</mat-label>
+          <input matInput placeholder="lpoNo" formControlName="lpoNo" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label class="mat-label-class">Inv Day</mat-label>
+          <input matInput placeholder="Inv Day" formControlName="invDay" type="number" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Inv Year</mat-label>
+          <mat-select formControlName="invYear">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of yearList" [value]="x.itemCode">{{x.itemCode}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Inv Month</mat-label>
+          <mat-select formControlName="invMonth">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of monthlist" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label class="mat-label-class">Penalty/Day</mat-label>
+          <input matInput placeholder="Penalty/Day" formControlName="penaltyDay" type="number" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label class="mat-label-class">Due Date</mat-label>
+          <input matInput [matDatepicker]="picker3" formControlName="dueDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="remarks" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-3 myCustomClass">
+        <mat-label>Status: </mat-label><b class="data">{{tranStatus}}</b>
+      </div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-label for="acceptTerms" class="form-check-label">Apply VAT</mat-label>
+        <input type="checkbox" formControlName="applyVAT" style="margin-left: 0.5rem;" />
+      </div>
+      <div class="col-3">
+        <mat-label class="form-check-label">Recurring</mat-label>
+        <input type="checkbox" formControlName="isRecurring" style="margin-left: 0.5rem;" />
+        <mat-label class="form-check-label" style="margin-left: 2rem;">Lmtd Period</mat-label>
+        <input type="checkbox" formControlName="isLimited" style="margin-left: 0.5rem;" />
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label class="mat-label-class">End Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="endDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="assetInvoiceForm.invalid || assetInvoiceForm.controls['mode'].value==='View'">
+        <mat-icon>save</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</mat-card>

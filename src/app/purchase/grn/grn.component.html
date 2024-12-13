@@ -1,0 +1,208 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">receipt</mat-icon>
+      <b>Goods Receipt Note</b><b class="data">(GRN)</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" type="button" class="btnUp"
+        (click)="onDetailsCilcked(grnForm.get('tranNo')!.value)"
+        [disabled]="grnForm.invalid || grnForm.get('mode')!.value === 'Add'"><mat-icon>info</mat-icon>Details</button>
+      <button mat-raised-button color="primary" type="button" class="btnUp"
+        (click)="onDocsCilcked(grnForm.get('tranNo')!.value)"
+        [disabled]="grnForm.invalid || grnForm.get('mode')!.value === 'Add'"><mat-icon>cloud_upload</mat-icon>Docs</button>
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(grnForm.get('tranNo')!.value )"
+        [disabled]="grnForm.get('tranNo')!.value === '' || grnForm.get('tranNo')!.value === null">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="logDetails(grnForm.get('tranNo')!.value )"
+        [disabled]="grnForm.get('tranNo')!.value === '' || grnForm.get('tranNo')!.value === null">
+        <mat-icon>comment</mat-icon>Log
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="grnForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="col-10">
+        <div class="row row justify-content-left">
+          <div class="col-2">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Modes</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(grnForm.get('mode')!.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" style="width:100%">
+              <mat-label>Tran No</mat-label>
+              <input matInput type="text" placeholder="Tran No" formControlName="tranNo" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="grnForm.get('tranNo')!.value"
+                (click)="grnForm.get('tranNo')!.setValue('')" type="button">
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" [disabled]="grnForm.get('mode')!.value == 'Add'"
+                (click)="onSearchCilcked()" type="button">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" style="width:90%">
+              <mat-label class="mat-label-class">Supplier</mat-label>
+              <input matInput type="text" placeholder="Supplier" formControlName="supplier"
+                [disabled]="grnForm.get('mode')!.value == 'View'" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="grnForm.get('supplier')!.value"
+                (click)="grnForm.get('supplier')!.setValue('')" type="button">
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" [disabled]="grnForm.get('mode')!.value == 'View'"
+                (click)="onSupplierSearch()" type="button">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="row row justify-content-left">
+          <div class="col-2">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">GRN Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" style="width:100%">
+              <mat-label>PO No</mat-label>
+              <input matInput type="text" placeholder="PO No" formControlName="pONo" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="grnForm.get('pONo')!.value"
+                (click)="grnForm.get('pONo')!.setValue('')" type="button">
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" [disabled]="grnForm.get('mode')!.value == 'View'"
+                (click)="onAuthorizedPOSearch()" type="button">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Currency</mat-label>
+              <mat-select matInput formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row row justify-content-left">
+          <div class="col-2">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Exchange Rate</mat-label>
+              <input matInput placeholder="Exchange Rate" class="right-align-input" formControlName="exchRate"
+                appExchange type="text">
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Delivery Note</mat-label>
+              <input matInput placeholder="Delivery Note" formControlName="delNoteNo" type="text">
+            </mat-form-field>
+          </div>
+          <div class="col-3 myCustomClass">
+            <mat-checkbox formControlName="isVatable">Apply VAT</mat-checkbox>
+          </div>
+        </div>
+        <div class="row row justify-content-left">
+          <div class="col-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Supplier Invoice</mat-label>
+              <input matInput placeholder="Supplier Invoice" formControlName="suppInvNo" type="text">
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Proforma Invoice</mat-label>
+              <input matInput placeholder="Proforma Invoice" formControlName="proformaInvNo" type="text">
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Category</mat-label>
+              <mat-select matInput formControlName="itemCategory">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option value="Stock">Stock</mat-option>
+                <mat-option value="Service">Service</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row  justify-content-left">
+          <div class="col-6">
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Remarks</mat-label>
+              <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-3"></div> -->
+
+          <div class="col-3 myCustomClass">
+            <mat-label>Status:&nbsp;</mat-label><b class="data">{{grnStatus | uppercase}}</b>
+          </div>
+
+        </div>
+      </div>
+      <div class="col-2 row"
+        style="background: rgb(240, 236, 213);;height: 100px; width: 240px; margin-left: -150px; border-radius: 10px;border: 1px solid;">
+        <div class="myCustomClass">
+          <table class="custom-table" id="customers">
+            <tr>
+              <td class="side-by-side"><b>Goods Amount:</b></td>
+              <td class="side-by-side right-align data">{{goodsCost | number: '1.2-2'}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Item Charges:</b></td>
+              <td class="side-by-side right-align data">{{itemCharges | number: '1.2-2'}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Common Charges:</b></td>
+              <td class="side-by-side right-align data">{{commonCharges | number: '1.2-2'}}</td>
+            </tr>
+            <!-- <tr>
+              <td class="side-by-side"><b>VAT Amount:</b></td>
+              <td class="side-by-side right-align data">{{vatAmount | number: '1.2-2'}}</td>
+            </tr> -->
+            <tr>
+              <mat-divider style="background-color:black; height: 1px;"></mat-divider>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Total Amount:</b></td>
+              <td class="side-by-side right-align data">{{totalAmount | number: '1.2-2'}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="grnForm.get('mode')!.value === 'View' || grnForm.invalid"><mat-icon>done</mat-icon>Apply</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button"
+        (click)="close()"><mat-icon>cancel</mat-icon>Close</button>
+    </div>
+  </form>
+</div>

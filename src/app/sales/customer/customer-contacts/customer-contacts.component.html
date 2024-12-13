@@ -1,0 +1,142 @@
+<mat-card>
+  <div class="container">
+    <form [formGroup]="contactForm" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field aria-colspan="2" class="matinput" appearance="outline">
+            <mat-label class="mat-label-class">S.No</mat-label>
+            <input matInput placeholder="S.No" id="contactID" formControlName="contactID" type="text">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field aria-colspan="2" class="matinput" appearance="outline">
+            <mat-label class="mat-label-class">S.No</mat-label>
+            <input matInput placeholder="S.No" id="contactID" formControlName="name" type="text">
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-3">
+
+            <mat-form-field appearance="outline" style="width: calc(100% - 40px); margin: 0;">
+              <mat-label>Name</mat-label>
+              <input matInput type="text" placeholder="name" formControlName="name" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="contactForm.get('name')!.value"
+                (click)="contactForm.get('name')!.setValue('')" type="button">
+                <mat-icon class="mat-clear-icon" style="font-size: 14px;">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" (click)="onnameSearch()" type="button"
+                [disabled]="contactForm.get('name')!.value === 'View'">
+                <mat-icon class="mat-search-icon" style="font-size: 14px;">search</mat-icon>
+              </button>
+            </mat-form-field> -->
+            <!-- <button mat-icon-button aria-label="Details" (click)="tenanDetails($event)" type="button"
+              [disabled]="contactForm.get('mode')!.value === 'View' || contactForm.get('updateAll')!.value || unitDetForm.get('tenantName')!.value === ''">
+              <mat-icon class="mat-launch-icon" style="font-size: 14px;">launch</mat-icon>
+            </button> -->
+        <!-- </div> -->
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Department</mat-label>
+            <input type="text" matInput placeholder="Department" id="department" formControlName="department">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="matinput" appearance="outline">
+            <mat-label class="mat-label-class">Designation</mat-label>
+            <input matInput placeholder="Designation" type="text" formControlName="designation" id="designation">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Phone1</mat-label>
+            <input matInput type="text" placeholder="Phone1" id="phone1" formControlName="phone1">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Phone2</mat-label>
+            <input matInput type="text" placeholder="Phone2" id="phone2" formControlName="phone2">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Phone3</mat-label>
+            <input matInput type="text" placeholder="Phone3" id="phone3" formControlName="phone3">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" id="eMail" formControlName="eMail" placeholder="Email">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <input matInput type="text" id="currStatus" formControlName="currStatus" placeholder="Status">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Nationality</mat-label>
+            <mat-select formControlName="nationality">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of nationalityList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">ID</mat-label>
+            <input matInput type="text" formControlName="idNo" placeholder="ID">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">DOB</mat-label>
+            <input matInput [matDatepicker]="picker1" placeholder="DOB" formControlName="dob" type="Datepicker">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-left">
+
+        <div class="col-6">
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>Remarks</mat-label>
+            <input matInput type="text" id="remarks" formControlName="remarks" placeholder="Remarks">
+          </mat-form-field>
+        </div>
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment" id="msgdiv">
+        <button mat-raised-button color="primary" class="btnUp" style="align-self: end;" (click)="Submit()"
+          [disabled]="mode==='View' || contactForm.invalid"><mat-icon>done</mat-icon>Apply</button>
+        <button mat-raised-button color="accent" class="btnUp" style="align-self: end;" type="button"
+          (click)="Clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+          <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+            <mat-icon>cancel</mat-icon><b>Close</b>
+          </button>
+      </div>
+    </form>
+  </div>
+</mat-card>
+<!-- <mat-divider></mat-divider> -->
+<ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:220px;"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)"
+  [gridOptions]="gridOptions">
+</ag-grid-angular>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+  [ngModelOptions]="{standalone: true}">
+  <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+</select>
+</div>

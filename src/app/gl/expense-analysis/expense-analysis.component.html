@@ -1,0 +1,106 @@
+<section>
+  <!-- <div class="container">
+    <div class="mat-card-header">
+      <div class="left adj">Expenses Analysis</div>
+    </div> -->
+
+  <div class="mat-card container-fluid">
+    <div class="left">Expenses Analysis</div>
+    <div class="right">
+      <!--  <button mat-raised-button color="accent" class="btnUp" type="button"
+          (click)="onDetailsCilcked(bankDeptForm.get('tranNo')!.value)"
+          [disabled]="bankDeptForm.get('tranNo')!.value === ''">
+          Details
+        </button>-->
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+  <mat-card>
+    <!-- <div class="container-fluid"> -->
+    <form [formGroup]="analysisForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Report</mat-label>
+            <mat-select formControlName="report" placeholder="Report">
+              <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option> -->
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width: 250px">
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="FromDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width: 250px">
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="ToDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="row justify-content-center">
+          <div class=" col-3">
+            <mat-form-field appearance="outline">
+              <mat-label>From Expense</mat-label>
+              <mat-select formControlName="fromExpense" placeholder="From Expense">
+                <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option> -->
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-3">
+            <mat-form-field appearance="outline">
+              <mat-label>To Expense</mat-label>
+              <mat-select formControlName="ToExpense" placeholder="To Expense">
+                <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option> -->
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Branch</mat-label>
+              <mat-select formControlName="branch" placeholder="Branch">
+                <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option> -->
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div class="btnAlignment">
+
+        <button mat-raised-button color="primary" type="submit" class="btnUp">
+          <mat-icon>apply</mat-icon>Apply
+        </button>
+
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Close()">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Reset()">
+          <mat-icon>reset</mat-icon>Reset
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button">
+          <mat-icon>help</mat-icon>Help
+        </button>
+
+      </div>
+    </form>
+  </mat-card>
+</section>

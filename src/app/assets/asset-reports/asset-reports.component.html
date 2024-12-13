@@ -1,0 +1,104 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Asset Reports</div>
+</div>
+<mat-card>
+  <form [formGroup]="assetReoprtForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-left">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Report</mat-label>
+          <mat-select formControlName="Report">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of reoprttList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Property</mat-label>
+          <mat-select formControlName="PropCode" (selectionChange)="onSelectedPropertyChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of properytList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Block</mat-label>
+          <mat-select formControlName="BlockCode" (selectionChange)="onSelectedBlockChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of blocksList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Flat</mat-label>
+          <mat-select formControlName="UnitID">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of flatsList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-left">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Status</mat-label>
+          <mat-select formControlName="UnitStatus">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of reoprttList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field class="mat-date" appearance="outline">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="FromDate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="mat-date" appearance="outline">
+          <mat-label class="mat-label-class">To Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="ToDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <!-- <div class="row  justify-content-center" style="margin-top: 15px;">{{retMessage}}</div> -->
+    <!-- <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="assetReoprtForm.invalid"></button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"></button>
+    </div> -->
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <!-- <div class="col-4"> -->
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="assetReoprtForm.invalid">
+        <mat-icon>download</mat-icon>Fetch
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="downloadPDF()"
+        [disabled]="assetReoprtForm.invalid || rowData.length <= 0">
+        <mat-icon style="font-size: 18px;">picture_as_pdf</mat-icon>PDF
+      </button>
+      <button (click)="downloadExcel()" mat-raised-button type="button"
+        [disabled]="assetReoprtForm.invalid || rowData.length <= 0" class="btnUp btn btn-success">
+        <mat-icon style="font-size: 18px;">description</mat-icon>Excel</button>
+      <button mat-raised-button color="accent" type="button" (click)="close()" class="btnUp">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+    <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+      style="width: 100%; height:290px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs"
+      [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+      (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+    </ag-grid-angular>
+
+  </form>
+</mat-card>

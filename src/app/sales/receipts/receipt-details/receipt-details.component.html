@@ -1,0 +1,123 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">receipt</mat-icon>
+  <b>{{formName | titlecase}}</b><b class="data ml-2">{{data.tranNo}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="reactiveForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-center">
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label>Serial Number</mat-label>
+          <input matInput type="number" formControlName="SlNo" class=" disabled-input">
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Document Number</mat-label>
+          <input matInput type="text" formControlName="RefDocNo" class=" disabled-input">
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Dcmnt Date</mat-label>
+          <input matInput [matDatepicker]="refDocDate" class=" disabled-input" formControlName="RefDocDate">
+          <mat-datepicker-toggle matSuffix [for]="refDocDate"></mat-datepicker-toggle>
+          <mat-datepicker #refDocDate></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="form-group col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Due Date</mat-label>
+          <input matInput [matDatepicker]="receiptDueDate" class=" disabled-input" formControlName="ReceiptDueDate">
+          <mat-datepicker-toggle matSuffix [for]="receiptDueDate"></mat-datepicker-toggle>
+          <mat-datepicker #receiptDueDate></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date disabled-input">
+          <mat-label class="mat-label-class">Currency</mat-label>
+          <mat-select class="disabled-input" formControlName="Currency"
+            (selectionChange)="onCurrencySelectionChange($event.value)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Currency Name</mat-label>
+          <input matInput type="text" formControlName="CurrencyName" class=" disabled-input">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Exchange Rate</mat-label>
+          <input matInput type="text" formControlName="ExchRate" placeholder="Exchange Rate"
+            class="right-align-input  disabled-input">
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date ">
+          <mat-label class="mat-label-class">Document Amount</mat-label>
+          <input matInput type="text" formControlName="DocAmt" placeholder="Document Amount"
+            class="right-align-input  disabled-input">
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date ">
+          <mat-label class="mat-label-class">Balance Amount</mat-label>
+          <input matInput type="text" formControlName="BalAmt" placeholder="Balance Amount"
+            class="right-align-input disabled-input">
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Receipt Amount</mat-label>
+          <input matInput type="text" formControlName="ReceiptAmt" placeholder="Receipt Amount"
+            class="right-align-input">
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <textarea matInput formControlName="Remarks"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="form-group  col-2"></div>
+
+    </div>
+
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" class="btnUp" type="submit"
+        [disabled]=" reactiveForm.invalid || data.mode ==='View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="fetchDetails()">
+        <mat-icon>download</mat-icon>Fetch
+      </button>
+    </div>
+  </form>
+</div>
+<ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:190px;"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)"
+  [gridOptions]="gridOptions">
+</ag-grid-angular>
+<select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+  [ngModelOptions]="{standalone: true}">
+  <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+</select>

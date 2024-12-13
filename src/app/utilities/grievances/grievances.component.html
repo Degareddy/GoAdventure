@@ -1,0 +1,175 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">report_problem</mat-icon>
+      <b class="ml-1">Grievances</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2">
+      <button mat-raised-button color="primary" type="button" class="btnUp" (click)="onDocsCilcked()"
+        style="margin-bottom: 5px;">
+        <mat-icon>cloud_upload</mat-icon>Docs
+      </button>
+
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails()" style="margin-bottom: 5px;">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()"
+        style="margin-bottom: 5px;">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="grievancesForm">
+    <div class="row justify-content-center myCustomClass flex flex-wrap">
+      <div class="col-3 size">
+        <label>Client:&nbsp;</label><b class="data">{{userDataService.userData.userName}}</b>
+      </div>
+      <div class="col-3 size">
+        <mat-form-field class="mat-date" appearance="outline">
+          <mat-label class="mat-label-class">Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="grvtDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3 size" style="display: flex; align-items: flex-end;">
+        <label>Ref No:&nbsp;</label><b class="data">{{refernceNo}} &nbsp;</b>
+        <button mat-raised-button color="primary" class=" search-button" type="button" (click)="onSearchCilcked('Ref')">
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+            <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Property</mat-label>
+          <mat-select formControlName="property" (selectionChange)="onSelectedPropertyChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of props" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3 ">
+        <mat-form-field appearance="outline" *ngIf="!block">
+          <mat-label class="mat-label-class">Block</mat-label>
+          <mat-select formControlName="block" (selectionChange)="onSelectedBlockChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of blocks" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-label *ngIf="block">Block:&nbsp;</mat-label><b class="data">{{block}}</b>
+
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Flat</mat-label>
+          <input matInput type="text" placeholder="Flat" formControlName="unit" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="grievancesForm.get('unit')!.value"
+            (click)="grievancesForm.get('unit')!.setValue('')" type="button">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="onFlatSearch()" type="button">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Complaint Type</mat-label>
+          <mat-select formControlName="complaintType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of compalintList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Priority</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of priorityList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3 ">
+        <mat-label>Issue Status:&nbsp;</mat-label><b class="data">{{issueStatus}}</b>
+      </div>
+    </div>
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-9">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label class="mat-label-class">Complaint Description</mat-label>
+          <textarea matInput placeholder="Description" rows="5" formControlName="complaint"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-9">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label class="mat-label-class">Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-3">
+        <mat-label>Raised On:&nbsp;</mat-label><b class="data">{{ raisedDate &&
+          !raisedDate.toString().includes('0001')
+          ? (raisedDate | date:'dd-MM-yyyy HH:mm') : '' }}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Allocated On:&nbsp;</mat-label><b class="data">{{ allocatedDate &&
+          !allocatedDate.toString().includes('0001') ? (allocatedDate | date:'dd-MM-yyyy HH:mm') : '' }}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Closed On:&nbsp;</mat-label><b class="data">{{ closedDate &&
+          !closedDate.toString().includes('0001')
+          ? (closedDate | date:'dd-MM-yyyy HH:mm') : '' }}</b>
+      </div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+
+      <div class="col-3">
+        <mat-label>Time Taken:&nbsp;<b class="data">{{ttDays}}&nbsp;</b>Days,&nbsp;<b class="data">{{ttHours}}&nbsp;</b>
+          Hours, &nbsp;<b class="data">{{ttMins}}&nbsp;</b>Min </mat-label>
+      </div>
+      <div class="col-5">
+        <mat-label>Complaint Count : In Last One Year &nbsp;<b class="data">{{yearlyCount}}</b>, In last one
+          month:&nbsp;<b class="data">{{monthlyCount}}</b> </mat-label>
+      </div>
+      <div class="col-1"></div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+
+      <div class="col-3">
+        <mat-label>Cost To Management:&nbsp;</mat-label><b class="data">{{costToMgmt | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Cost To Landlord:&nbsp;</mat-label><b class="data">{{costToLandlord | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Cost To Tenant:&nbsp;</mat-label><b class="data">{{costToTenant | number:'1.2-2'}}</b>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class=btnUp (click)="onSubmit()"
+        [disabled]="grievancesForm.invalid || refernceNo != ''"><mat-icon>done</mat-icon>Submit</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+    </div>
+  </form>
+</div>

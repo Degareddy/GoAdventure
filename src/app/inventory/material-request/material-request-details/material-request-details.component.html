@@ -1,0 +1,69 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">move_to_inbox</mat-icon>
+  Material Request Details:&nbsp;<b class="data">{{data.tranNum}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="mrhReqForm" (submit)="onSubmit()">
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-1">
+        <mat-label>SlNo:</mat-label>&nbsp;
+        <b class="data">{{slNum}}</b>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width:95%">
+          <mat-label class="mat-label-class">Product</mat-label>
+          <input matInput placeholder="Product" formControlName="productName" type="text">
+          <button mat-button *ngIf="mrhReqForm.get('productName')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="mrhReqForm.get('productName')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchProduct()"
+            [disabled]="data.mode === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label>UOM</mat-label>
+          <input matInput placeholder="uOM" formControlName="uom" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Quantity</mat-label>
+          <input matInput placeholder="Quantity" class="right-align-input" appNumberFormat formControlName="quantity"
+            type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" class="btnUp" type="submit"
+        [disabled]="data.mode ==='View'  || mrhReqForm.invalid">
+        <mat-icon>save</mat-icon><b>Apply</b></button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="addMaterialRequest()">
+        <mat-icon>add</mat-icon><b>New</b></button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+    </div>
+  </form>
+</div>
+<div class="grid">
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:230px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDef"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+</div>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>

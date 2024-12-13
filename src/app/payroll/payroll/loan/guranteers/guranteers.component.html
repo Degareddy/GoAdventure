@@ -1,0 +1,154 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">guranteers works!</div>
+  <!-- <div class="right">
+    <button mat-icon-button mat-dialog-close class="small-button">
+      <mat-icon class="small-icon">close</mat-icon>
+    </button>
+  </div> -->
+</div>
+
+<mat-card>
+  <form [formGroup]="plgdetForm" (submit)="onSubmit()">
+    <div class="row justify-content-center">
+      <!-- <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="mode"> <mat-option *ngFor="let x of modes"
+              [value="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div> -->
+      <div class="col-3">
+        <mat-label style="padding-left: 25px; font-size: 12px;">SlNo:</mat-label>
+        <b style="padding-left: 10px;">{{slNum}}</b>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>TranNo</mat-label>
+          <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>SlNo</mat-label>
+          <input matInput placeholder="SlNo" formControlName="slNo" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Employee</mat-label>
+          <input matInput placeholder="Employee" formControlName="employee" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <!-- <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="JoinDate" formControlName="joinDate" type="date">
+        </mat-form-field>
+      </div> -->
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>JoinDate</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="joinDate" [max]="tomorrow"/>
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Basic</mat-label>
+          <input matInput placeholder="Basic" formControlName="basic" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>LastPay</mat-label>
+          <input matInput placeholder="LastPay" formControlName="lastPay" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>RowStatus</mat-label>
+          <input matInput placeholder="RowStatus" formControlName="rowStatus" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <div class="row  justify-content-center" [ngStyle]="{
+      'text-align': 'center',
+      'font-size': '10px',
+      'background-color': textMessageClass === 'green' ? 'green' : 'red',
+      color: 'white'}">
+      <b>{{ retMessage }}</b>
+    </div>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" class="btnUp" type="submit" [disabled]="mode !='Modify'">Apply</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button">New</button>
+    </div>
+  </form>
+</mat-card>
+
+<div class="container">
+  <table mat-table matSort [dataSource]="dataSource" class="tbl-dataList">
+    <ng-container matColumnDef="tranNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>TranNo</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.tranNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="slNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>SlNo</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.slNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="employee">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Employee</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.employee}} </td>
+    </ng-container>
+    <ng-container matColumnDef="joinDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>JoinDate</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.joinDate| date:'dd-MM-YYYY' }} </td>
+    </ng-container>
+    <ng-container matColumnDef="basic">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Basic</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.basic}} </td>
+    </ng-container>
+    <ng-container matColumnDef="lastPay">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>LastPay</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.lastPay}} </td>
+    </ng-container>
+    <ng-container matColumnDef="remarks">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Remarks</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.remarks}} </td>
+    </ng-container>
+    <ng-container matColumnDef="rowStatus">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>RowStatus</th>
+      <td mat-cell *matCellDef="let tblData">{{tblData.rowStatus}} </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let cust"> <button class="btn" mat-raised-button color="accent"
+          (click)="onViewClicked()">View</button> <button class="btn" mat-raised-button color="primary"
+          (click)="onEditClicked()">Edit</button> <button class="btn" mat-raised-button color="warn"
+          (click)="onDeleteClicked()">Delete</button> </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayColumns; sticky:true"></tr>
+    <tr mat-row [class.selected]="selectedRowIndex === i" *matRowDef="let row; columns: displayColumns; let i=index;"
+      class="clickable-row" (click)="onRowClick(row,i)"></tr>
+  </table> <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5,10,25,50,100]"> </mat-paginator>
+</div>

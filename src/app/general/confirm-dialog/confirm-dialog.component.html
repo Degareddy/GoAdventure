@@ -1,0 +1,15 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<h2 mat-dialog-title>
+  {{title}}
+</h2>
+<div mat-dialog-content>
+  <div [innerHTML]="message"></div>
+</div>
+<div mat-dialog-actions class="dialog-actions">
+  <button *ngIf="title !== 'Info!'" mat-raised-button color="primary" class="yes-button" (click)="onConfirm()">Yes</button>
+  <button mat-stroked-button color="warn" class="no-button" (click)="onDismiss()">
+    {{ title === 'Info!' ? 'OK' : 'No' }}
+  </button>
+</div>

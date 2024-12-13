@@ -1,0 +1,15 @@
+.mat-table{
+  font-size: 10px !important;
+  font-weight: bold !important;
+}
+.mat-cell{
+  font-size: 10px !important;
+  font-weight: bold !important;
+}
+/* .mat-cell mat-icon{
+  font-size: 22px !important;
+} */
+.mat-header-cell{
+  font-size: 10px !important;
+  font-weight: bold !important;
+}

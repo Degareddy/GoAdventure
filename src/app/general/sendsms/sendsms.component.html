@@ -1,0 +1,40 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Send SMS:&nbsp;<b class="data">{{data.Flat}}</b></div>
+</div>
+<mat-card>
+  <form [formGroup]="smsForm" (submit)="onSubmit()">
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-2">
+        <mat-checkbox [labelPosition]="labelPosition" formControlName="tenant">Tenant</mat-checkbox>
+
+      </div>
+      <div class="col-2">
+        <mat-checkbox [labelPosition]="labelPosition" formControlName="landlord">Landlord</mat-checkbox>
+
+      </div>
+    </div>
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-9">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label class="mat-label-class">Message</mat-label>
+          <textarea matInput placeholder="Message" rows="15"formControlName="message"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+   <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="smsForm.invalid">
+        <mat-icon>textsms</mat-icon>Send
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</mat-card>

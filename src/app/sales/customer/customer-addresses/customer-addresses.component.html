@@ -1,0 +1,146 @@
+<!-- <h2 align="center">  Addresses </h2> -->
+<mat-card>
+  <div class="container" style="margin-top: -15px;">
+    <form [formGroup]="addressForm" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-1 myCustomClass offset-sm-2">
+          <mat-label>S.No:&nbsp;</mat-label><b class="data">{{slNo}}</b>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Name</mat-label>
+            <input type="text" matInput placeholder="Care Taker" #input formControlName="address3">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Address1</mat-label>
+            <input type="text" matInput placeholder="Address1" #input formControlName="address1">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Address2</mat-label>
+            <input type="text" matInput placeholder="Address2" id="address2" formControlName="address2">
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-3" *ngIf="1 !=1">
+          <mat-form-field class="matinput" appearance="outline">
+            <mat-label>Address3</mat-label>
+            <input matInput placeholder="Address3" type="text" formControlName="address3" id="address3">
+          </mat-form-field>
+        </div> -->
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">ZIP</mat-label>
+            <input matInput type="text" placeholder="ZIP" id="pO_PIN_ZIP" formControlName="pO_PIN_ZIP">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">City</mat-label>
+            <input matInput type="text" placeholder="City" id="city" formControlName="city">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Province</mat-label>
+            <input matInput type="text" placeholder="Province" id="province" formControlName="province">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Country</mat-label>
+            <input matInput type="text" id="Country" formControlName="country" placeholder="Country">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <!-- <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Mobile</mat-label>
+            <input matInput type="text" id="Phone1" formControlName="phone1" placeholder="Mobile">
+          </mat-form-field>
+        </div> -->
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Phone2</mat-label>
+            <input matInput type="text" id="phone2" placeholder="Phone2" formControlName="phone2">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Phone3</mat-label>
+            <input matInput type="text" id="phone3" placeholder="Phone3" formControlName="phone3">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Fax</mat-label>
+            <input matInput type="text" id="fax" formControlName="fax" placeholder="Fax">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Notes</mat-label>
+            <input matInput type="text" id="notes" formControlName="notes" placeholder="Notes">
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label>Status</mat-label>
+            <input matInput type="text" id="currStatus" formControlName="currStatus" placeholder="Status">
+          </mat-form-field>
+          <mat-checkbox formControlName="allowSMS" style="margin-left: 25px;">SMS</mat-checkbox>
+        </div> -->
+      </div>
+      <div class="row justify-content-left">
+        <div class="col-3">
+          <mat-checkbox formControlName="allowEmail">Email</mat-checkbox>
+        </div>
+        <div class="col-3">
+          <mat-checkbox formControlName="allowWhatsApp">WhatsApp</mat-checkbox>
+          </div>
+        <div class="col-3">
+          <mat-checkbox formControlName="allowSMS" style="margin-left: 25px;">SMS</mat-checkbox>
+
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label>Status</mat-label>
+            <input matInput type="text" id="currStatus" formControlName="currStatus" placeholder="Status">
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-3">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label>Notes</mat-label>
+            <input matInput type="text" id="notes" formControlName="notes" placeholder="Notes">
+          </mat-form-field>
+        </div> -->
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" class="btnUp" (click)="Submit()"
+          [disabled]="addressForm.invalid || mode=='View'">
+          <mat-icon>done</mat-icon>Apply</button>
+        <button mat-raised-button color="accent" class="btnUp" type="button"
+          (click)="Clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+      </div>
+    </form>
+  </div>
+</mat-card>
+<mat-divider></mat-divider>
+
+<ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:160px;"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)"
+  [gridOptions]="gridOptions">
+</ag-grid-angular>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+  [ngModelOptions]="{standalone: true}">
+  <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+</select>
+</div>

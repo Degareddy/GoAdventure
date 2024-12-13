@@ -1,0 +1,116 @@
+
+<div class="flex justify-between items-center mb-0.1 h-8 bg-blue-400">
+  <div class="flex items-center text-white">
+    <mat-icon class="mr-1">admin_panel_settings</mat-icon>
+    <b>User Access Rights</b>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100  rounded-sm">
+  <form [formGroup]="accRightsForm" #frmClear="ngForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">User</mat-label>
+          <mat-select  formControlName="user"
+             placeholder="User">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let y of usersListData" [value]="y.itemCode">{{y.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Company</mat-label>
+          <mat-select placeholder="Company" formControlName="company" (selectionChange)="companyChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of companyList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-4">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Location</mat-label>
+          <mat-select placeholder="Location" formControlName="location">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of locationList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+  <div class="row  justify-content-center">
+    <div class="col-3">
+      <mat-form-field appearance="outline">
+        <mat-label class="mat-label-class">Page</mat-label>
+        <mat-select placeholder="page" formControlName="page" (selectionChange)="pageChange()">
+          <mat-option value="">--Select--</mat-option>
+          <mat-option *ngFor="let x of pagesData" [value]="x.itemCode">{{x.itemName}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-3">
+      <mat-form-field appearance="outline">
+        <mat-label >As User</mat-label>
+        <mat-select placeholder="AsUser" formControlName="asUser" >
+          <mat-option value="">--Select--</mat-option>
+          <mat-option *ngFor="let x of usersListData" [value]="x.itemCode">{{x.itemName}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-4"  style="margin-top: -10px;">
+      <mat-form-field appearance="outline">
+        <mat-label >As Location</mat-label>
+        <mat-select placeholder="As Location" formControlName="asLocation" >
+          <mat-option value="">--Select--</mat-option>
+          <mat-option *ngFor="let x of locationList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      class="btn btnUp"
+      [disabled]="accRightsForm.get('user')?.value ==='' || accRightsForm.get('asUser')?.value ===''" (click)="assignAsUser()">
+      <mat-icon>done</mat-icon>Assign
+    </button>
+    </div>
+    </div>
+    <div class="container" style="margin-top: 10px;">
+      <div class="box list-container">
+        <h3><b  class="data"><u>Rights Available</u></b></h3>
+        <ul>
+          <li
+            *ngFor="let right of unMappedList"
+            (click)="selectRight(right, 'available')"
+            [class.selected]="right === selectedRightAvailable">
+            {{ right }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="box buttons-container">
+        <button (click)="moveAllRight()" type="button" [disabled]="accRightsForm.invalid || unMappedList.length ===0  ">>></button>
+        <button (click)="moveRight()" type="button" [disabled]="accRightsForm.invalid || unMappedList.length ===0 || selectedRightAvailable === null">></button>
+        <button (click)="moveLeft()" type="button" [disabled]="accRightsForm.invalid || mappedList.length ===0 || selectedRightAssigned === null"><</button>
+        <button (click)="moveAllLeft()" type="button" [disabled]="accRightsForm.invalid || mappedList.length ===0"><<</button>
+      </div>
+      <div class="box list-container">
+        <h3><b class="data"><u>Rights Assigned</u></b></h3>
+        <ul>
+          <li
+            *ngFor="let right of mappedList"
+            (click)="selectRight(right, 'assigned')"
+            [class.selected]="right=== selectedRightAssigned">
+            {{ right }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

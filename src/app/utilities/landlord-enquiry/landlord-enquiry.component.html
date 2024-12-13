@@ -1,0 +1,50 @@
+<!-- <p>tenant-enquiry works!</p> -->
+<div class="mat-card container-fluid">
+  <div class="left data">Landlord Enquiry</div>
+</div>
+<mat-card>
+  <form [formGroup]="landlordForm" class="text-center">
+    <!-- <div class="row  justify-content-center">
+
+    </div> -->
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-label>Name: </mat-label><b></b>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Report Type</mat-label>
+          <!-- <input type="text" matInput formControlName="reportType" placeholder="Report Type"> -->
+          <mat-select formControlName="reportType">
+            <mat-option value="">--Select--</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" aria-colspan="2" class="mat-date">
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="picker" [max]="tomorrow" placeholder="From Date" formControlName="fromDate" type="Datepicker">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" aria-colspan="2" class="mat-date">
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="picker1" [max]="tomorrow" placeholder="To Date" formControlName="toDate" type="Datepicker">
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+   <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <!-- <button mat-raised-button color="primary" class=btnUp>Update</button> -->
+      <button mat-raised-button color="primary" type="submit" class=btnUp
+        (click)="onSubmit()" [disabled]="landlordForm.invalid"><mat-icon>save</mat-icon>Retrive</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</mat-card>

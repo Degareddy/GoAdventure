@@ -1,0 +1,7 @@
+<div (mousemove)="onUserAction()" (keydown)="onUserAction()" style="height: 100%;">
+  <app-loader *ngIf="isLoading"></app-loader>
+  <router-outlet *ngIf="!isLoading"></router-outlet>
+  <ngx-ui-loader [logoUrl]="logoPath"></ngx-ui-loader>
+  <div ngxUiLoaderBlurred [blur]="1">
+  </div>
+</div>

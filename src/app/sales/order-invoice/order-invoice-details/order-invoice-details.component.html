@@ -1,0 +1,64 @@
+
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Order Invoice Details</div>
+</div>
+<mat-card>
+  <form [formGroup]="oidDetForm">
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="SlNo" formControlName="slNo" class="right-align-input" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="IssueNo" formControlName="issueNo" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>Issue Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="issueDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="IssueValue" formControlName="issueValue" class="right-align-input" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="VATAmount" formControlName="vATAmount" class="right-align-input" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="TotalAmount" formControlName="totalAmount" class="right-align-input" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" (click)="onUpdate()" >
+        <mat-icon>update</mat-icon><b>Update</b>
+      </button>
+
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()"mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>refresh</mat-icon><b>Reset</b>
+      </button>
+    </div>
+  </form>
+</mat-card>
+

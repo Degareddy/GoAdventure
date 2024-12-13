@@ -1,0 +1,25 @@
+ ::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+  .mat-form-field-label {
+  transform: translateY(-1.1em) scale(0.75);
+  width: 133.33333%;
+}
+
+
+
+::ng-deep .mat-tooltip {
+  background-color: rgb(250, 52, 52) !important; /* Set the background color to red */
+  color: white !important; /* Set the text color to white */
+  max-height: 22px !important;
+  line-height: 10px;
+}
+
+

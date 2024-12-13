@@ -1,0 +1,112 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+
+    Holiday Definition
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="phtDetForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>HolidayCode</mat-label>
+          <input matInput placeholder="HolidayCode" formControlName="holidayCode" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>HolidayDesc</mat-label>
+          <input matInput placeholder="HolidayDesc" formControlName="holidayDesc" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>HolidayType</mat-label>
+          <input matInput placeholder="HolidayType" formControlName="holidayType" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>TranDate</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="tranDate" [max]="tomorrow"/>
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>FromDate</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fromDate" [max]="tomorrow"/>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>ToDate</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="toDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>DaysCount</mat-label>
+          <input matInput placeholder="DaysCount" formControlName="daysCount" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Repeats</mat-label>
+          <input matInput placeholder="Repeats" formControlName="repeats" type="">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>TypeStatus</mat-label>
+          <input matInput placeholder="TypeStatus" formControlName="typeStatus" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="notes" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3"></div>
+    </div>
+    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <div class="btnAlignment">
+      <button type="button" mat-raised-button color="primary" class="btnUp" (click)="onUpdate()">Update</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="insert()">
+        <mat-icon>insert</mat-icon>Insert
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>refresh</mat-icon>Reset
+      </button>
+    </div>
+  </form>
+</div>

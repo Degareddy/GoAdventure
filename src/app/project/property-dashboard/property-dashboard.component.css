@@ -1,0 +1,140 @@
+.dashboard-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.row{
+  margin: 8px !important;
+}
+.small-box {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  transition: transform 0.5s ease;
+}
+
+.small-box:hover {
+  transform: scale(1.03);
+}
+
+.inner {
+  padding: 20px;
+  text-align: center;
+}
+
+.icon {
+  position: relative;
+  text-align: center;
+  color: white;
+  font-size: 90px;
+  margin-top: 10px;
+}
+
+/* Define background colors for small boxes */
+.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+.bg-success {
+  background-color: #28a745 !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1.5em;
+}
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+  .mat-form-field-label {
+  transform: translateY(-1.1em) scale(0.75);
+  width: 133.33333%;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em;
+  margin-top: -0.2em;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1.5em;
+}
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+  .mat-form-field-label {
+  transform: translateY(-1.1em) scale(0.75);
+  width: 133.33333%;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em;
+  margin-top: -0.2em;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+/* Custom CSS to adjust font size for AG-Grid chart labels */
+::ng-deep .ag-chart-label {
+  font-size: 8px !important; /* Set font size to 8px */
+}
+
+
+.table-header {
+  /* margin: 4px; */
+  background-color: #bbeef6;
+  display: table;
+  width: 100%;
+  /* border-collapse: collapse; */
+  border: 1px solid #000; /* Add bottom border to mimic table header */
+}
+
+
+
+.table-header h3 {
+  margin: 0;
+}
+
+.table-content {
+  display: flex;
+  /* padding: 10px; */
+}
+
+.column {
+  flex: 1;
+  border: 1px solid #000;
+}
+
+.column:first-child {
+  padding-right: 10px; /* Add space between columns */
+}
+
+.data {
+  font-weight: bold;
+}

@@ -1,0 +1,70 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="{isAltered:dailogchange}">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Eligible Details:&nbsp;<b class="data">{{data.yearNo}}</b></div>
+</div>
+<mat-card>
+  <form [formGroup]="eligibleForm" (ngSubmit)="onUpdate()">
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-1">
+        <mat-label>SlNo:</mat-label><b class="data">{{slNum}}</b>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Leave Type</mat-label>
+          <mat-select formControlName="leaveType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of leaveList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            <!-- <mat-option value="PERCENTAGE">Percentage</mat-option>
+            <mat-option value="FLAT">Flat</mat-option> -->
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Eligible Leaves</mat-label>
+          <input type="text" matInput formControlName="eligibleDetails" placeholder="Eligible Leaves">
+          <!-- <mat-select formControlName="eligibleDetails">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="PERCENTAGE">Percentage</mat-option>
+            <mat-option value="FLAT">Flat</mat-option>
+          </mat-select> -->
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline" style="width: 100%;">
+          <mat-label class="mat-label-class">Remarks</mat-label>
+          <input type="text" matInput formControlName="remarks" placeholder="Remarks">
+        </mat-form-field>
+      </div>
+
+
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="data.mode === 'View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+
+    </div>
+  </form>
+</mat-card>
+<ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:230px;"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)"
+  [gridOptions]="gridOptions">
+</ag-grid-angular>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>

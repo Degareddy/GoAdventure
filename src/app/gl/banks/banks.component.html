@@ -1,0 +1,110 @@
+
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">savings</mat-icon>
+      <b>Banks</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="accounts()"
+      [disabled]="bankForm.invalid">
+      <mat-icon>account_box</mat-icon> Accounts
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="bankForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" placeholder="Mode"
+            (selectionChange)="modeChange(bankForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Bank List</mat-label>
+          <mat-select formControlName="list" placeholder="List" (selectionChange)="bankChange()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of bankList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="Date" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Code</mat-label>
+          <input matInput placeholder="Code" formControlName="code" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Name</mat-label>
+          <input matInput placeholder="Name" formControlName="name" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" aria-colspan="3">
+          <mat-label>Website</mat-label>
+          <input matInput placeholder="Website" formControlName="website" type="text" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center myCustomClass">
+      <div class="col-5">
+        <section class="example-section">
+          <label>Handles:</label>
+          <mat-checkbox formControlName="cashHandles" style="margin-left: .7rem;">Cash</mat-checkbox>
+          <mat-checkbox formControlName="notCashHandles" style="margin-left: 1rem;">Non Cash</mat-checkbox>
+        </section>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:&nbsp;</mat-label> <b class="data">{{bankStatus}}</b>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <!-- <div class="col-1"></div> -->
+      <div class="col-8">
+        <mat-form-field appearance="outline" aria-colspan="2" style="width:100%">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="notes" formControlName="notes" type="text" [matTooltipPosition]="'right'"
+            [matTooltip]="bankForm.get('notes')!.invalid && (bankForm.get('notes')!.dirty || bankForm.get('purpose')!.touched) ? 'Enter notes' : 'Notes'">
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="bankForm.invalid || bankForm.controls['mode'].value=='View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

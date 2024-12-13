@@ -1,0 +1,174 @@
+
+<!-- <div class="right">
+  <button mat-icon-button mat-dialog-close>
+    <mat-icon style="font-size: 14px; margin-bottom: 18px;">close</mat-icon>
+  </button>
+</div> -->
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">OT Register Details</div>
+  <!-- <div class="right">
+  <button mat-icon-button mat-dialog-close class="small-button">
+    <mat-icon class="small-icon">close</mat-icon>
+  </button>
+  </div> -->
+</div>
+<mat-card>
+  <form [formGroup]="purReqHdrForm" (submit)="onSubmit()">
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-label style="margin-left: 28px;">SlNo:<b style="padding-left: 10px;">{{slNum}}</b></mat-label>
+      </div>
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline" >
+            <mat-label>Employee</mat-label>
+            <input matInput placeholder="Employee" formControlName="employee" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline">
+          <mat-label>From Date</mat-label>
+          <input type="text" matInput formControlName="fromDateTime" />
+        </mat-form-field> -->
+        <mat-form-field appearance="outline">
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="fromDateTime" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline" >
+          <mat-label>toDateTime</mat-label>
+          <input matInput placeholder="toDateTime" formControlName="toDateTime" type="text">
+        </mat-form-field> -->
+        <mat-form-field appearance="outline">
+          <mat-label>To Date Time</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="toDateTime" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>otHours</mat-label>
+          <input matInput placeholder="otHours" formControlName="otHours" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>otRate</mat-label>
+          <input matInput placeholder="unitRate" formControlName="otRate" type="text">
+        </mat-form-field>
+
+        <!-- <mat-label style="margin-left: 28px;">unitRate:<b style="padding-left: 10px;">{{approvedOn}}</b></mat-label> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>otAmount</mat-label>
+          <input matInput placeholder="otAmount" formControlName="otAmount" type="number">
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">Issued By:<b style="padding-left: 10px;">{{issuedBy}}</b></mat-label> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>Remarks</mat-label>
+          <textarea  matInput placeholder="Remarks" formControlName="remarks"></textarea>
+          <!-- <input matInput placeholder="remarks" formControlName="remarks" type="text"> -->
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">Issued On:<b style="padding-left: 10px;">{{issuedOn}}</b></mat-label> -->
+      </div>
+    </div>
+    <!-- <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>Pending Qty</mat-label>
+          <input matInput placeholder="pendingQty" formControlName="pendingQty" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>Order Qty</mat-label>
+          <input matInput placeholder="orderingQty" formControlName="orderingQty" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>Amount</mat-label>
+          <input matInput placeholder="amount" formControlName="amount" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3"></div>
+    </div> -->
+
+   <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <!-- <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div> -->
+    <div class="btnAlignment">
+      <!-- <button mat-raised-button color="primary" [disabled]="purReqHdrForm.get('mode').value === 'View'"
+        class=btnUp>Update</button> -->
+      <button mat-raised-button color="accent" class=btnUp>Apply</button>
+      <!-- <button mat-raised-button color="warn" type="button" (click)="reset()" class=btnUp>Reset</button> -->
+    </div>
+  </form>
+
+</mat-card>
+<mat-card>
+  <table mat-table matSort [dataSource]="dataSource">
+    <ng-container matColumnDef="slNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>S.No</th>
+      <td mat-cell *matCellDef="let cust">{{cust.slNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="tranNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tran No</th>
+      <td mat-cell *matCellDef="let cust">{{cust.tranNo}} </td>
+    </ng-container>
+    <ng-container matColumnDef="employee">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Employee</th>
+      <td mat-cell *matCellDef="let cust">{{cust.employee}} </td>
+    </ng-container>
+    <ng-container matColumnDef="fromDateTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>From Date</th>
+      <td mat-cell *matCellDef="let cust">{{cust.fromDateTime}} </td>
+    </ng-container>
+    <ng-container matColumnDef="toDateTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>To Date</th>
+      <td mat-cell *matCellDef="let cust">{{cust.toDateTime}} </td>
+    </ng-container>
+    <ng-container matColumnDef="otHours">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>OT Hours</th>
+      <td mat-cell *matCellDef="let cust" class="right-align">{{cust.otHours}} </td>
+    </ng-container>
+    <ng-container matColumnDef="otRate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>OT Rate</th>
+      <td mat-cell *matCellDef="let cust" class="right-align">{{cust.otRate}} </td>
+    </ng-container>
+    <ng-container matColumnDef="otAmount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>OT Amount</th>
+      <td mat-cell *matCellDef="let cust" class="right-align">{{cust.otAmount}} </td>
+    </ng-container>
+    <ng-container matColumnDef="remarks">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Remarks</th>
+      <td mat-cell *matCellDef="let cust" class="right-align">{{cust.remarks}} </td>
+    </ng-container>
+    <!-- <ng-container matColumnDef="orderingQty">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ordering Qty</th>
+      <td mat-cell *matCellDef="let cust" class="right-align">{{cust.orderingQty}} </td>
+    </ng-container>
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+      <td mat-cell *matCellDef="let cust" class="right-align">{{cust.amount}} </td>
+    </ng-container> -->
+    <tr mat-header-row *matHeaderRowDef="displayColumns; sticky:true"></tr>
+    <tr mat-row [class.selected]="selectedRowIndex === i" *matRowDef="let row; columns: displayColumns; let i=index;"
+      class="clickable-row" (click)="onRowClick(row,i)"></tr>
+  </table>
+  <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5,10,25,50,100]">
+  </mat-paginator>
+</mat-card>
+<!-- </section> -->

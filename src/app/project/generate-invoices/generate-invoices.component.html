@@ -1,0 +1,146 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">edit</mat-icon>
+      <b>{{formTitle | titlecase}}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="autoGenForm" (ngSubmit)="onGenerate()">
+    <div class="row justify-content-center">
+      <div class="col-md-9">
+        <div class="row myCustomClass">
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Property</mat-label>
+              <mat-select formControlName="property" (selectionChange)="onSelectedPropertyChanged()">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of propertyList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Block</mat-label>
+              <mat-select formControlName="block" placeholder="Block" (selectionChange)="onSelectedBlockChanged()">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of blockList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row myCustomClass">
+          <div class="col-md-3">
+            <mat-checkbox
+              [labelPosition]="labelPosition"
+              formControlName="rentInvoice"
+              (change)="onCheckboxChange('rentInvoice')">
+              Rent Invoice
+            </mat-checkbox>
+          </div>
+          <div class="col-md-3">
+            <mat-checkbox
+              [labelPosition]="labelPosition"
+              formControlName="includeExpenses"
+              (change)="onCheckboxChange('includeExpenses')">
+              Include Expenses
+            </mat-checkbox>
+          </div>
+          
+          <div class="col-md-3">
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="authorize">Authorize Invoices</mat-checkbox>
+          </div>
+        </div>
+
+        <div class="row myCustomClass">
+          <div class="col-md-3">
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="sms">SMS</mat-checkbox>
+          </div>
+          <div class="col-md-3">
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="whatsapp">WhatsApp</mat-checkbox>
+          </div>
+          <div class="col-md-3">
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="email">Email</mat-checkbox>
+          </div>
+        </div>
+        <div class="row myCustomClass">
+          <div class="col-md-3">
+            <mat-label><b>Next: </b><b class="data">{{nextInvYear}}-{{nextInvMonth}}</b></mat-label>
+          </div>
+          <div class="col-md-3">
+            <mat-label><b>Next Count: </b> <b class="data">{{nextInvCount | number}}</b></mat-label>
+          </div>
+          <div class="col-md-3">
+            <mat-label><b>Next Date: </b> <b class="data">{{nextInvDate | date:'dd-MM-yyyy'}}</b></mat-label>
+          </div>
+          <!-- <div class="col-md-3">
+            <mat-label><b>Total Units: </b> <b class="data">{{totalUnits | number}}</b></mat-label>
+          </div> -->
+        </div>
+      </div>
+
+
+      <div class="col-md-3"
+        style="background: rgb(240, 236, 213);;height: 180px; ;border-radius: 5px; border: 1px solid; margin-left: -180px;">
+        <div style="font-weight: 800; font-size: 14px; color: cornflowerblue;">Current Month history</div>
+        <div class="myCustomClass">
+
+          <table class="custom-table" id="customers">
+            <!-- <th style="font-weight: 800; font-size: 14px; color: blue;">Last Month history</th> -->
+
+            <!-- <th style="font-weight: 800;font-size: 14px">Last Month history</th> -->
+            <tr>
+              <td class="side-by-side"><b>Year:</b></td>
+              <td class="side-by-side right-align data">{{invYear}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Month:</b></td>
+              <td class="side-by-side right-align data">{{dateGen | date:'dd-MM-yyyy'}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Count:</b></td>
+              <td class="side-by-side right-align data">{{lastMontrhInvCnt | number}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Is Rental:</b></td>
+              <td class="side-by-side right-align data">{{rentalInv}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Incl. Expenses:</b></td>
+              <td class="side-by-side right-align data">{{inclExpenses}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Authorize:</b></td>
+              <td class="side-by-side right-align data">{{authorize}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Total Units:</b></td>
+              <td class="side-by-side right-align data">{{totalUnits | number}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="autoGenForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button"
+        (click)="close()"><mat-icon>cancel</mat-icon>Close</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,107 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">request_quote</mat-icon>
+  Transfer Details:&nbsp;<b class="data">{{data.tranNo}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="trfDetForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-center">
+      <div class="col-1 myCustomClass">
+        <mat-label>SlNo:&nbsp;<b class="data">{{slNum}}</b></mat-label>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width:95%">
+          <mat-label class="mat-label-class">Product</mat-label>
+          <input matInput placeholder="Product" formControlName="prodCode" type="text">
+          <button mat-button *ngIf="trfDetForm.get('prodCode')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="trfDetForm.get('prodCode')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchProduct()"
+            [disabled]="data.mode === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline" style="width:95%">
+          <mat-label class="mat-label-class">Warehouse</mat-label>
+          <input matInput placeholder="warehouse" formControlName="warehouse" type="text">
+          <button mat-button *ngIf="trfDetForm.get('warehouse')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="trfDetForm.get('warehouse')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchWarehouse()"
+            [disabled]="data.mode === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">LotNo</mat-label>
+          <input matInput placeholder="Lot No" appNumberFormat class="right-align-input" formControlName="lotNo"
+            type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">UOM</mat-label>
+          <input matInput placeholder="UOM" formControlName="uom" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2 ">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Quantity</mat-label>
+          <input matInput placeholder="Quantity" appNumberFormat class="right-align-input" formControlName="quantity"
+            type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Unit Rate</mat-label>
+          <input matInput placeholder="Unit Rate" appNumberFormat class="right-align-input" formControlName="unitRate"
+            type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Amount</mat-label>
+          <input matInput placeholder="Amount" appNumberFormat class="right-align-input" formControlName="rowValue"
+            type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="trfDetForm.invalid || data.mode==='View'">
+        <mat-icon>save</mat-icon><b>Apply</b>
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{isAltered:dataFlag}">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+    </div>
+  </form>
+  <div class="grid">
+    <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+      style="width: 100%; height:230px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDef"
+      [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+      (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+    </ag-grid-angular>
+  </div>
+  <div class="pageSizectrl" style="margin-top:-20px;">
+    <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+      [ngModelOptions]="{standalone: true}">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+</div>

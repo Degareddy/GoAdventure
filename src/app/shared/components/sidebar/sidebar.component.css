@@ -1,0 +1,203 @@
+
+/* .router-link-active {
+  background-color: #e0e0e0 !important;
+  color: #3f51b5 !important;
+  border-radius: 5px;
+} */
+body.theme-light {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.theme-light .sidenav {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.theme-light .mat-nav-list .mat-list-item {
+  color: #000; /* Default item color */
+}
+
+.theme-light .mat-expansion-panel {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.theme-light .mat-expansion-panel-header {
+  background-color: var(--bg-color);
+}
+
+/* Dark Theme */
+.theme-dark {
+  --bg-color: #333333; /* Dark background */
+  --text-color: #ffffff; /* Light text */
+}
+
+.theme-dark .sidenav {
+  background-color: #2c3e50; /* Sidebar dark background */
+  color: white; /* Text color */
+}
+
+.theme-dark .mat-nav-list .mat-list-item {
+  color: white; /* Default item color */
+}
+
+.theme-dark .mat-expansion-panel {
+  background-color: #34495e; /* Panel background */
+  color: white; /* Text color in panels */
+}
+
+.theme-dark .mat-expansion-panel-header {
+  background-color: #2c3e50; /* Header background */
+}
+
+
+.router-link-active {
+  width: auto !important; /* Sets the width to 100% of the parent */
+  background-color: #e0e0e0 !important; /* Active link background color */
+  color: #3f51b5 !important; /* Active link text color */
+  border-radius: 5px;
+  box-sizing: border-box; /* Ensures padding is included in the element's total width */
+}
+
+.active-panel {
+  background-color: #6f97fa !important; /* Active link background color */
+  color: #fbfbfd !important; /* Active link text color */
+  border-radius: 5px;
+  font-weight: 500;
+}
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav .mat-list-item {
+  justify-content: center; /* Center icons in the collapsed state */
+}
+
+.sidenav {
+  width: 230px; /* Default width */
+  background-color: #2c3e50; /* Dark background for the sidebar */
+  color: white; /* White text */
+  transition: width 0.3s ease; /* Smooth transition for width changes */
+}
+
+.mat-list-item {
+  color: white;
+}
+
+.mat-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+::ng-deep .mat-expansion-indicator::after {
+  color: white !important;
+}
+
+.mat-nav-list .mat-list-item {
+  margin-left: -15px !important;
+}
+
+.mat-icon {
+  margin-right: 6px; /* Spacing between icon and text */
+}
+
+
+.mat-expansion-panel {
+  background-color: #34495e;
+  border-radius: 5px;
+  border: 1px solid rgba(238, 233, 233, 0.296);
+  color: white !important;
+}
+
+.mat-expansion-panel-header-title {
+  color: white !important;
+}
+
+.mat-expansion-panel-header:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Lighten on hover */
+  color: white !important;
+}
+
+.sidenav .mat-list-item {
+  font-size: 10px;
+  height: 22px;
+  font-weight: 600;
+}
+
+.sidenav .mat-icon {
+  font-size: 20px;
+}
+
+.sidenav .mat-toolbar {
+  font-size: 18px;
+}
+
+.sidenav .mat-expansion-panel-header {
+  font-size: 12px !important;
+  height: 28px !important;
+  font-weight: 600 !important;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .sidenav {
+    width: 230px; /* Reduce width on smaller screens */
+  }
+
+  .sidenav .mat-list-item {
+    font-size: 10px; /* Reduce font size */
+  }
+
+  .sidenav .mat-icon {
+    font-size: 18px; /* Reduce icon size */
+  }
+
+  .sidenav .mat-toolbar {
+    font-size: 16px; /* Reduce toolbar font size */
+  }
+
+  .sidenav .mat-expansion-panel-header {
+    font-size: 12px; /* Reduce expansion panel header font size */
+  }
+}
+
+@media (max-width: 480px) {
+  .sidenav {
+    width: 230px; /* Further reduce width on very small screens */
+  }
+
+  .sidenav .mat-list-item {
+    font-size: 8px; /* Further reduce font size */
+  }
+
+  .sidenav .mat-icon {
+    font-size: 16px; /* Further reduce icon size */
+  }
+
+  .sidenav .mat-toolbar {
+    font-size: 14px; /* Further reduce toolbar font size */
+  }
+
+  .sidenav .mat-expansion-panel-header {
+    font-size: 10px; /* Further reduce expansion panel header font size */
+  }
+}
+
+.mat-toolbar:hover {
+  cursor: pointer;
+}
+.mat-toolbar {
+  height: 30px !important;
+  font-size: 12px !important;
+  background-color: #2980b9; /* Header background */
+  font-weight: 600;
+  margin-top: -8px !important;
+}
+.mat-toolbar .mat-icon {
+  margin-left: 12px !important;
+}
+
+
+::ng-deep .mat-expansion-panel-content {
+  background-color: rgba(43, 43, 41, 0.704) !important;
+   border: white 1px solid !important;
+}

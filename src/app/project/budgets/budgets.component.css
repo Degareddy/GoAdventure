@@ -1,0 +1,107 @@
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1.5em;
+}
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+  .mat-form-field-label {
+  transform: translateY(-1.1em) scale(0.75);
+  width: 133.33333%;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em;
+  margin-top: -0.2em;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1.5em;
+}
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+  .mat-form-field-label {
+  transform: translateY(-1.1em) scale(0.75);
+  width: 133.33333%;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em;
+  margin-top: -0.2em;
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+
+
+/* .mat-form-field {
+  width: 230px !important;
+  font-size: 10px !important;
+} */
+
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1em !important;
+}
+
+.wide-textarea {
+  width: 100%;
+}
+
+#userMessage {
+  text-align: center !important;
+  font-size: 14px;
+  font-family: 900;
+}
+
+.input-with-button {
+  display: flex;
+  align-items: center;
+}
+
+.input-with-button input {
+  margin-right: 8px; /* Adjust the spacing between the input and button as needed */
+}
+.container {
+  width: 100%;
+  max-width: 1200px; /* Adjust the maximum width as needed */
+  margin: 0 auto;
+}
+
+.input-with-button {
+  display: flex;
+  align-items: center;
+}
+
+.mat-form-field {
+  margin-right: 10px;
+}
+
+@media (max-width: 576px) {
+  /* Adjust the responsive layout as needed */
+  .row.justify-content-center {
+    flex-direction: column;
+    align-items: center;
+  }
+}

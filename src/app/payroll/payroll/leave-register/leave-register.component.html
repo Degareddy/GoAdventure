@@ -1,0 +1,185 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+
+      Leave Register
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="plrHdrForm" (submit)="onSubmit()">
+    <div class="row  justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Tran No</mat-label>
+          <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+          <button mat-button *ngIf="plrHdrForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="plrHdrForm.get('tranNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+            [disabled]="plrHdrForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Employee</mat-label>
+          <mat-select formControlName="employee">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of empList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Leave Type</mat-label>
+          <input matInput placeholder="LeaveType" formControlName="leaveType" type="text">
+        </mat-form-field> -->
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Leave Type</mat-label>
+          <mat-select formControlName="leaveType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of leaveList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Requested Leave From</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="requestedLeaveFrom" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Requested Leave To</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="requestedLeaveTo" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Sanctioned Leave From</mat-label>
+          <input matInput [matDatepicker]="picker3" formControlName="sanctionedLeaveFrom" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Sanctioned Leave To</mat-label>
+          <input matInput [matDatepicker]="picker4" formControlName="sanctionedLeaveTo" />
+          <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+          <mat-datepicker #picker4></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Joined BackOn</mat-label>
+          <input matInput [matDatepicker]="picker5" formControlName="joinedBackOn" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker5"></mat-datepicker-toggle>
+          <mat-datepicker #picker5></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Applied On</mat-label>
+          <input matInput [matDatepicker]="picker6" formControlName="appliedOn" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker6"></mat-datepicker-toggle>
+          <mat-datepicker #picker6></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Total Leave Days</mat-label>
+          <input matInput placeholder="TotalLeaveDays" formControlName="totalLeaveDays" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Approved On</mat-label>
+          <input matInput [matDatepicker]="picker7" formControlName="approvedOn" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker7"></mat-datepicker-toggle>
+          <mat-datepicker #picker7></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Approved By</mat-label>
+          <input matInput placeholder="Approved By" formControlName="approvedBy" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <!-- <mat-label >Is BonusLeave</mat-label>
+        <mat-checkbox matInput formControlName="isBonusLeave" style="margin-left: 10px;"></mat-checkbox> -->
+        <mat-checkbox formControlName="isBonusLeave">Is BonusLeave</mat-checkbox>
+      </div>
+
+    </div>
+    <div class="row row justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Extra Leaves Taken</mat-label>
+          <input matInput placeholder="Extra Leaves Taken" formControlName="extraLeavesTaken" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:&nbsp;</mat-label><b class="data">{{status | uppercase}}</b>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="plrHdrForm.get('mode')!.value === 'View' || plrHdrForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

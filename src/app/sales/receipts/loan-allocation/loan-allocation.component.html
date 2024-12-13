@@ -1,0 +1,25 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="{isAltered:altered}">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center  text-sm text-white">
+      <mat-icon class="mr-1">check_box</mat-icon>
+      <b>{{this.data.search | titlecase}}</b><b class="data ml-2 text-sm">{{data.tranNo}}</b>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:250px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+  <div class="pageSizectrl" style="margin-top:-20px;">
+    <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+      [ngModelOptions]="{standalone: true}">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+</div>

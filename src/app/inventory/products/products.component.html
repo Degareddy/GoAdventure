@@ -1,0 +1,263 @@
+<section>
+  <div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+    <div class="flex justify-between items-center mb-0.1 h-8">
+      <div class="flex items-center text-white">
+        <mat-icon class="mr-1">shopping_bag</mat-icon>
+        <b>Products</b>
+      </div>
+      <div class="flex items-end space-x-1 mb-2.5">
+        <button mat-raised-button color="primary" class="btnUp" type="button" [disabled]="this.productForm.invalid"
+        (click)="AliasProductList()"><mat-icon>list</mat-icon>
+        Alias Names</button>
+      <button mat-raised-button class="btnUp" type="button"
+        (click)="NotesDetails(productForm.get('productGroup')!.value)" [disabled]="this.productForm.invalid">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+
+      <button mat-raised-button class="btnUp" type="button"
+        (click)="logDetails(productForm.get('productGroup')!.value )">
+        <mat-icon>comment</mat-icon>
+        Log
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+      </div>
+    </div>
+  </div>
+  <div class="p-4 bg-zinc-100 container rounded-sm">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" placeholder="Mode"
+              (selectionChange)="modeChanged(productForm.controls['mode'].value)">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Product</mat-label>
+            <input matInput placeholder="Product" formControlName="productGroup" type="text">
+            <button mat-button *ngIf="productForm.get('productGroup')!.value" type="button" matSuffix mat-icon-button
+              aria-label="Clear" (click)="productForm.get('productGroup')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onProductSearch()"
+              [disabled]="productForm.get('mode')!.value === 'Add'">
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Re-Order Quantity</mat-label>
+            <input matInput placeholder="Re-Order Quantity" separator formControlName="reOrderQuantity"
+              class="right-align-input" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Code</mat-label>
+            <input matInput placeholder="Code" formControlName="code" type="text" [matTooltipPosition]="'right'"
+              [matTooltip]="productForm.get('code')!.invalid &&
+                (productForm.get('code')!.dirty || productForm.get('code')!.touched)
+                ? 'Only alpha numeric values are allowed.Max 10 Chars.' : 'Code'" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Purchase Rate</mat-label>
+            <input matInput placeholder="Purchase Rate" formControlName="purchaseRate" NumberFormatDirective separator
+              type="text" class="right-align-input" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Vat Type</mat-label>
+            <mat-select placeholder="VatType" formControlName="vatType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of vatTypes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Product</mat-label>
+            <input matInput placeholder="Product" formControlName="product" type="text" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Sale Rate - Std</mat-label>
+            <input matInput placeholder="Sale Rate - Std" separator formControlName="saleRateStd" type="text"
+              class="right-align-input" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Tran Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">UOM</mat-label>
+            <mat-select placeholder="UOM" formControlName="uom">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of UOMList" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="3" class="mat-mode">
+            <mat-label class="mat-label-class">Sale Rate - min</mat-label>
+            <input matInput placeholder="Sale Rate Min" formControlName="saleRateMin" separator type="text"
+              class="right-align-input" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2" class="mat-mode">
+            <mat-label>Status</mat-label>
+            <input matInput placeholder="Status" formControlName="status" type="text" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Stock Type</mat-label>
+            <mat-select placeholder="Stock Type" formControlName="type">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="Asset">Asset</mat-option>
+              <mat-option value="Stock">Stock</mat-option>
+              <mat-option value="Service">Service</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Sale Rate Max</mat-label>
+            <input matInput placeholder="SaleRateMax" formControlName="saleRateMax" separator type="text"
+              class="right-align-input" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Product Group</mat-label>
+            <mat-select placeholder="Product Group" formControlName="productGroups">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of groupList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Warehouse</mat-label>
+            <mat-select placeholder="WareHouse" formControlName="wareHouse">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of wareHouseList" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button matSuffix mat-icon-button aria-label="Search"
+            style="line-height: 5px;margin-top: -10px;margin-left: -10px;" (click)="warehouse($event)" type="button"
+            [disabled]="productForm.get('mode')!.value === 'View'">
+            <mat-icon class="mat-search-icon" style="font-size: 16px;">launch</mat-icon>
+          </button>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Unit Weight(KG)</mat-label>
+            <input matInput placeholder="UnitWeight" separator formControlName="unitWeight" type="text"
+              class="right-align-input" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>HS Code</mat-label>
+            <input matInput placeholder="HS Code" formControlName="hsCode" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Item Count</mat-label>
+            <input matInput placeholder="ItemCount" formControlName="itemCount" type="number"
+              class="right-align-input" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2" class="mat-notes">
+            <mat-label>Display Name</mat-label>
+            <input matInput placeholder="Display Name" formControlName="displayName" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <!-- <mat-label for="acceptTerms" style="padding-left: 28px;padding-right: 7px;" class="form-check-label">Is
+            Perishable</mat-label>
+          <input type="checkbox" formControlName="isPerishable" /> -->
+          <mat-checkbox formControlName="isPerishable" class="myCustomClass">Is Perishable</mat-checkbox>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2" class="mat-notes">
+            <mat-label>Notes</mat-label>
+            <input matInput placeholder="Notes" rows="2" formControlName="notes" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+
+        </div>
+      </div>
+
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp"
+          [disabled]="productForm.get('mode')!.value === 'View' || productForm.invalid">
+          <mat-icon>done</mat-icon>Apply
+        </button>
+        <!-- <button mat-raised-button color="warn" class="btnUp" type="button" (click)="reset()">
+          <mat-icon>autorenew</mat-icon>Reset
+        </button> -->
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+      </div>
+    </form>
+    <!-- </div> -->
+  </div>
+  <!-- </div> -->
+</section>
+<!-- company data : ends-->

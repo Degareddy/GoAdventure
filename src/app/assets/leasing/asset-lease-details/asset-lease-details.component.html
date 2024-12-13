@@ -1,0 +1,169 @@
+<!-- <div class="mat-card-header">
+  <div class="left">Asset Leasing Details</div>
+</div>
+<div class="right">
+  <button mat-icon-button mat-dialog-close>
+    <mat-icon style="font-size: 14px; background-color: red; color: #fff;">close</mat-icon>
+  </button>
+</div> -->
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Asset Leasing Details</div>
+  <!-- <div class="right">
+    <button mat-icon-button mat-dialog-close class="small-button">
+      <mat-icon class="small-icon">close</mat-icon>
+    </button>
+  </div> -->
+</div>
+
+<mat-card style="margin-top: 30px;">
+  <form [formGroup]="assetLeasedtForm" (submit)="onSubmit()">
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-label style="margin-left: 28px;">SlNo:<b style="padding-left: 10px;">{{slNum}}</b></mat-label>
+      </div>
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline">
+            <mat-label>Tran No</mat-label>
+            <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Asset ID</mat-label>
+          <input type="text" matInput formControlName="assetID" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Trace No</mat-label>
+          <input matInput placeholder="Trace No" formControlName="traceNo" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Return Date</mat-label>
+          <input matInput placeholder="Return Date" formControlName="returnDate" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Ret Condition</mat-label>
+          <input matInput placeholder="Ret Condition" formControlName="retCondition" type="text">
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">unitRate:<b style="padding-left: 10px;">{{approvedOn}}</b></mat-label> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Lease Amount</mat-label>
+          <input matInput placeholder="Lease Amount" formControlName="leaseAmount" type="number">
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">Issued By:<b style="padding-left: 10px;">{{issuedBy}}</b></mat-label> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Damage Charges</mat-label>
+          <input matInput placeholder="DamageCharges" formControlName="damageCharges" type="number">
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">Issued On:<b style="padding-left: 10px;">{{issuedOn}}</b></mat-label> -->
+      </div>
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Total Amount</mat-label>
+          <input matInput placeholder="totalAmount" formControlName="totalAmount" type="number">
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">Received By:<b style="padding-left: 10px;">{{receivedBy}}</b></mat-label> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Paid Amount</mat-label>
+          <input matInput placeholder="PaidAmount" formControlName="paidAmount" type="number">
+        </mat-form-field>
+        <!-- <mat-label style="margin-left: 28px;">Received On:<b style="padding-left: 10px;">{{receivedOn}}</b></mat-label> -->
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Bal Amount</mat-label>
+          <input matInput placeholder="Bal Amount" formControlName="balAmount" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3"></div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="accent" class=btnUp>Apply</button>
+       <button mat-raised-button color="warn" type="button" (click)="reset()" class=btnUp>Reset</button>
+    </div>
+  </form>
+</mat-card>
+
+<mat-card>
+  <div class="container">
+    <table mat-table matSort [dataSource]="dataSource" class="tbl-dataList">
+      <ng-container matColumnDef="langID">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>LangID</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.langID}} </td>
+      </ng-container>
+      <ng-container matColumnDef="tranNo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>TranNo</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.tranNo}} </td>
+      </ng-container>
+      <ng-container matColumnDef="slNo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>SlNo</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.slNo}} </td>
+      </ng-container>
+      <ng-container matColumnDef="assetID">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>AssetID</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.assetID}} </td>
+      </ng-container>
+      <ng-container matColumnDef="traceNo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>TraceNo</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.traceNo}} </td>
+      </ng-container>
+      <ng-container matColumnDef="returnDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ReturnDate</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.returnDate| date:'dd-MM-YYYY' }} </td>
+      </ng-container>
+      <ng-container matColumnDef="retCondition">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>RetCondition</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.retCondition}} </td>
+      </ng-container>
+      <ng-container matColumnDef="leaseAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>LeaseAmount</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.leaseAmount}} </td>
+      </ng-container>
+      <ng-container matColumnDef="damageCharges">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>DamageCharges</th>
+
+        <td mat-cell *matCellDef="let tblData">{{tblData.damageCharges}} </td>
+      </ng-container>
+      <ng-container matColumnDef="totalAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>TotalAmount</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.totalAmount}} </td>
+      </ng-container>
+      <ng-container matColumnDef="paidAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>PaidAmount</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.paidAmount}} </td>
+      </ng-container>
+      <ng-container matColumnDef="balAmount">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>BalAmount</th>
+        <td mat-cell *matCellDef="let tblData">{{tblData.balAmount}} </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayColumns; sticky:true"></tr>
+      <tr mat-row [class.selected]="selectedRowIndex === i" *matRowDef="let row; columns: displayColumns; let i=index;"
+        class="clickable-row" (click)="onRowClick(row,i)"></tr>
+    </table>
+    <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5,10,25,50,100]">
+    </mat-paginator>
+  </div>
+</mat-card>

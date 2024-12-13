@@ -1,0 +1,102 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">storage</mat-icon>
+      <b class="ml-1">Master Data</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(mastForm.get('typeName')!.value )"
+        [disabled]="mastForm.get('typeName')!.value === '' || mastForm.get('typeName')!.value === null">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="logDetails(mastForm.get('typeName')!.value )"
+        [disabled]="mastForm.get('typeName')!.value === '' || mastForm.get('typeName')!.value === null">
+        <mat-icon>comment</mat-icon>Log
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+<form [formGroup]="mastForm" (ngSubmit)="onUpdate()">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" appearance="outline"
+            (selectionChange)="modeChanged(mastForm.controls['mode'].value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Type Name</mat-label>
+          <mat-select formControlName="typeName" (selectionChange)="onSelectedTypeChanged()" placeholder="typeName">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let y of typeNamesList" [value]="y.itemCode">{{y.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Item Code</mat-label>
+          <input matInput placeholder="Item Code" formControlName="itemCode" type="text" id="itemCode"
+            [matTooltipPosition]="'right'"
+            [matTooltip]="mastForm.get('itemCode')!.invalid && (mastForm.get('itemCode')!.dirty || mastForm.get('itemCode')!.touched) ? 'Only alpha numeric are allowed' : 'ItemCode'">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Item Name</mat-label>
+          <input type="text" matInput placeholder="Item Name" #input formControlName="itemName" id="itemName">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="effectiveDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-6">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Notes</mat-label>
+          <input matInput type="text" id="notes" formControlName="notes" placeholder="Notes">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:<b class="data">{{itemStatus}}</b></mat-label>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="mastForm.get('mode')!.value === 'View' || mastForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+    </div>
+  </form>
+  <div style="margin-top: -30px;">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+      [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+      [gridHeight]="'230px'" [paginationPageSize]="25" [showToolPanel]="true"
+      [showRecordCount]="true"></app-access-grid>
+  </div>
+</div>

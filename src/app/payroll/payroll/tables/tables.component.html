@@ -1,0 +1,103 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+
+      Tax Table
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+      (click)="onDetailsClicked()" [disabled]="tthForm.invalid"><mat-icon>help</mat-icon>
+      Details</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="tthForm">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" appearance="outline" aria-colspan="2"
+            (selectionChange)="modeChanged(this.tthForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Table Type</mat-label>
+          <mat-select formControlName="tableType" appearance="outline" aria-colspan="2"
+            (selectionChange)="getTableTypeChange($event)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of taxTypesList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label >Year</mat-label>
+          <mat-select formControlName="taxType" appearance="outline" aria-colspan="2"
+            (selectionChange)="onSelectedTaxTypeListChanged(tthForm.get('taxType')!.value)">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of taxList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-3"></div> -->
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Valid From</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="validFrom" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Year Code</mat-label>
+          <input matInput placeholder="YearCode" formControlName="yearCode" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Tax Status:&nbsp;</mat-label><b class="data">{{taxStatus | uppercase}}</b>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Valid To</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="validTo" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-6">
+        <mat-form-field aria-colspan="2" appearance="outline" style="width:95%">
+          <mat-label>Notes</mat-label>
+          <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-3"></div> -->
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+    <div class="btnAlignment">
+      <button type="button" mat-raised-button color="primary" class="btnUp" (click)="onUpdate()"
+        [disabled]="tthForm.invalid">
+        <mat-icon>done</mat-icon>Apply</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

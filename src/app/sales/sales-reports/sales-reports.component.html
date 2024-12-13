@@ -1,0 +1,96 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">account_balance</mat-icon>
+      <b>Client Balances</b>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="saleReportForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:150px">
+          <mat-label class="mat-label-class">Property</mat-label>
+          <mat-select formControlName="PropCode" (selectionChange)="onSelectedPropertyChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of properytList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:150px">
+          <mat-label class="mat-label-class">Block</mat-label>
+          <mat-select formControlName="BlockCode" (selectionChange)="onSelectedBlockChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of blocksList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:150px">
+          <mat-label class="mat-label-class">Flat</mat-label>
+          <mat-select formControlName="UnitID">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of flatsList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:150px">
+          <mat-label class="mat-label-class">Client Type</mat-label>
+          <mat-select formControlName="clientType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of clientTypes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field class="mat-mode" appearance="outline">
+          <mat-label class="mat-label-class">As On Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="FromDate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-checkbox formControlName="isSummary">Summary</mat-checkbox>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="saleReportForm.invalid">
+        <mat-icon>download</mat-icon>Fetch
+      </button>
+      <button mat-raised-button color="accent" type="button" (click)="clear()" class="btnUp">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" type="button" (click)="close()" class="btnUp">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+  <div style="margin-top: -30px;" *ngIf="gridData.length > 0">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="gridData" [exportPDF]="true" [exportExcel]="true"
+      (filterChanges)="onFilterData($event)" [totals]="totals" [globalSearch]="true" (gridReady)="onGridReady($event)"
+      (linkClicked)="onLnkClicked($event)" [gridHeight]="'290px'" [reportName]="'Client Balances'"
+      [paginationPageSize]="25" [showToolPanel]="true" [showRecordCount]="true" (detailClicked)="onDtlClicked($event)"
+      (columnVisibilityChanged)="onColumnVisibilityChanged($event)"></app-access-grid>
+  </div>
+  <div class="balance-container" *ngIf="!balanceTmp && gridData.length > 0">
+    <span class="balance-label" *ngIf="!loanToal && gridData.length > 0">Loan Amount:</span>
+    <span class="balance-amount balance-credit" *ngIf="!loanToal && gridData.length > 0">{{ totalLoanAmt | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="balance-label">Negetive Amount:</span>
+    <span class="balance-amount balance-debit">{{ balanceAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="balance-label">Positive Amount:</span>
+    <span class="balance-amount balance-credit">{{ totalAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="balance-label">Net Amount:</span>
+    <span class="balance-amount balance-credit">{{ diffAmount | number: '1.2-2' }}</span>
+  </div>
+</div>
+

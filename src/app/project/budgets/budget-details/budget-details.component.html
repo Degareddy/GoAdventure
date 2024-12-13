@@ -1,0 +1,102 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="{isAltered:dataModified}">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">account_balance_wallet</mat-icon>
+  Budget Details:&nbsp;<b class="data">{{data.tranNo}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="bgtDetForm" (submit)="onSubmit()">
+    <div class="row  justify-content-center">
+      <div class="col-1 myCustomClass">
+        <mat-label>SlNo:<b class="data">{{slNum}}</b></mat-label>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Worktype</mat-label>
+          <mat-select matInput placeholder="workTypeName" formControlName="workTypeName">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of workTypes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Budget Amount</mat-label>
+          <input matInput placeholder="budgetAmt" class="right-align-input" separator formControlName="budgetAmt"
+            type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2 myCustomClass">
+        <mat-label>Actual Amount:&nbsp;<b class="data">{{actualAmt | number:'1.2-2'}}</b></mat-label>
+      </div>
+      <div class="col-2 myCustomClass">
+        <mat-label>Diff Amount:&nbsp;<b class="data">{{diffAmt | number:'1.2-2'}}</b></mat-label>
+      </div>
+    </div>
+
+    <div class="row  justify-content-center">
+      <div class="col-1">
+
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Start Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="startDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">End Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="endDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-2 myCustomClass">
+        <mat-label>Actual CmplDate:&nbsp;<b class="data">{{actCmplDate | date: 'dd-MM-yyyy'}}</b></mat-label>
+      </div> -->
+      <div class="col-2 myCustomClass">
+        <mat-label>Diff Days:&nbsp;<b class="data">{{diffDays | number:'1.0-2'}}</b></mat-label>
+      </div>
+      <div class="col-4">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-2">
+
+      </div> -->
+
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" class="btnUp" [disabled]="bgtDetForm.invalid ||  mode ==='View'">
+        <mat-icon>done</mat-icon><b>Apply</b>
+      </button>
+      <button mat-raised-button color="accent" type="button" [disabled]="mode !='Modify' || status !='Open'"
+        (click)="addBudget()" class=btnUp>
+        <mat-icon>add</mat-icon><b>New</b>
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{isAltered:dataModified}">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+    </div>
+  </form>
+</div>
+<div class="grid">
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:230px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+</div>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>

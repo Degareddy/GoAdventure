@@ -1,0 +1,90 @@
+<div class="mat-card container-fluid">
+  <div class="left">Purchase Dashboard</div>
+</div>
+<mat-card class="purchase-request-card">
+  <form [formGroup]="purDashForm" (ngSubmit)="Submit()">
+    <div class="form-container">
+      <div class="row">
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Transaction</mat-label>
+            <mat-select formControlName="tranType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="Purchase">Purchase</mat-option>
+              <mat-option value="Sales">Sales</mat-option>
+              <mat-option value="Ventures">Ventures</mat-option>
+              <mat-option value="Properties">Properties</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Report</mat-label>
+            <mat-select formControlName="reportType">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="Annual">Annually</mat-option>
+              <mat-option value="Monthly">Monthly</mat-option>
+              <mat-option value="Year_Month">Year&Month</mat-option>
+              <mat-option value="Daily">Daily</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" style="width:160px">
+            <mat-label>Group</mat-label>
+            <mat-select formControlName="productGroup">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option value="CEMENT">Cement</mat-option>
+              <mat-option value="CHUMAS">Chumas</mat-option>
+              <mat-option value="STEELPRO">STEEL PROFILES</mat-option>
+              <mat-option value="ROUNDS">ROUND BARS</mat-option>
+              <mat-option value="IRNSHEET">IRON SHEETS</mat-option>
+              <mat-option value="PVC">PVC Pipes</mat-option>
+              <mat-option value="WOOD">WOOD PRODUCTS</mat-option>
+              <mat-option value="SP">SP Paints</mat-option>
+              <mat-option value="TILES">TILES</mat-option>
+              <mat-option value="GIFITS">GI FITTINGS</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3" style="display: flex; align-items: flex-end;">
+          <mat-form-field appearance="outline" style="flex-grow: 1;">
+            <mat-label>Product</mat-label>
+            <input matInput placeholder="Product" formControlName="product" type="text">
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="button" (click)="searchProduct()" class="search-button">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+        <div class="col-1">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fromDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-1" style="margin-left: 30px;">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="toDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="search-button"
+        class="btnUp"><mat-icon>search</mat-icon>Report</button>
+        <button mat-raised-button color="primary" type="button" class="search-button"
+        class="btnUp"><mat-icon>cancel</mat-icon>Clear</button>
+    </div>
+    <!-- </div> -->
+  </form>
+</mat-card>
+<mat-card>
+  <ag-charts-angular style="height: 100%" [options]="chartOptions">
+  </ag-charts-angular>
+</mat-card>

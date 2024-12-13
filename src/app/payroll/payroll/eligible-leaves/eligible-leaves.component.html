@@ -1,0 +1,111 @@
+<!-- <div class="mat-card container-fluid">
+  <div class="left data">Eligible Leaves</div>
+  <div class="right">
+    <button mat-raised-button color="primary" class="btnUp" type="button"
+      (click)="onDetailsCilcked()"><mat-icon>info</mat-icon>
+      Details</button>
+
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+  </div>
+</div> -->
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      Eligible Leaves
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+      (click)="onDetailsCilcked()"><mat-icon>info</mat-icon>
+      Details</button>
+
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="eligibleLeavesForm" (ngSubmit)="onSubmit()">
+    <div class="row  justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChanged(eligibleLeavesForm.get('mode')?.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Year No</mat-label>
+          <mat-select formControlName="yearNo">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of yearNum" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+          <!-- <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+          <button mat-button [disabled]="eligibleLeavesForm.get('mode')!.value === 'View'" type="button" matSuffix
+            mat-icon-button aria-label="Clear" (click)="eligibleLeavesForm.get('tranNo')!.setValue('')">
+            <mat-icon class="mat-search-icon">close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button> -->
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fromDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">To Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="toDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-5">
+        <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
+          <mat-label>Remarks</mat-label>
+          <textarea placeholder="Remarks" matInput formControlName="remarks" rows="1"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="col-2 myCustomClass">
+        <mat-label>Status:&nbsp;<b class="data">{{tranStatus | uppercase}}</b></mat-label>
+      </div>
+
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="eligibleLeavesForm.get('mode')!.value === 'View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>clear_all</mat-icon>clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+
+    </div>
+  </form>
+</div>

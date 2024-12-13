@@ -1,0 +1,232 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">request_quote</mat-icon>
+      <b>{{title | titlecase}}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+
+    <button mat-raised-button color="primary" class="btnUp" type="button"
+    (click)="onDetailsCilcked(quotationForm.get('tranNo')!.value)"
+    [disabled]="quotationForm.invalid || quotationForm.get('mode')?.value ==='Add'"><mat-icon>info</mat-icon>Details
+  </button>
+  <button mat-raised-button color="accent" type="button" class="btnUp"
+    (click)="onDocsCilcked(quotationForm.get('tranNo')!.value) "
+    [disabled]="quotationForm.invalid || quotationForm.get('mode')?.value === 'Add'"><mat-icon>cloud_upload</mat-icon>Docs</button>
+  <button mat-raised-button color="primary" class="btnUp" type="button" (click)="quotationreports()"
+    [disabled]="quotationForm.invalid || quotationForm.get('mode')?.value === 'Add'"><mat-icon>download</mat-icon>Report</button>
+  <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+    <mat-icon>help</mat-icon>
+    Help
+  </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+    <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row">
+      <div class="col-9 justify-content-left">
+        <div class="row justify-content-left">
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(quotationForm.get('mode')!.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Quotation No</mat-label>
+              <input matInput placeholder="Quotation No" formControlName="tranNo" type="text">
+              <button mat-button *ngIf="quotationForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="quotationForm.get('tranNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchCilcked()"
+                [disabled]="quotationForm.get('mode')!.value == 'Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label class="mat-label-class">Customer</mat-label>
+              <input matInput placeholder="Customer" formControlName="customer" type="text">
+              <button mat-button *ngIf="quotationForm.get('customer')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="quotationForm.get('customer')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onCustomerSearch()"
+                [disabled]="quotationForm.get('mode')!.value == 'View'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row justify-content-left">
+          <div class="col-4">
+            <!-- <mat-form-field appearance="outline">
+              <mat-label>Executive</mat-label>
+              <input matInput placeholder="Executive" formControlName="salesExec" type="text" />
+            </mat-form-field> -->
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label class="mat-label-class">Executive</mat-label>
+              <input matInput placeholder="Executive" formControlName="salesExec" type="text">
+              <button mat-button *ngIf="quotationForm.get('salesExec')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="quotationForm.get('salesExec')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onEmployeeSearch()"
+                [disabled]="quotationForm.get('mode')!.value == 'View'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Quote Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="quoteDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Currency</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row justify-content-left">
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Valid for(Days)</mat-label>
+              <input matInput placeholder="ValidForDays" class="right-align-input" formControlName="validForDays"
+                type="number" />
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Revision No</mat-label>
+              <input matInput placeholder="RevisionNo" class="right-align-input" formControlName="revisionNo"
+                type="number" />
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Exchange Rate</mat-label>
+              <input matInput placeholder="ExchangeRate" appExchange class="right-align-input"
+                formControlName="exchangeRate" type="text" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row justify-content-left">
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Customer Ref No</mat-label>
+              <input matInput placeholder="Customer Ref No" formControlName="custRef" class="right-align-input"
+                type="text" />
+            </mat-form-field>
+          </div>
+          <div class="col-4 myCustomClass">
+            <mat-checkbox formControlName="applyVat">Apply VAT</mat-checkbox>
+          </div>
+          <div class="col-4">
+            <!-- <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Address No</mat-label>
+              <input matInput placeholder="AddressNo" formControlName="addressNo" type="text" />
+            </mat-form-field> -->
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Bill To</mat-label>
+              <input matInput placeholder="Address No" formControlName="addressNo" type="text">
+              <button mat-button [disabled]="quotationForm.get('mode')!.value === 'View'" type="button" matSuffix
+                mat-icon-button aria-label="Clear" (click)="quotationForm.get('addressNo')!.setValue('')">
+                <mat-icon class="mat-search-icon">close</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="billToSearch('BILLTO')">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row justify-content-left">
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Pay Terms</mat-label>
+              <mat-select formControlName="payTerm">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of payTermList" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
+              <mat-label>Notes</mat-label>
+              <textarea matInput placeholder="Notes" rows="2" formControlName="remarks"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="col-4 myCustomClass">
+            <mat-label>Status :&nbsp;</mat-label><b class="data">{{tranStatus | uppercase}}</b>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="col-3"
+        style="background: rgb(240, 236, 213);;height: 70px; ;border-radius: 5px;border: 1px solid;">
+        <div class="myCustomClass">
+          <table class="custom-table" id="customers">
+            <tr>
+              <td class="side-by-side"><b>Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{amountExclVat < 0 ? '0.00' : amountExclVat |
+                    number:'1.2-2'}}</b>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="side-by-side"><b>VAT Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{vatAmount < 0 ? '0.00' : vatAmount | number:'1.2-2'}}</b>
+              </td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Total Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{totalAmount < 0 ? '0.00' : totalAmount |
+                    number:'1.2-2'}}</b>
+              </td>
+            </tr>
+
+
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="quotationForm.invalid ||
+      quotationForm.get('mode')!.value==='View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

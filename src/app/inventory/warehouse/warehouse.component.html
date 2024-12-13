@@ -1,0 +1,109 @@
+<section>
+  <div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+    <div class="flex justify-between items-center mb-0.1 h-8">
+      <div class="flex items-center text-white">
+        <mat-icon class="mr-1">inventory</mat-icon>
+        <b>Warehouse</b>
+      </div>
+      <div class="flex items-end space-x-1 mb-2.5">
+        <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(warehouseForm.get('list')!.value)"
+        [disabled]="warehouseForm.get('list')!.value === ''">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="logDetails(warehouseForm.get('list')!.value )"
+        [disabled]="warehouseForm.get('list')!.value === '' || warehouseForm.get('list')!.value === null">
+        <mat-icon>comment</mat-icon>
+        Log
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+      </div>
+    </div>
+  </div>
+  <div class="p-4 bg-zinc-100 container rounded-sm">
+    <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" (selectionChange)="modeChange(warehouseForm.get('mode')!.value)">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Warehouse List</mat-label>
+            <mat-select formControlName="list">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of wareHouseList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="effectiveDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Warehouse Code</mat-label>
+            <input matInput placeholder="Warehouse Code" formControlName="whid" type="text" type="text"
+              [matTooltipPosition]="'right'" [disabled]="warehouseForm.get('mode')!.value === 'Modify'"
+              [matTooltip]="warehouseForm.get('whid')!.invalid && (warehouseForm.get('whid')!.dirty || warehouseForm.get('whid')!.touched) ? 'Enter Code' : 'Code'" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Warehouse Name</mat-label>
+            <input matInput placeholder="Warehouse Name" formControlName="whName" type="text" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-3 myCustomClass">
+          <mat-checkbox formControlName="isDefault" [labelPosition]="labelPosition">Default</mat-checkbox>
+        </div>
+      </div>
+
+      <div class="row justify-content-center myCustomClass">
+        <div class="col-6">
+          <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
+            <mat-label class="mat-label-class">Notes</mat-label>
+            <input matInput placeholder="Notes" formControlName="notes" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3 ">
+          <mat-label>Status:&nbsp;</mat-label><b class="data">{{whStatus}}</b>
+        </div>
+      </div>
+
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+      <div class="btnAlignment">
+
+        <button mat-raised-button color="primary" type="submit" class="btnUp"
+          [disabled]="warehouseForm.get('mode')!.value === 'View' || warehouseForm.invalid">
+          <mat-icon>done</mat-icon>Apply
+        </button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()"
+          [mat-dialog-close]="true">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

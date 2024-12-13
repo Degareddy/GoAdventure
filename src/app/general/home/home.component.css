@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  background: linear-gradient(135deg, #6dd5ed, #2193b0); /* Gradient background */
+  border-radius: 2px;
+}
+
+.dashboard-container {
+  display: flex;
+  justify-content: center; /* Center the widgets horizontally */
+  align-items: flex-end; /* Align widgets to the bottom */
+  gap: 10px;
+  padding: 10px;
+  position: absolute;
+  bottom: 10px; /* Position at the bottom of the carousel slide */
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Optional background for better contrast */
+  border-radius: 0 0 10px 10px; /* Rounded corners at the bottom */
+}
+
+.widget-card {
+  text-align: center;
+  width: 70px; /* Smaller widget width */
+  height: 70px; /* Smaller widget height */
+  padding: 5px;
+  border-radius: 50%; /* Circular shape */
+  background-color: white; /* Background color for cards */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1s ease-in;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.widget-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  color: white;
+  background: linear-gradient(135deg, #4ac29a, #bdfff3);
+}
+
+.icon-container {
+  margin-bottom: 5px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.text-container {
+  font-size: 0.6rem; /* Smaller text */
+}
+
+.mat-card-title {
+  font-size: 0.7rem;
+}
+
+h2 {
+  font-size: 0.8rem;
+}

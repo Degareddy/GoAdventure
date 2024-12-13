@@ -1,0 +1,184 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">support_agent</mat-icon>
+      <b>{{formName | titlecase}}:</b> <b class="data ml-2">{{refernceNo}}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onCostClick()"
+        [disabled]="grievancesForm.controls['mode'].value==='Add' || !refernceNo">
+        <mat-icon>monetization_on</mat-icon>Cost
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="technicianAllocation()"
+        [disabled]="grievancesForm.controls['mode'].value==='Add' || !refernceNo">
+        <mat-icon>assignment_ind</mat-icon>Technicians
+      </button>
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails()"
+        [disabled]="grievancesForm.controls['mode'].value==='Add' || !refernceNo">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="grievancesForm" style="margin-top: -10px;">
+    <div class="row  justify-content-left" style="background-color: burlywood;border-radius: 5px;">
+      <div class="col-2" style="margin-top: 7px;">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Issue Status</mat-label>
+          <mat-select matInput formControlName="issueStatus">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of issuesStatusList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-1" style="margin-top: 7px;">
+        <mat-checkbox formControlName="all"><b>All</b></mat-checkbox>
+      </div>
+      <div class="col-3" style="margin-top: 7px;">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker3" [max]="today" placeholder="From Date" formControlName="fromDate"
+            type="Datepicker" [disabled]="grievancesForm.controls['all'].value">
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">To Date</mat-label>
+          <input matInput [matDatepicker]="picker4" [max]="today" placeholder="To Date" formControlName="toDate"
+            type="Datepicker" [disabled]="grievancesForm.controls['all'].value">
+          <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+          <mat-datepicker #picker4></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-6 myCustomClass justify-content-left">
+        <button mat-raised-button color="primary" class="btnUp" type="button"
+          [disabled]="grievancesForm.controls['issueStatus'].value===''" style="margin-bottom: 5px;"
+          (click)="pullData()"><mat-icon>download</mat-icon>Pull</button>
+        <mat-label style="margin-left: 23px;">Issue Status:&nbsp;</mat-label><b [ngClass]="{
+          'allocated': currIssueStatus === 'Allocated',
+          'Progress': currIssueStatus === 'Progress',
+          'red': currIssueStatus === 'Open',
+          'green': currIssueStatus === 'Closed'
+        }" class="custom-status">{{ currIssueStatus }}</b>&nbsp;
+        <mat-label>Yearly count:&nbsp;</mat-label><b class="data">{{yearlyCount}}</b>&nbsp;
+        <mat-label>Monthly Count:&nbsp;</mat-label><b class="data">{{monthlyCount}}</b>
+      </div>
+    </div>
+
+    <div class="row row justify-content-left">
+      <div class="col-1">
+        <mat-form-field appearance="outline" style="width:100px">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode" style="margin-left: 30px;">
+          <mat-label class="mat-label-class">Priority</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of priorityList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Raised On:&nbsp;</mat-label><b class="data">{{raisedDate | date:"dd-MM-yyyy hh:mm:ss"}}</b>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Allocated At</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="allocatedDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width:80px">
+          <mat-label>Allocated Time</mat-label>
+          <input matInput type="time" formControlName="allocatedTime" placeholder="HH:mm" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Close By</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="closedDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline" style="width:80px">
+          <mat-label>Closed Time</mat-label>
+          <input matInput type="time" formControlName="closedTime" placeholder="HH:mm" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row row justify-content-left myCustomClass">
+      <div class="col-3">
+        <mat-label>Property:&nbsp;</mat-label><b class="data">{{grcls.propertyName | uppercase}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Block:&nbsp;</mat-label><b class="data">{{blockName | uppercase}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Unit:&nbsp;</mat-label><b class="data">{{unitName | uppercase}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Client:&nbsp;</mat-label><b class="data">{{tenantName | uppercase}}</b>
+      </div>
+
+    </div>
+
+    <div class="row row justify-content-left myCustomClass">
+      <div class="col-3">
+        <mat-label>Cost To Management:&nbsp;</mat-label><b class="data">{{costToMgmt | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Cost To Landlord:&nbsp;</mat-label><b class="data">{{costToLandlord | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Cost To Tenant:&nbsp;</mat-label><b class="data">{{costToTenant | number:'1.2-2'}}</b>
+      </div>
+      <div class="col-3">
+        <mat-label>Time Taken:&nbsp;<b class="data">{{ttDays}}</b>&nbsp;Days, <b class="data">{{ttHours}}</b> Hours, <b
+            class="data">{{ttMins}}</b> Min </mat-label>
+      </div>
+
+    </div>
+
+
+    <div class="row row justify-content-left myCustomClass">
+      <div class="col-10">
+        <div style="width: 100%;">
+          <mat-label>Complaint:&nbsp;</mat-label><b class="data">{{complaintType}}-{{complaint | uppercase}}</b>
+        </div>
+        <div style="width: 100%;">
+          <mat-label>Notes:&nbsp;</mat-label><b class="data">{{notes}}</b>
+        </div>
+      </div>
+      <div class="col-2">
+
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+          <mat-icon>cancel</mat-icon><b>Close</b>
+        </button>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+  </form>
+</div>
+
+<ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:210px;"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)">
+</ag-grid-angular>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>

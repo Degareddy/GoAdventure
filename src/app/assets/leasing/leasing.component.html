@@ -1,0 +1,95 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Asset Leasing</div>
+  <div class="right">
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onDetailsCilcked(alDetForm.get('tranNo')!.value)"
+      [disabled]="alDetForm.get('tranNo')!.value === ''"><mat-icon>info</mat-icon>
+      Details
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+    <button mat-raised-button color="primary" type="button" class="btnUp"
+      (click)="onDocsCilcked(alDetForm.get('tranNo')!.value)"><mat-icon>cloud_upload</mat-icon>Docs</button>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="alDetForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modChange(alDetForm.get('mode')?.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Tran No</mat-label>
+          <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+          <button mat-button *ngIf="alDetForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="alDetForm.get('tranNo')!.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+            [disabled]="alDetForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker3" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline" >
+                    <mat-label>Customer</mat-label>
+                    <input matInput placeholder="customer" formControlName="customer" type="text">
+                </mat-form-field> -->
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label class="mat-label-class">Customer</mat-label>
+          <input matInput placeholder="Customer" formControlName="customer" type="text">
+          <button mat-button *ngIf="alDetForm.get('customer')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="alDetForm.get('customer')!.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+            [disabled]="alDetForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>remarks</mat-label>
+          <input matInput placeholder="remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:&nbsp;<b class="data">{{tranStatus | uppercase}}</b></mat-label>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" type="button" class=btnUp
+        (click)="reset()"><mat-icon>clear_all</mat-icon>Clear</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+
+    </div>
+  </form>
+</mat-card>

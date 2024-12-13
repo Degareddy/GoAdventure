@@ -1,0 +1,374 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { debounceTime, forkJoin } from 'rxjs';
+import { getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { Item } from 'src/app/general/Interface/interface';
+import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { MastersService } from 'src/app/Services/masters.service';
+import { ProjectsService } from 'src/app/Services/projects.service';
+import { UserDataService } from 'src/app/Services/user-data.service';
+import { Router } from '@angular/router';
+
+import { SubSink } from 'subsink';
+import { GridApi } from 'ag-grid-community';
+import { MasterParams } from 'src/app/modals/masters.modal';
+import { DecimalPipe } from '@angular/common';
+import { LogComponent } from 'src/app/general/log/log.component';
+import { NotesComponent } from 'src/app/general/notes/notes.component';
+
+@Component({
+  selector: 'app-legal-charges',
+  templateUrl: './legal-charges.component.html',
+  styleUrls: ['./legal-charges.component.css'],
+  providers: [DecimalPipe]
+})
+export class LegalChargesComponent implements OnInit, OnDestroy {
+  legaChargeForm!: FormGroup;
+  masterParams!: MasterParams;
+  properytList: Item[] = [];
+  currency: Item[] = [];
+  blocksList: Item[] = [];
+  private gridApi!: GridApi;
+  subSink: SubSink = new SubSink();
+  amountMessage: string = '';
+  textMessageClass: string = "";
+  legaCharges: Item[] = [];
+  retMessage: string = "";
+  modes: Item[] = [];
+  vatList: Item[] = [];
+  rowData: any = [];
+  columnDefs: any = [
+    { field: "chargeItemName", headerName: "Legal Charge", flex: 1, resizable: true, sortable: true, filter: true, },
+    { field: "chargeMethod", headerName: "Charge Type", sortable: true, filter: true, resizable: true, flex: 1 },
+    { field: "currencyName", headerName: "Currency", sortable: true, filter: true, resizable: true, flex: 1 },
+    {
+      field: "rate", headerName: "Rate", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+      cellStyle: { justifyContent: "flex-end" },
+      valueFormatter: function (params: any) {
+        if (typeof params.value === 'number' || typeof params.value === 'string') {
+          const numericValue = parseFloat(params.value.toString());
+          if (!isNaN(numericValue)) {
+            return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
+          }
+        }
+        return null;
+      },
+    },
+
+  ];
+  constructor(private decimalPipe: DecimalPipe, protected router: Router, private loader: NgxUiLoaderService, private projService: ProjectsService, private userDataService: UserDataService, public dialog: MatDialog, private fb: FormBuilder, private masterService: MastersService) {
+    this.legaChargeForm = this.formInit();
+    this.masterParams = new MasterParams();
+
+
+  }
+  ngOnDestroy(): void {
+    this.subSink.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    this.masterParams.company = this.userDataService.userData.company;
+    this.masterParams.location = this.userDataService.userData.location;
+    this.masterParams.user = this.userDataService.userData.userID;
+    this.masterParams.refNo = this.userDataService.userData.sessionID;
+    this.loadData();
+    this.legalChargeChange();
+    this.refresh();
+  }
+  refresh() {
+
+    this.legaChargeForm.get('amount')?.valueChanges.subscribe(() => {
+      this._amountMessage();
+    });
+  }
+  logDetails(tranNo: string) {
+    const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
+      width: '60%',
+      disableClose: true,
+      data: {
+        'tranType': "LEGLCHARGE",
+        'tranNo': tranNo,
+        'search': 'Legal Charges Log Details'
+      }
+    });
+  }
+  NotesDetails(tranNo: any) {
+    const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
+      width: '90%',
+      disableClose: true,
+      data: {
+        'tranNo': tranNo,
+        'mode': 'modify',
+        'note': this.legaChargeForm.controls['notes'].value,
+        'TranType': "legalChargetype",  // Pass any data you want to send to CustomerDetailsComponent
+        'search': "Legal Charges Notes"
+      }
+    });
+
+  }
+  _amountMessage() {
+
+    this.amountMessage = '';
+    if (this.legaChargeForm.get('chargeType')?.value === 'FLAT') {
+      this.amountMessage = '';
+      if (parseFloat(this.legaChargeForm.get('amount')?.value.toString()) <= 0) {
+        this.amountMessage = '';
+        this.amountMessage = 'Amount must be greater than 0';
+      }
+    }
+    else if (this.legaChargeForm.get('chargeType')?.value === 'PERCENTAGE') {
+      this.amountMessage = '';
+      if (parseFloat(this.legaChargeForm.get('amount')?.value.toString()) >= 100) {
+        this.amountMessage = '';
+        this.amountMessage = 'Percentage must be less than 100';
+      }
+      else if (parseFloat(this.legaChargeForm.get('amount')?.value.toString()) <= 0) {
+        this.amountMessage = '';
+        this.amountMessage = 'Percentage must be greater than 0';
+      }
+    }
+    // Regex pattern to match any alphabet or special character
+    var format = /[a-zA-Z!@#$%^&*()_+\-=\[\]{};':"\\|<>\/?]+/;
+    if (this.legaChargeForm.get('amount')?.value.toString().match(format)) {
+      this.amountMessage = '';
+      this.amountMessage = 'Special Characters are not allowed';
+    }
+
+
+
+  }
+  formInit() {
+    return this.fb.group({
+      mode: ['View', [Validators.required]],
+      currency: ['', [Validators.required]],
+      chargeType: ['', [Validators.required]],
+      legalChargetype: ['', [Validators.required]],
+      amount: ['', [Validators.required]],
+      notes: [''],
+    });
+  }
+  formatRateValue(event: any) {
+    const formattedValue = this.decimalPipe.transform(event.target.value, '1.2-2');
+    this.legaChargeForm.get('amount')?.patchValue(formattedValue);
+  }
+  onUpdate() {
+    if (this.legaChargeForm.invalid) {
+      this.handelError('Please enter all required fields', 'red');
+      return;
+    }
+    const body = {
+      ...this.commonParams(),
+      mode: this.legaChargeForm.controls['mode'].value,
+      //property:this.legaChargeForm.controls['propCode'].value,
+      ChargeItem: this.legaChargeForm.controls['legalChargetype'].value,
+      Currency: this.legaChargeForm.controls['currency'].value,
+      ChargeMethod: this.legaChargeForm.controls['chargeType'].value,
+      Rate: this.legaChargeForm.controls['amount'].value,
+      Notes: this.legaChargeForm.controls['notes'].value,
+    };
+    try {
+      this.loader.start();
+      this.subSink.sink = this.projService.updateLegalCharges(body).subscribe((res: SaveApiResponse) => {
+        this.loader.stop();
+        // this.rowData=res['data'];
+        if (res.status.toUpperCase() === "SUCCESS") {
+          this.legalChargeChange();
+          this.handelError(res, 'green');
+
+        }
+        else {
+          this.handelError(res, 'red');
+
+        }
+
+      });
+    }
+    catch (ex: any) {
+      this.handelError(ex, 'red');
+    }
+  }
+  async propertyChnaged() {
+    this.blocksList = [];
+    // this.clearMsgs();
+    this.legaChargeForm.controls['legalChargetype'].patchValue('');
+    this.masterParams.type = 'BLOCK';
+    this.masterParams.item = this.legaChargeForm.controls['propCode'].value;
+    try {
+      if (this.masterParams.item != 'All' && this.legaChargeForm.controls['propCode'].value != '') {
+        this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams)
+          .pipe(
+            debounceTime(300) // Adjust the debounce time as needed (in milliseconds)
+          )
+          .subscribe((result: getResponse) => {
+            if (result.status.toUpperCase() === "SUCCESS") {
+              this.blocksList = result['data'];
+              if (this.blocksList.length === 1) {
+                this.legaChargeForm.get('blockCode')!.patchValue(this.blocksList[0].itemCode);
+              }
+            }
+            else {
+              this.retMessage = "Block list empty!";
+              this.textMessageClass = 'red';
+              return;
+            }
+          });
+      }
+    }
+    catch (ex: any) {
+      this.loader.stop();
+      this.handelError(ex, 'red');
+    }
+  }
+  async legalChargeChange() {
+    this.rowData = [];
+    const body = {
+      ...this.commonParams(),
+      item: 'LEGLCHARGE',
+    };
+    try {
+      this.loader.start();
+      this.subSink.sink = await this.projService.getLegalCharges(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === "SUCCESS") {
+          this.rowData = res['data'];
+        }
+        else {
+          this.rowData = [];
+          this.handelError(res, 'red');
+        }
+      });
+    }
+    catch (ex: any) {
+      this.handelError(ex, 'red');
+    }
+  }
+  onHelpClicked() {
+    const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
+      disableClose: true,
+      data: {
+        ScrId: "SM807",
+        SlNo: 0,
+        IsPrevious: false,
+        IsNext: false,
+        User: this.userDataService.userData.userID,
+        RefNo: this.userDataService.userData.sessionID
+      }
+    });
+  }
+  Clear() {
+    this.legaChargeForm = this.formInit();
+    this.refresh();
+    this.handelError('', '');
+  }
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID
+    }
+  }
+  // onGridReady(params: any) {
+  //   this.gridApi = params.api;
+  //   this.columnApi = params.columnApi;
+  //   const gridApi = params.api;
+  //   gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  // }
+  async loadData() {
+    const mode$ = this.masterService.getModesList({ ...this.commonParams(), item: 'SM809' });
+    const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', })
+    const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATRATE' });
+    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY' });
+    const legalfee$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE' });
+    this.subSink.sink = await forkJoin([vbody$, property$, legalfee$, currency$, mode$]).subscribe(
+      ([vatRes, propertyRes, chargeRes, currencyRes, mode]: any) => {
+        this.handleloadRes(vatRes, propertyRes, chargeRes, currencyRes, mode)
+      },
+      error => {
+        this.handelError(error, 'red');
+      }
+    );
+
+  }
+
+  onRowSelected(event: any) {
+    this.legaChargeForm.patchValue({
+      mode: 'View',
+      legalChargetype: event.data.chargeItem,
+      chargeType: event.data.chargeMethod,
+      currency: event.data.currency,
+      amount: event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      notes: event.data.notes
+    });
+  }
+  modeChange(value: any) {
+    if (value === 'Add') {
+      this.Clear();
+      this.legaChargeForm.get('mode')!.patchValue('Add');
+    }
+  }
+  handleloadRes(vatRes: getResponse, propertyRes: getResponse, legalfee: getResponse, currencyRes: getResponse, mode: getResponse) {
+
+    if (mode.status.toUpperCase() === "SUCCESS") {
+      this.modes = mode['data'];
+      if (this.modes.length === 1) {
+        this.legaChargeForm.get('mode')!.patchValue(this.modes[0].itemCode);
+      }
+    }
+    else {
+      this.retMessage = "Mode list empty!";
+      this.textMessageClass = "red";
+    }
+    // if (propertyRes.status.toUpperCase() === "SUCCESS") {
+    //   this.properytList = propertyRes['data'];
+    //   if (this.properytList.length === 1) {
+    //     this.legaChargeForm.get('propCode')!.patchValue(this.properytList[0].itemCode);
+    //     this.propertyChnaged();
+    //   }
+    // } else {
+    //   this.retMessage = "Property list empty!";
+    //   this.textMessageClass = "red";
+
+    // }
+    // if (vatRes.status.toUpperCase() === "SUCCESS") {
+    //   this.vatList = vatRes['data'];
+    //   if (this.vatList.length === 1) {
+    //     this.legaChargeForm.get('vatRate')!.patchValue(this.vatList[0].itemCode);
+    //   }
+    // }
+    //
+    if (legalfee.status.toUpperCase() === "SUCCESS") {
+      this.legaCharges = legalfee['data'];
+      if (this.legaCharges.length === 1) {
+        this.legaChargeForm.get('legalChargetype')!.patchValue(this.legaCharges[0].itemCode);
+      }
+    } else {
+      this.retMessage = "Legal Charges list empty!";
+      this.textMessageClass = "red";
+
+    }
+    if (currencyRes.status.toUpperCase() === "SUCCESS") {
+      this.currency = currencyRes['data'];
+      if (this.currency.length === 1) {
+        this.legaChargeForm.get('currency')!.patchValue(this.currency[0].itemCode);
+      }
+    } else {
+      this.retMessage = "Currency list empty!";
+      this.textMessageClass = "red";
+    }
+  }
+
+  handelError(res: any, colour: string) {
+    this.retMessage = res.message;
+    this.textMessageClass = colour;
+  }
+  Close() {
+    this.router.navigateByUrl('/home');
+  }
+  Delete() {
+
+  }
+
+}

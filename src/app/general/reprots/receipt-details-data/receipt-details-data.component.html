@@ -1,0 +1,118 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+
+<div class="container-fluid mat-card">
+  <div class="left" *ngIf="type">
+    {{ searchName | titlecase }} : <b class="data">{{ type === 'RECEIPT' || type === 'PAYMENT' ? tableData.receiptNo : tableData.tranNo }}</b>
+  </div>
+</div>
+
+<div *ngIf="type ==='RECEIPT' || type === 'PAYMENT'">
+  <table class="myCustomClass">
+    <tr>
+      <td>Receipt Type :&nbsp;<b class="data">{{this.tableData.rctType}}</b></td>
+      <td>Receipt Date :&nbsp;<b class="data">{{this.tableData.receiptDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Client Name :&nbsp;<b class="data">{{this.tableData.customerName}}</b></td>
+      <td>Receipt Mode :&nbsp;<b class="data">{{this.tableData.rctMode}}</b></td>
+      <td>Currency :&nbsp;<b class="data">{{this.tableData.currency}}</b></td>
+    </tr>
+    <tr>
+      <td>Receipt Account :&nbsp;<b class="data">{{this.tableData.rctAccount}}</b></td>
+      <td>Date :&nbsp;<b class="data">{{this.tableData.rctDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Receipt Status :&nbsp;<b class="data">{{this.tableData.rctStatus}}</b></td>
+      <td>Receipt Bank :&nbsp;<b class="data">{{this.tableData.rctBank}}</b></td>
+      <td>Currency Paid :&nbsp;<b class="data">{{this.tableData.paidCurrency}}</b></td>
+    </tr>
+    <tr>
+      <td>Paid Amount :&nbsp;<b class="data">{{this.tableData.paidAmt | number:'1.2-2'}}</b></td>
+      <td>Exchange Rate :&nbsp;<b class="data">{{this.tableData.exchRate | number:'1.4-4'}}</b></td>
+      <td>Charge Amount :&nbsp;<b class="data">{{this.tableData.charges | number:'1.2-2'}}</b></td>
+      <td>Receipt Amount :&nbsp;<b class="data">{{this.tableData.rctAmount | number:'1.2-2'}}</b></td>
+      <td>Tran Status :&nbsp;<b class="data">{{this.tableData.tranStatus | uppercase}}</b></td>
+    </tr>
+  </table>
+</div>
+<div *ngIf="type ==='INVOICE'">
+  <table class="myCustomClass">
+    <tr>
+      <td>Company :&nbsp;<b class="data">{{this.tableData.company | uppercase}}</b></td>
+      <td>Location :&nbsp;<b class="data">{{this.tableData.location | uppercase}}</b></td>
+      <td>Property :&nbsp;<b class="data">{{this.tableData.property | uppercase}}</b></td>
+      <td>Block :&nbsp;<b class="data">{{this.tableData.block| uppercase}}</b></td>
+      <td>Unit :&nbsp;<b class="data">{{this.tableData.unitName | uppercase}}</b></td>
+    </tr>
+    <tr>
+      <td>Type :&nbsp;<b class="data">{{type | uppercase}}</b></td>
+      <td>Invoice Date :&nbsp;<b class="data">{{this.tableData.tranDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Tenant Name :&nbsp;<b class="data">{{this.tableData.tenantName | uppercase}}</b></td>
+      <td>Rent Month & Year :&nbsp;<b class="data">{{this.tableData.rentMonth}} & {{this.tableData.rentYear}}</b></td>
+      <td>Currency :&nbsp;<b class="data">{{this.tableData.currency | uppercase}}</b></td>
+    </tr>
+    <tr>
+      <td>Apply VAT :&nbsp;<b class="data">{{ this.tableData.applyVAT ? 'YES' : 'NO' }}</b></td>
+      <td>Include Expenses:&nbsp;<b class="data">{{this.tableData.includeExpenses ? 'YES' : 'NO'}}</b></td>
+      <td>From Date :&nbsp;<b class="data">{{this.tableData.invFromDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>To Date :&nbsp;<b class="data">{{this.tableData.invToDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Status :&nbsp;<b class="data">{{this.tableData.tranStatus | uppercase}}</b></td>
+    </tr>
+    <tr>
+      <td>Rental Charges :&nbsp;<b class="data">{{this.tableData.rentalCharges | number:'1.2-2'}}</b></td>
+      <td>Other Charges :&nbsp;<b class="data">{{this.tableData.othrCharges | number:'1.2-2'}}</b></td>
+      <td>Disc Amount :&nbsp;<b class="data">{{this.tableData.discAmount | number:'1.2-2'}}</b></td>
+      <td>Vat Amount :&nbsp;<b class="data">{{this.tableData.vatAmount | number:'1.2-2'}}</b></td>
+      <td>Total Amount :&nbsp;<b class="data">{{this.tableData.totalCharges | number:'1.2-2'}}</b></td>
+    </tr>
+
+  </table>
+</div>
+<div *ngIf="type ==='GRIEVANCE'">
+  <table class="myCustomClass">
+    <tr>
+      <td>Company :&nbsp;<b class="data">{{this.tableData.company | uppercase}}</b></td>
+      <td>Location :&nbsp;<b class="data">{{this.tableData.location | uppercase}}</b></td>
+      <td>Property :&nbsp;<b class="data">{{this.tableData.propertyName | uppercase}}</b></td>
+      <td>Block :&nbsp;<b class="data">{{this.tableData.blockName| uppercase}}</b></td>
+      <td>Unit :&nbsp;<b class="data">{{this.tableData.unitName | uppercase}}</b></td>
+    </tr>
+    <tr>
+      <td>Type :&nbsp;<b class="data">{{type | uppercase}}</b></td>
+      <td>Raised Date :&nbsp;<b class="data">{{this.tableData.raisedDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Tenant Name :&nbsp;<b class="data">{{this.tableData.tenantName | uppercase}}</b></td>
+      <td>Complaint Type :&nbsp;<b class="data">{{this.tableData.complaintType | uppercase}}</b></td>
+      <td>Complaint :&nbsp;<b class="data">{{this.tableData.complaint | uppercase}}</b></td>
+    </tr>
+    <tr>
+      <td>Priority :&nbsp;<b class="data">{{this.tableData.priority | uppercase}}</b></td>
+      <td>Days Taken :&nbsp;<b class="data">{{this.tableData.ttDays}} Days</b></td>
+      <td>Time Taken Hr's :&nbsp;<b class="data">{{this.tableData.ttHours}} Hr's</b></td>
+      <td>Time Taken Min's :&nbsp;<b class="data">{{this.tableData.ttMins}} Min</b></td>
+      <td>Monthly Count :&nbsp;<b class="data">{{this.tableData.monthlyCount}}</b></td>
+    </tr>
+    <tr>
+      <td>Allocated Date :&nbsp;<b class="data">{{this.tableData.allocatedDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Allocated Time :&nbsp;<b class="data">{{this.tableData.allocatedTime}}</b></td>
+      <td>Closed Date :&nbsp;<b class="data">{{this.tableData.closedDate | date:'dd-MM-yyyy'}}</b></td>
+      <td>Closed Time :&nbsp;<b class="data">{{this.tableData.closedTime}}</b></td>
+      <td>Status :&nbsp;<b class="data">{{this.tableData.issueStatus | uppercase}}</b></td>
+    </tr>
+    <tr>
+      <td>Yearly Count :&nbsp;<b class="data">{{this.tableData.yearlyCount}}</b></td>
+      <td>Remarks :&nbsp;<b class="data">{{this.tableData.remarks | uppercase}}</b></td>
+      <td>Cost To Mgmt :&nbsp;<b class="data">{{this.tableData.costToMgmt | number:'1.2-2'}}</b></td>
+      <td>Cost To Landlord :&nbsp;<b class="data">{{this.tableData.costToLandlord | number:'1.2-2'}}</b></td>
+      <td>Cost To Tenant :&nbsp;<b class="data">{{this.tableData.costToTenant | number:'1.2-2'}}</b></td>
+    </tr>
+  </table>
+  
+</div>
+<div *ngIf="type ==='PAYMENT'">
+  <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+  [gridHeight]="'320px'" 
+  [globalSearch]="true" [paginationPageSize]="25"
+  [showToolPanel]="true" 
+  (gridReady)="onGridReady($event)"
+ [showRecordCount]="true">
+</app-access-grid>
+
+</div>

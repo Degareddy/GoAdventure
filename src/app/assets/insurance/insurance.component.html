@@ -1,0 +1,125 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Asset Insurance</div>
+  <div class="right">
+    <button mat-raised-button color="primary" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="aihForm">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Tran No</mat-label>
+          <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+          <button mat-button *ngIf="aihForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="aihForm.get('tranNo')!.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+            [disabled]="aihForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker3" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Ins Type</mat-label>
+          <input matInput placeholder="Ins Type" formControlName="insType" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Ins Company</mat-label>
+          <input matInput placeholder="Ins Company" formControlName="insCompany" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Policy No</mat-label>
+          <input matInput placeholder="Policy No" formControlName="policyNo" type="text">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Effective Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="effectiveDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Expiry Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="expiryDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Annual Premium</mat-label>
+          <input matInput placeholder="Annual Premium" class="right-align-input" formControlName="annualPremium" separator type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Policy Amount</mat-label>
+          <input matInput placeholder="Policy Amount" class="right-align-input" formControlName="policyAmt" separator type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="notes" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-label>Status:&nbsp;<b>{{tranStatus | uppercase}}</b></mat-label>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" (click)="onSubmit()"
+        [disabled]="aihForm.get('mode')!.value === 'View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" type="button" class=btnUp (click)="reset()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+
+    </div>
+  </form>
+</mat-card>

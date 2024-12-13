@@ -1,0 +1,56 @@
+.card-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Keep this if you want the card centered in the viewport */
+  background-color: rgba(255, 255, 255, 0.9); /* Optional: Slightly transparent background */
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* Add padding for the card */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow for card effect */
+  background-color: #fff; /* Card background color */
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px; /* Space between loader and message */
+}
+
+.loading-message {
+  font-size: 1rem; /* Adjust as needed */
+  color: #3498db; /* Change the color to match your theme */
+  animation: fadeIn 2s ease-in-out infinite alternate;
+  text-align: center;
+}
+
+/* Loader spin animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Loading message fade in animation */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+/* Custom Spinner Styles */
+.spinner-border {
+  border-radius: 50%;
+}

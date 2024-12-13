@@ -1,0 +1,4 @@
+.disabled-input {
+  font-weight: 600 !important;
+  color: black !important; /* Change this color to whatever you prefer */
+}

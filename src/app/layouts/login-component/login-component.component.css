@@ -1,0 +1,58 @@
+.transition {
+  transition: background-color 0.5s ease;
+}
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: scale(0.95);
+  }
+  to {
+      opacity: 1;
+      transform: scale(1);
+  }
+}
+.relative {
+  position: relative;
+}
+
+body, html {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+}
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translateY(10px); }
+  50% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-text {
+  animation: fadeInOut 6s ease-in-out infinite
+}
+.animate-bg {
+  background: #000;
+}
+
+.version-text {
+  color: #8c8c8c;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+.black-text {
+  color: black;
+  font-size: 12px !important;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-label {
+  color: black;
+}
+
+.mat-form-field-appearance-fill .mat-form-field-underline {
+  background-color: black;
+}
+
+/* .mat-form-field input {
+  height: 10px !important;
+  padding: 1px !important;
+} */

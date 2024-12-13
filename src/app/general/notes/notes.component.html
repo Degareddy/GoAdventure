@@ -1,0 +1,69 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">note_add</mat-icon>
+  <b>{{searchName | titlecase}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container">
+    <form [formGroup]="notesForm" (ngSubmit)="onSubmit()">
+      <div class="row myCustomClass justify-content-center">
+        <div class="col-1">
+          <mat-label>SlNo:&nbsp;</mat-label>
+          <b class="data">{{slNum}}</b>
+        </div>
+        <div class="col-6">
+          <mat-form-field appearance="outline" style="width:100%">
+            <mat-label class="mat-label-class">Notes</mat-label>
+            <!-- <input matInput placeholder="Notes" formControlName="notes" type="text"> -->
+            <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label class="mat-label-class">Notes Date</mat-label>
+            <input matInput [matDatepicker]="picker3" formControlName="notesDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+            <mat-datepicker #picker3></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-2">
+          <mat-label>User:&nbsp;</mat-label>
+          <b class="data">{{DatauserID | uppercase}}</b>
+        </div>
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp"
+          [disabled]="data.mode =='View' || notesForm.invalid || data.mode ==='Delete'">
+          <mat-icon>done</mat-icon>Apply
+        </button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Add()">
+          <mat-icon>add</mat-icon>New
+        </button>
+        <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Delete()" [disabled]="data.mode !='Modify' ||
+        data.status=='Closed' || notesForm.invalid || slNum ==0">
+          <mat-icon>delete</mat-icon> Delete
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+
+      </div>
+    </form>
+
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:190px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+  <div class="pageSizectrl" style="margin-top:-20px;">
+    <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+      [ngModelOptions]="{standalone: true}">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+</div>

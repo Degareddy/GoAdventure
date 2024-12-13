@@ -1,0 +1,100 @@
+
+
+@media (min-width: 600px) {
+  .nav-links {
+    display: flex;
+  }
+}
+
+a.mat-button {
+  color: white; /* Ensure the text color contrasts with the background */
+}
+
+.theme-toggle-button {
+  width: 36px; /* Small width */
+  height: 36px; /* Small height */
+  padding: 0; /* Remove default padding */
+  background-color: transparent; /* Make background transparent */
+  border: none; /* Remove border */
+  border-radius: 50%; /* Make it circular */
+  transition: background-color 0.3s; /* Smooth background color transition */
+  display: flex; /* Center the icon */
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Change background on hover */
+}
+
+.theme-toggle-button:focus {
+  outline: none; /* Remove focus outline */
+}
+
+
+
+/* header.component.css */
+.custom-toolbar {
+  background: #586ff5;
+  color: white;
+  height: 40px;
+  font-size: 10px;
+}
+
+
+
+.nav-links .active-link {
+  font-weight: bold;
+}
+
+
+
+
+.srtdata{
+  color: #24f0ff;
+  font-size: 11px;
+}
+.mat-icon{
+  color: white;
+}
+.signOut{
+  background-color: rgb(69, 153, 217) !important;
+  color: white !important;
+}
+
+
+.rounded-icon {
+  width: 32px; /* Adjust the width and height as needed */
+  height: 32px;
+  border-radius: 50%; /* This creates a rounded shape */
+  object-fit: cover; /* This ensures the image fills the container without stretching */
+}
+
+
+.relative {
+  position: relative;
+}
+
+.hidden {
+  display: none;
+}
+
+.group:hover .group-hover\:block {
+  display: block;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.flex.space-x-4 {
+  display: flex !important;
+}
+.group-hover .image-preview {
+  top: 50px; /* Adjust as needed to move below the text */
+  right: 0;  /* Align with the right edge */
+}

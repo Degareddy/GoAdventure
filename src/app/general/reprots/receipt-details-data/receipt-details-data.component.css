@@ -1,0 +1,45 @@
+.myCustomClass {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.myCustomClass td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  color: #333;
+}
+
+.myCustomClass td:first-child {
+  font-weight: bold;
+}
+
+.myCustomClass tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.myCustomClass tr:hover {
+  background-color: #ddd;
+}
+
+.myCustomClass td b.data {
+  font-weight: normal;
+  color: #007bff;
+}
+
+.myCustomClass td {
+  padding: 10px 15px;
+}
+
+.myCustomClass tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.myCustomClass {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}

@@ -1,0 +1,40 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+<div class="card-container">
+  <mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-subtitle><b class="data">{{helpdata.Page}}-Help</b></mat-card-subtitle>
+      </mat-card-title-group>
+      <div class="offset-md-6">
+        <button mat-icon-button (click)="previousTopic()" title="Previous Topic" class="topic-navigation-button">
+          <mat-icon>keyboard_arrow_left</mat-icon><span class="button-label">Previous</span>
+        </button>
+        <button mat-icon-button (click)="toggleEdit()" title="Edit" class="edit-button" style="margin-left: 50px;">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="nextTopics()" title="Next Topic" class="topic-navigation-button">
+          <span class="button-label">Next</span> <mat-icon>keyboard_arrow_right</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content [@fadeInOut]>
+      <div *ngIf="!isEditing; else editMode">
+        <textarea [(ngModel)]="text" rows="16" cols="120" [disabled]="true"></textarea>
+      </div>
+      <ng-template #editMode>
+        <textarea [(ngModel)]="text" rows="15" cols="120"></textarea>
+        <div class="btnAlignment">
+          <button mat-raised-button color="primary" class="btnUp" type="button"
+            (click)="updateHelpText()"><mat-icon>update</mat-icon>Update</button>
+          <button mat-raised-button color="accent" class="btnUp" type="button"
+            [mat-dialog-close]="true"><mat-icon>cancel</mat-icon>Close</button>
+        </div>
+
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>

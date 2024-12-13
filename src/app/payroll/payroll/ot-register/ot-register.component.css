@@ -1,0 +1,134 @@
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1em !important;
+  margin-top: -0.2em !important;
+}
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+
+::ng-deep
+  .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+  .mat-form-field-label {
+  transform: translateY(-1.1em) scale(0.75);
+  width: 133.33333%;
+}
+
+
+
+
+
+/* .mat-form-field {
+  width: 230px !important;
+  font-size: 10px !important;
+} */
+
+::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4em 0px !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1em !important;
+}
+
+.wide-textarea {
+  width: 100%;
+}
+
+#userMessage {
+  text-align: center !important;
+  font-size: 14px;
+  font-family: 900;
+}
+
+.input-with-button {
+  display: flex;
+  align-items: center;
+}
+
+.input-with-button input {
+  margin-right: 8px; /* Adjust the spacing between the input and button as needed */
+}
+.container {
+  width: 100%;
+  max-width: 1200px; /* Adjust the maximum width as needed */
+  margin: 0 auto;
+}
+
+.input-with-button {
+  display: flex;
+  align-items: center;
+}
+
+/* .mat-form-field {
+  margin-right: 10px;
+} */
+
+@media (max-width: 576px) {
+  /* Adjust the responsive layout as needed */
+  .row.justify-content-center {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+::ng-deep .mat-tooltip {
+  background-color: red !important; /* Set the background color to red */
+  color: white !important; /* Set the text color to white */
+  max-height: 22px !important;
+  line-height: 10px !important;
+  font-weight: 600 !important;
+}
+
+.mat-menu-content a.mat-menu-item {
+  height: 30px; /* Adjust the height as needed */
+  line-height: 30px; /* Adjust to vertically align content */
+  padding: 0 3px; /* Adjust the padding as needed */
+}
+
+.mat-menu-content a.mat-menu-item .mat-icon {
+  font-size: 12px; /* Adjust the font size as needed */
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.mat-menu-content a.mat-menu-item .menu-label {
+  font-size: 12px; /* Adjust the font size as needed */
+  vertical-align: middle;
+}
+
+
+
+.custom-button .mat-icon {
+  font-size: 16px; /* Adjust icon size */
+  margin-right: 0px;
+}
+
+.custom-menu .data {
+  font-size: 12px; /* Adjust label font size */
+
+}
+
+.mat-icon{
+  margin-right: 0px;
+}
+.mat-menu-item{
+  height: 30px;
+  line-height: 30px;
+}
+ .mat-menu-item:hover {
+  background-color: #2cadee !important; /* Change background color on hover */
+}
+/* .mat-form-field {
+   display: inline;
+  position: relative;
+  text-align: left;
+} */
+.myCustomClass > .col-md-3 {
+  display: flex;
+  align-items: center;
+}
+
+.myCustomClass > .col-md-3:not(:last-child) {
+  margin-right: -67px;
+}
+

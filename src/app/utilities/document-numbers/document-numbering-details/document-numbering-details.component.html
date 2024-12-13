@@ -1,0 +1,88 @@
+<!-- <mat-card> -->
+
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  Document Number Details
+</div>
+
+<form [formGroup]="DocDetailsForm" (ngSubmit)="onSubmit()">
+  <div class="row  justify-content-center">
+    <div class="col-2 offset-md-1 myCustomClass">
+      <mat-label>S.No:<b class="data">{{slNum}}</b></mat-label>
+    </div>
+    <div class="col-md-3">
+      <mat-form-field aria-colspan="2" appearance="outline">
+        <mat-label class="mat-label-class">Prefix</mat-label>
+        <input matInput placeholder="Prefix" formControlName="prefix" type="text">
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3">
+      <mat-form-field aria-colspan="2" appearance="outline">
+        <mat-label class="mat-label-class">Last No</mat-label>
+        <input matInput placeholder="Last No" formControlName="lastNo" type="number">
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3">
+      <mat-form-field aria-colspan="2" appearance="outline">
+        <mat-label class="mat-label-class">Suffix</mat-label>
+        <input matInput placeholder="Suffix" formControlName="suffix" type="text">
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="row  justify-content-center">
+    <div class="col-md-3 offset-md-3">
+      <mat-form-field appearance="outline">
+        <mat-label class="mat-label-class">StartDate</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="startDate" [max]="today" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col-md-3">
+      <mat-form-field appearance="outline">
+        <mat-label class="mat-label-class">EndDate</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="endDate" />
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col-md-3">
+      <mat-form-field appearance="outline">
+        <mat-label class="mat-label-class">LastTranDate</mat-label>
+        <input matInput [matDatepicker]="picker2" formControlName="lastTranDate" />
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+  <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+  <div class="btnAlignment">
+    <button mat-raised-button color="primary" type="submit" class="btnUp"
+      [disabled]="detailsdDta.mode==='View' || DocDetailsForm.invalid">
+      <mat-icon>done</mat-icon>Apply
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="create()">
+      <mat-icon>add</mat-icon>New
+    </button>
+    <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Clear()">
+      <mat-icon>clear_all</mat-icon>Clear
+    </button>
+    <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+      <mat-icon>cancel</mat-icon>Close
+    </button>
+  </div>
+</form>
+<div class="grid">
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:190px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs1"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    [gridOptions]="gridOptions">
+  </ag-grid-angular>
+</div>
+<div class="pageSizectrl" style="margin-top:-30px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div>

@@ -1,0 +1,221 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+
+     Pay-Slip
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="psdForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>RefNo</mat-label>
+          <input matInput placeholder="RefNo" formControlName="refNo" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Employee</mat-label>
+          <input matInput placeholder="Employee" formControlName="employee" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Department</mat-label>
+          <input matInput placeholder="Department" formControlName="department" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Designation</mat-label>
+          <input matInput placeholder="Designation" formControlName="designation" type="text"> </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>EmpType</mat-label>
+          <input matInput placeholder="EmpType" formControlName="empType" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayID</mat-label>
+          <input matInput placeholder="PayID" formControlName="payID" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayType</mat-label>
+          <input matInput placeholder="PayType" formControlName="payType" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>BasicPay</mat-label>
+          <input matInput placeholder="BasicPay" formControlName="basicPay" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>IsTaxable</mat-label>
+          <input matInput placeholder="IsTaxable" formControlName="isTaxable" type="">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>FlatOrPercent</mat-label>
+          <input matInput placeholder="FlatOrPercent" formControlName="flatOrPercent" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Rate</mat-label>
+          <input matInput placeholder="Rate" formControlName="rate" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Amount</mat-label>
+          <input matInput placeholder="Amount" formControlName="amount" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>GrossPay</mat-label>
+          <input matInput placeholder="GrossPay" formControlName="grossPay" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Taxable Pay</mat-label>
+          <input matInput placeholder="TaxablePay" formControlName="taxablePay" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>TaxAmount</mat-label>
+          <input matInput placeholder="TaxAmount" formControlName="taxAmount" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>DeductedAmt</mat-label>
+          <input matInput placeholder="DeductedAmt" formControlName="deductedAmt" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>NetPay</mat-label>
+          <input matInput placeholder="NetPay" formControlName="netPay" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>MMonth</mat-label>
+          <input matInput placeholder="MMonth" formControlName="mMonth" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>MYear</mat-label>
+          <input matInput placeholder="MYear" formControlName="mYear" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>PayDate</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="payDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayMode</mat-label>
+          <input matInput placeholder="PayMode" formControlName="payMode" type="text">
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PerAmount</mat-label>
+          <input matInput placeholder="PerAmount" formControlName="perAmount" type="number">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>TranStatus</mat-label>
+          <input matInput placeholder="TranStatus" formControlName="tranStatus" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+    <div class="col-3">
+      <mat-form-field appearance="outline">
+        <mat-label>TranDate</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow"/>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    </div>
+    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onUpdate()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>refresh</mat-icon>Reset
+      </button>
+    </div>
+  </form>
+</div>

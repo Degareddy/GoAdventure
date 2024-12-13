@@ -1,0 +1,16 @@
+<div class="balance-amount balance-debit">{{ custName }}</div>
+
+<div >
+  <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+    [globalSearch]="true" (gridReady)="onGridReady($event)"  (filterChanges)="onFilterData($event)"
+    [gridHeight]="'340px'" [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'"
+    [showRecordCount]="true" [totals]="totals"  (columnVisibilityChanged)="onColumnVisibilityChanged($event)">
+  </app-access-grid>
+</div>
+<div class="balance-container" *ngIf="!acBalTmp" >
+  <span class="balance-label">Rent Amount:</span>
+  <span class="balance-amount balance-credit" >{{ Actual | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+  <span class="balance-label">Payble Amount:</span>
+  <span class="balance-amount balance-debit">{{ Payble | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+

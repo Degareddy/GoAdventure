@@ -1,0 +1,161 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">attach_money</mat-icon>
+      <b class="ml-1">{{title | titlecase}}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+      (click)="onDetailsCilcked(saleForm.get('tranNo')!.value)"
+      [disabled]="saleForm.invalid || saleForm.get('mode')!.value==='Add'">
+      <mat-icon>info</mat-icon>Details
+    </button>
+    <button mat-raised-button color="accent" type="button" class="btnUp" [disabled]="saleForm.invalid || saleForm.get('mode')!.value==='Add'"
+      (click)="onDocsCilcked(saleForm.get('tranNo')!.value)"><mat-icon>cloud_upload</mat-icon>Docs</button>
+    <button mat-raised-button color="primary" class="btnUp" type="button" (click)="invoiceReport()"
+    [disabled]="saleForm.invalid || saleForm.get('mode')!.value==='Add'"><mat-icon>download</mat-icon>Report</button>
+    <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+    </div>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="saleForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row">
+      <div class="col-9">
+        <div class="row justify-content-left">
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(saleForm.get('mode')!.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Invoice No</mat-label>
+              <input matInput placeholder="Invoice No" formControlName="tranNo" type="text">
+              <button mat-button *ngIf="saleForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="saleForm.get('tranNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+                [disabled]="saleForm.get('mode')!.value == 'Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label class="mat-label-class">Customer</mat-label>
+              <input matInput placeholder="Customer" formControlName="customer" type="text">
+              <button mat-button *ngIf="saleForm.get('customer')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="saleForm.get('customer')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onCustomerSearch()"
+                [disabled]="saleForm.get('mode')!.value == 'View'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="tranDate">
+              <mat-label class="mat-label-class">Sale Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row justify-content-left myCustomClass">
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Currency</mat-label>
+              <mat-select matInput placeholder="Currency" formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Exchange Rate</mat-label>
+              <input matInput placeholder="ExchangeRate" class="right-align-input" appExchange
+                formControlName="exchangeRate" type="text" />
+            </mat-form-field>
+          </div>
+          <div class="col-3 ">
+            <mat-checkbox formControlName="applyVAT">Apply VAT</mat-checkbox>
+
+          </div>
+          <div class="col-3">
+            <mat-checkbox formControlName="issueStcok">Issuse Stock</mat-checkbox>
+          </div>
+        </div>
+
+        <div class="row justify-content-left myCustomClass">
+          <div class="col-9">
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Notes</mat-label>
+              <textarea matInput placeholder="Notes" rows="2" formControlName="notes"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-label>Status:&nbsp;<b class="data">{{tranStatus}}</b></mat-label>
+          </div>
+        </div>
+      </div>
+      <div class="col-3"
+        style="background: rgb(240, 236, 213);;height: 120px; ;border-radius: 5px;border: 1px solid;">
+        <!-- <table></table> -->
+        <div class="myCustomClass">
+          <table class="custom-table" id="customers">
+
+            <tr>
+              <td class="side-by-side"><b>Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{amountExclVat | number:'1.2-2'}}</b></td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Charges:</b></td>
+              <td class="side-by-side right-align data"><b>{{charges| number:'1.2-2'}}</b></td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>VAT Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{vatAmount| number:'1.2-2'}}</b></td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Total Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{totalAmount| number:'1.2-2'}}</b></td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Total Weight:</b></td>
+              <td class="side-by-side right-align data"><b>{{totalWeight| number:'1.2-2'}}</b></td>
+            </tr>
+            <!-- <tr>
+                  <td class="side-by-side"><b>Status:</b></td>
+                  <td class="side-by-side right-align data"><b>{{tranStatus}}</b></td>
+                </tr> -->
+          </table>
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="saleForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</mat-card>

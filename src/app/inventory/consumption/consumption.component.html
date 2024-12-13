@@ -1,0 +1,135 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">power_off</mat-icon>
+      <b>Consumption</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onDetailsCilcked()"
+      [disabled]="consumptionForm.invalid">
+      <mat-icon>info</mat-icon>Details
+    </button>
+
+    <button mat-raised-button color="primary" type="button" class="btnUp" [disabled]="consumptionForm.invalid"
+      (click)="onDocsCilcked(consumptionForm.get('tranNo')!.value)"><mat-icon>cloud_upload</mat-icon>Docs</button>
+
+    <button mat-raised-button color="accent" type="button" class="btnUp" [disabled]="consumptionForm.invalid"
+      (click)="generatePDF()">
+      <mat-icon style="font-size: 18px;">picture_as_pdf</mat-icon>PDF
+    </button>
+    <button (click)="generateExcel()" mat-raised-button type="button" [disabled]="consumptionForm.invalid"
+      class="btnUp">
+      <mat-icon style="font-size: 18px;">description</mat-icon>Excel</button>
+    <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(consumptionForm.get('tranNo')!.value )"
+      [disabled]="consumptionForm.get('tranNo')!.value === '' || consumptionForm.get('tranNo')!.value === null">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(consumptionForm.get('tranNo')!.value )"
+      [disabled]="consumptionForm.get('tranNo')!.value === '' || consumptionForm.get('tranNo')!.value === null">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="consumptionForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(consumptionForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>TranNo</mat-label>
+          <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+          <button mat-button *ngIf="consumptionForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="consumptionForm.get('tranNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchCilcked()"
+            [disabled]="consumptionForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center  ">
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Property</mat-label>
+          <input type="text" matInput formControlName="propertyName" [matAutocomplete]="auto" placeholder="Property">
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectedPropertyChanged()"
+            [displayWith]="displayProperty">
+            <!-- <mat-option value="">--Select--</mat-option> -->
+            <mat-option *ngFor="let x of propertyList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Block</mat-label>
+          <input type="text" matInput formControlName="block" [matAutocomplete]="autob" placeholder="Block">
+          <mat-autocomplete #autob="matAutocomplete" (selectionChange)="onSelectedBlockChanged()"
+            [displayWith]="displayBlock">
+            <mat-option *ngFor="let x of blockList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Purpose</mat-label>
+          <input matInput placeholder="purpose" formControlName="purpose">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center myCustomClass">
+
+      <div class="col-6">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="remarks" formControlName="remarks">
+        </mat-form-field>
+      </div>
+      <div class="col-2 ">
+        <mat-label>Item Count:&nbsp;</mat-label><b class="data">{{itemCount}}</b>
+      </div>
+      <div class="col-1">
+        <mat-label>Status:&nbsp;</mat-label><b class="data">{{tranStatus}}</b>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="consumptionForm.get('mode')!.value === 'View' || consumptionForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

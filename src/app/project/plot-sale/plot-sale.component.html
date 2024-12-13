@@ -1,0 +1,205 @@
+<div class="mat-card container-fluid">
+  <div class="left">Plot Sale</div>
+  <div class="right">
+
+    <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(pltSaleForm.get('tranNo')!.value )"
+      [disabled]="pltSaleForm.get('tranNo')!.value === '' || pltSaleForm.get('tranNo')!.value === null">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails(pltSaleForm.get('tranNo')!.value )"
+      [disabled]="pltSaleForm.get('tranNo')!.value === '' || pltSaleForm.get('tranNo')!.value === null">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="AddCustomer()">
+      Customers
+    </button> -->
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="pltSaleForm" (ngSubmit)="onSubmit()">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="padding-top: 8px;">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(pltSaleForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>TranNo</mat-label>
+            <input matInput placeholder="TranNo" formControlName="invoiceNo" type="text"
+              [disabled]="pltSaleForm.get('mode')!.value == 'Add'" (focusout)="onTranNoFocusOut()">
+          </mat-form-field>
+          <span style="padding-bottom: 10px;">
+            <button mat-raised-button color="primary" [disabled]="pltSaleForm.get('mode')!.value == 'Add'" type="button"
+              (click)="searchData()" class="btnUp search-button">
+              <mat-icon>search</mat-icon>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-3"></div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline">
+            <mat-label>Venture</mat-label>
+            <input matInput placeholder="Venture" formControlName="venture" type="text" (change)="handleVentureChange()"
+              (blur)="handleVentureChange()">
+          </mat-form-field>
+          <span style="padding-bottom: 14px;">
+            <button mat-raised-button color="primary" class="btnUp search-button" type="button"
+              (click)="onVentureSearch()" [disabled]="pltSaleForm.get('mode')!.value != 'Add'">
+              <mat-icon>search</mat-icon>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline">
+            <mat-label>Plot Name</mat-label>
+            <input matInput placeholder="Plot" formControlName="plot" type="text" (change)="handlePlotChange()"
+              (blur)="handlePlotChange()">
+          </mat-form-field>
+          <span style="padding-bottom: 14px;">
+            <button mat-raised-button color="primary" class="btnUp search-button" type="button" (click)="onPlotSearch()"
+              [disabled]="pltSaleForm.get('mode')!.value != 'Add'">
+              <mat-icon>search</mat-icon>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline">
+            <mat-label>Customer</mat-label>
+            <input matInput placeholder="Customer" formControlName="customer" type="text"
+              (change)="handleCustomerChange()" (blur)="handleCustomerChange()">
+          </mat-form-field>
+          <span style="padding-bottom: 14px;">
+            <button mat-raised-button color="primary" class="btnUp search-button" type="button"
+              (click)="onCustomerSearch()" [disabled]="pltSaleForm.get('mode')!.value != 'Add'">
+              <mat-icon>search</mat-icon>
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <!-- <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="Latitude" formControlName="latitude" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3"> <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="Longitude" formControlName="longitude" type="number">
+        </mat-form-field>
+      </div> -->
+
+      <!-- <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="Extent_M2" formControlName="extent_M2" type="number">
+        </mat-form-field>
+      </div> -->
+    </div>
+
+    <div class="row justify-content-center">
+      <!-- <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>AvailableFrom</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="availableFrom" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div> -->
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label>Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="tranDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label>Deal Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="dealDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label>Sale Date</mat-label>
+          <input matInput [matDatepicker]="picker3" formControlName="saleDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="tranDate">
+          <mat-label>Regn Date</mat-label>
+          <input matInput [matDatepicker]="picker4" formControlName="regnDate" />
+          <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+          <mat-datepicker #picker4></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row row justify-content-center">
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="tranDate">
+          <mat-label>Token Amount</mat-label>
+          <input matInput placeholder="Token Amount" formControlName="tokenAmount" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-label>Total Amount: </mat-label>{{dealValue}}
+      </div>
+      <div class="col-2">
+        <mat-label>Plot Status: </mat-label>{{tranStatus}}
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Remarks</mat-label>
+          <textarea matInput placeholder="Remarks" formControlName="remarks" rows="5"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <!-- <button type="button" mat-raised-button color="primary" class="btnUp"
+                              (click)="Update()">Update</button> -->
+      <button mat-raised-button color="primary" type="submit" class="btnUp">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>refresh</mat-icon>Reset
+      </button>
+    </div>
+  </form>
+</mat-card>

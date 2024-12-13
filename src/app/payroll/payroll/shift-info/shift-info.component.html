@@ -1,0 +1,103 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+
+      Shift Details
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="pstForm" >
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode"(selectionChange)="modeChange(pstForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Type Code</mat-label>
+          <input matInput placeholder="Type Code" formControlName="typeCode" type="text">
+          <button mat-button *ngIf="pstForm.get('typeCode')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="pstForm.get('typeCode')!.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+            [disabled]="pstForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <input matInput placeholder="TypeDesc" formControlName="typeDesc" type="text">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker">
+          </mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="small-form-field">
+          <mat-label>From Time</mat-label>
+          <input matInput type="time" formControlName="fromTime" class="small-input" placeholder="HH:mm" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="small-form-field">
+          <mat-label>To Time</mat-label>
+          <input matInput type="time" formControlName="toTime" class="small-input" placeholder="HH:mm" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Type Rate</mat-label>
+          <input matInput placeholder="Type Rate" formControlName="typeRate" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-6">
+        <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
+          <mat-label >Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="notes" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:&nbsp;<b>{{typeStatus | uppercase}}</b></mat-label>
+    </div>
+
+    </div>
+
+    <!-- <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div> -->
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+
+      <button type="button" mat-raised-button color="primary" class="btnUp" (click)="onUpdate()"
+        [disabled]="pstForm.get('mode')!.value === 'View' || pstForm.invalid"><mat-icon>done</mat-icon>Apply</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>clear_all</mat-icon> Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon> Close
+      </button>
+    </div>
+  </form>
+</div>

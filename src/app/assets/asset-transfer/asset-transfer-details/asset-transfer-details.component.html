@@ -1,0 +1,124 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="{ isAltered: dataFlag}">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Asset Transfer Details:&nbsp;<b class="data">{{data.tranNo}}</b></div>
+</div>
+
+<!-- <div class="mat-card container-fluid">
+  <div class="left">Asset Transfer Details</div>
+  <div class="right">
+    <button mat-icon-button mat-dialog-close class="small-button">
+      <mat-icon class="small-icon">close</mat-icon>
+    </button> -->
+<!-- </div>
+</div> -->
+<mat-card style="margin-top: 30px;">
+  <form [formGroup]="assetTransferDetailsForm">
+    <div class="row row justify-content-left">
+      <div class="col-3">
+        <mat-label style="margin-left: 28px;">SlNo:<b style="padding-left: 10px;">{{slNo}}</b></mat-label>
+      </div>
+
+      <!-- <div class="col-3">
+          <div class="input-with-button">
+            <mat-form-field appearance="outline" aria-colspan="2">
+              <mat-label>TranNo</mat-label>
+              <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+            </mat-form-field>
+          </div>
+        </div> -->
+        <div class="col-3">
+
+            <mat-form-field appearance="outline" aria-colspan="2">
+              <mat-label>Assigned SlNo</mat-label>
+              <input matInput placeholder="Assigned SlNo" formControlName="assignedSlNo" type="text">
+            </mat-form-field>
+        </div>
+      <div class="col-3">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Asset ID</mat-label>
+            <input matInput placeholder="AssetID" formControlName="assetID" type="text">
+            <button mat-button *ngIf="assetTransferDetailsForm.get('assetID')!.value" type="button" matSuffix
+              mat-icon-button aria-label="Clear" (click)="assetTransferDetailsForm.get('assetID')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search" (click)="searchData()" type="button">
+              <!-- [disabled]="assetTransferDetailsForm.get('mode')!.value === 'Add'" -->
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+
+      </div>
+      <div class="col-3">
+        <div class="input-with-button">
+
+        </div>
+      </div>
+      <div class="col-3">
+
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" aria-colspan="2">
+          <mat-label>Asset Desc</mat-label>
+          <input matInput placeholder="assetDesc" formControlName="assetDesc" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline" aria-colspan="2">
+            <mat-label>Remarks</mat-label>
+            <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div class="row  justify-content-center" [ngStyle]="{
+      'text-align': 'center',
+      'font-size': '10px',
+      'background-color': textMessageClass === 'green' ? 'green' : 'red',color: 'white'}">
+      <b>{{ retMessage }}</b>
+    </div>
+    <div class="btnAlignment">
+      <!-- <button mat-raised-button color="accent" class=btnUp>Apply</button>
+      <button mat-raised-button color="accent" class=btnUp>New</button>
+      <button mat-raised-button color="accent" (click)="close()" class=btnUp>Close</button> -->
+
+      <button mat-raised-button color="primary" class="btnUp" type="button"  (click)="onSubmit()"
+        [disabled]="data.mode !='Modify' || data.status=='Closed' || assetTransferDetailsForm.invalid">
+        <mat-icon>save</mat-icon><b>Apply</b>
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="addNewAsset()">
+        <mat-icon>add</mat-icon><b>New</b>
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button">
+        <mat-icon>delete</mat-icon><b>Delete</b>
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button"  [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button">
+        <mat-icon>autorenew</mat-icon><b>Reset</b>
+      </button>
+      <button mat-raised-button [disabled]="exportTmp" (click)="onExportBtnClick()" type="button" color="primary"
+      class="btnUp"><mat-icon class="small-icon">save_alt</mat-icon>Download</button>
+    </div>
+
+  </form>
+</mat-card>
+
+
+<div class="grid">
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:230px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs1"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+  <div style="text-align: right;">
+
+    <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+      [ngModelOptions]="{standalone: true}">
+      <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+</div>

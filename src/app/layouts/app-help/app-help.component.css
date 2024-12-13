@@ -1,0 +1,40 @@
+.example-card {
+  /* max-width: 400px !important; */
+  margin-bottom: 8px !important;
+}
+.mat-card{
+  background: white !important;
+  /* margin-right: 10px; */
+
+}
+.card-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows cards to wrap when the container is not wide enough */
+  /* margin-left: 130px; */
+}
+
+.button-label {
+  margin-left: 4px; /* Adjusts spacing between icon and text */
+}
+
+/* Optional: You can adjust the right container's alignment if needed */
+/* .right {
+  display: flex;
+  align-items: center;
+} */
+
+.button-container {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+}
+
+.topic-navigation-button {
+  margin-left: 8px;
+}
+
+.edit-button {
+  margin-left: 16px;
+}

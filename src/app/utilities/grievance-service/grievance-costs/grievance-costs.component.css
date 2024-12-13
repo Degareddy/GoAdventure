@@ -1,0 +1,12 @@
+.grid{
+  margin-top: 10px !important;
+}
+.data{
+  font-size: 12px;
+}
+.myCustomClass {
+  color: black;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 11px;
+}

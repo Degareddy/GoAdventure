@@ -1,0 +1,21 @@
+/* message.component.css */
+.message-box {
+  text-align: center;
+  font-size: 12px;
+  border-radius: 5px;
+  color: white;
+  padding: 1px;
+  margin-top: 5px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  /* margin: 10px; */
+  /* width: 90%; */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.message-success {
+  background-color: green;
+}
+
+.message-error {
+  background-color: red;
+}

@@ -1,0 +1,82 @@
+<section>
+  <div class="mat-card container-fluid">
+    <div class="left">Customer opening Balances</div>
+    <div class="right">
+      <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="AddCustomer()">
+        Customers
+      </button> -->
+    </div>
+  </div>
+        <mat-card>
+            <!-- <div class="container-fluid"> -->
+            <form [formGroup]="customerOpeningForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Mode</mat-label>
+                            <mat-select formControlName="mode" placeholder="Mode">
+                                <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option> -->
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+
+                    <div class="col-3">
+                        <mat-form-field appearance="outline" aria-colspan="3">
+                            <mat-label>Tran No</mat-label>
+                            <input matInput placeholder="TranNo" formControlName="tranNo" type="text" />
+                        </mat-form-field>
+                    </div>
+
+
+
+                    <div class="col-3">
+                        <mat-form-field appearance="outline" style="width: 250px">
+                            <mat-label>Date</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="date"  [max]="tomorrow"/>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <mat-form-field appearance="outline" aria-colspan="3">
+                            <mat-label>Notes</mat-label>
+                            <input matInput placeholder="Notes" formControlName="notes" type="text" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-3">
+                        <mat-form-field appearance="outline" aria-colspan="3">
+                            <mat-label>Status</mat-label>
+                            <input matInput placeholder="Status" formControlName="status" type="text" />
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
+                <div class="btnAlignment">
+                    <!-- <button type="button" mat-raised-button color="primary" class="btnUp"
+                                  (click)="Update()">Update</button> -->
+                    <button mat-raised-button color="primary" type="submit" class="btnUp">
+                        <mat-icon>apply</mat-icon>Apply
+                    </button>
+
+                    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="refresh()">
+                        <mat-icon>refresh</mat-icon>Refresh
+                    </button>
+                    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Reset()">
+                        <mat-icon>reset</mat-icon>Reset
+                    </button>
+                    <button mat-raised-button color="warn" class="btnUp" type="button">
+                        <mat-icon>info</mat-icon>Info
+                    </button>
+                </div>
+            </form>
+            <!-- </div> -->
+        </mat-card>
+</section>
+<!-- company data : ends-->

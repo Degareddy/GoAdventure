@@ -1,0 +1,100 @@
+<!-- <div class="mat-card-header">
+  <div class="left adj">Tax-details</div>
+</div> -->
+
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">paid</mat-icon>
+      <b>Tax-details</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="vatForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(vatForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Year Code</mat-label>
+          <input matInput placeholder="Year Code" formControlName="yearCode" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">SlNo</mat-label>
+          <input matInput placeholder="SlNo" formControlName="slNo" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Table Type</mat-label>
+          <input matInput placeholder="Table Type" formControlName="tableType" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Rate Type</mat-label>
+          <input matInput placeholder="Rate Type" formControlName="rateType" type="text"> </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label >From Amt</mat-label>
+          <input matInput placeholder="FromAmt" formControlName="fromAmt" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label >To Amt</mat-label>
+          <input matInput placeholder="To Amt" formControlName="toAmt" type="number">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Rate</mat-label>
+          <input matInput placeholder="Rate" formControlName="rate" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Note</mat-label>
+          <input matInput placeholder="Note" formControlName="note" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onUpdate()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>refresh</mat-icon>Reset
+      </button>
+    </div>
+  </form>
+</div>

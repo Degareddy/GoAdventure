@@ -1,0 +1,67 @@
+<nav [ngClass]="isDarkTheme ? 'theme-dark' : 'theme-light'">
+  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div class="relative flex h-10 items-center justify-between">
+      <div class="flex flex-shrink-0 items-center">
+        <img class="h-8 w-auto cursor-pointer mr-4 rounded" [src]="logoImageBlob" alt="Your Company" matTooltip="Home"
+          (click)="navigateToHome()">
+        <button mat-icon-button
+        (click)="toggleTheme()"
+        class="theme-toggle-button"
+        [matTooltip]="(isDarkTheme$ | async) ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+  <mat-icon>{{ (isDarkTheme$ | async) ? 'light_mode' : 'dark_mode' }}</mat-icon>
+</button>
+
+      </div>
+      <div class="px-20 text-white flex">
+        <button mat-icon-button (click)="toggleSideBar()">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <button *ngIf="tenantlnld" mat-icon-button (click)="changeLocation()" class="srtdata" style="margin-left: 40px;" matTooltip="Change Location">
+          <mat-icon>location_on</mat-icon><u>Change Location</u>
+        </button>
+      </div>
+      <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-end">
+        <div class="flex space-x-4 relative z-20">
+          <span
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer">
+            Company:&nbsp;<span class="srtdata">{{company}}</span>
+          </span>
+          <span
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer">
+            Location:&nbsp;<span class="srtdata">{{location}}</span>
+          </span>
+          <span
+            class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white cursor-pointer">
+            Welcome:&nbsp;<span class="srtdata">{{userName}}&nbsp;&nbsp;({{userProfile}})</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+        <div class="relative group">
+          <button type="button"
+            class="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 profile-button"
+            (click)="toggleMenu()">
+            <img class="h-8 w-8 rounded-full cursor-pointer" [src]="imageBlob" alt="Profile">
+          </button>
+          <div
+            class="absolute hidden group-hover:block top-0 right-12 z-10 w-40 h-40 bg-white border border-gray-300 rounded-lg shadow-lg"
+            *ngIf="!isMenuOpen">
+            <img class="w-full h-full object-cover rounded-lg" [src]="imageBlob" alt="Image Preview" />
+          </div>
+        </div>
+        <div *ngIf="isMenuOpen"
+          class="absolute z-10 mt-1 w-48 rounded-md bg-blue-600 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none user-menu"
+          role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+          style="top: 35px; right: 0;">
+          <a class="flex items-center px-1 py-2 text-sm text-white hover:bg-gray-700 cursor-pointer" role="menuitem"
+            tabindex="-1" id="user-menu-item-2" (click)="signOut()">
+            <mat-icon>exit_to_app</mat-icon>
+            Sign out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

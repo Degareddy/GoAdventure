@@ -1,0 +1,225 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">shopping_cart</mat-icon>
+      <b>Purchase Order</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="accent" type="button" class="btnUp" (click)="onDetailsCilcked()"
+        [disabled]="purhdrForm.get('mode')!.value == 'Add' || purhdrForm.invalid">
+        <mat-icon>info</mat-icon>Details
+      </button>
+
+      <button mat-raised-button color="primary" class="btnUp" type="button" [matMenuTriggerFor]="menu"
+        [disabled]="purhdrForm.get('mode')!.value == 'Add' || purhdrForm.invalid">
+        <mat-icon>more_vert</mat-icon>Actions
+      </button>
+      <mat-menu #menu="matMenu" class="custom-menu">
+        <button mat-menu-item (click)="onDocsCilcked(purhdrForm.get('tranNo')!.value)"
+          [disabled]="purhdrForm.invalid" class="custom-button">
+          <mat-icon>cloud_upload</mat-icon><span class="data">Docs</span>
+        </button>
+        <button mat-menu-item (click)="generatePDF()" [disabled]="purhdrForm.invalid" class="custom-button">
+          <mat-icon>picture_as_pdf</mat-icon><span class="data">PDF</span>
+        </button>
+        <button mat-menu-item (click)="generateExcel()" [disabled]="purhdrForm.invalid" class="custom-button">
+          <mat-icon>description</mat-icon><span class="data">Excel</span>
+        </button>
+      </mat-menu>
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(purhdrForm.get('tranNo')!.value )"
+        [disabled]="purhdrForm.get('tranNo')!.value === '' || purhdrForm.get('tranNo')!.value === null">
+        <mat-icon>note_add</mat-icon>
+        Notes
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <div class="flex flex-col lg:flex-row gap-4">
+    <div class="lg:w-3/4">
+      <form [formGroup]="purhdrForm" class="space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(purhdrForm.get('mode')!.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label>Tran No</mat-label>
+              <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+              <button mat-button *ngIf="purhdrForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="purhdrForm.get('tranNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchCilcked()"
+                [disabled]="purhdrForm.get('mode')!.value === 'Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Supplier</mat-label>
+              <input matInput placeholder="Supplier" formControlName="supplier" type="text">
+              <button mat-button *ngIf="purhdrForm.get('supplier')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="purhdrForm.get('supplier')!.setValue('')">
+                <mat-icon class="mat-search-icon">close</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSupplierSearch()"
+                [disabled]="purhdrForm.get('mode')!.value != 'Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-2">
+
+          </div> -->
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-checkbox [(indeterminate)]="indeterminate" [labelPosition]="labelPosition"
+              formControlName="isQtnBased">Quotation Based</mat-checkbox>
+          </div>
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Quotation</mat-label>
+              <input matInput placeholder="Quotation" formControlName="quotationNo" type="text">
+              <button mat-button *ngIf="purhdrForm.get('quotationNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="purhdrForm.get('quotationNo')!.setValue('')">
+                <mat-icon class="mat-search-icon">close</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchQtnCilcked()"
+                [disabled]="purhdrForm.get('mode')!.value != 'Add' || purhdrForm.get('isQtnBased')!.value===false">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-checkbox [(indeterminate)]="indeterminate" [labelPosition]="labelPosition"
+              formControlName="isVatable">Apply VAT</mat-checkbox>
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Tran Date</mat-label>
+              <input matInput [matDatepicker]="picker" [max]="tomorrow" placeholder="TranDate"
+                formControlName="tranDate" type="Datepicker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Order Type</mat-label>
+              <mat-select matInput placeholder="TranType" formControlName="tranType">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option value="Single">Single</mat-option>
+                <mat-option value="Multiple">Multiple</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Category</mat-label>
+              <mat-select matInput placeholder="Category" formControlName="tranCategory">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option value="Asset">Asset</mat-option>
+                <mat-option value="Stock">Stock</mat-option>
+                <mat-option value="Service">Service</mat-option>
+                <mat-option value="Consumable">Consumable</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Currency</mat-label>
+              <mat-select matInput placeholder="Currency" formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Exch Rate</mat-label>
+              <input matInput placeholder="ExchRate" formControlName="exchRate" class="right-align-input" type="text"
+                appExchange>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Supplier Ref No</mat-label>
+              <input matInput placeholder="Supplier Ref No" formControlName="suppRefNo" type="text">
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <mat-form-field appearance="outline">
+              <mat-label>Notes</mat-label>
+              <input matInput placeholder="Notes" formControlName="notes" type="text" [matTooltipPosition]="'right'"
+                [matTooltip]="purhdrForm.get('notes')!.invalid && (purhdrForm.get('notes')!.dirty || purhdrForm.get('purpose')!.touched) ? 'Enter notes' : 'Notes'">
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-label class="myCustomClass">Tran Status:&nbsp;</mat-label><b class="data">{{tranStatus |
+              uppercase}}</b>
+          </div>
+          <div>
+            <mat-label class="myCustomClass">Authorized By:&nbsp;</mat-label><b class="data">{{authorizedBy |
+              uppercase}}</b>
+          </div>
+        </div>
+        <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+        <div class="btnAlignment">
+          <button mat-raised-button color="primary" type="submit" class="btnUp"
+            [disabled]="purhdrForm.get('mode')!.value === 'View' || purhdrForm.invalid || tranStatus==='Authorized'"
+            (click)="onSubmit()"><mat-icon>done</mat-icon>Apply</button>
+          <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+            <mat-icon>clear_all</mat-icon>Clear
+          </button>
+          <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+            <mat-icon>cancel</mat-icon>Close
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="lg:w-1/4 bg-[#F0ECD5] custom-table text-sm bg-[#F0ECD5] rounded-lg border border-gray-400 p-2">
+      <table class="w-full text-sm">
+        <tr>
+          <td class="myCustomClass">Item Count:</td>
+          <td class="text-right data">{{itemCount | number}}</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="border-t border-black my-1"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="myCustomClass">Amount:</td>
+          <td class="text-right data">{{tranAmount | number: '1.2-2'}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left data"><b>Pending Cash Transfers</b></div>
+</div>
+<mat-card>
+  <app-access-grid [columnDefs]="columnDefs"  [rowData]="rowData" [exportPDF]="true" [exportExcel]="true" (linkClicked)="onLnkClicked($event)"
+   [paginationPageSize]="25" [globalSearch]="true" [showToolPanel]="true"  (columnVisibilityChanged)="onColumnVisibilityChanged($event)"
+    [gridHeight]="'210px'" (filterChanges)="onFilterData($event)" [showRecordCount]="true"[reportName]="'Transaction'" (detailClicked)="onDtlClicked($event)"></app-access-grid>
+</mat-card>
+<app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+<div class="btnAlignment">
+<button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+  <mat-icon>cancel</mat-icon><b>Close</b>
+</button>
+</div>

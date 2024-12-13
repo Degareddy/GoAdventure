@@ -1,0 +1,167 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">local_shipping</mat-icon>
+      <b class="ml-1">{{title | titlecase}}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+        [disabled]="deliveryForm.invalid || deliveryForm.get('mode')!.value==='Add'"
+        (click)="onDetailsCilcked(deliveryForm.get('tranNo')!.value)">
+        <mat-icon>info</mat-icon>Details
+      </button>
+      <button mat-raised-button color="accent" type="button" class="btnUp"
+        [disabled]="deliveryForm.invalid || deliveryForm.get('mode')!.value==='Add'"
+        (click)="onDocsCilcked(deliveryForm.get('tranNo')!.value)"><mat-icon>cloud_upload</mat-icon>Docs</button>
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="deliveryReport()"
+        [disabled]="deliveryForm.invalid || deliveryForm.get('mode')!.value==='Add'"><mat-icon>download</mat-icon>Report</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="deliveryForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(deliveryForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Delivery No</mat-label>
+          <input matInput placeholder="Delivery No" formControlName="delNo" type="text">
+          <button mat-button *ngIf="deliveryForm.get('delNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="deliveryForm.get('delNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="deliverySearch()"
+            [disabled]="deliveryForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Sale Order No</mat-label>
+          <input matInput placeholder="Sale Order No" formControlName="tranNo" type="text">
+          <button mat-button *ngIf="deliveryForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="deliveryForm.get('tranNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="saleOrderSearch()"
+            [disabled]="deliveryForm.get('mode')!.value != 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label class="mat-label-class">Customer</mat-label>
+          <input matInput placeholder="Customer" formControlName="customer" type="text">
+          <button mat-button *ngIf="deliveryForm.get('customer')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="deliveryForm.get('customer')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onCustomerSearch()"
+            [disabled]="deliveryForm.get('mode')!.value === 'View'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Delivery Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Ship To</mat-label>
+          <input matInput placeholder="Ship To" formControlName="shipTo" type="text">
+          <button mat-button [disabled]="deliveryForm.get('shipTo')!.value === 'View'" type="button" matSuffix
+            mat-icon-button aria-label="Clear" (click)="deliveryForm.get('shipTo')!.setValue('')">
+            <mat-icon class="mat-search-icon">close</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="billToSearch('SHIPTO')">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Delivery Method</mat-label>
+          <mat-select matInput formControlName="deliveryMethod">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of deliveryMethodList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Transporter</mat-label>
+          <input matInput placeholder="Transporter" formControlName="transporter" type="text" />
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Driver ID</mat-label>
+          <input matInput placeholder="Driver ID" formControlName="driverId" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Driver Name</mat-label>
+          <input matInput placeholder="Driver Name" formControlName="driverName" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Truck No</mat-label>
+          <input matInput placeholder="Truck Number" formControlName="truckNo" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Status:&nbsp;<b class="data">{{tranStatus}}</b></mat-label>
+      </div>
+    </div>
+    <div class="row justify-content-left">
+      <div class="col-12">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>Notes</mat-label>
+          <textarea matInput placeholder="Notes" rows="2" formControlName="notes"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="deliveryForm.invalid || deliveryForm.get('mode')?.value==='View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

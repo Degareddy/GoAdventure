@@ -1,0 +1,655 @@
+
+
+@import '~ag-grid-community/styles/ag-grid.css';
+@import '~ag-grid-community/styles/ag-theme-alpine.css';
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+@import "../node_modules/ag-grid-community/dist/styles/ag-grid.css";
+@import "../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css";
+
+/* global-theme.css */
+/* styles.css */
+
+/* Light Theme */
+
+/* styles.css */
+
+
+
+
+
+body.theme-dark {
+  background-color: #333333; /* Default dark background */
+  color: #ffffff;           /* Default dark text */
+}
+
+
+
+/* Dark Theme */
+.theme-dark {
+  --bg-color: #333333;
+  --text-color: #ffffff;
+}
+
+
+body.theme-light {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+/*
+body.theme-dark {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+} */
+.theme-light {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.row {
+  margin-top: 5px !important;
+}
+@media screen and (max-width: 767px) {
+  .row {
+    margin-top: 10px !important; /* Adjust as needed */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .row {
+    margin-top: 15px !important; /* Adjust as needed */
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+  .mat-card-header {
+    font-size: 14px !important; /* Adjust as needed */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .mat-card-header {
+    font-size: 16px !important  ; /* Adjust as needed */
+  }
+}
+
+.Helpbtn{
+  background-color: yellow;
+  color: rgb(17, 15, 15);
+ }
+
+
+table {
+  width: 100% !important;
+  /* font-size: 10px !important; */
+}
+
+::ng-deep .mat-paginator-page-size-select {
+  margin: 6px 4px 0 4px !important;
+  width: 70px !important;
+}
+
+.mat-paginator-page-size-select {
+  margin: 6px 4px 0 4px !important;
+  width: 70px !important;
+}
+
+.content {
+  background-color: #dce3ef;
+}
+
+.btn,
+.btnUp {
+  line-height: 20px !important;
+  font-size: 10px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+}
+
+.btnUp {
+  margin-left: 5px !important;
+  margin-top: 10px !important;
+  border-radius: 15px !important;
+  font-size: 9px !important;
+}
+
+@media screen and (max-width: 767px) {
+  /* Adjust styles for screens smaller than 767px */
+  .btn,
+  .btnUp {
+    font-size: 8px !important; /* Adjust as needed */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  /* Adjust styles for screens between 768px and 991px */
+  .btn,
+  .btnUp {
+    font-size: 12px !important; /* Adjust as needed */
+  }
+}
+
+/* Add more media queries as needed for larger screen sizes */
+
+tr.mat-row {
+  height: 25px !important;
+  font-size: 10px;
+}
+.btnAlignment {
+  text-align: center;
+  /* margin:   5px; */
+}
+
+th {
+  color: white !important;
+}
+
+.right {
+  width: 100% !important;
+  text-align: right !important;
+  float: right !important;
+}
+
+.mat-select {
+  font-family: Roboto, Arial, sans-serif !important;
+}
+
+.btnAdd {
+  line-height: 20px !important;
+  font-size: 12px !important;
+  width: 20px !important;
+}
+
+
+tr.mat-header-row {
+  height: 28px !important;
+  /* color: rgb(255, 255, 255); */
+  background-color: rgba(50, 75, 235, 0.87) !important;
+}
+
+
+
+#userMessage {
+  /* border-radius: 3px; */
+  text-align: center;
+  font-size: 15px;
+  color: white;
+}
+.clickable-row {
+  cursor: pointer !important;
+}
+::ng-deep .mat-autocomplete {
+  position: absolute !important;
+  bottom: 0 !important;
+}
+.mat-option {
+  font-size: 9px;
+  font-weight: 600;
+  height: 20px !important;
+}
+
+.mat-date,
+.mat-mode,
+.mat-notes {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.mat-date {
+  width: 100px;
+}
+
+.mat-time {
+  width: 80px !important;
+}
+.mat-mode {
+  width: 120px;
+}
+.detailsTxt{
+  width: 20px;
+}
+
+.mat-notes {
+  width: 500px;
+}
+
+.mat-number {
+  width: 120px;
+}
+/* Responsive styles */
+@media screen and (max-width: 767px) {
+  .mat-date,
+  .mat-mode,
+  .mat-notes {
+    font-size: 0.7rem; /* Adjust as needed */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .mat-date,
+  .mat-mode,
+  .mat-notes {
+    font-size: 0.75rem; /* Adjust as needed */
+  }
+}
+.mat-form-field {
+  font-size: 0.6rem;
+  padding-left: 0;
+  font-weight: 600;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 767px) {
+  .mat-form-field {
+    font-size: 0.5rem; /* Adjust as needed for smaller screens */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .mat-form-field {
+    font-size: 0.55rem; /* Adjust as needed for medium-sized screens */
+  }
+}
+
+/* Add more media queries as needed for larger screen sizes */
+
+.cdk-global-overlay-wrapper {
+  margin-left: 6rem !important;
+  margin-top: 15px !important;
+}
+
+
+.container-fluid {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border-radius: 2px !important;
+  height: 10px !important;
+}
+
+.left,
+.right {
+  display: inline-block !important;
+}
+
+.left {
+  font-weight: 600 !important;
+  /* color: #ffffff !important; */
+  margin-left: -8px !important;
+  width: 400px !important;
+  font-size: 12px;
+}
+
+.right {
+  margin-bottom: 7px !important;
+}
+
+.clickable-row {
+  cursor: pointer !important;
+  color: white !important;
+}
+.clickable-row:hover {
+  background-color: #6a89e5 !important;
+
+  /* Add any other styles you want for the hover effect */
+}
+.clickable-row:hover * {
+  color: white !important;
+}
+
+/* Add this to your component's CSS file */
+.mat-row:nth-child(even) {
+  background-color: #dfdede; /* Change this to your desired color */
+}
+
+.mat-row:nth-child(odd) {
+  background-color: #ffffff; /* Change this to your desired color */
+}
+/* // In your component's CSS or SCSS file */
+
+@media (max-width: 600px) {
+  .mat-dialog-container {
+    width: 90% !important;
+    height: 90% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+}
+.right-align {
+  text-align: right !important;
+}
+::ng-deep .mat-tooltip {
+  background-color: red !important; /* Set the background color to red */
+  color: white !important; /* Set the text color to white */
+}
+.mat-column {
+  white-space: nowrap !important;
+}
+.mat-header-row {
+  white-space: nowrap !important;
+}
+.close-button {
+  float: right;
+  top: -24px;
+  right: -24px;
+  height: 0px !important;
+  /* padding-bottom: -55px !important; */
+}
+
+.close-icon {
+  transition: 1s ease-in-out;
+  margin-bottom: 10px;
+  line-height: 15px;
+}
+
+::ng-deep .icon-outside .mat-dialog-container {
+  overflow: unset;
+}
+/* .md-datepicker-input-container {
+  width: 300px !important;
+} */
+.mat-datepicker-content .mat-calendar {
+  zoom: 0.75;
+}
+
+.search-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 24px !important; /* Adjust the height based on your icon size */
+  width: 20px !important; /* Adjust the width based on your icon size */
+  min-width: 0 !important; /* To remove any default minimum width */
+  line-height: 10px !important;
+  margin-bottom: 3px !important;
+}
+
+/* .tranDate {
+  width: 100px !important;
+  font-size: 10px !important;
+} */
+/* Default styles */
+.tranDate {
+  width: 100px;
+  font-size: 10px;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 767px) {
+  .tranDate {
+    width: 80px; /* Adjust as needed for smaller screens */
+    font-size: 9px; /* Adjust as needed for smaller screens */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .tranDate {
+    width: 90px; /* Adjust as needed for medium-sized screens */
+    font-size: 9.5px; /* Adjust as needed for medium-sized screens */
+  }
+}
+
+/* Add more media queries as needed for larger screen sizes */
+
+
+@media (max-width: 768px) {
+  .container-fluid {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .col-3 {
+    width: 100% !important;
+  }
+}
+
+.mat-card {
+  /* @apply rounded-lg shadow-lg border-l-4 border-blue-500 bg-white p-4; */
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  border: 1.5px solid #cbd5e0;
+}
+
+
+.mat-form-field-outline-start,
+.mat-form-field-outline-gap,
+.mat-form-field-outline-end {
+  background-color: white;
+}
+ .ag-cell {
+  border-right: 1px solid #ccc !important;
+}
+.grid-with-lines {
+  border-collapse: collapse !important;
+}
+.ag-header-row {
+  background-color: #3b64f5;
+  height: 23px ;
+  color: white !important;
+  font-size: 0.7rem;
+  /* your desired color */
+}
+
+.ag-paging-panel {
+  height: 23px !important;
+  line-height: 23px !important;
+}
+
+ .ag-icon-menu{
+  color: white !important;
+}
+ .ag-row {
+  height: 16px !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+ /* text-align: center !important; */
+  line-height: 30px !important;
+}
+
+
+
+.ag-row:hover {
+    background-color: #aacdec !important;
+    color: rgb(21, 20, 21) !important;
+    cursor: pointer;
+    font-weight: 800 !important;
+    font-size: 10px !important;
+    /* height:100px!important; */
+}
+ .ag-cell-not-inline-editing {
+  display: flex !important;
+  /* // padding: 3px !important; */
+  line-height: 20px !important;
+  align-items: center !important;
+}
+.align-right {
+  text-align: right;
+}
+ .ag-cell {
+  text-align: right;
+}
+.mat-header{
+  color: black !important;
+  background: #498ef7 !important;
+  background: linear-gradient(0deg, #2b7cf6, #c8d6ed) !important;
+}
+
+/* your-component.styles.css */
+
+.small-icon {
+  font-size: 18px !important; /* Adjust the size as needed */
+  color: #070607 !important;
+}
+
+small-close-icon{
+  font-size: 12px !important; /* Adjust the size as needed */
+  color:white !important;
+}
+
+
+.right-align-input {
+  text-align: right !important;
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1em !important;
+}
+
+.data{
+  color:brown !important;
+  /* font-size: 10px !important; */
+}
+.data.allocated {
+  color: green !important;
+  /* Add other styles as needed */
+}
+.myCustomClass {
+  /* background-color: rgb(162, 166, 177); */
+  color: black !important;
+  border-radius: 3px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+}
+.ag-theme-quartz,
+.ag-theme-quartz-dark {
+  /* bright green, 10% opacity */
+  --ag-selected-row-background-color: rgb(0, 255, 0, 0.1) !important;
+}
+.mat-search-icon{
+  font-weight: 800 !important;
+  color: blue !important;
+}
+
+.mat-clear-icon{
+  font-weight: 800 !important;
+  color: red !important;
+}
+
+.search {
+  width: 80% !important;
+}
+
+@media screen and (max-width: 768px) {
+  .search {
+    width: 100% !important; /* Adjust width for smaller screens */
+  }
+}
+.mat-option:hover {
+  background-color: #4f62f3 !important;
+  color: #fff !important;
+  /* font-size: 9px !important; */
+}
+.pageSizectrl {
+  margin-bottom: 10px;
+  margin-top: -35px;
+  z-index: 100;
+  position: absolute;
+  margin-left: 10px;
+  margin-right: 14px;
+}
+
+.balance-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1px; /* Adjust the gap as needed */
+  background: white;
+  padding: 1px; /* Add padding for better spacing */
+  border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+}
+
+.balance-label {
+  font-size: 14px;
+  color: #000;
+  font-weight: 600;
+}
+
+.balance-amount {
+  font-size: 14px;
+  font-weight: bold;
+
+}
+
+.balance-debit {
+  color: red;
+  font-weight: bold;
+}
+
+.balance-credit {
+  color: green;
+  font-weight: bold;
+}
+
+.balance-balance {
+  color: rgb(39, 102, 238);
+  font-weight: bold;
+}
+
+
+.report-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1px; /* Adjust the gap as needed */
+  background: white;
+  padding: 1px; /* Add padding for better spacing */
+  border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+  text-align: right;
+}
+
+.report-label {
+  font-size: 14px;
+  color: #000;
+  font-weight: 600;
+}
+
+.report-amount {
+  font-size: 14px;
+  font-weight: bold;
+  color: rgb(39, 102, 238); /* Adjust color as needed */
+}
+
+::ng-deep .ag-theme-alpine {
+  --ag-odd-row-background-color: #d2e7f7 !important;
+}
+::ng-deep .ag-theme-alpine .ag-row-odd {
+  background-color: var(--ag-odd-row-background-color) !important;
+}
+
+
+.red-text {
+  color: rgb(248, 246, 246);
+  background-color: rgb(104, 101, 103);
+  border: 1px solid;
+  border-radius: 2px !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+
+.adjust-card {
+  max-width: 500px; /* Adjust the width as per your content */
+  margin: 0 auto; /* Center the card */
+}
+
+.full-width {
+  width: 100%;
+}
+
+.custom-dialog-container .mat-dialog-container {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.custom-dialog-container .mat-dialog-container {
+  transform: scale(0.9);
+}
+
+.custom-dialog-container .mat-dialog-container.ng-trigger.ng-trigger-dialogAnimation {
+  transform: scale(1);
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,55 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="{ isAltered: dataFlag}">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<div class="mat-card container-fluid">
+  <div class="left">Asset AMC Details</div>
+</div>
+<mat-card>
+  <form [formGroup]="AMCDetailsForm" (submit)="onSubmit()">
+    <div class="row  justify-content-center">
+      <div class="col-3">
+        <mat-label>SlNo:&nbsp;<b class="data">{{slNum}}</b></mat-label>
+      </div>
+      <div class="col-3">
+        <div class="input-with-button">
+          <mat-form-field appearance="outline">
+            <mat-label>Tran No</mat-label>
+            <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Trace No</mat-label>
+          <input type="text" matInput formControlName="traceNo" placeholder="traceNo" />
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Asset Desc</mat-label>
+          <input matInput placeholder="Asset Desc" formControlName="assetDesc" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" class="btnUp" type="button"
+        [disabled]="data.mode !='Modify' || data.status=='Closed' || AMCDetailsForm.invalid">
+        <mat-icon>done</mat-icon><b>Apply</b>
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button">
+        <mat-icon>add</mat-icon><b>New</b>
+      </button>
+      <button mat-raised-button color="primary" class="btnUp" type="button">
+        <mat-icon>delete</mat-icon><b>Delete</b>
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon><b>Close</b>
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button">
+        <mat-icon>autorenew</mat-icon><b>Reset</b>
+      </button>
+    </div>
+  </form>
+</mat-card>

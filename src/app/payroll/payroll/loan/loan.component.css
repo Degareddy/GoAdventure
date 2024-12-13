@@ -1,0 +1,39 @@
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1.0em !important;
+  margin-top: -0.2em !important;
+}
+
+/* .mat-card {
+  margin-top: 5px !important;
+} */
+.mat-form-field{
+  width: 230px !important;
+  font-size: 10px !important;
+}
+
+
+::ng-deep .mat-form-field-flex>.mat-form-field-infix {
+  padding: 0.4em 0px !important;
+
+}
+
+::ng-deep .mat-form-field-label-wrapper {
+  top: -1.0em !important;
+}
+
+
+
+.wide-textarea {
+  width: 100%;
+}
+
+
+#userMessage{
+  text-align: center !important;
+  font-size: 14px;
+  font-family: 900;
+}
+.input-with-button {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,263 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">how_to_reg</mat-icon>
+      <b>{{formName | titlecase }}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button [disabled]="userForm.get('mode')!.value==='Add' || userForm.invalid" color="primary"
+        class="btnUp" type="button" (click)="manageAllowedIps()">
+        <mat-icon>check_circle_outline</mat-icon><b>IPs Allowed</b>
+      </button>
+      <button mat-raised-button [disabled]="userForm.get('mode')!.value==='Add' || userForm.invalid" color="accent"
+        class="btnUp" type="button" (click)="properties()">
+        <mat-icon>call_split</mat-icon><b>Properties</b>
+      </button>
+      <button mat-raised-button [disabled]="userForm.get('mode')!.value==='Add' || userForm.invalid" color="primary"
+        class="btnUp" type="button" (click)="Companies()">
+        <mat-icon>call_split</mat-icon><b>Companies</b>
+      </button>
+      <button mat-raised-button color="warn" [disabled]="userForm.get('mode')!.value == 'Add'  || userForm.invalid"
+        class="btnUp" [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+        Actions
+      </button>
+      <mat-menu #menu="matMenu">
+        <ng-container>
+          <a mat-menu-item (click)="onDocsCilcked(userForm.get('userID')!.value)"
+            [disabled]="userForm.get('mode')!.value == 'Add' || userForm.invalid">
+            <mat-icon style="font-size: 16px;">cloud_upload</mat-icon>
+            <span class="menu-label data">Docs</span>
+          </a>
+        </ng-container>
+        <ng-container>
+          <a mat-menu-item (click)="NotesDetails(userForm.get('user')!.value )"
+            [disabled]="userForm.get('user')!.value === '' || userForm.get('user')!.value === null">
+            <mat-icon style="font-size: 16px;">note_add</mat-icon>
+            <span class="menu-label data">Notes</span>
+          </a>
+        </ng-container>
+        <ng-container>
+          <a mat-menu-item (click)="logDetails(userForm.get('user')!.value )"
+            [disabled]="userForm.get('user')!.value === '' || userForm.get('user')!.value === null">
+            <mat-icon style="font-size: 16px;">comment</mat-icon>
+            <span class="menu-label data">Log</span>
+          </a>
+        </ng-container>
+      </mat-menu>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <mat-icon>help</mat-icon>
+        Help
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="p-2 bg-zinc-100 container mx-auto">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" #frmClear="ngForm" class="flex flex-col space-y-4">
+    <div class="grid grid-cols-3 gap-4">
+      <!-- Left side with form controls -->
+      <div class="col-span-2">
+        <div class="grid grid-cols-3 gap-4 mt-3" >
+          <div>
+            <mat-form-field appearance="outline"  class="w-full">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(userForm.get('mode')!.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">User</mat-label>
+              <input matInput type="text" placeholder="User" formControlName="user" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="userForm.get('user')!.value"
+                (click)="onClearClick()" type="button">
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" (click)="onUserSearch()" type="button"
+                [disabled]="userForm.get('mode')!.value==='Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mt-3">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label for="userID">User Id</mat-label>
+              <input matInput placeholder="UserID" class="disabled-input" formControlName="userID" type="text" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label for="email" class="mat-label-class">Email</mat-label>
+              <input matInput placeholder="Email" formControlName="email" type="email" />
+            </mat-form-field>
+          </div>
+          <div class="myCustomClass" class="w-full">
+            <mat-checkbox [(indeterminate)]="reAssignFlag" [labelPosition]="labelPosition"
+              formControlName="reAssign">Re-Assign Permissions</mat-checkbox>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-3">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label for="userPassword" class="mat-label-class">User Password</mat-label>
+              <input matInput placeholder="User Password" formControlName="userPassword" type="password" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label for="confirmPassword">Confirm Password</mat-label>
+              <input matInput type="password" id="confirmPassword" placeholder="Confirm Password"
+                formControlName="confirmPassword">
+            </mat-form-field>
+
+          </div>
+
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">Mobile</mat-label>
+              <input matInput placeholder="Mobile" formControlName="mobile" type="text" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-3">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">User Profile</mat-label>
+              <mat-select formControlName="userProfile">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of profileList" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">User Company</mat-label>
+              <mat-select formControlName="userCompany">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of companyList" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">Default Company</mat-label>
+              <mat-select formControlName="defaultCompany">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of companyList" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mt-3">
+          <div>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label class="mat-label-class">Default Location</mat-label>
+              <mat-select formControlName="defaultLocn">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of locationList" [value]="x.itemCode">{{
+                  x.itemName
+                  }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="tranDate">
+              <mat-label class="mat-label-class">Join Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="joinDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="tranDate">
+              <mat-label class="mat-label-class">Expires On</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="expiresOn" />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mt-3">
+          <div class="w-full">
+            <mat-label>Status:&nbsp;</mat-label><b class="data">{{status | uppercase}}</b>
+          </div>
+          <div >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Last Login On</mat-label>
+              <input matInput placeholder="LastLoginOn" formControlName="lastLoginOn" type="text"
+                class="disabled-input" />
+            </mat-form-field>
+          </div>
+          <div >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Last Login Fail</mat-label>
+              <input matInput placeholder="LastLoginFailOn" formControlName="lastLoginFailOn" type="text"
+                class="disabled-input" />
+            </mat-form-field>
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mt-3">
+          <div >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Fail Attempts</mat-label>
+              <input matInput placeholder="Fail Attempts" formControlName="failAttempts" type="number"
+                class="disabled-input" />
+            </mat-form-field>
+          </div>
+          <div >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Max Allowed Fail Attempts</mat-label>
+              <input matInput placeholder="MaxAllowedFailAttempts" formControlName="maxAllowedFailAttempts"
+                type="number" class="disabled-input" />
+            </mat-form-field>
+          </div>
+          <div >
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Remarks</mat-label>
+              <textarea matInput formControlName="remarks" placeholder="Remarks">
+            </textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 mt-3"
+          style="background-color: red; font-weight: 600; color: white;text-align: center;"
+          *ngIf="userForm.hasError('mismatch') && userForm.get('confirmPassword')!.touched">
+          <b>Passwords do not match.</b>
+        </div>
+      </div>
+      <div class="flex justify-center items-center">
+        <div class="relative h-40 w-40 bg-white border-4 border-blue-300 rounded-lg overflow-hidden shadow-lg">
+          <img class="h-full w-full object-cover rounded-lg" [src]="imageBlob" alt="Profile" />
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="userForm.get('mode')!.value === 'View' || userForm.invalid">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button"
+        (click)="close()"><mat-icon>cancel</mat-icon>Close</button>
+    </div>
+  </form>
+</div>

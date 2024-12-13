@@ -1,0 +1,198 @@
+<div class="flex items-center text-white h-8 rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">summarize</mat-icon>
+  <b>Statement Report</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="reportForm" (ngSubmit)="onSubmit()" style="margin-top: -10px;">
+    <div class="row justify-content-left">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class" >Report Type</mat-label>
+          <mat-select formControlName="reportType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of reportTypeTemp" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2" *ngIf="isClientTypeEnable()">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Client Type</mat-label>
+          <mat-select formControlName="clientType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of clientTypes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2" *ngIf="reportForm.get('reportType')!.value =='Revenue'">
+        <mat-form-field appearance="outline" class="mat-mode"
+          *ngIf="reportForm.get('reportType')!.value !='Statement' && reportForm.get('reportType')!.value.toUpperCase() !='DEPOSIT'">
+          <mat-label class="mat-label-class">Revenue Type</mat-label>
+          <mat-select formControlName="chargeType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="ALL">ALL</mat-option>
+            <mat-option *ngFor="let x of chargeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2"
+        *ngIf="isClientEnable()">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label class="mat-label-class">Client</mat-label>
+          <input matInput type="text" placeholder="Client" formControlName="client" />
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="reportForm.get('client')!.value"
+            (click)="reportForm.get('client')!.setValue('')" type="button"
+            [disabled]="reportForm.get('reportType')!.value==='Revenue' || reportForm.get('reportType')!.value==='DEPOSIT'">
+            <mat-icon class="mat-clear-icon">clear</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="onClientSearch()" type="button"
+            [disabled]="reportForm.get('reportType')!.value==='Revenue' || reportForm.get('clientType')!.value==='DEPOSIT'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+
+      </div>
+      <div class="col-2"
+        *ngIf="reportForm.get('reportType')!.value.toUpperCase() !='DEPOSIT' && reportForm.get('reportType')!.value.toUpperCase() !='LOANSTATEMENT'">
+        <mat-form-field class="mat-mode" appearance="outline">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fromDate" [max]="today"
+            [disabled]="reportForm.get('clientType')!.value==='DEPOSIT'" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+      </div>
+      <div class="col-2" *ngIf=" reportForm.get('reportType')!.value.toUpperCase() !='LOANSTATEMENT'">
+        <mat-form-field class="mat-mode" appearance="outline">
+          <mat-label class="mat-label-class" appearance="outline" style="width:100%">{{selectDate}}</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="toDate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-1"
+        *ngIf="reportForm.get('reportType')!.value !='Revenue' && reportForm.get('reportType')!.value !='CASHTRF' && reportForm.get('reportType')!.value !='' && reportForm.get('clientType')!.value !='PROPERTY' && reportForm.get('clientType')!.value =='DEPOSIT' ">
+        <mat-checkbox formControlName="summary" class="myCustomClass">Summary</mat-checkbox>
+      </div>
+      <div class="col-1"
+        *ngIf="reportForm.get('reportType')!.value !='Revenue' && reportForm.get('reportType')!.value !='CASHTRF' && reportForm.get('reportType')!.value !='' && reportForm.get('clientType')!.value !='PROPERTY' && reportForm.get('reportType')!.value !='Statement'">
+        <mat-checkbox formControlName="LandLordHoldings" class="myCustomClass"
+          [disabled]="reportForm.get('clientType')!.value =='DEPOSIT'">LandLord</mat-checkbox>
+      </div>
+      <div class="col-1"
+        *ngIf="reportForm.get('reportType')!.value !='Revenue' && reportForm.get('reportType')!.value !='CASHTRF' && reportForm.get('reportType')!.value !='' && reportForm.get('clientType')!.value !='PROPERT' && reportForm.get('reportType')!.value !='Statement'">
+        <mat-checkbox formControlName="PropertyHoldings" class="myCustomClass"
+          [disabled]="reportForm.get('clientType')!.value =='DEPOSIT'">Property</mat-checkbox>
+      </div> -->
+      <div class="col-1" *ngIf="shouldShowSummaryCheckbox()">
+        <mat-checkbox formControlName="summary" class="myCustomClass">Summary</mat-checkbox>
+      </div>
+
+      <div class="col-1" *ngIf="shouldShowLandLordHoldingsCheckbox()">
+        <mat-checkbox formControlName="LandLordHoldings" class="myCustomClass"
+          [disabled]="isLandLordHoldingsDisabled()">
+          LandLord
+        </mat-checkbox>
+      </div>
+
+      <div class="col-1" *ngIf="shouldShowPropertyHoldingsCheckbox()">
+        <mat-checkbox formControlName="PropertyHoldings" class="myCustomClass"
+          [disabled]="isPropertyHoldingsDisabled()">
+          Property
+        </mat-checkbox>
+      </div>
+
+    </div>
+
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <div class="client-name" *ngIf="reportForm.get('reportType')!.value ==='Statement'">
+        <mat-label class="myCustomClass">
+          <b class="data">Client Name:-&nbsp;{{ custName }}</b>
+        </mat-label>
+      </div>
+      
+      <!-- <div class="balance-amount balance-debit">{{ custName }}</div> -->
+      <mat-label class="myCustomClass" *ngIf="reportForm.get('reportType')!.value ==='Statement'">Loan Balances:-&nbsp;
+        <b class="data">{{ loanBalAmount | currency: 'USD':'symbol':'1.2-2' }}</b></mat-label>
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="!isFormValid()">
+        <mat-icon>download</mat-icon>Report
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+
+    </div>
+  </form>
+  <div style="margin-top: -30px;">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+      (linkClicked)="onLnkClicked($event)" (cellClicked)="onPayment($event)" [gridHeight]="'320px'" [fromDate]="fromDate" [toDate]="toDate"
+      (gridReady)="onGridReady($event)" [globalSearch]="true" [paginationPageSize]="25"
+      (filterChanges)="onFilterData($event)" [showToolPanel]="true" [reportName]="rprtName"
+      (columnVisibilityChanged)="onColumnVisibilityChanged($event)" (detailClicked)="onDtlClicked($event)"
+      [showRecordCount]="true">
+    </app-access-grid>
+  </div>
+
+  <div class="balance-container" *ngIf="reportForm.get('reportType')?.value==='Statement'">
+
+    <span class="balance-label" *ngIf="!creditTmp">Credit:</span>
+    <span class="balance-amount" *ngIf="!creditTmp">{{ creditAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label" *ngIf="!this.reportForm.get('summary')!.value && !debitTmp">Debit:</span>
+    <span class="balance-amount" *ngIf="!this.reportForm.get('summary')!.value && !debitTmp">{{debitAmount | number:
+      '1.2-2'
+      }}</span>&nbsp;&nbsp;&nbsp;
+    <span class="balance-label" *ngIf="!this.reportForm.get('summary')!.value && !balanceTmp">Balance:</span>
+    <span class="balance-amount" *ngIf="!this.reportForm.get('summary')!.value && !balanceTmp"
+      [ngClass]="{'balance-debit': balAmount < 0, 'balance-credit': balAmount >= 0}">
+      {{ balAmount | number: '1.2-2' }}
+    </span>
+
+
+  </div>
+  <div class="balance-container" *ngIf="reportForm.get('reportType')?.value==='Revenue' && !amountTmp">
+    <span class="balance-label">Total Amount:</span>
+    <span class="balance-amount balance-credit">{{ totalAmount | number: '1.2-2' }}</span>
+  </div>
+  <div class="balance-container" *ngIf="reportForm.get('reportType')!.value.toUpperCase()=='LOANSTATEMENT'">
+    <span class="balance-label">Total Loan Amount:</span>
+    <span class="balance-amount balance-credit">{{ totLoanAmt | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label">Paid Amount:</span>
+    <span class="balance-amount balance-credit">{{ totLoanPaid | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label">Balance Amount:</span>
+    <span class="balance-amount balance-debit">{{ totLoanBal | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+  </div>
+  <div class="balance-container" *ngIf="reportForm.get('reportType')!.value =='DEPOSIT'">
+    <span class="balance-label">Deposit Amount:</span>
+    <span class="balance-amount balance-credit">{{ totalDepositAmt | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label">Paid Amount:</span>
+    <span class="balance-amount balance-credit">{{ totalDepositPaid | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label">Balance Amount:</span>
+    <span class="balance-amount balance-debit">{{ totalDepositBal | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label" *ngIf="reportForm.get('LandLordHoldings')!.value">LandLord Amount:</span>
+    <span class="balance-amount balance-debit" *ngIf="reportForm.get('LandLordHoldings')!.value">{{ totalLandLord |
+      number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label" *ngIf="reportForm.get('PropertyHoldings')!.value">Propertry Amount:</span>
+    <span class="balance-amount balance-credit" *ngIf="reportForm.get('PropertyHoldings')!.value">{{ totalProperty |
+      number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+  </div>
+  <div class="balance-container" *ngIf="reportForm.get('reportType')?.value==='CASHTRF'">
+    <span class="balance-label">Debit Amount:</span>
+    <span class="balance-amount balance-debit">{{ debitAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
+
+    <span class="balance-label">Credit Amount:</span>
+    <span class="balance-amount balance-credit">{{ creditAmount | number: '1.2-2' }}</span>
+  </div>
+</div>

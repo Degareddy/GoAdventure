@@ -1,0 +1,329 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Asset Details</div>
+  <div class="right">
+    <button mat-raised-button color="primary" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="assetForm" (ngSubmit)="onSubmit()">
+    <div class="row  justify-content-center">
+      <div class="col-2">
+        <mat-form-field class="mat-mode" appearance="outline">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(assetForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Assigned SlNo</mat-label>
+          <input matInput placeholder="Assigned SlNo" formControlName="assignedSlNo" type="text">
+          <button mat-button *ngIf="assetForm.get('assignedSlNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="assetForm.get('assignedSlNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" (click)="searchData()" type="button"
+            [disabled]="assetForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+        <!-- <button mat-raised-button color="primary"
+                    class=" search-button" type="button" (click)="searchData()">
+                    <div                        style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+                        <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+                    </div>
+                </button> -->
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Asset ID</mat-label>
+          <input matInput placeholder="Asset Id" formControlName="assetID" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Quantity</mat-label>
+          <input matInput placeholder="Quantity" formControlName="quantity" class="right-align-input" appNumberFormat type="text">
+        </mat-form-field>
+      </div>
+
+
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Asset Description</mat-label>
+          <input matInput placeholder="AssetDesc" formControlName="assetDesc" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class"> Asset Group</mat-label>
+          <mat-select formControlName="groupID">
+            <mat-option *ngFor="let x of groupList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Asset Conditions</mat-label>
+          <mat-select formControlName="condition">
+            <mat-option *ngFor="let x of assetcondList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">UOM </mat-label>
+          <mat-select formControlName="uom">
+            <mat-option *ngFor="let x of UOMList" [value]="x.itemName">{{x.itemCode}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <div class="row  justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Asset Location</mat-label>
+          <mat-select formControlName="asstLocation">
+            <mat-option *ngFor="let x of assetLocationList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline" >
+          <mat-label class="mat-label-class">Supplier</mat-label>
+          <input matInput placeholder="Supplier" formControlName="supplier" type="text">
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="search-button" type="button" (click)="onSupplierSearch()"
+          [disabled]="assetForm.get('mode')!.value != 'Add'">
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+            <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+          </div>
+        </button> -->
+        <mat-form-field appearance="outline" style="width:90%">
+          <mat-label class="mat-label-class">Supplier</mat-label>
+          <input matInput placeholder="Supplier" formControlName="supplier" type="text">
+          <button mat-button *ngIf="assetForm.get('supplier')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="assetForm.get('supplier')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSupplierSearch()"
+            [disabled]="assetForm.get('mode')!.value != 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <!-- <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Custodian</mat-label>
+          <input matInput placeholder="custodianName" formControlName="custodianName" type="text">
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="search-button" type="button"
+          [disabled]="assetForm.get('mode')!.value != 'Add'" (click)="onEmployeeSearch()" style="margin-bottom: 3px;">
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+            <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+          </div>
+        </button> -->
+        <mat-form-field appearance="outline" style="width:90%">
+          <mat-label class="mat-label-class">Custodian</mat-label>
+          <input matInput placeholder="Custodian" formControlName="custodianName" type="text">
+          <button mat-button *ngIf="assetForm.get('custodianName')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="assetForm.get('custodianName')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onEmployeeSearch()"
+            [disabled]="assetForm.get('mode')!.value != 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+
+    </div>
+
+    <div class="row  justify-content-center">
+
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Make</mat-label>
+          <input matInput placeholder="Make" formControlName="make" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Model</mat-label>
+          <input matInput placeholder="Model" formControlName="model" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">MFR Serial</mat-label>
+          <input matInput placeholder="MfrSerial" formControlName="mfrSerial" type="text">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Dep Level</mat-label>
+          <mat-select formControlName="depLevel" placeholder="Dep Level">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="AssetLevel">Asset Level</mat-option>
+            <mat-option value="GroupLevel">Group Level</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Apply On</mat-label>
+          <mat-select formControlName="applyOn" placeholder="Apply On">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="Diminising">Diminishing</mat-option>
+            <mat-option value="StrightLine">StrightLine</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <!-- <div class="col-6"> -->
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class" class="mat-date">Add On Date</mat-label>
+          <input matInput [matDatepicker]="picker4" formControlName="addedOn" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+          <mat-datepicker #picker4></mat-datepicker>
+        </mat-form-field>
+        <!-- </div>
+        <div class="col-6"> -->
+        <mat-form-field appearance="outline" class="mat-date">
+          <mat-label class="mat-label-class">Disposed On</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="disposedOn" [max]="tomorrow" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <!-- </div> -->
+      </div>
+
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-2">
+
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Dep Rate</mat-label>
+          <input matInput placeholder="Dep Rate" class="right-align-input" formControlName="depRate" separator
+            type="text">
+        </mat-form-field>
+      </div>
+
+
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Disposed Value</mat-label>
+          <input matInput placeholder="Disposed Value" class="right-align-input" separator
+            formControlName="disposedValue" type="text">
+        </mat-form-field>
+      </div>
+
+      <div class="col-3 myCustomClass">
+        <!-- <input style="margin-left: 28px;" style="margin-left: 28px;" type="checkbox" formControlName="applyWarranty"
+          [formControl]="assetForm.get('applyWarranty')" />
+        <mat-label for="acceptTerms" class="form-check-label" style="margin-left: 28px;"
+          style="margin-left: 10px;">Apply Warranty &nbsp;</mat-label> -->
+        <mat-checkbox formControlName="applyWarranty">Apply Warrant</mat-checkbox>
+      </div>
+
+
+
+    </div>
+    <div class="row  justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Warranty Description</mat-label>
+          <input matInput placeholder="Warr Desc" formControlName="warrDesc" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3 myCustomClass">
+        <mat-label>Life:&nbsp;<b>
+            <mat-form-field appearance="outline" style="width:70px">
+              <mat-label class="mat-label-class">Years</mat-label>
+              <input matInput formControlName="lifeYears" class="right-align-input" type="number">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="width:70px">
+              <mat-label class="mat-label-class">Months</mat-label>
+              <input matInput formControlName="lifeMonths" type="number" class="right-align-input">
+            </mat-form-field>
+          </b></mat-label>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Warr Expiry</mat-label>
+          <input matInput [matDatepicker]="picker3" formControlName="warrExpiry" />
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+
+
+    </div>
+
+    <div class="row  justify-content-center myCustomClass">
+      <div class="col-2">
+        <mat-label>Initial Value:&nbsp;<b class="data">{{initialValue | number:'1.2-2'}}</b>
+        </mat-label>
+      </div>
+      <div class="col-3">
+        <mat-label>Current Value:&nbsp;<b class="data">{{currentValue | number:'1.2-2'}}</b>
+        </mat-label>
+      </div>
+
+      <div class="col-3">
+        <mat-label>Asset Status:&nbsp;</mat-label><b class="data">{{assetStatus | uppercase}}</b>
+      </div>
+
+    </div>
+    <div class="row row justify-content-center">
+      <div class="col-8">
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="assetForm.get('mode')!.value === 'View' || assetForm.invalid">
+        <mat-icon>save</mat-icon>Apply
+      </button>
+      <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>autorenew</mat-icon>Reset
+      </button> -->
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Delete()"
+        [disabled]="assetForm.get('mode')!.value !='Delete'">
+        <mat-icon>delete</mat-icon><b>Delete</b>
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</mat-card>

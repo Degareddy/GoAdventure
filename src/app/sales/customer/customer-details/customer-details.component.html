@@ -1,0 +1,253 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<mat-tab-group (selectedTabChange)="onTabChanged($event)">
+  <mat-tab class="mat-tab" label="Customer Details">
+    <ng-template mat-tab-label>
+      <mat-icon> dashboard </mat-icon>Client Details
+    </ng-template>
+    <div style="margin-top: -15px;">
+      <form [formGroup]="custForm" #frmClear="ngForm">
+        <mat-card>
+          <div class="row justify-content-left">
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label>Mode</mat-label>
+                <mat-select formControlName="mode" (selectionChange)="modeChanged($event)">
+                  <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Code</mat-label>
+                <input matInput placeholder="Code" formControlName="code" type="text" [matTooltipPosition]="'right'"
+                  [matTooltip]="custForm.get('code')!.invalid && (custForm.get('code')!.dirty || custForm.get('code')!.touched) ? 'Only Alpha Numeric Max 10 Char.' : 'Code is auto generated'">
+              </mat-form-field>
+            </div>
+            <div class="col-3">
+              <mat-form-field appearance="outline">
+                <mat-label class="mat-label-class">Name</mat-label>
+                <input type="text" matInput placeholder="Name" #input formControlName="custName"
+                [matTooltip]="custForm.get('custName')!.invalid && (custForm.get('custName')!.dirty || custForm.get('custName')!.touched) ? 'Only Alpha Numeric Max 50 Char.' : 'Enter Client Name'">
+              </mat-form-field>
+            </div>
+            <div class="col-3">
+              <mat-form-field appearance="outline">
+                <mat-label class="mat-label-class">Group Name</mat-label>
+                <mat-select formControlName="groupName">
+                  <mat-option value="">--Select--</mat-option>
+                  <mat-option *ngFor="let y of custGroups" [value]="y.itemCode">{{y.itemName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-date">
+                <mat-label class="mat-label-class">Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="effectiveDate" [max]="tomorrow" />
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row justify-content-left">
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Currency</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option value="">--Select--</mat-option>
+                  <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+                </mat-select>
+                <!-- <input matInput placeholder="Currency" id="currency" formControlName="currency"> -->
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Vat-Pin</mat-label>
+                <input matInput type="text" placeholder="Vat-Pin" formControlName="vATPINNo">
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Pay Term</mat-label>
+                <mat-select formControlName="payTerm">
+                  <mat-option value="NA">N/A</mat-option>
+                  <mat-option *ngFor="let x of paytermList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+                </mat-select>
+                <!-- <input matInput type="text" id="payTerm" formControlName="payTerm" placeholder="Pay Term"> -->
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Pricing</mat-label>
+                <mat-select formControlName="pricing">
+                  <mat-option value="NA">N/A</mat-option>
+                  <mat-option *ngFor="let x of pricesList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+                </mat-select>
+                <!-- <input matInput type="text" id="payTerm" formControlName="payTerm" placeholder="Pay Term"> -->
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Credit Limit</mat-label>
+                <input matInput type="number" placeholder="Credit Limit" class="right-align-input"
+                  formControlName="maxCrLimit">
+              </mat-form-field>
+            </div>
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Security Item</mat-label>
+                <input matInput type="text" id="secuItemDesc" placeholder="Security Item"
+                  formControlName="secuItemDesc">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row justify-content-left">
+            <div class="col-2">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Sales Executive</mat-label>
+                <mat-select formControlName="salesExecutive">
+                  <mat-option value="NA">N/A</mat-option>
+                  <mat-option *ngFor="let x of saleList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-3">
+              <mat-form-field appearance="outline" class="w-full h-8"> <!-- Adjust height here -->
+                <mat-label class="mat-label-class">Country</mat-label>
+                <input
+                  type="text"
+                  matInput
+                  formControlName="countryName"
+                  placeholder="Enter Country Name"
+                  [matAutocomplete]="auto"
+                >
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCountryName.bind(this)">
+                  <mat-option *ngFor="let country of filteredCountryNames | async" [value]="country.itemCode"
+                    (onSelectionChange)="countryChanged($event)">
+                    {{ country.itemName  }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <div class="col-3">
+              <mat-form-field appearance="outline" class="mat-mode" >
+                <mat-label class="mat-label-class">Country Code</mat-label>
+                <input matInput type="text" id="Phone1" formControlName="countryCode" placeholder="Mobile"
+                [matTooltip]="custForm.get('countryCode')!.invalid && (custForm.get('countryCode')!.dirty || custForm.get('countryCode')!.touched) ? 'Only Numeric' : 'Please select country'">
+              </mat-form-field>
+            </div>
+            <div class="col-3">
+              <mat-form-field appearance="outline">
+                <input matInput type="text" id="Phone1"  formControlName="phone1" placeholder="Mobile" [matTooltip]=" custForm.get('phone1')!.value && !custForm.get('phone1')!.invalid && (custForm.get('phone1')!.dirty || custForm.get('phone1')!.touched) ? 'Only Numeric' : 'Please Enter Without Country Code'" (focusout)="onPhone1Change($event)">
+              </mat-form-field>
+            </div>
+              <div class="col-3">
+                <mat-form-field appearance="outline">
+                  <mat-label>Email</mat-label>
+                  <input matInput type="email" id="email" formControlName="email" placeholder="Email">
+                </mat-form-field>
+              </div>
+              <div class="col-3">
+
+                <mat-form-field appearance="outline" style="width: calc(100% - 40px); margin: 0;">
+                  <mat-label>Representative</mat-label>
+                  <input matInput type="text" placeholder="name" formControlName="name" />
+                  <button matSuffix mat-icon-button aria-label="Clear" *ngIf="custForm.get('name')!.value && custForm.get('mode')!.value !== 'View'"
+                    (click)="custForm.get('name')!.setValue('')" type="button">
+                    <mat-icon class="mat-clear-icon" style="font-size: 14px;">clear</mat-icon>
+                  </button>
+                  <button matSuffix mat-icon-button aria-label="Search" (click)="onnameSearch()" type="button"
+                    [disabled]="custForm.get('name')!.value === 'View'">
+                    <mat-icon class="mat-search-icon" style="font-size: 14px;">search</mat-icon>
+                  </button>
+                </mat-form-field>
+                <!-- <button mat-icon-button aria-label="Details" (click)="tenanDetails($event)" type="button"
+                  [disabled]="contactForm.get('mode')!.value === 'View' || contactForm.get('updateAll')!.value || unitDetForm.get('tenantName')!.value === ''">
+                  <mat-icon class="mat-launch-icon" style="font-size: 14px;">launch</mat-icon>
+                </button> -->
+            </div>
+            <div class="col-3">
+              <mat-form-field appearance="outline">
+                <mat-label>Notes</mat-label>
+                <input matInput type="text" id="notes" formControlName="notes" placeholder="Notes">
+              </mat-form-field>
+            </div>
+            <div class="col-3">
+              <mat-label>Status: </mat-label><b class="data">{{custStatus}}</b>
+            </div>
+          </div>
+          <div class="d-flex justify-content-start align-items-center flex-wrap gap-10">
+            <div *ngIf="tenantlnld">
+              <mat-checkbox formControlName="isCustomer">Customer</mat-checkbox>
+            </div>
+            <div *ngIf="tenantlnld">
+              <mat-checkbox formControlName="isVendor">Vendor</mat-checkbox>
+            </div>
+            <div *ngIf="tenantlnld">
+              <mat-checkbox formControlName="isEmployee">Staff</mat-checkbox>
+            </div>
+            <div>
+              <mat-checkbox formControlName="isLandlord">Landlord</mat-checkbox>
+            </div>
+            <div>
+              <mat-checkbox formControlName="isTenant">Tenant</mat-checkbox>
+            </div>
+            <div>
+              <mat-checkbox formControlName="isCareTaker">Representative</mat-checkbox>
+            </div>
+            <div *ngIf="tenantlnld">
+              <mat-checkbox formControlName="isStaker">Stakeholder</mat-checkbox>
+            </div>
+          </div>
+          
+          
+
+          <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+          <div class="btnAlignment">
+            <button mat-raised-button color="primary" class="btnUp" (click)="checkMobileNumber()"
+              [disabled]="custForm.get('mode')!.value === 'View' ||  custForm.invalid">
+              <mat-icon>done</mat-icon><b>Apply</b>
+            </button>
+            <button mat-raised-button color="primary" type="button" class="btnUp"
+      (click)="onDocsCilcked(custForm.get('code')!.value)"
+      [disabled]="custForm.get('code')!.value === '' || custForm.invalid"><mat-icon>cloud_upload</mat-icon>
+      Docs
+    </button>
+            <button mat-raised-button class="btnUp" color="accent" type="button" (click)="Clear()">
+              <mat-icon>clear_all</mat-icon><b>Clear</b>
+            </button>
+            <!-- <button mat-raised-button color="primary" type="button" class="btnUp" (click)="reset()">
+              <mat-icon>autorenew</mat-icon><b>Reset</b>
+            </button> -->
+            <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+              <mat-icon>cancel</mat-icon><b>Close</b>
+            </button>
+          </div>
+        </mat-card>
+      </form>
+      <app-customer-addresses #address [mode]="custForm.controls['mode'].value"
+        [custID]="custForm.controls['code'].value" (serialCreated)="getSlNum($event)"></app-customer-addresses>
+
+    </div>
+  </mat-tab>
+  <mat-tab class="mat-tab" [disabled]="this.serialNum == 0 || this.serialNum == undefined">
+    <ng-template mat-tab-label>
+      <mat-icon>info</mat-icon>Personal Info
+    </ng-template>
+    <div style="padding-top:10px ;">
+      <app-customer-contacts [mode]="custForm.controls['mode'].value" [custID]="custForm.controls['code'].value"
+        #contacts></app-customer-contacts>
+    </div>
+  </mat-tab>
+  <mat-tab class="mat-tab">
+    <ng-template mat-tab-label>
+      <mat-icon>info</mat-icon>Unit Details
+    </ng-template>
+    <div  *ngIf="selectedTabIndex === 2" style="padding-top:10px ;">
+      <app-customer-units [custID]="this.custId" [custName]="this.custName" #units></app-customer-units>
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,72 @@
+<div class="flex h-screen overflow-hidden">
+  <div class="relative w-1/2 hidden lg:flex items-center justify-center bg-gradient-to-br from-gray-400 to-indigo-800">
+    <div class="text-center px-8">
+      <div class="mb-4 text-white">
+        <h2>👋 Welcome To</h2>
+        <mat-icon *ngIf="currentMainHeader === 'Property Management'" class="icon-size">home</mat-icon>
+        <mat-icon *ngIf="currentMainHeader === 'Construction Management'" class="icon-size">build</mat-icon>
+        <mat-icon *ngIf="currentMainHeader === 'Inventory Management'" class="icon-size">storage</mat-icon>
+        <mat-icon *ngIf="currentMainHeader === 'Asset Management'" class="icon-size">account_balance</mat-icon>
+        <mat-icon *ngIf="currentMainHeader === 'Payroll'" class="icon-size">monetization_on</mat-icon>
+        <mat-icon *ngIf="currentMainHeader === 'General Ledger'" class="icon-size">receipt</mat-icon>
+      </div>
+      <h1 class="text-white text-4xl font-bold mb-4 animate-text">{{ currentMainHeader }}</h1>
+      <p class="text-white text-lg mb-8 animate-text">{{ currentSubHeader }}</p>
+      <!-- <div class="absolute bottom-4 text-white text-sm">© {{currentYear}} Dega Technologies. All rights reserved.</div> -->
+    </div>
+  </div>
+  <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-2 bg-white">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-full max-w-sm">
+      <div class="text-center px-8">
+        <!-- <h1 class="text-gray-800 text-4xl font-bold mb-4">Hello, Welcome Back!</h1> -->
+        <!-- <p class=" text-lg mb-8 text-gray-800">Skip repetitive tasks and focus on what matters the most with automated solutions.</p> -->
+        <div class="absolute bottom-4  text-gray-800 text-sm">© {{currentYear}} Dega Technologies. All rights reserved.</div>
+      </div>
+      <div class="mb-3 text-center">
+        <div class="inline-block p-4 rounded-lg">
+          <img src="assets/img/degalogo.JPEG" alt="Logo" class="w-24 mx-auto rounded-md">
+        </div>
+      </div>
+      <div class="mb-4 text-center">
+        <mat-form-field appearance="outline" class="w-2/4">
+          <mat-label class="mat-label-class">Username</mat-label>
+          <input matInput formControlName="email" id="email" placeholder="User ID or email" class="black-text"
+            autocomplete="off">
+          <mat-error *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">Email or
+            User Id is
+            required!</mat-error>
+          <mat-error *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">Please enter a
+            valid User ID or email</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="mb-6 text-center">
+        <mat-form-field appearance="outline" class="w-2/4">
+          <mat-label class="mat-label-class">Password</mat-label>
+          <input matInput formControlName="password" autocomplete="off" id="password" type="password"
+            placeholder="******************" class="black-text">
+          <mat-error
+            *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">Password is
+            required!</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="text-center mt-4 text-sm">
+        <a routerLink="/forgot" class="text-gray-500 cursor-pointer">Forgot password?</a>
+      </div>
+      <div class="flex justify-between mb-2">
+        <button type="submit" [disabled]="!loginForm.valid"
+          class="w-1/2 py-1 bg-blue-500 text-whit rounded-md  btnUp font-semibold hover:bg-blue-600 disabled:bg-gray-300 flex items-center justify-center">
+          <mat-icon class="mr-1">arrow_forward</mat-icon>Login
+        </button>
+
+        <button type="button" (click)="formReset()"
+          class="w-1/2 py-1 bg-red-500 text-white rounded-md   btnUp font-semibold hover:bg-red-600 disabled:bg-gray-300 flex items-center justify-center ml-1">
+          <mat-icon class="mr-1">clear</mat-icon>Clear
+        </button>
+      </div>
+
+      <!-- <div class="text-center mt-6 text-sm text-gray-800">Version: {{ version }}</div> -->
+    </form>
+  </div>
+
+</div>

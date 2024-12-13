@@ -1,0 +1,104 @@
+
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">account_balance</mat-icon>
+      <b>Opening Balances</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" type="button" class="btnUp" (click)="onDetailsCilcked()"
+      [disabled]="openingBalForm.get('mode')!.value == 'Add' || openingBalForm.invalid || openingBalForm.get('tranNo')!.value===''">
+      <mat-icon>info</mat-icon>Details
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="NotesDetails()">
+      <mat-icon>note_add</mat-icon>
+      Notes
+    </button>
+    <button mat-raised-button class="btnUp" type="button" (click)="logDetails()">
+      <mat-icon>comment</mat-icon>Log
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+      <mat-icon>help</mat-icon>
+      Help
+    </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="openingBalForm">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(openingBalForm.get('mode')!.value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Tran No</mat-label>
+          <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+          <button mat-button *ngIf="openingBalForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="openingBalForm.get('tranNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchCilcked()"
+            [disabled]="openingBalForm.get('mode')!.value === 'Add'">
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Tran Date</mat-label>
+          <input matInput [matDatepicker]="picker" [max]="tomorrow" placeholder="TranDate" formControlName="tranDate"
+            type="Datepicker">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label class="mat-label-class">Balance Type</mat-label>
+          <mat-select formControlName="balType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of patyTypeList" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-7">
+          <mat-form-field appearance="outline" style="width: 98%; margin-left: -10px;">
+            <mat-label class="mat-label-class">Notes</mat-label>
+            <input matInput placeholder="Notes" formControlName="notes" type="text">
+          </mat-form-field>
+        </div>
+        <div class="col-3 myCustomClass">
+          <mat-label>Status:&nbsp;<b class="data">{{status}}</b></mat-label>
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]="openingBalForm.get('mode')!.value === 'View' || openingBalForm.invalid"
+        (click)=" onSubmit()"><mat-icon>done</mat-icon>Apply</button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+  <div>
+    <app-access-grid [columnDefs]="columnDefs" [tranLabel]="tranLabel" [rowData]="rowData" [exportPDF]="true"
+      [exportExcel]="true" (linkClicked)="onLnkClicked($event)" [paginationPageSize]="25" [globalSearch]="true"
+      [showToolPanel]="true" (detailClicked)="onDtlClicked($event)"
+      (columnVisibilityChanged)="onColumnVisibilityChanged($event)" [gridHeight]="'250px'"
+      (filterChanges)="onFilterData($event)" [showRecordCount]="true" [reportName]="'Transaction'"></app-access-grid>
+  </div>
+</div>

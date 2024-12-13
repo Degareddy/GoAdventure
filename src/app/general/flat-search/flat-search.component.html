@@ -1,0 +1,86 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+</button>
+<div class="flex items-center text-white rounded-sm bg-blue-400 ">
+  <mat-icon class="mr-1">search</mat-icon>
+  <b class="mr-2">{{searchName | titlecase}}</b>
+  Property:&nbsp;<b class="data">{{data.property}}&nbsp;&nbsp;</b> Block:&nbsp;<b class="data">{{data.block}}</b>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="flatSearchForm">
+    <div class="row  justify-content-center" style="margin-top: 8px;">
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Unit</mat-label>
+          <input matInput placeholder="Unit" formControlName="unit" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Landlord</mat-label>
+          <input matInput placeholder="Plot" formControlName="landlord" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Tenant</mat-label>
+          <input matInput placeholder="Plot" formControlName="tenant" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Plex Type</mat-label>
+          <mat-select placeholder="Status" formControlName="plexType" matInput>
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="Simplex">Simplex</mat-option>
+            <mat-option value="Duplex">Duplex</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select placeholder="Status" formControlName="unitStatus" matInput>
+            <mat-option value="ANY">--Select--</mat-option>
+            <mat-option value="">All</mat-option>
+            <mat-option value="Active">Active</mat-option>
+            <mat-option value="Allocated">Allocated</mat-option>
+            <mat-option value="For Sale">For Sale</mat-option>
+            <mat-option value="Not For Rent">Not For Rent</mat-option>
+            <mat-option value="Pending">Pending</mat-option>
+            <mat-option value="Vacant">Vacant</mat-option>
+            <mat-option value="Open">Open</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" class="btnUp"
+          (click)="search()"><mat-icon>search</mat-icon>Search</button>
+        <button mat-raised-button color="accent" class="btnUp"
+          (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+        <button mat-raised-button color="warn" class="btnUp"
+          [mat-dialog-close]="true"><mat-icon>cancel</mat-icon>Close</button>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- <div class="grid">
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:280px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs1"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+
+</div>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select id="page-size" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChanged()"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+  </select>
+</div> -->
+<app-access-grid [columnDefs]="columnDefs1" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+    [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+    [gridHeight]="'280px'" [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'"
+    [showRecordCount]="true">
+  </app-access-grid>

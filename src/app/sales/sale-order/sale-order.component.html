@@ -1,0 +1,253 @@
+
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">shopping_cart</mat-icon>
+      <b>{{title | titlecase}}</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="primary" [disabled]="saleOrderForm.invalid || saleOrderForm.get('mode')!.value === 'Add'"
+      class="btnUp" type="button" (click)="onDetailsCilcked()">
+       <mat-icon>info</mat-icon>Details
+     </button>
+     <button mat-raised-button color="accent" type="button" class="btnUp" [disabled]="saleOrderForm.invalid || saleOrderForm.get('mode')!.value === 'Add'"
+     (click)="onDocsCilcked()"><mat-icon>cloud_upload</mat-icon>Docs</button>
+     <button mat-raised-button color="primary" class="btnUp" type="button" (click)="onHelpCilcked()">
+       <mat-icon>help</mat-icon>
+       Help
+     </button>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+    <form [formGroup]="saleOrderForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row">
+      <div class="col-9">
+        <div class="row justify-content-left">
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange(saleOrderForm.get('mode')!.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Sale No</mat-label>
+              <input matInput placeholder="Sale No" formControlName="saleNo" type="text">
+              <button mat-button *ngIf="saleOrderForm.get('saleNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="saleOrderForm.get('saleNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="saleNoSearch()"
+                [disabled]="saleOrderForm.get('mode')!.value ==='Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Quotation No</mat-label>
+              <input matInput placeholder="Quotation No" formControlName="quotationNo" type="text">
+              <button mat-button *ngIf="saleOrderForm.get('quotationNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="saleOrderForm.get('quotationNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="quotationSearch()"
+                [disabled]="saleOrderForm.get('mode')!.value == 'View'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label class="mat-label-class">Customer</mat-label>
+              <input matInput placeholder="Customer" formControlName="customer" type="text">
+              <button mat-button *ngIf="saleOrderForm.get('customer')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="saleOrderForm.get('customer')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onCustomerSearch()"
+                [disabled]="saleOrderForm.get('mode')!.value == 'View'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="row justify-content-left">
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Sale Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Pricing</mat-label>
+              <mat-select matInput formControlName="pricing">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of pricingList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Schedule</mat-label>
+              <mat-select matInput formControlName="schedule">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of scheduleList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label class="mat-label-class">Excutive</mat-label>
+              <input matInput placeholder="Excutive" formControlName="salesRep" type="text">
+              <button mat-button *ngIf="saleOrderForm.get('salesRep')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="saleOrderForm.get('salesRep')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onEmployeeSearch()"
+                [disabled]="saleOrderForm.get('mode')!.value == 'View'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="row justify-content-left myCustomClass">
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">LPO No</mat-label>
+              <input matInput placeholder="LopNo" formControlName="lopNo" type="text" />
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Currency</mat-label>
+              <mat-select matInput placeholder="Currency" formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Pay Terms</mat-label>
+              <mat-select matInput placeholder="Pay Terms" formControlName="payTerm">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of payTermList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Exchange Rate</mat-label>
+              <input matInput placeholder="Exchange Rate" class="right-align-input" appExchange
+                formControlName="exchangeRate" type="text" />
+            </mat-form-field>
+          </div>
+
+        </div>
+        <div class="row justify-content-left">
+          <div class="col-3 myCustomClass">
+            <mat-checkbox formControlName="applyVAT">Apply VAT</mat-checkbox>
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Ship To</mat-label>
+              <input matInput placeholder="Ship To" formControlName="shipTo" type="text">
+              <button mat-button [disabled]="saleOrderForm.get('mode')!.value === 'View'" type="button" matSuffix
+                mat-icon-button aria-label="Clear" (click)="saleOrderForm.get('shipTo')!.setValue('')">
+                <mat-icon class="mat-search-icon">close</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="billToSearch('SHIPTO')">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+
+          </div>
+          <div class="col-3">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Bill To</mat-label>
+              <input matInput placeholder="BillTo" formControlName="billTo" type="text">
+              <button mat-button [disabled]="saleOrderForm.get('mode')!.value === 'View'" type="button" matSuffix
+                mat-icon-button aria-label="Clear" (click)="saleOrderForm.get('billTo')!.setValue('')">
+                <mat-icon class="mat-search-icon">close</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="billToSearch('BILLTO')">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="col-3">
+          </div>
+        </div>
+        <div class="row justify-content-left">
+          <div class="col-9">
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Notes</mat-label>
+              <textarea matInput placeholder="Notes" rows="2" formControlName="notes"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="col-3 myCustomClass">
+            <mat-label>Status:&nbsp;<b class="data">{{tranStatus | uppercase}}</b></mat-label>
+          </div>
+        </div>
+      </div>
+      <div class="col-3"
+        style="background: rgb(240, 236, 213);;height: 90px; ;border-radius: 5px;border: 1px solid;">
+        <div class="myCustomClass">
+          <table class="custom-table" id="customers">
+            <tr>
+              <td class="side-by-side"><b>Item count:</b></td>
+              <td class="side-by-side right-align data"><b>{{itemCount < 0 ? '0.00' : itemCount | number:'1.0-0'}}</b>
+              </td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{amountExclVat < 0 ? '0.00' : amountExclVat | number:'1.2-2'}}</b>
+              </td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>VAT Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{vatAmount < 0 ? '0.00' : vatAmount | number:'1.2-2'}}</b>
+              </td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Total Amount:</b></td>
+              <td class="side-by-side right-align data"><b>{{totalAmount < 0 ? '0.00' : totalAmount |
+                    number:'1.2-2'}}</b>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+       [disabled]="saleOrderForm.invalid || saleOrderForm.get('mode')!.value==='View'
+       ">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+</div>

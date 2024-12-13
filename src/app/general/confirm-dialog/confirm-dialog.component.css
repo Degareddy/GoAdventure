@@ -1,0 +1,48 @@
+/* Add this in your component's CSS or SCSS file */
+
+ .mat-dialog-container {
+  /* background-color: #deebfd; */
+  /* border-radius: 4px !important; */
+  background: linear-gradient(135deg, #eaebec, #b6cff5);
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  color: #3f51b5; /* Soft blue color for the title */
+  font-weight: bold;
+}
+
+.yes-button {
+  background-color: #4caf50; /* Green for the 'Yes' button */
+  color: white;
+  line-height: 22px;
+}
+
+.no-button {
+  border-color: #f44336; /* Red border for the 'No' button */
+  color: #f44336;
+  line-height: 22px;
+
+}
+
+.yes-button:hover,
+.no-button:hover {
+  filter: brightness(1.1); /* Slightly brighten on hover */
+}
+
+.no-button[mat-stroked-button] {
+  background-color: white; /* White background for the 'No' button */
+}
+
+.small-icon {
+  font-size: 16px;
+}
+
+
+.dialog-actions {
+  display: flex;
+  justify-content: right; /* Center the buttons horizontally */
+  gap: 3px; /* Optional: Add spacing between buttons */
+  padding: 3px; /* Optional: Add padding around the buttons */
+
+}

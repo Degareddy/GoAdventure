@@ -1,0 +1,152 @@
+<section>
+  <div class="mat-card container-fluid">
+    <div class="left data">Bank Statement Reconciliation</div>
+    <div class="right">
+      <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="AddCustomer()">
+          Customers
+        </button> -->
+      <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button>
+    </div>
+  </div>
+  <mat-card>
+    <!-- <div class="container-fluid"> -->
+    <form [formGroup]="reconForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Mode</mat-label>
+            <mat-select formControlName="mode" placeholder="Mode" (selectionChange)="modeChange(reconForm.get('mode')?.value)">
+              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <!-- <mat-form-field appearance="outline">
+            <mat-label>Tran No</mat-label>
+            <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+            <button mat-button *ngIf="reconForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+              aria-label="Clear" (click)="reconForm.get('tranNo')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-form-field>
+          <button mat-raised-button color="primary" class=" search-button" type="button" (click)="onTranSearch()"
+            [disabled]="reconForm.get('mode')!.value === 'View'">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+            </div>
+          </button> -->
+          <mat-form-field appearance="outline" style="width: 95%;">
+            <mat-label>Tran No</mat-label>
+            <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+            <button mat-button *ngIf="reconForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+              aria-label="Clear" (click)="reconForm.get('tranNo')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onTranSearch()"
+              [disabled]="reconForm.get('mode')!.value === 'Add'">
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="tranDate">
+            <mat-label class="mat-label-class">Tran Date</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="tranDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Bank</mat-label>
+            <mat-select formControlName="bank" placeholder="Bank">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of bankList" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <!-- <mat-form-field appearance="outline">
+            <mat-label>Bank Account No</mat-label>
+            <input matInput placeholder="Bank Account No" formControlName="bankAccountNo" type="text">
+            <button mat-button *ngIf="reconForm.get('bankAccountNo')!.value" type="button" matSuffix mat-icon-button
+              aria-label="Clear" (click)="reconForm.get('bankAccountNo')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-form-field>
+          <button mat-raised-button color="primary" class=" search-button" type="button" (click)="onAccountSearch()"
+            [disabled]="reconForm.get('mode')!.value === 'View'">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+              <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+            </div>
+          </button> -->
+          <mat-form-field appearance="outline" style="width: 95%;">
+            <mat-label class="mat-label-class">Bank Account No</mat-label>
+            <input matInput placeholder="Bank Account No" formControlName="bankAccountNo" type="text">
+            <button mat-button *ngIf="reconForm.get('bankAccountNo')!.value" type="button" matSuffix mat-icon-button
+              aria-label="Clear" (click)="reconForm.get('bankAccountNo')!.setValue('')">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onTranSearch()"
+              [disabled]="reconForm.get('mode')!.value === 'View'">
+              <mat-icon class="mat-search-icon">search</mat-icon>
+            </button>
+          </mat-form-field>
+
+        </div>
+        <div class="col-3">
+          <mat-form-field appearance="outline">
+            <mat-label class="mat-label-class">Currency</mat-label>
+            <mat-select formControlName="currency" placeholder="Currency">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+            </mat-select>
+            <!-- <input matInput placeholder="Currency" formControlName="currency" type="text" /> -->
+          </mat-form-field>
+        </div>
+
+      </div>
+      <div class="row justify-content-center myCustomClass">
+        <div class="col-3">
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>Notes</mat-label>
+            <input matInput placeholder="Notes" type="text" formControlName="notes" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-label>Total Entries:&nbsp;</mat-label><b class="data">{{totalEntries}}</b>
+          <!-- <input matInput placeholder="TotalEntries" formControlName="totalEntries" type="text" /> -->
+        </div>
+
+
+        <div class="col-3">
+          <mat-label>Status:&nbsp;</mat-label><b class="data">{{status}}</b>
+
+        </div>
+
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="reconForm.invalid">
+          <mat-icon>done</mat-icon>Apply
+        </button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</section>

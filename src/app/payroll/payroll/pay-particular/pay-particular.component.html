@@ -1,0 +1,114 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+
+     Pay Perticular
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <!-- <button mat-raised-button color="accent" class="btnUp" type="button"
+        (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+        Help</button> -->
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form [formGroup]="ppartForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayID</mat-label>
+          <input matInput placeholder="PayID" formControlName="payID" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayDesc</mat-label>
+          <input matInput placeholder="PayDesc" formControlName="payDesc" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayOn</mat-label>
+          <input matInput placeholder="PayOn" formControlName="payOn" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayType</mat-label>
+          <input matInput placeholder="PayType" formControlName="payType" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayBy</mat-label>
+          <input matInput placeholder="PayBy" formControlName="payBy" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Taxable</mat-label>
+          <input matInput placeholder="Taxable" formControlName="taxable" type="">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>IsMandatory</mat-label>
+          <input matInput placeholder="IsMandatory" formControlName="isMandatory" type="">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>PayValue</mat-label>
+          <input matInput placeholder="PayValue" formControlName="payValue" type="number">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" style="width: 250px">
+          <mat-label>Created Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="createdDate" [max]="tomorrow"/>
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>TranStatus</mat-label>
+          <input matInput placeholder="TranStatus" formControlName="tranStatus" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="notes" type="text">
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <div class="btnAlignment">
+      <button type="button" mat-raised-button color="primary" class="btnUp" (click)="onUpdate()">Update</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="insert()">
+        <mat-icon>insert</mat-icon>Insert
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
+        <mat-icon>refresh</mat-icon>Reset
+      </button>
+    </div>
+  </form>
+</div>

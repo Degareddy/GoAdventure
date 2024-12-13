@@ -1,0 +1,68 @@
+<div class="toolpanelWrapper" *ngIf="showToolPanel && menuState">
+  <h6>Columns</h6>
+  <ul class="columnsMenu" style="max-height: 180px;">
+    <ng-template ngFor let-check [ngForOf]="columnDefs">
+      <li *ngIf="check.headerName.length > 0 && check.field">
+        <div class="form-check columnItems">
+          <input [attr.id]="'inlnbox'+check.headerName" [attr.value]="check.field" class="colHeader checkbox-NewDes"
+            [checked]="!check?.hide" type="checkbox" (change)="checkedFields($event)"
+            (change)="onColumnVisibilityChange($event, check)">
+          <label [attr.for]="'inlnbox'+check.headerName" class=""> {{check.headerName}}</label>
+        </div>
+      </li>
+    </ng-template>
+  </ul>
+</div>
+<div class="flex flex-col sm:flex-row justify-between items-center mb-1">
+  <div class="flex-1">
+    <mat-label><b class="data"><u>{{tranLabel | titlecase}}</u></b></mat-label>
+  </div>
+
+  <div class="flex flex-wrap justify-end mt-1 sm:mt-0">
+    <div class="flex items-center mr-1" *ngIf="globalSearch">
+      <input type="search"
+             class="form-control form-control-sm agGridFilter border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+             id="filter-text-box"
+             [(ngModel)]="quickFilter"
+             placeholder="Filter .."
+             (input)="onFilterTextBoxChanged($event)"
+             (focusout)="onFilterFocusOut($event)">
+    </div>
+
+    <div class="flex items-center mr-3" *ngIf="exportPDF" title="Export data">
+      <span class="cursor-pointer" (click)="Pdfexport()">
+        <img src="assets/pdfLogo.jpg" width="20" height="20" alt="Export to PDF">
+      </span>
+    </div>
+
+    <div class="flex items-center mr-3" *ngIf="exportExcel" title="Export data">
+      <span class="cursor-pointer" (click)="exportCSV()">
+        <img src="assets/excelicon.svg" width="20" height="20" alt="Export to Excel">
+      </span>
+    </div>
+
+    <div class="flex items-center" *ngIf="showToolPanel" title="Customize Columns">
+      <span class="cursor-pointer" (click)="toggleMenu($event)">
+        <img src="assets/gridSetting.svg" width="20" height="20" alt="Customize Columns">
+      </span>
+    </div>
+  </div>
+</div>
+<ag-grid-angular  [pagination]="true" class="ag-theme-alpine" [style.height]="gridHeight"
+  [frameworkComponents]="frameworkComponents" [paginationPageSize]="paginationPageSize" style="width: 100%;" #agGrid
+  (gridReady)="onGridReady($event)" (linkClicked)="onLnkClicked($event)" (detailClicked)="onDtlClicked($event)"
+  (rowsSelected)="onSelectionChanged($event)" [columnDefs]="columnDefs" [rowData]="rowData"
+  (filterChanged)="onFilterChanged()" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+  (cellClicked)="onGridCellClicked($event)" [context]="context" [gridOptions]="gridOptions">
+</ag-grid-angular>
+<div class="pageSizectrl" style="margin-top:-20px;">
+  <select (change)="onPageSizeChanged($event)" id="page-size">
+    <option *ngFor="let page of pageSizes" [value]="page" [attr.selected]="page == paginationPageSize?true :null">
+      {{page}}
+    </option>
+    <span *ngIf="showRecordCount">
+      <span style="margin-left:10px;font-weight:bold;">No.of Records :</span>
+      <span>{{rowData ? rowData.length : 0}}</span>
+    </span>
+  </select>
+</div>

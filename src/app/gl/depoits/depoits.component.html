@@ -1,0 +1,131 @@
+<div class="mat-card container-fluid">
+  <div class="left data">Bank Deposits</div>
+  <div class="right">
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onDetailsCilcked(bankDeptForm.get('tranNo')!.value)"
+      [disabled]="bankDeptForm.get('tranNo')!.value === ''">
+      Details
+    </button>
+    <button mat-raised-button color="accent" class="btnUp" type="button"
+      (click)="onHelpCilcked()"><mat-icon>help</mat-icon>
+      Help</button>
+  </div>
+</div>
+<mat-card>
+  <form [formGroup]="bankDeptForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode" placeholder="Mode">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3" style="display: flex; align-items: flex-end;">
+        <mat-form-field appearance="outline" style="flex-grow: 1;">
+          <mat-label>Tran No</mat-label>
+          <input matInput placeholder="tranNo" formControlName="tranNo" type="text"
+            [disabled]="bankDeptForm.get('mode')!.value == 'Add'">
+          <button mat-button *ngIf="bankDeptForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="bankDeptForm.get('tranNo')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-form-field>
+        <button mat-raised-button color="primary" [disabled]="bankDeptForm.get('mode')!.value == 'Add'" type="button"
+          (click)="searchData()" class="search-button">
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%;">
+            <mat-icon style="font-size: 18px; height: 100%; width: 100%;">search</mat-icon>
+          </div>
+        </button>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Deposite Type</mat-label>
+          <mat-select formControlName="depositeType" placeholder="DepositeType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of depositsTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Bank</mat-label>
+          <mat-select formControlName="bank" placeholder="Bank">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of banksList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Bank Account</mat-label>
+          <mat-select formControlName="bankAccount" placeholder="BankAccount">
+            <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option> -->
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" >
+          <mat-label>Currency</mat-label>
+          <input matInput placeholder="Currency" formControlName="currency" type="text" />
+        </mat-form-field>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-date">
+            <mat-label>Tran Date</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="tranDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field appearance="outline" class="mat-number">
+            <mat-label>Total Amount</mat-label>
+            <input matInput placeholder="TotalAmount" formControlName="totalAmount" type="text" />
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <!-- <mat-form-field appearance="outline" aria-colspan="2">
+                <mat-label>Status</mat-label>
+                <input matInput placeholder="Status" formControlName="status" type="text" />
+              </mat-form-field> -->
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-6">
+          <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
+            <mat-label>Notes</mat-label>
+            <textarea matInput placeholder="Notes" rows="2" formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-3 myCustomClass">
+          <mat-label>Status:</mat-label>
+        </div>
+      </div>
+    </div>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp">
+        <mat-icon>apply</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Reset()">
+        <mat-icon>reset</mat-icon>Reset
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button">
+        <mat-icon>help</mat-icon>Help
+      </button>
+    </div>
+  </form>
+</mat-card>
