@@ -29,6 +29,7 @@ export class plotClass {
   public latitude!: number
   public longitude!: number
   public extent_M2!: number
+  public extent_Y2!: number
   public client!: string
   public availableFrom!: string | null
   public saleDate!: Date

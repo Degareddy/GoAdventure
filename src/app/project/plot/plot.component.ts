@@ -43,7 +43,8 @@ export class PlotComponent implements OnInit, OnDestroy {
   plotsDt!: string;
   @Input() max: any;
   today = new Date();
-
+  private readonly SQ_M_TO_SQ_YD = 1.1959896; // Sq Meters to Sq Yards
+  private readonly SQ_YD_TO_SQ_M = 0.836127;  // Sq Yards to Sq Meters
   constructor(private fb: FormBuilder,
     private masterService: MastersService,
     private loader: NgxUiLoaderService, public dialog: MatDialog,
@@ -61,10 +62,10 @@ export class PlotComponent implements OnInit, OnDestroy {
       plotName: ['', [Validators.required, Validators.maxLength(50)]],
       latitude: [0],
       longitude: [0],
-      extent_M2: ['', [Validators.required]],
+      extent_M2: ['0.00', [Validators.required]],
       client: ['', [Validators.maxLength(50)]],
       availableFrom: [new Date(), [Validators.required]],
-      // saleDate: [''],
+      extent_Y2: ['0.00', [Validators.required]],
       // regnDate: [''],
       plotStatus: ['', [Validators.maxLength(20)]],
       remarks: ['', [Validators.maxLength(255)]],
@@ -73,8 +74,27 @@ export class PlotComponent implements OnInit, OnDestroy {
       plot: ['']
     })
   }
+
+  private subscribeToChanges(): void {
+    this.pltDetForm.get('extent_M2')?.valueChanges.subscribe((value: string) => {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue)) {
+        const convertedValue = (numValue * this.SQ_M_TO_SQ_YD).toFixed(2);
+        this.pltDetForm.get('extent_Y2')?.setValue(convertedValue, { emitEvent: false });
+      }
+    });
+
+    this.pltDetForm.get('extent_Y2')?.valueChanges.subscribe((value: string) => {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue)) {
+        const convertedValue = (numValue * this.SQ_YD_TO_SQ_M).toFixed(2);
+        this.pltDetForm.get('extent_M2')?.setValue(convertedValue, { emitEvent: false });
+      }
+    });
+  }
   ngOnInit(): void {
     this.loadData();
+    this.subscribeToChanges();
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
@@ -146,10 +166,11 @@ export class PlotComponent implements OnInit, OnDestroy {
     this.retMessage = '';
     this.plotStatus = '';
     this.plotsList = [];
+    this.subscribeToChanges();
   }
 
   onSelectedVentureChanged() {
-    if(this.pltDetForm.get('mode')?.value !='Add'){
+    if (this.pltDetForm.get('mode')?.value != 'Add') {
       this.masterParams.type = 'PLOT';
       this.masterParams.item = this.pltDetForm.controls['venture'].value;
       // this.pltDetForm.controls['ventureCode'].patchValue(this.pltDetForm.controls['venture'].value);
@@ -209,6 +230,7 @@ export class PlotComponent implements OnInit, OnDestroy {
         this.pltDetForm.controls['latitude'].patchValue(res['data'].latitude);
         this.pltDetForm.controls['longitude'].patchValue(res['data'].longitude);
         this.pltDetForm.controls['extent_M2'].patchValue(res['data'].extent_M2);
+        this.pltDetForm.controls['extent_Y2'].patchValue(res['data'].extent_Y2);
         this.pltDetForm.controls['availableFrom'].patchValue(res['data'].availableFrom);
         this.saleDate = res['data'].saleDate;
         this.regnDate = res['data'].regnDate;
@@ -268,7 +290,11 @@ export class PlotComponent implements OnInit, OnDestroy {
         this.plotCls.plotName = this.pltDetForm.get('plotName')!.value;
         this.plotCls.latitude = this.pltDetForm.get('latitude')!.value;
         this.plotCls.longitude = this.pltDetForm.get('longitude')!.value;
-        this.plotCls.extent_M2 = this.pltDetForm.get('extent_M2')!.value;
+        this.plotCls.extent_M2 = parseFloat(this.pltDetForm.get('extent_M2')!.value.replace(/,/g, ''));
+        this.plotCls.extent_Y2 = parseFloat(this.pltDetForm.get('extent_Y2')!.value.replace(/,/g, ''));
+
+        // this.plotCls.extent_M2 = this.pltDetForm.get('extent_M2')!.value;
+        // this.plotCls.extent_M2 = this.pltDetForm.get('extent_Y2')!.value;
         var avblFromDate = this.datePipe.transform(new Date(this.pltDetForm.get('availableFrom')!.value), 'yyyy-MM-dd');
         this.plotCls.availableFrom = avblFromDate;
         this.plotCls.remarks = this.pltDetForm.get('remarks')!.value;
@@ -280,7 +306,7 @@ export class PlotComponent implements OnInit, OnDestroy {
             if (this.pltDetForm.controls['mode'].value == "Add") {
               this.selMode = 'Add';
               this.modeChange("Modify");
-              this.plotsList.push({itemCode:this.pltDetForm.get('plotNo')?.value,itemName:this.pltDetForm.get('plotName')?.value});
+              this.plotsList.push({ itemCode: this.pltDetForm.get('plotNo')?.value, itemName: this.pltDetForm.get('plotName')?.value });
               this.pltDetForm.get('plot')?.patchValue(this.pltDetForm.get('plotNo')?.value);
               this.masterParams.tranNo = res.tranNoNew;
             }
@@ -308,7 +334,7 @@ export class PlotComponent implements OnInit, OnDestroy {
     // this.plotsData();
     this.pltDetForm = this.formInit();
     this.textMessageClass = '';
-    this.plotStatus="";
+    this.plotStatus = "";
     this.retMessage = '';
   }
 

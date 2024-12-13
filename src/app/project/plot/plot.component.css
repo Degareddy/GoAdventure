@@ -52,10 +52,10 @@
 }
 
 
-.mat-form-field {
+/* .mat-form-field {
   width: 230px !important;
   font-size: 10px !important;
-}
+} */
 
 ::ng-deep .mat-form-field-flex > .mat-form-field-infix {
   padding: 0.4em 0px !important;

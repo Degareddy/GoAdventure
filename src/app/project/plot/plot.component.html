@@ -94,20 +94,26 @@
       </div>
 
       <div class="col-3">
-        <mat-form-field aria-colspan="2" appearance="outline">
-          <mat-label class="mat-label-class">Extent_M2</mat-label>
-          <input matInput placeholder="Extent_M2" formControlName="extent_M2" type="number">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Extent M<sup>2</sup></mat-label>
+          <input matInput placeholder="Extent M²" class="right-align-input" appNumberFormat separator formControlName="extent_M2" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Extent Y<sup>2</sup></mat-label>
+          <input matInput placeholder="Extent Y²" class="right-align-input" appNumberFormat separator formControlName="extent_Y2" type="text">
         </mat-form-field>
       </div>
 
+    </div>
+    <div class="row justify-content-center">
       <div class="col-3">
         <mat-form-field aria-colspan="2" appearance="outline">
           <mat-label>Client</mat-label>
           <input matInput placeholder="Client" formControlName="client" type="text">
         </mat-form-field>
       </div>
-    </div>
-    <div class="row justify-content-center">
       <div class="col-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Available From</mat-label>
@@ -123,7 +129,7 @@
           <input matInput placeholder="Remarks" formControlName="remarks" type="text">
         </mat-form-field>
       </div>
-      <div class="col-3"></div>
+      <!-- <div class="col-3"></div> -->
     </div>
     <div class="row justify-content-center myCustomClass">
       <div class="col-3">
