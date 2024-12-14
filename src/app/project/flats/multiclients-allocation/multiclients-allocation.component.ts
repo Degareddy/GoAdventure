@@ -213,67 +213,113 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSubmit(mode:any) {
-    if(this.data.mode === "Modify"){
-      if (this.landlordCode === null || this.landlordCode === undefined || this.landlordCode === '') {
-        this.displayMessage("Enter Landlord", "red");
+  // onSubmit(mode:any) {
+  //   if(this.data.mode === "Modify"){
+  //     if (this.landlordCode === null || this.landlordCode === undefined || this.landlordCode === '') {
+  //       this.displayMessage("Enter Landlord", "red");
+  //       return;
+  //     }
+  //     if (this.mulitClientsForm.invalid) {
+  //       this.displayMessage("Enter required fields", "red");
+  //       return;
+  //     }
+  //     else {
+  //       this.prepareCls(mode);
+  //       try {
+  //         this.loader.start();
+  //         this.subSink.sink = this.projService.UpdateUnitLandlordDetails(this.multiCls).subscribe((res: SaveApiResponse) => {
+  //           this.loader.stop();
+  //           if (res.status.toUpperCase() === "SUCCESS") {
+  //             this.displayMessage("Success: " + res.message, "green");
+  //             this.getmultiClientDate(this.data.Property, this.data.Block, this.data.Flat);
+  //           }
+  //           else {
+  //             this.displayMessage("Error: " + res.message, "red");
+  //           }
+  //         });
+  //       }
+  //       catch (ex: any) {
+  //         this.displayMessage("Exception: " + ex.message, "red");
+  //       }
+  //     }
+  //   }
+  //   else if(this.data.mode === "Delete"){
+  //     if (this.landlordCode === null || this.landlordCode === undefined || this.landlordCode === '') {
+  //       this.displayMessage("Enter Landlord", "red");
+  //       return;
+  //     }
+  //     if (this.mulitClientsForm.invalid) {
+  //       this.displayMessage("Enter required fields", "red");
+  //       return;
+  //     }
+  //     else {
+  //       this.prepareCls(mode);
+  //       try {
+  //         this.loader.start();
+  //         this.subSink.sink = this.projService.UpdateUnitLandlordDetails(this.multiCls).subscribe((res: SaveApiResponse) => {
+  //           this.loader.stop();
+  //           if (res.status.toUpperCase() === "SUCCESS") {
+  //             this.displayMessage("Success: " + res.message, "green");
+  //           }
+  //           else {
+  //             this.displayMessage("Error: " + res.message, "red");
+  //           }
+  //         });
+  //       }
+  //       catch (ex: any) {
+  //         this.displayMessage("Exception: " + ex.message, "red");
+  //       }
+  //     }
+  //   }
+
+
+  // }
+  onSubmit(mode: any): void {
+    if (!this.landlordCode) {
+      this.displayMessage("Enter Landlord", "red");
+      return;
+    }
+    if (this.mulitClientsForm.invalid) {
+      this.displayMessage("Enter required fields", "red");
+      return;
+    }
+    this.prepareCls(mode);
+    try {
+      this.loader.start();
+      let serviceCall$;
+      if (this.data.mode === "Modify") {
+        serviceCall$ = this.projService.UpdateUnitLandlordDetails(this.multiCls);
+      } else if (this.data.mode === "Delete") {
+        serviceCall$ = this.projService.UpdateUnitLandlordDetails(this.multiCls);
+      } else {
+        this.displayMessage("Invalid mode", "red");
+        this.loader.stop();
         return;
       }
-      if (this.mulitClientsForm.invalid) {
-        this.displayMessage("Enter required fields", "red");
-        return;
-      }
-      else {
-        this.prepareCls(mode);
-        try {
-          this.loader.start();
-          this.subSink.sink = this.projService.UpdateUnitLandlordDetails(this.multiCls).subscribe((res: SaveApiResponse) => {
-            this.loader.stop();
-            if (res.status.toUpperCase() === "SUCCESS") {
-              this.displayMessage("Success: " + res.message, "green");
+      this.subSink.sink = serviceCall$.subscribe({
+        next: (res: SaveApiResponse) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === "SUCCESS") {
+            this.displayMessage(`Success: ${res.message}`, "green");
+
+            if (this.data.mode === "Modify") {
               this.getmultiClientDate(this.data.Property, this.data.Block, this.data.Flat);
             }
-            else {
-              this.displayMessage("Error: " + res.message, "red");
-            }
-          });
+          } else {
+            this.displayMessage(`Error: ${res.message}`, "red");
+          }
+        },
+        error: (err: any) => {
+          this.loader.stop();
+          this.displayMessage(`Error: ${err.message || 'An unexpected error occurred'}`, "red");
         }
-        catch (ex: any) {
-          this.displayMessage("Exception: " + ex.message, "red");
-        }
-      }
+      });
+    } catch (ex: any) {
+      this.loader.stop();
+      this.displayMessage(`Exception: ${ex.message}`, "red");
     }
-    else if(this.data.mode === "Delete"){
-      if (this.landlordCode === null || this.landlordCode === undefined || this.landlordCode === '') {
-        this.displayMessage("Enter Landlord", "red");
-        return;
-      }
-      if (this.mulitClientsForm.invalid) {
-        this.displayMessage("Enter required fields", "red");
-        return;
-      }
-      else {
-        this.prepareCls(mode);
-        try {
-          this.loader.start();
-          this.subSink.sink = this.projService.UpdateUnitLandlordDetails(this.multiCls).subscribe((res: SaveApiResponse) => {
-            this.loader.stop();
-            if (res.status.toUpperCase() === "SUCCESS") {
-              this.displayMessage("Success: " + res.message, "green");
-            }
-            else {
-              this.displayMessage("Error: " + res.message, "red");
-            }
-          });
-        }
-        catch (ex: any) {
-          this.displayMessage("Exception: " + ex.message, "red");
-        }
-      }
-    }
-
-
   }
+
   getmultiClientDate(property: string, block: string, flat: string) {
     const body = {
       ...this.commonParams(),
