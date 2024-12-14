@@ -20,7 +20,7 @@ import { PropertyGuard } from './project/_guard/property.guard';
 import { ForgotPasswordComponent } from './utilities/forgot-password/forgot-password.component';
 import { TenantGuard } from './tenant/_guard/tenant.guard';
 import { LandlordGuard } from './landlord/_guard/landlord.guard';
-import { ChangePasswordComponent } from './utilities/change-password/change-password.component';
+
 const routes: Routes = [
   {
     path: '', component: LoginComponent
