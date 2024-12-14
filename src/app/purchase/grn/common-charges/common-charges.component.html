@@ -84,11 +84,11 @@
   </div>
  <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
   <div class="btnAlignment">
-    <button mat-raised-button color="primary" class="btnUp" [disabled]="grnccForm.invalid">
+    <button mat-raised-button color="primary" class="btnUp" [disabled]="grnccForm.invalid || data.mode ==='View'">
       <mat-icon>done</mat-icon><b>Apply</b>
     </button>
 
-    <button mat-raised-button color="accent" type="button" (click)="newCommonCharge()" class=btnUp>
+    <button mat-raised-button color="accent" type="button" (click)="newCommonCharge()" class="btnUp" [disabled]="data.mode ==='View'" >
       <mat-icon>add</mat-icon><b>New</b>
     </button>
 

@@ -344,7 +344,8 @@ export class CommonChargesComponent implements OnInit, OnDestroy {
 
   }
   newCommonCharge() {
-
+    this.slNo=0;
+    this.grnccForm = this.formInit();
   }
   commonParams() {
     return {
