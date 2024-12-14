@@ -66,7 +66,7 @@ export class GrnComponent implements OnInit, OnDestroy {
 
   forminit() {
     return this.fb.group({
-      tranNo: [{ value: '', disabled: true }],
+      tranNo: [''],
       tranDate: [new Date(), [Validators.required]],
       pONo: ['', [Validators.maxLength(30)]],
       supplier: ['', [Validators.required, Validators.maxLength(60)]],
@@ -223,34 +223,34 @@ export class GrnComponent implements OnInit, OnDestroy {
       TranStatus: "ANY"
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() != "FAIL") {
+      if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR" && res.status.toUpperCase() != "FAILED") {
         if (res.data.tranCount === 1) {
           this.masterParams.tranNo = res.data.selTranNo;
           this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
         }
         else {
-          this.retMessage = '';
-          if (!this.dialogOpen) {
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: { tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN" }  // Pass any data you want to send to CustomerDetailsComponent
-            });
-            dialogRef.afterClosed().subscribe(result => {
-              if (result != true && result != undefined) {
-                this.dialogOpen = false;
-                this.masterParams.tranNo = result;
-                this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
-              }
-            });
-          }
-
+          this.retMessage = res.message;
+          this.textMessageClass = 'red';
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = 'red';
+        if (!this.dialogOpen) {
+          const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+            width: '90%',
+            disableClose: true,
+            data: { tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN" }  // Pass any data you want to send to CustomerDetailsComponent
+          });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result != true && result != undefined) {
+              this.dialogOpen = false;
+              this.masterParams.tranNo = result;
+              this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
+            }
+          });
+        }
+
       }
+
     });
   }
 
@@ -500,9 +500,9 @@ export class GrnComponent implements OnInit, OnDestroy {
     }
     else {
       this.grnForm.get('tranNo')!.enable();
-      this.programmaticModeChange = true; // Set the flag to true to avoid infinite loop
+      this.grnForm.get('tranNo')!.clearValidators();
+      this.grnForm.get('tranNo')!.updateValueAndValidity();
       this.grnForm.controls['mode'].patchValue(event, { emitEvent: false });
-      this.programmaticModeChange = false; // Reset the flag
     }
   }
 

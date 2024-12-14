@@ -46,7 +46,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
   { field: "supplierName", headerName: "Supplier", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "chargeItemName", headerName: "Charge", sortable: true, filter: true, resizable: true, width: 180 },
   {
-    field: "unitRate", headerName: "Unit Rate", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "unitRate", headerName: "Unit Rate",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -60,7 +60,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
   },
 
   {
-    field: "vatRate", headerName: "Vat", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "vatRate", headerName: "Vat",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -73,7 +73,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "netRate", headerName: "Net", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "netRate", headerName: "Net",resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -86,7 +86,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "quantity", headerName: "Quantity", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "quantity", headerName: "Quantity",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -100,7 +100,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
   },
 
   {
-    field: "rowAmount", headerName: "Amount", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "rowAmount", headerName: "Amount", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {

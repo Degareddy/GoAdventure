@@ -41,12 +41,12 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   public exportTmp: boolean = true;
   public excelName: string = "";
   autoHeight: boolean = true;
-
+  public grnDetTmp:boolean=false
   columnDefs: any = [{ field: "slNo", headerName: "S.No", flex: 1 },
   { field: "prodName", headerName: "Product", sortable: true, filter: true, resizable: true, flex: 1 },
-  { field: "uom", headerName: "UOM", sortable: true, filter: true, resizable: true, flex: 1 },
+  { field: "uom", headerName: "UOM", resizable: true, flex: 1 },
   {
-    field: "unitRate", headerName: "Unit Rate", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "unitRate", headerName: "Unit Rate",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -60,7 +60,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   },
 
   {
-    field: "discRate", headerName: "Disc%", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "discRate", headerName: "Disc%", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -73,7 +73,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "vatRate", headerName: "Vat", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "vatRate", headerName: "Vat",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -86,7 +86,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "netRate", headerName: "Net", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "netRate", headerName: "Net",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -99,7 +99,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "quantity", headerName: "Quantity", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "quantity", headerName: "Quantity", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -113,7 +113,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   },
 
   {
-    field: "amount", headerName: "Amount", sortable: true, filter: true, resizable: true, flex: 1, type: 'rightAligned',
+    field: "amount", headerName: "Amount",  resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -180,6 +180,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   newGRN() {
     this.grnDetailsForm = this.formInit();
     this.slNum = 0;
+    this.grnDetTmp=false;
   }
   prepareDetCls() {
     this.grnDetailsCls.company = this.userDataService.userData.company;
@@ -310,10 +311,10 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      poNo: [''],
-      slNo: [''],
+      poNo: [{value: '', disabled: true}],
+      // slNo: [''],
       product: ['', [Validators.required, Validators.maxLength(150)]],
-      uom: ['', [Validators.required, Validators.maxLength(15)]],
+      uom: [{value: '', disabled: true}],
       unitRate: ['0.00'],
       discRate: ['0.00'],
       vatRate: [{ value: "0.00", disabled: true }],
@@ -322,7 +323,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       amount: ['0.00'],
       warehouse: ['', Validators.required],
       unitWeight: ['0'],
-      lotNo: ['0'],
+      lotNo: [{value: '0', disabled: true}],
       serialNo: [''],
     });
   }
@@ -350,7 +351,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   }
   onRowClick(row: any) {
     this.slNum = row.slNo;
-    // this.grnDetailsForm.patchValue(row);
+    this.grnDetTmp = true;
     this.grnDetailsForm.controls['product'].patchValue(row.prodName);
     this.grnDetailsForm.controls['warehouse'].patchValue(row.warehouse);
     this.grnDetailsForm.controls['serialNo'].patchValue(row.serialNo);
