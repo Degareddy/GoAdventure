@@ -703,6 +703,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
     }
   }
 
+  
+
 
   async onSelectedFlatChanged(unitId: string, mode: string) {
     
