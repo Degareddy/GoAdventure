@@ -64,6 +64,10 @@
             <mat-option *ngFor="let x of statusList" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
+        <!-- <mat-form-field class="mat-checkbox" appearance="outline"> -->
+          <mat-checkbox *ngIf="reoprtForm.controls['Report'].value==='Units'" formControlName="multiLandLord">Multi Landlord</mat-checkbox>
+            
+        <!-- </mat-form-field> -->
       </div>
     </div>
     <div class="row justify-content-left" *ngIf="reoprtForm.controls['Report'].value==='Technician History'">
@@ -94,6 +98,8 @@
           <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
+        
+        
       </div>
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>

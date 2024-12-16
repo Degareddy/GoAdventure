@@ -30,6 +30,7 @@ import { ReceiptDetailsComponent } from './transfer-receipt/receipt-details/rece
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { APP_DATE_FORMATS, AppDateAdapter } from '../general/date-format';
 import { AgChartsAngularModule } from 'ag-charts-angular';
+import { SupplierProductsComponent } from './products/supplier-products/supplier-products.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { AgChartsAngularModule } from 'ag-charts-angular';
     ConsumptionDetailsComponent,
     ProductDetailsComponent,
     WareHouseSearchComponent,
-    ReceiptDetailsComponent
+    ReceiptDetailsComponent,
+    SupplierProductsComponent
   ],
   imports: [
     CommonModule,

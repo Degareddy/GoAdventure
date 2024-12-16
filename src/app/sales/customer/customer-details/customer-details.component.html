@@ -212,10 +212,10 @@
               <mat-icon>done</mat-icon><b>Apply</b>
             </button>
             <button mat-raised-button color="primary" type="button" class="btnUp"
-      (click)="onDocsCilcked(custForm.get('code')!.value)"
-      [disabled]="custForm.get('code')!.value === '' || custForm.invalid"><mat-icon>cloud_upload</mat-icon>
-      Docs
-    </button>
+            (click)="onDocsCilcked(custForm.get('code')!.value)"
+              [disabled]="custForm.get('code')!.value === '' || custForm.invalid"><mat-icon>cloud_upload</mat-icon>
+            Docs
+             </button>
             <button mat-raised-button class="btnUp" color="accent" type="button" (click)="Clear()">
               <mat-icon>clear_all</mat-icon><b>Clear</b>
             </button>
@@ -246,8 +246,16 @@
     <ng-template mat-tab-label>
       <mat-icon>info</mat-icon>Unit Details
     </ng-template>
-    <div  *ngIf="selectedTabIndex === 2" style="padding-top:10px ;">
+    <div  *ngIf="selectedTabIndex === 2"style="padding-top:10px ;">
       <app-customer-units [custID]="this.custId" [custName]="this.custName" #units></app-customer-units>
+    </div>
+  </mat-tab>
+  <mat-tab class="mat-tab">
+    <ng-template mat-tab-label>
+      <mat-icon>shopping_bag</mat-icon>Products
+    </ng-template>
+    <div  *ngIf="selectedTabIndex === 3" style="padding-top:10px ;">
+      <app-vendor-products [custName]="this.custName"  [Mode]="custForm.controls['mode'].value" [custID]="custForm.controls['code'].value" #Products></app-vendor-products>
     </div>
   </mat-tab>
 </mat-tab-group>

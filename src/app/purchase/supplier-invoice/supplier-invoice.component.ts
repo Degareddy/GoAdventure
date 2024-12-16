@@ -217,7 +217,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
   handleGetData(res: any) {
     this.supinvForm.controls['tranNo'].patchValue(res['data'].tranNo);
     this.supinvForm.controls['tranDate'].patchValue(res['data'].tranDate);
-    this.supinvForm.controls['supplier'].patchValue(res['data'].supplier);
+    this.supinvForm.controls['supplier'].patchValue(res['data'].supplierName);
     this.supinvForm.controls['currency'].patchValue(res['data'].currency);
     this.supinvForm.controls['applyVAT'].patchValue(res['data'].applyVAT);
     this.supinvForm.controls['vatMonth'].patchValue(res['data'].vatMonth);

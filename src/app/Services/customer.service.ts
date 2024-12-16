@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Address, Contact, Customer, CustomerParam, CustomerParams } from '../sales/sales.class';
+import { Address, Contact, Customer, CustomerParam, CustomerParams, vendorProducts } from '../sales/sales.class';
 import { Observable } from 'rxjs';
 import { custApiResponse } from '../sales/customer/customer.component';
 
@@ -20,6 +20,13 @@ export class CustomerService {
 
   updateCustomer(customer: Customer): Observable<any> {
     return this.http.post(environment.Url + 'Party/UpdatePartyDetails/', customer)
+  }
+
+  UpdateSupplierProducts(prodclass: vendorProducts): Observable<any> {
+    return this.http.post(environment.Url + 'property/UpdateSupplierProducts/', prodclass)
+  }
+  GetSupplierProducts(prodclass: any): Observable<any> {
+    return this.http.post(environment.Url + 'property/GetSupplierProducts/', prodclass)
   }
 
   getUnitDetailsForClient(custParas: CustomerParam): Observable<any> {

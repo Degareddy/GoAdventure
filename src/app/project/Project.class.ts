@@ -529,6 +529,8 @@ export class propertyReportData {
   public Report!: string;
   public User!: string;
   public RefNo!: string;
+  public MultiLandlords!: string;
+  
 }
 
 export class waterReading {

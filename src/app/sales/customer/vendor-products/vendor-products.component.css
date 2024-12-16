@@ -1,0 +1,121 @@
+table.tr {
+    font-size: 10px !important;
+  }
+  .msgBackColorSuccess {
+    background-color: darkgreen;
+    color: white;
+    height: 25px;
+  }
+  
+  .msgBackColorDefault {
+    background-color: lightblue;
+    color: white;
+    height: 25px;
+  }
+  
+  .msgBackColorWarn {
+    background-color: red;
+    color: white;
+    height: 25px;
+  }
+  
+  
+  
+  ::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -1em !important;
+    margin-top: -0.2em !important;
+  }
+  ::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -1em !important;
+    margin-top: -0.2em !important;
+  }
+  
+  ::ng-deep .mat-form-field-flex > .mat-form-field-infix {
+    padding: 0.4em 0px !important;
+  }
+  
+  ::ng-deep .mat-form-field-label-wrapper {
+    top: -1.5em;
+  }
+  
+  ::ng-deep
+    .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float
+    .mat-form-field-label {
+    transform: translateY(-1.1em) scale(0.75);
+    width: 133.33333%;
+  }
+  
+  ::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -1em;
+    margin-top: -0.2em;
+  }
+  
+  ::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -1em;
+    margin-top: -0.2em;
+  }
+  
+  ::ng-deep .mat-form-field-wrapper {
+    margin-bottom: -1em !important;
+    margin-top: -0.2em !important;
+  }
+  
+  
+  .right-align-cell {
+    text-align: right !important;
+  }
+  /* Default styles for ag-Grid */
+  .ag-theme-alpine {
+    width: 100%;
+    height: 0;
+    flex: 1 1 auto;
+    min-height: 400px;
+  }
+  
+  /* Responsive styles for ag-Grid */
+  @media screen and (max-width: 767px) {
+    .ag-theme-alpine {
+      min-height: 200px; /* Adjust the height for small screens */
+    }
+  }
+  
+  @media screen and (min-width: 768px) and (max-width: 991px) {
+    .ag-theme-alpine {
+      min-height: 300px; /* Adjust the height for medium screens */
+    }
+  }
+  
+  @media screen and (min-width: 992px) and (max-width: 1199px) {
+    .ag-theme-alpine {
+      min-height: 350px; /* Adjust the height for large screens */
+    }
+  }
+  
+  /* Add more media queries as needed for larger screens */
+  .form-field-container {
+    display: flex;
+    align-items: center;         /* Align items vertically */
+  }
+  
+  .select-field {
+    flex: 1;                     /* Allow the select field to take up remaining space */
+    margin-right: 8px;           /* Space between the select field and button */
+  }
+  
+  .refresh-button {
+    background-color: white;
+    border-radius: 40%;          /* Circular shape */
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;         /* Center icon vertically */
+    justify-content: center;     /* Center icon horizontally */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Optional shadow */
+    margin: 2px;
+  }
+  
+  .refresh-button mat-icon {
+    font-size: 20px;             /* Adjust icon size */
+    color: #1976d2;              /* Optional icon color */
+  }
+  

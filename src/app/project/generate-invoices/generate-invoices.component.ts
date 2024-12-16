@@ -17,6 +17,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GeneratedInvoicesComponent } from './generated-invoices/generated-invoices.component';
 
 @Component({
   selector: 'app-generate-invoices',
@@ -197,6 +198,18 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
           this.retMessage = res.message + " Time taken : " + elapsedTimeInSeconds;
           this.textMessageClass = "green";
           this.getReportTenantInvoicesData();
+          
+            const dialogRef: MatDialogRef<GeneratedInvoicesComponent> = this.dialog.open(GeneratedInvoicesComponent, {
+              disableClose: true,
+              data: {
+                ScrId: "ST916",
+                SlNo: 0,
+                IsPrevious: false,
+                IsNext: false,
+                User: this.userDataService.userData.userID,
+                RefNo: this.userDataService.userData.sessionID
+              }
+            });
         }
         else {
           this.handleDataLoadError(res);

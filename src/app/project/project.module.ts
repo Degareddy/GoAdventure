@@ -41,6 +41,7 @@ import { TableModule } from 'primeng/table';
 import { FilteredUnitsComponent } from './property-reports/filtered-units/filtered-units.component';
 import { ProjectsComponent } from './projects.component';
 import { StakeholderDetailsComponent } from './venture-details/stakeholder-details/stakeholder-details.component';
+import { GeneratedInvoicesComponent } from './generate-invoices/generated-invoices/generated-invoices.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +78,8 @@ import { StakeholderDetailsComponent } from './venture-details/stakeholder-detai
     MulticlientsAllocationComponent,
     FilteredUnitsComponent,
     ProjectsComponent,
-    StakeholderDetailsComponent
+    StakeholderDetailsComponent,
+    GeneratedInvoicesComponent
   ],
   imports: [
     CommonModule,

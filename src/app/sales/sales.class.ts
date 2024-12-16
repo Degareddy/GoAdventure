@@ -32,6 +32,20 @@ export class Customer {
   public repCode!:any;
   public repName!:any;
 }
+export class vendorProducts{
+  public Mode!:string;
+  public company!: string
+  public location!: string
+  public Supplier!:string;
+  public SlNo!:number;
+  public ProdCode!:string;
+  public Rate!:string;
+  public ValidUntil!:Date;
+  public ProdStatus!:string;
+  public User!:string;
+  public RefNo!:string;
+
+}
 
 export class MasterParams {
   public company!: string

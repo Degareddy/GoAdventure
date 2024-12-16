@@ -263,7 +263,9 @@ export class PropertyReportsComponent implements OnInit, OnDestroy {
       UnitStatus: ['All', Validators.required],
       FromDate: [{ value: new Date(), disabled: true }],
       ToDate: [{ value: new Date(), disabled: true }],
-      customer: [{ value: 'All', disabled: true }]
+      customer: [{ value: 'All', disabled: true }],
+      multiLandLord:[false]
+
     });
   }
   onPageSizeChanged() {
@@ -435,7 +437,8 @@ export class PropertyReportsComponent implements OnInit, OnDestroy {
           Technician: this.custCode || "All",
           FromDate: this.datepipe.transform(this.reoprtForm.controls['FromDate'].value, "yyyy-MM-dd"),
           ToDate: this.datepipe.transform(this.reoprtForm.controls['ToDate'].value, "yyyy-MM-dd"),
-          Type: "Tasks"
+          Type: "Tasks",
+          
         }
         try {
           this.loader.start();
@@ -471,6 +474,8 @@ export class PropertyReportsComponent implements OnInit, OnDestroy {
         this.propCls.UnitID = formValues.UnitID;
         this.propCls.UnitStatus = formValues.UnitStatus;
         this.propCls.User = this.userDataService.userData.userID;
+        this.propCls.MultiLandlords = this.reoprtForm.get('multiLandLord')?.value;
+
         this.loader.start();
         try {
           this.subSink.sink = await this.projectService.GetReportUnitsData(this.propCls).subscribe((res: any) => {

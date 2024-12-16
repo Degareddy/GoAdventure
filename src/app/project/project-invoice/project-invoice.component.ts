@@ -491,10 +491,10 @@ async  loadData() {
       return;
     }
 
-    if (tranStatus === 'AUTHORIZED') {
-      this.displayMessage(`Failed: Tenant invoice ${tranNo} already authorized.`, "red");
-      return;
-    }
+    // if (tranStatus === 'AUTHORIZED') {
+    //   this.displayMessage(`Failed: Tenant invoice ${tranNo} already authorized.`, "red");
+    //   return;
+    // }
     if (mode === 'AUTHORIZE' && this.totalAmount >= 0 && !isSubmitted) {
       const message = `You are about to authorize an invoice with a total amount of ${this.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Do you wish to proceed?`;
       confirmAndSubmit("Authorize Invoice?", message);
@@ -531,7 +531,6 @@ async  loadData() {
       data: dialogData,
       disableClose: true
     });
-
     dialogRef.afterClosed().subscribe(dialogResult => {
       if (dialogResult != true && dialogResult === 'YES') {
         this.apply();

@@ -18,6 +18,7 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { SupplierProductsComponent } from './supplier-products/supplier-products.component';
 interface params {
   itemCode: string
   itemName: string
@@ -390,7 +391,17 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.productForm.controls['productGroup'].enable();
     }
   }
-
+  supplierProducts() {
+    const dialogRef: MatDialogRef<SupplierProductsComponent> = this.dialog.open(SupplierProductsComponent, {
+      width: '80%',
+      disableClose: true,
+      data: {
+        mode: this.productForm.controls['mode'].value,
+        product: this.productForm.controls['product'].value,
+        code: this.productForm.controls['code'].value
+      }
+    });
+  }
   AliasProductList() {
     const dialogRef: MatDialogRef<ProductDetailsComponent> = this.dialog.open(ProductDetailsComponent, {
       width: '80%',

@@ -21,6 +21,7 @@ import { CustomerUnitsComponent } from '../customer-units/customer-units.compone
 import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.component';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
+import { VendorProductsComponent } from '../vendor-products/vendor-products.component';
 @Component({
   selector: 'app-customer-details',
   templateUrl: './customer-details.component.html',
@@ -31,6 +32,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('address') address!: CustomerAddressesComponent;
   @ViewChild('contacts') contacts!: CustomerContactsComponent;
   @ViewChild('units') units!: CustomerUnitsComponent;
+  @ViewChild('Products') Products!: VendorProductsComponent;
   @ViewChild('frmClear') public cstFrm!: NgForm;
   @Input() max: any;
   tomorrow = new Date();

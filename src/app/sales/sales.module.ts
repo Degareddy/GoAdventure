@@ -38,6 +38,7 @@ import { CustomerUnitsComponent } from './customer/customer-units/customer-units
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { VendorProductsComponent } from './customer/vendor-products/vendor-products.component';
 
 
 @NgModule({
@@ -71,7 +72,8 @@ import { TableModule } from 'primeng/table';
     SaleOrderDetailsComponent,
     AllocateComponent,
     LoanAllocationComponent,
-    CustomerUnitsComponent
+    CustomerUnitsComponent,
+    VendorProductsComponent
   ],
   imports: [
     CommonModule,
