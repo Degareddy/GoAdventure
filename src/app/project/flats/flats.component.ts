@@ -462,7 +462,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
   refreshData() {
 
-    this.unitDetForm.get('landLordName')?.clearValidators();
+    this.unitDetForm.get('landLordName')?.enable();
     this.ifCmpUser();
     this.unitDetForm.get('updateAll')?.valueChanges.subscribe((ch: any) => {
       console.log(ch);
@@ -628,7 +628,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
 
   populateFlatData(result: flatApiResponse) {
-
+    
     const flatCls = result.data;
     const formControls = this.unitDetForm.controls;
     formControls.rentType.patchValue(flatCls.rentType);
@@ -699,17 +699,18 @@ export class FlatsComponent implements OnInit, OnDestroy {
       this.unitDetForm.get('landLordName')?.disable();
     }
     else {
-      this.unitDetForm.get('landLordName')?.clearValidators();
+      this.unitDetForm.get('landLordName')?.enable();
     }
   }
 
 
   async onSelectedFlatChanged(unitId: string, mode: string) {
-
+    
     this.clearMsgs();
     this.masterParams.type = 'UNIT';
     this.masterParams.item = unitId;
     this.subSink.sink = await this.projectService.getFlatDetails(this.masterParams).subscribe((result: flatApiResponse) => {
+      
       if (result.status.toUpperCase() === 'SUCCESS') {
         this.populateFlatData(result);
         this.msgHandling(result, mode);
@@ -1199,7 +1200,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
 
   Clear() {
-    this.unitDetForm.get('landLordName')?.clearValidators();
+    this.unitDetForm.get('landLordName')?.enable();
     this.ifCmpUser();
     this.unitDetForm = this.formInit();
     this.retMessage = "";
