@@ -276,6 +276,8 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
     }
   }
   grnItemChange(event: any) {
+    this.retMessage="";
+    this.textMessageClass="";
     this.rowData=[];
     const foundItem = this.grndata.find(item => item.slNo === event);
     this.itemChargeForm.controls['gRNSlNo'].patchValue(foundItem.slNo);
@@ -285,7 +287,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
       rowNo: event,
       ...this.commonParams(),
       tranNo: this.data.tranNum,
-      langId: this.userDataService.userData.langId
+      langId: this.userDataService.userData.langId,
     }
     this.subSink.sink = this.purService.GetGrnItemSpecificCharges(body).subscribe((res: any) => {
       if (res.status.toUpperCase() === "FAIL") {
@@ -343,7 +345,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex;
+      this.retMessage = "Exception " + ex.message;
       this.textMessageClass = 'red';
     }
   }

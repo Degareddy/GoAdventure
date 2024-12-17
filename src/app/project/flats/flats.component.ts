@@ -628,7 +628,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
 
   populateFlatData(result: flatApiResponse) {
-    
+
     const flatCls = result.data;
     const formControls = this.unitDetForm.controls;
     formControls.rentType.patchValue(flatCls.rentType);
@@ -703,16 +703,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
     }
   }
 
-  
+
 
 
   async onSelectedFlatChanged(unitId: string, mode: string) {
-    
+
     this.clearMsgs();
     this.masterParams.type = 'UNIT';
     this.masterParams.item = unitId;
     this.subSink.sink = await this.projectService.getFlatDetails(this.masterParams).subscribe((result: flatApiResponse) => {
-      
+
       if (result.status.toUpperCase() === 'SUCCESS') {
         this.populateFlatData(result);
         this.msgHandling(result, mode);
@@ -767,7 +767,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
 
                   try {
                     this.onSelectedFlatChanged(result.unitId, this.unitDetForm.get('mode')?.value);
-                    this.isRentSelected = result.data.noRent;
+                    // this.isRentSelected = result.data.noRent;
 
                   }
                   catch (ex: any) {
