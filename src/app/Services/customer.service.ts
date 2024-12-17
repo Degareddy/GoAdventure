@@ -28,6 +28,9 @@ export class CustomerService {
   GetSupplierProducts(prodclass: any): Observable<any> {
     return this.http.post(environment.Url + 'property/GetSupplierProducts/', prodclass)
   }
+  GetProductSuppliers(prodclass: any): Observable<any> {
+    return this.http.post(environment.Url + 'Products/GetProductSuppliers/', prodclass)
+  }
 
   getUnitDetailsForClient(custParas: CustomerParam): Observable<any> {
     return this.http.post(environment.Url + 'property/GetClientUnitDetails', custParas)

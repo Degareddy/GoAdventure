@@ -72,7 +72,7 @@
             <mat-option *ngFor="let x of receiptmodes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full mt-2" *ngIf="this.receiptsForm.get('mode')!.value == 'Add' || this.receiptsForm.get('receiptmode')!.value === 'other'">
+        <mat-form-field appearance="outline" class="w-full mt-2" >
           <mat-label>Mode</mat-label>
           <mat-select formControlName="mode" (selectionChange)="modeChange(receiptsForm.controls['mode'].value)">
             <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>

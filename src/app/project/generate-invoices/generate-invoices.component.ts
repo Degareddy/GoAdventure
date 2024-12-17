@@ -49,6 +49,8 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   currentInvCnt: number = 0;
   lastMontrhInvCnt: number = 0;
   totalUnits: number = 0;
+  revProp:number=0;
+  revLandLord:number=0;
 
   nextInvCount: number = 0;
   nextInvMonth: number = 0;
@@ -152,6 +154,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.retMessage = ex.message;
       this.textMessageClass = "red";
     }
+    
   }
 
   private handleDataLoadError(error: any): void {
@@ -200,12 +203,11 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
           this.getReportTenantInvoicesData();
           
             const dialogRef: MatDialogRef<GeneratedInvoicesComponent> = this.dialog.open(GeneratedInvoicesComponent, {
-              disableClose: true,
+              width: '90%',
+              disableClose: false,
               data: {
-                ScrId: "ST916",
-                SlNo: 0,
-                IsPrevious: false,
-                IsNext: false,
+                Company:this.userDataService.userData.company,
+                Location: this.userDataService.userData.location,
                 User: this.userDataService.userData.userID,
                 RefNo: this.userDataService.userData.sessionID
               }
@@ -583,6 +585,8 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
         this.lastMontrhInvCnt = result.data.currMonthInvCount;
         this.totalUnits = result.data.totalUnits;
         this.dateGen = result.data.currInvDate;
+        this.revLandLord=result.data.revToLandlord;
+        this.revProp=result.data.revToProperty;
 
 
         this.nextInvCount = result.data.nextInvCount;
@@ -643,15 +647,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     }
   }
 
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * onSelectedBlockChanged
- *
- * Handles the event when the selected block value changes on the form.
- * If a property is selected, it calls the GetLastGeneratedInvoiceInfo service to get the last generated invoice details for the selected property and block.
- * If no property is selected, it clears the block list.
- */
-/******  3d7d7026-20cb-4d28-b7e4-edb48aa57a94  *******/
+
  async onSelectedBlockChanged() {
 
     this.resetMessages();

@@ -86,6 +86,16 @@
             <mat-label><b>Total Units: </b> <b class="data">{{totalUnits | number}}</b></mat-label>
           </div> -->
         </div>
+        <div class="row myCustomClass">
+          <div class="col-md-4">
+            <mat-label><b>LandLord Revenue: </b> <b class="data">{{revLandLord | currency:'Kes ':'symbol':'1.0-0'}}</b></mat-label>
+
+          </div>
+          <div class="col-md-4">
+            <mat-label><b>Property Revenue: </b> <b class="data">{{revProp | currency:'Kes ':'symbol':'1.0-0'}}</b></mat-label>
+
+          </div>
+        </div>
       </div>
 
 
@@ -126,6 +136,7 @@
               <td class="side-by-side"><b>Total Units:</b></td>
               <td class="side-by-side right-align data">{{totalUnits | number}}</td>
             </tr>
+            
           </table>
         </div>
       </div>

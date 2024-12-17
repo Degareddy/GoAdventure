@@ -27,7 +27,7 @@ export class SupplierProductsComponent implements OnInit {
 
   columnDefs: any  = [
     { field: "slNo", headerName: "slNo", sortable: true, filter: true, resizable: true, flex: 1 },
-    { field: "prodName", headerName: "Product", sortable: true, filter: true, resizable: true, flex: 1 },
+    { field: "suppName", headerName: "Supplier Name", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "prodStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "prodStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
    
@@ -181,9 +181,9 @@ export class SupplierProductsComponent implements OnInit {
     }
     onRowSelected(event:any){   
       console.log(event);
-      this.supplierProductsForm.get('productGroup')?.patchValue(event.data.prodName);
+      this.supplierProductsForm.get('supplier')?.patchValue(event.data.suppName);
       this.supplierProductsForm.get('rate')?.patchValue(event.data.rate);
-      this.supplierProductsForm.get('code')?.patchValue(event.data.prodCode);
+      this.supplierProductsForm.get('code')?.patchValue(event.data.supplier);
       this.supplierProductsForm.get('effectiveDate')?.patchValue(event.data.validUntil);
       this.supplierProductsForm.get('status')?.patchValue(event.data.prodStatus);
  
@@ -243,7 +243,7 @@ export class SupplierProductsComponent implements OnInit {
         
           try {
             this.loader.start();
-            this.subSink.sink = this.custService.GetSupplierProducts(body).subscribe((res: any) => {
+            this.subSink.sink = this.custService.GetProductSuppliers(body).subscribe((res: any) => {
               this.loader.stop();
               if (res.status.toUpperCase() === "SUCCESS") {
                 this.rowData=res['data'];

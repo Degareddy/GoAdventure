@@ -256,6 +256,9 @@ export class ProjectsService {
   AutogenerateTenantInvoices(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'property/AutogenerateTenantInvoices/', body)
   }
+  GetReportInvoicesList(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'property/GetReportInvoicesList/', body)
+  }
 
   GetLastGeneratedInvoiceInfo(body: any): Observable<any> {
     return this.http.post(environment.Url + 'property/GetLastBulkInvoiceInfo/', body)
