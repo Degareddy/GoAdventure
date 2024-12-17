@@ -171,9 +171,12 @@ export class AuthoriseInvoiceComponent implements OnInit {
       this.dataSource.filter = filterValue.trim().toLowerCase();
     }
     apply(){
+      
       let response=1;
       for(let i=0 ; i<(this.dataSource.data.length) ;i++){
+        
         if(this.dataSource.data[i].mapped && response){
+          
         const body={
           ...this.commonParams(),
           TranType:this.authoriseInvoiceForm.controls['tranType'].value,
@@ -185,6 +188,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
           this.subSink.sink = this.projService.authoriseSelectedData(body).subscribe((res: any) => {
             this.loader.stop(); 
             if(res['status'].toUpperCase() === "SUCCESS"){
+              
             this.handelError(res,'green');
             response=1;
             }
@@ -204,6 +208,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
       }
     }
     authoriseSelectedInvoice(){
+      
       const message = `You are about to Authorise   ${this.count} invoices. Are you sure you want to continue?`;
         const dialogData = new ConfirmDialogModel("Do you want to Authorise ?", message);
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -214,6 +219,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(dialogResult => {
+          
           if (dialogResult != true && dialogResult === "YES") {
             this.apply();
             // return;
@@ -267,7 +273,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
       subTranType:['',[Validators.required]],
       property:['',[Validators.required]],
       block:['',[Validators.required]],
-      fromDate:[new Date(),[Validators.required]],
+      fromDate:[new Date(new Date().getFullYear(), new Date().getMonth(), 1),[Validators.required]],
       toDate:[new Date(),[Validators.required]]
     })
   }
