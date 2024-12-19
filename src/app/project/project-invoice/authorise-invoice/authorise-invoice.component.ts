@@ -62,11 +62,11 @@ export class AuthoriseInvoiceComponent implements OnInit {
     
   }
   toggleAllRows(isSelected: boolean) {
-    debugger;
+    
     this.isAllSelected = isSelected;
     this.buttonEnable = !isSelected;
     
-    this.count = this.dataSource.length; 
+    this.count = this.dataSource.filteredData.length; 
     if (this.dataSource.data && Array.isArray(this.dataSource.data)) {
       this.dataSource.data.forEach((row: any) => (row.mapped = isSelected));
     }
