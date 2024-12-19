@@ -30,6 +30,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
 
   ];
   buttonEnable:boolean=true;
+  isAllSelected:boolean=false;
   checkBoxEnable:boolean=true;
   subTrantype:Item[]=[
     {itemCode:'TNV',itemName:'Tenenat Invoice'},
@@ -61,6 +62,11 @@ export class AuthoriseInvoiceComponent implements OnInit {
     this.masterParams = new MasterParams();
     
   }toggleAllRows(isSelected: boolean) {
+    
+    this.isAllSelected=isSelected;
+    this.buttonEnable=!isSelected;
+    this.count=this.rowData.length();
+    
     if (Array.isArray(this.dataSource.data)) {
       this.dataSource.data.forEach((row: any) => (row.mapped = isSelected));
     }
@@ -69,14 +75,22 @@ export class AuthoriseInvoiceComponent implements OnInit {
 
   // Update the status of a single row
   updateMapStatus(row: any, isSelected: boolean) {
+    
     row.mapped = isSelected;
+    if(this.isAllSelected && this.count>0){
+      this.buttonEnable=false;
+    }
+    else{
+      this.buttonEnable=!isSelected;
+    }
+    // this.buttonEnable=!isSelected;
     if(isSelected){
       this.count++;
-      this.authorisedDisable(this.count);
+      // this.authorisedDisable(this.count);
     }
     else{
       this.count--;
-      this.authorisedDisable(this.count);
+      // this.authorisedDisable(this.count);
     }
   }
 
@@ -90,14 +104,14 @@ export class AuthoriseInvoiceComponent implements OnInit {
         this.loadData();
         
   }
-  authorisedDisable(count:number){
-    if(count>0){
-      this.buttonEnable=false;
-      return;
-    }
-    this.buttonEnable=true;
+  // authorisedDisable(count:number){
+  //   if(count>0){
+  //     this.buttonEnable=false;
+  //     return;
+  //   }
+  //   this.buttonEnable=true;
 
-  }
+  // }
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -173,9 +187,11 @@ export class AuthoriseInvoiceComponent implements OnInit {
     apply(){
       
       let response=1;
-      for(let i=0 ; i<(this.dataSource.data.length) ;i++){
+      for(let i=0 ; i<(this.dataSource.data.length) ;i++)
+      {
         
-        if(this.dataSource.data[i].mapped && response){
+        if(this.dataSource.data[i].mapped && response && this.count>0)
+        {
           
         const body={
           ...this.commonParams(),
@@ -191,9 +207,11 @@ export class AuthoriseInvoiceComponent implements OnInit {
               
             this.handelError(res,'green');
             response=1;
+            this.count--;
             }
             else{
               this.handelError(res,'red');
+              
               response=0;
             }
           });
@@ -203,9 +221,8 @@ export class AuthoriseInvoiceComponent implements OnInit {
           response=0;
         }
       }
-      this.submit();
-
       }
+      this.submit();
     }
     authoriseSelectedInvoice(){
       

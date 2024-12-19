@@ -119,10 +119,14 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     }
   }
  async fetchTenantData() {
-    if (this.invCls.tenant) {
+    if ( this.flatCode) {
       const tbody = {
         ...this.commonParams(),
-        tenant: this.invCls.tenant
+        property : this.saleForm.get('property')?.value,
+        block : this.saleForm.get('block')?.value,
+        unit : this.flatCode,
+        // tenant: this.invCls.tenant
+       
       }
       this.subSink.sink =await this.projService.FetchTenantInvoiceData(tbody).subscribe((res: any) => {
         if (res.status.toUpperCase() === "SUCCESS") {
@@ -783,10 +787,11 @@ async  loadData() {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['customer'].patchValue(res.data.selName);
-            this.invCls.tenantName = res.data.selName;
-            this.invCls.tenant = res.data.selCode;
-            this.custCode = res.data.selCode;
-            if (this.invCls.tenant) {
+            // this.invCls.tenantName = res.data.selName;
+            // this.invCls.tenant = res.data.selCode;
+            this.invCls.unit = res.data.selCode
+            // this.custCode = res.data.selCode;
+            if ( this.invCls.unit) {
               this.fetchTenantData();
             }
           }
@@ -806,9 +811,10 @@ async  loadData() {
                 this.textMessageClass = "";
                 this.saleForm.controls['customer'].patchValue(result.partyName);
                 this.custCode = result.code;
-                this.invCls.tenantName = result.partyName
-                this.invCls.tenant = result.code;
-                if (this.invCls.tenant) {
+                // this.invCls.tenantName = result.partyName
+                this.invCls.unit = result.selCode
+                // this.invCls.tenant = result.code;
+                if (this.invCls.unit) {
                   this.fetchTenantData();
                 }
                 this.dialogOpen = false;
@@ -1029,6 +1035,7 @@ async  onEmployeeSearch() {
     }
   }
  async onSelectedPropertyChanged() {
+  
     this.saleForm.controls.flat.patchValue('');
     if (this.saleForm.controls.property.value != "") {
       this.blocks = [];
@@ -1088,8 +1095,8 @@ async  onFlatSearch() {
             this.saleForm.controls['flat'].patchValue(res.data.selName);
             this.masterParams.item = res.data.selCode;
             this.flatCode = res.data.selCode;
-            this.invCls.tenant = res.data.selCode;
-            if (this.invCls.tenant) {
+            // this.invCls.tenant = res.data.selCode;
+            if (this.flatCode) {
               this.fetchTenantData();
             }
           }
