@@ -57,20 +57,21 @@ export class AuthoriseInvoiceComponent implements OnInit {
     { headerName: 'Property', field: 'propertyName', sortable: false, filter: true, resizable: true, flex: 1 },
     { headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1 },
   ];
-  rowData: any;
   constructor(public dialog: MatDialog,private fb:FormBuilder,private masterService:MastersService,private loader: NgxUiLoaderService,private projService: ProjectsService,private userDataService:UserDataService) { this.authoriseInvoiceForm=this.forminit();   
     this.masterParams = new MasterParams();
     
-  }toggleAllRows(isSelected: boolean) {
+  }
+  toggleAllRows(isSelected: boolean) {
+    debugger;
+    this.isAllSelected = isSelected;
+    this.buttonEnable = !isSelected;
     
-    this.isAllSelected=isSelected;
-    this.buttonEnable=!isSelected;
-    this.count=this.rowData.length();
-    
-    if (Array.isArray(this.dataSource.data)) {
+    this.count = this.dataSource.length; 
+    if (this.dataSource.data && Array.isArray(this.dataSource.data)) {
       this.dataSource.data.forEach((row: any) => (row.mapped = isSelected));
     }
   }
+  
   
 
   // Update the status of a single row
