@@ -14,6 +14,7 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() custID!: string;
   @Input() custName!: string;
+  noOfUnits!:number;
   private subsink: SubSink = new SubSink();
   CustomerParam: CustomerParam;
   public gridOptions!: GridOptions;
@@ -193,6 +194,8 @@ export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit 
           this.loader.stop();
           if (res.status.toUpperCase() === "SUCCESS") {
             this.rowData = this.processRowPostCreate(res['data']);
+            this.noOfUnits=this.rowData.length;
+            --this.noOfUnits;
             this.displayMessage("Success: " + res.message, "green");
           }
           else {

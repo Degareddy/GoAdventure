@@ -62,11 +62,15 @@ export class AuthoriseInvoiceComponent implements OnInit {
     
   }
   toggleAllRows(isSelected: boolean) {
-    
     this.isAllSelected = isSelected;
     this.buttonEnable = !isSelected;
-    
-    this.count = this.dataSource.filteredData.length; 
+    if(isSelected){
+      this.count = this.dataSource.filteredData.length;
+    }
+    else{
+      this.count = 0;
+    }
+    // this.count = this.dataSource.filteredData.length; 
     if (this.dataSource.data && Array.isArray(this.dataSource.data)) {
       this.dataSource.data.forEach((row: any) => (row.mapped = isSelected));
     }
@@ -185,46 +189,47 @@ export class AuthoriseInvoiceComponent implements OnInit {
       const filterValue = (event.target as HTMLInputElement).value;
       this.dataSource.filter = filterValue.trim().toLowerCase();
     }
-    apply(){
+    async apply() {
       
-      let response=1;
-      for(let i=0 ; i<(this.dataSource.data.length) ;i++)
-      {
+      let response = 1;
+    
+      // Iterate over the dataSource and make async calls
+      for (let i = 0; i < (this.dataSource.data.length && this.count > 0) ; i++) {
         
-        if(this.dataSource.data[i].mapped && response && this.count>0)
-        {
-          
-        const body={
-          ...this.commonParams(),
-          TranType:this.authoriseInvoiceForm.controls['tranType'].value,
-          SubTranType:this.authoriseInvoiceForm.controls['subTranType'].value,
-          TranNo:this.dataSource.data[i].tranNo,
-        };
-        try{
-          this.loader.start();
-          this.subSink.sink = this.projService.authoriseSelectedData(body).subscribe((res: any) => {
-            this.loader.stop(); 
-            if(res['status'].toUpperCase() === "SUCCESS"){
-              
-            this.handelError(res,'green');
-            response=1;
-            this.count--;
+    
+        if (this.dataSource.data[i].mapped && response && this.count > 0) {
+          const body = {
+            ...this.commonParams(),
+            TranType: this.authoriseInvoiceForm.controls['tranType'].value,
+            SubTranType: this.authoriseInvoiceForm.controls['subTranType'].value,
+            TranNo: this.dataSource.data[i].tranNo,
+          };
+    
+          try {
+            this.loader.start();
+            // Wait for the Observable to complete before continuing
+            const res: any = await this.projService.authoriseSelectedData(body).toPromise();
+    
+            this.loader.stop();
+            if (res['status'].toUpperCase() === 'SUCCESS') {
+              this.handelError(res, 'green');
+              response = 1;
+              --this.count;
+            } else {
+              this.handelError(res, 'red');
+              response = 0;
             }
-            else{
-              this.handelError(res,'red');
-              
-              response=0;
-            }
-          });
-        }
-        catch(ex:any){
-          this.handelError(ex,'red');
-          response=0;
+          } catch (ex: any) {
+            this.handelError(ex, 'red');
+            response = 0;
+          }
         }
       }
-      }
+    
+      // Call submit only after all requests have been processed
       this.submit();
     }
+    
     authoriseSelectedInvoice(){
       
       const message = `You are about to Authorise   ${this.count} invoices. Are you sure you want to continue?`;

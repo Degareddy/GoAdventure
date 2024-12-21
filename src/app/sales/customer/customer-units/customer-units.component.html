@@ -1,7 +1,8 @@
 <div class="balance-amount balance-debit">{{ custName }}</div>
+<div class="balance-amount balance-debit">No Of Units: {{ noOfUnits }}</div>
 
 <div >
-  <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+  <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true" [isClientUnitDetails]="true"
     [globalSearch]="true" (gridReady)="onGridReady($event)"  (filterChanges)="onFilterData($event)"
     [gridHeight]="'340px'" [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'"
     [showRecordCount]="true" [totals]="totals"  (columnVisibilityChanged)="onColumnVisibilityChanged($event)">
