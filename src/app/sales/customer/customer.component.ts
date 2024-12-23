@@ -287,7 +287,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<CustomerDetailsComponent> = this.dialog.open(CustomerDetailsComponent, {
       width: '90%',
       disableClose: true,
-      data: { customerId: code.code, customerName: code.name, mode: "View" },
+      data: { customerId: code.code, customerName: code.name, mode: "View",type:this.custForm.controls['type'].value },
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

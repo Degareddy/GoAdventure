@@ -14,6 +14,7 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() custID!: string;
   @Input() custName!: string;
+  @Input() type!: string;
   noOfUnits!:number;
   private subsink: SubSink = new SubSink();
   CustomerParam: CustomerParam;
@@ -23,6 +24,7 @@ export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit 
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
   rowData: any = [];
+  filteredData: any = [];
   columnDefs: any = [];
   totals: string = "";
   Actual: number = 0;
@@ -105,7 +107,6 @@ export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit 
 
   onColumnVisibilityChanged(event: any) {
     const { field, hide } = event;
-    console.log(field);
     if (field.toUpperCase() === 'AMOUNT') {
       this.acBalTmp = hide;
     }
@@ -193,7 +194,33 @@ export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit 
         this.subsink.sink = this.customerService.getUnitDetailsForClient(this.CustomerParam).subscribe((res: any) => {
           this.loader.stop();
           if (res.status.toUpperCase() === "SUCCESS") {
-            this.rowData = this.processRowPostCreate(res['data']);
+            if(this.type  === "*Tenants"){
+              this.filteredData = res['data'].filter((item : any) => this.type === "*Tenants" && item.clientType === "Tenant");
+              this.rowData = this.processRowPostCreate(this.filteredData);
+            }
+            else if(this.type === "*Landlords"){
+              this.filteredData = res['data'].filter((item : any) => this.type === "*Landlords" && item.clientType === "Landlord");
+              this.rowData = this.processRowPostCreate(this.filteredData);
+            }
+            else if(this.type === "CareTaker"){
+              this.filteredData = res['data'].filter((item : any) => this.type === "CareTaker" && item.clientType === "Caretaker");
+              this.rowData = this.processRowPostCreate(this.filteredData);
+            }
+            
+            else{
+              this.rowData = this.processRowPostCreate(res['data']);
+            }
+            
+
+            // for(let i=0;i<res['data'].length;i++){
+            //   if(this.type === "*Tenant"){
+            //     if(res['data'][i].clientType === "Tenant"){
+            //       this.filteredData.push(res['data'][i]);
+            //     }
+            //   }
+            // }
+            // this.rowData = this.processRowPostCreate(this.filteredData);
+            // this.rowData = this.filteredData;
             this.noOfUnits=this.rowData.length;
             --this.noOfUnits;
             this.displayMessage("Success: " + res.message, "green");

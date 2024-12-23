@@ -39,6 +39,8 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
   repCode!:any;
   code!: string;
   customer!: Customer;
+  type:string;
+
   custForm!: FormGroup;
   itemStatus!: string;
   retMessage: string = '';
@@ -68,7 +70,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
   userProfile:string="";
   tenantlnld: boolean=true;
   constructor(protected route: ActivatedRoute,    public dialog: MatDialog,private utlService: UtilitiesService,
-    protected router: Router, @Inject(MAT_DIALOG_DATA) public data: { mode: string, customerId: string, customerName: string },
+    protected router: Router, @Inject(MAT_DIALOG_DATA) public data: { mode: string, customerId: string, customerName: string,type:string },
     private masterService: MastersService, private userDataService: UserDataService,
     protected custService: CustomerService, private loader: NgxUiLoaderService,
     private fb: FormBuilder) {
@@ -78,6 +80,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
     this.subsink = new SubSink();
     this.custForm = this.formInit();
     this.userProfile = this.userDataService.userData.userProfile;
+    this.type=this.data.type;
   }
   ngOnDestroy() {
     this.subsink.unsubscribe();

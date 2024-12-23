@@ -247,7 +247,7 @@
       <mat-icon>info</mat-icon>Unit Details
     </ng-template>
     <div  *ngIf="selectedTabIndex === 2"style="padding-top:10px ;">
-      <app-customer-units [custID]="this.custId" [custName]="this.custName" #units></app-customer-units>
+      <app-customer-units [custID]="this.custId" [custName]="this.custName" [type]="this.type" #units></app-customer-units>
     </div>
   </mat-tab>
   <mat-tab class="mat-tab">

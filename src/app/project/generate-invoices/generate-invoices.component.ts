@@ -44,6 +44,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   invMonthName: string = "";
   rentalInv: string = "";
   inclExpenses: string = "";
+  IncludeUtilities : string = "";
   authorize: string = "";
   dateGen: string = "";
   currentInvCnt: number = 0;
@@ -80,6 +81,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.resetMessages();
       this.autoGenForm.controls['rentInvoice'].setValue(false);
       this.autoGenForm.controls['includeExpenses'].setValue(false);
+      this.autoGenForm.controls['IncludeUtility'].setValue(false);
       this.autoGenForm.controls['authorize'].setValue(false);
       this.autoGenForm.controls['email'].setValue(false);
       this.autoGenForm.controls['sms'].setValue(false);
@@ -185,6 +187,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       Property: this.autoGenForm.get('property')!.value,
       block: this.autoGenForm.get('block')!.value,
       includeExpenses: this.autoGenForm.get('includeExpenses')!.value,
+      IncludeUtility : this.autoGenForm.get('IncludeUtility')!.value,
       authorize: this.autoGenForm.get('authorize')!.value,
       email: this.autoGenForm.get('email')!.value,
       sms: this.autoGenForm.get('sms')!.value,
@@ -506,6 +509,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     this.invMonthName = "";
     this.rentalInv = "";
     this.inclExpenses = "";
+    this.IncludeUtilities="";
     this.authorize = "";
     this.dateGen = "";
   }
@@ -518,6 +522,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     return this.fb.group({
       property: ['', Validators.required],
       block: ['', Validators.required],
+      IncludeUtility : [false],
       // invDate: [new Date(), Validators.required],
       rentInvoice: [false],
       includeExpenses: [false],
@@ -525,7 +530,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       email: [false],
       sms: [false],
       whatsapp: [false]
-    }, { validator: this.requireAtLeastOne(['rentInvoice', 'includeExpenses']) });
+    }, { validator: this.requireAtLeastOne(['rentInvoice', 'includeExpenses','IncludeUtility']) });
   }
 
   requireAtLeastOne(controlNames: string[]) {
@@ -571,6 +576,9 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
         if (result.data.inclExpenses === true) {
           this.inclExpenses = "YES";
         }
+        if (result.data.IncludeUtility  === true) {
+          this.IncludeUtilities = "YES";
+        }
         else {
           this.inclExpenses = "NO";
         }
@@ -600,6 +608,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
         this.invMonthName = "";
         this.rentalInv = "";
         this.inclExpenses = "";
+        this.IncludeUtilities = "";
         this.authorize = "";
         this.dateGen = "";
       }
@@ -608,6 +617,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.invMonthName = "";
       this.rentalInv = "";
       this.inclExpenses = "";
+      this.IncludeUtilities = "";
       this.authorize = "";
       this.dateGen = "";
       this.retMessage = `${result.message} for this property`;
@@ -619,6 +629,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     this.resetMessages();
     this.autoGenForm.controls['rentInvoice'].setValue(false);
     this.autoGenForm.controls['includeExpenses'].setValue(false);
+    this.autoGenForm.controls['IncludeUtility'].setValue(false);
     this.autoGenForm.controls['authorize'].setValue(false);
     this.autoGenForm.controls['email'].setValue(false);
     this.autoGenForm.controls['sms'].setValue(false);
@@ -691,14 +702,19 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onCheckboxChange(selectedCheckbox: string) {
-    if (selectedCheckbox === 'rentInvoice') {
-      this.autoGenForm.patchValue({
-        includeExpenses: false,
-      });
-    } else if (selectedCheckbox === 'includeExpenses') {
-      this.autoGenForm.patchValue({
-        rentInvoice: false,
-      });
-    }
+  //   if (selectedCheckbox === 'rentInvoice') {
+  //     this.autoGenForm.patchValue({
+  //       includeExpenses: false,
+  //     });
+  //   } else if (selectedCheckbox === 'includeExpenses') {
+  //     this.autoGenForm.patchValue({
+  //       rentInvoice: false,
+  //     });
+  //   }
+  //   else if (selectedCheckbox === 'IncludeUtility') {
+  //     this.autoGenForm.patchValue({
+  //       IncludeUtility: false,
+  //     });
+  //   }
   }
 }

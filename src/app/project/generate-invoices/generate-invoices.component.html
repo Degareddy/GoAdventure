@@ -56,11 +56,22 @@
             </mat-checkbox>
           </div>
           
+          
+         
+        </div>
+        <div class="row myCustomClass">
+          <div class="col-md-3">
+            <mat-checkbox
+              [labelPosition]="labelPosition"
+              formControlName="IncludeUtility"
+              (change)="onCheckboxChange('IncludeUtility')">
+              Utility
+            </mat-checkbox>
+          </div>
           <div class="col-md-3">
             <mat-checkbox [labelPosition]="labelPosition" formControlName="authorize">Authorize Invoices</mat-checkbox>
           </div>
         </div>
-
         <div class="row myCustomClass">
           <div class="col-md-3">
             <mat-checkbox [labelPosition]="labelPosition" formControlName="sms">SMS</mat-checkbox>
@@ -100,7 +111,7 @@
 
 
       <div class="col-md-3"
-        style="background: rgb(240, 236, 213);;height: 180px; ;border-radius: 5px; border: 1px solid; margin-left: -180px;">
+        style="background: rgb(240, 236, 213);;height: 200px; ;border-radius: 5px; border: 1px solid; margin-left: -180px;">
         <div style="font-weight: 800; font-size: 14px; color: cornflowerblue;">Current Month history</div>
         <div class="myCustomClass">
 
@@ -127,6 +138,10 @@
             <tr>
               <td class="side-by-side"><b>Incl. Expenses:</b></td>
               <td class="side-by-side right-align data">{{inclExpenses}}</td>
+            </tr>
+            <tr>
+              <td class="side-by-side"><b>Utility Bill</b></td>
+              <td class="side-by-side right-align data">{{IncludeUtilities}}</td>
             </tr>
             <tr>
               <td class="side-by-side"><b>Authorize:</b></td>
