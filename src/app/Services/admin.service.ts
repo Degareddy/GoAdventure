@@ -14,6 +14,7 @@ export class AdminService {
     return this.http.post<CompanyResponse>(`${this.baseUrl}Company/GetCompanyDetails/`, company)
   }
 
+
   saveCompanyData(company: CompanyClass): Observable<SaveApiResponse>  {
     return this.http.post<SaveApiResponse>(`${this.baseUrl}Company/InsertCompanyDetails/`, company)
   }
@@ -33,6 +34,9 @@ export class AdminService {
   }
   GetGCMappings(body: any): Observable<any>  {
     return this.http.post(environment.Url + 'Company/GetGCMappings/', body)
+  }
+  UpdateUserCompanies(body: any): Observable<any>  {
+    return this.http.post(environment.Url + 'Users/UpdateUserCompanies/', body)
   }
   GetBranchList(body: any): Observable<BranchLocationsResponse>  {
     return this.http.post<BranchLocationsResponse>(environment.Url + 'Company/GetBranches/', body)

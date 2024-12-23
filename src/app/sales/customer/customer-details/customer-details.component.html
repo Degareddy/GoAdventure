@@ -156,7 +156,7 @@
                   <mat-label>Representative</mat-label>
                   <input matInput type="text" placeholder="name" formControlName="name" />
                   <button matSuffix mat-icon-button aria-label="Clear" *ngIf="custForm.get('name')!.value && custForm.get('mode')!.value !== 'View'"
-                    (click)="custForm.get('name')!.setValue('')" type="button">
+                    (click)="repclear()" type="button">
                     <mat-icon class="mat-clear-icon" style="font-size: 14px;">clear</mat-icon>
                   </button>
                   <button matSuffix mat-icon-button aria-label="Search" (click)="onnameSearch()" type="button"

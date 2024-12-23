@@ -29,6 +29,7 @@ import { VendorProductsComponent } from '../vendor-products/vendor-products.comp
 })
 export class CustomerDetailsComponent implements OnInit, OnDestroy {
 
+
   @ViewChild('address') address!: CustomerAddressesComponent;
   @ViewChild('contacts') contacts!: CustomerContactsComponent;
   @ViewChild('units') units!: CustomerUnitsComponent;
@@ -312,9 +313,13 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
     this.customer.isTenant = this.custForm.controls['isTenant'].value;
     this.customer.isStaker = this.custForm.controls['isStaker'].value;
     this.customer.IsCareTaker  = this.custForm.controls['isCareTaker'].value;
-    this.customer.repCode=this.repCode;
-    this.customer.repName=this.custForm.controls['name'].value;
-
+   
+      this.customer.repCode=this.repCode;
+      this.customer.repName=this.custForm.controls['name'].value;
+  }
+  repclear() {
+    this.custForm.get('name')!.setValue('')
+    this.repCode='';
   }
 
 
@@ -322,6 +327,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
   checkMobileNumber() {
     
     this.custForm.controls['phone1'].value.trim();
+
     this.onUpdate();
     // if(this.custForm.controls['phone1'].value.startsWith(this.custForm.controls['countryCode'].value)){
     //   const message = `It seems that the entered phone number ${this.custForm.controls['phone1'].value} appears to start with the country code ${this.custForm.controls['countryCode'].value}.`
