@@ -10,7 +10,7 @@ import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { CompanyClass, userCompanyClass } from '../../admin.class';
-import { getPayload } from 'src/app/general/Interface/admin/admin';
+import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { forkJoin } from 'rxjs';
 import { PropertiesComponent } from '../properties/properties.component';
 import { DatePipe } from '@angular/common';
@@ -170,12 +170,12 @@ export class CompaniesComponent implements OnInit, OnDestroy {
       UserId: this.data.userId,
       IsDefault: this.companyForm.get('Map')?.value,
       MapStatus: 'map',
-      TranDate: this.datepipe.transform(this.companyForm.get('date')?.value, 'dd-MM-yyyy')
+      TranDate: this.companyForm.get('date')?.value
 
     };
     try {
       this.loader.start();
-      this.subsink.sink = this.adminService.UpdateUserCompanies(body).subscribe((res: any) => {
+      this.subsink.sink = this.adminService.UpdateUserCompanies(body).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
           this.displayMessage(res.message, "green");
