@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -13,16 +13,17 @@ import { CompanyClass, userCompanyClass } from '../../admin.class';
 import { getPayload } from 'src/app/general/Interface/admin/admin';
 import { forkJoin } from 'rxjs';
 import { PropertiesComponent } from '../properties/properties.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-companies',
   templateUrl: './companies.component.html',
   styleUrls: ['./companies.component.css']
 })
-export class CompaniesComponent implements OnInit {
+export class CompaniesComponent implements OnInit, OnDestroy {
 
   public companyForm!: FormGroup;
-  
+
 
   @Input() max: any;
   private compCls: userCompanyClass;
@@ -30,7 +31,7 @@ export class CompaniesComponent implements OnInit {
   textMessageClass: string = "";
   retMessage: string = "";
   rowData: any = [];
-  companyName:string='';
+  companyName: string = '';
   branchList: Item[] = [];
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
@@ -75,12 +76,15 @@ export class CompaniesComponent implements OnInit {
   ];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   constructor(private fb: FormBuilder, private loader: NgxUiLoaderService, private adminService: AdminService, public dialog: MatDialog,
-    private masterService: MastersService, protected router: Router, private userDataService: UserDataService,
+    private masterService: MastersService, protected router: Router, private userDataService: UserDataService,private datepipe:DatePipe,
     @Inject(MAT_DIALOG_DATA) public data: { mode: string, userId: string }) {
     this.companyForm = this.formInit();
     this.compCls = new userCompanyClass();
     this.subsink = new SubSink();
 
+  }
+  ngOnDestroy(): void {
+    this.subsink.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -108,9 +112,6 @@ export class CompaniesComponent implements OnInit {
             this.companyList = res1.data;
             if (this.companyList.length === 1) {
               this.companyForm.patchValue({ company: this.companyList[0].itemCode });
-
-              // this.accRightsForm.controls['company'].patchValue(this.companyList[0].itemCode, { emitEvent: false });
-              // this.companyChanged();
             }
           }
           else {
@@ -142,7 +143,7 @@ export class CompaniesComponent implements OnInit {
     this.textMessageClass = cssClass;
   }
 
-  
+
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -158,65 +159,65 @@ export class CompaniesComponent implements OnInit {
   }
   clear() {
     this.companyForm = this.formInit();
-    this.displayMessage("","");
+    this.displayMessage("", "");
   }
   Map() {
-   
-     const body = {
+
+    const body = {
       ...this.commonParams(),
-      Mode:this.data.mode,
+      Mode: this.data.mode,
       CompanyId: this.companyForm.get('company')?.value,
-      
-      UserId:this.data.userId,
-      IsDefault:this.companyForm.get('Map')?.value,
-      MapStatus:'map',
-      TranDate :this.companyForm.controls['date'].value
-     };
-        try {
-          this.loader.start();
-          this.subsink.sink =  this.adminService.UpdateUserCompanies(body).subscribe((res: any) => {
-            this.loader.stop();
-            if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-              this.displayMessage("Error: " + res.message, "green");
-              this.loadData();
-            } else {
-              // this.handleError(res);
-              this.displayMessage("Error: " + res.message, "red");
-            }
-          });
-        } catch (ex: any) {
-          this.displayMessage("Exception: " + ex.message, "red");
-          // this.handleError(ex);
+      UserId: this.data.userId,
+      IsDefault: this.companyForm.get('Map')?.value,
+      MapStatus: 'map',
+      TranDate: this.datepipe.transform(this.companyForm.get('date')?.value, 'dd-MM-yyyy')
+
+    };
+    try {
+      this.loader.start();
+      this.subsink.sink = this.adminService.UpdateUserCompanies(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+          this.displayMessage(res.message, "green");
+          this.loadData();
+        } else {
+          // this.handleError(res);
+          this.displayMessage("Error: " + res.message, "red");
         }
+      });
+    } catch (ex: any) {
+      this.displayMessage("Exception: " + ex.message, "red");
+      // this.handleError(ex);
+    }
 
   }
   unMap() {
     const body = {
       ...this.commonParams(),
-      Mode:this.data.mode,
+      Mode: this.data.mode,
       CompanyId: this.companyForm.get('company')?.value,
-      
-      UserId:this.data.userId,
-      IsDefault:this.companyForm.get('Map')?.value,
-      MapStatus:'unmap',
-      TranDate :this.companyForm.controls['date'].value
-     };
-        try {
-          this.loader.start();
-          this.subsink.sink =  this.adminService.UpdateUserCompanies(body).subscribe((res: any) => {
-            this.loader.stop();
-            if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-              this.displayMessage("Error: " + res.message, "green");
-              this.loadData();
-            } else {
-              // this.handleError(res);
-              this.displayMessage("Error: " + res.message, "red");
-            }
-          });
-        } catch (ex: any) {
-          this.displayMessage("Exception: " + ex.message, "red");
-          // this.handleError(ex);
+
+      UserId: this.data.userId,
+      IsDefault: this.companyForm.get('Map')?.value,
+      MapStatus: 'unmap',
+      TranDate: this.companyForm.controls['date'].value
+    };
+    try {
+      this.loader.start();
+      this.subsink.sink = this.adminService.UpdateUserCompanies(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+          this.displayMessage("Error: " + res.message, "green");
+          this.loadData();
+        } else {
+          // this.handleError(res);
+          this.displayMessage("Error: " + res.message, "red");
         }
+      });
+    } catch (ex: any) {
+      this.displayMessage("Exception: " + ex.message, "red");
+      // this.handleError(ex);
+    }
   }
   onPageSizeChanged() {
     if (this.gridApi) {
@@ -227,7 +228,7 @@ export class CompaniesComponent implements OnInit {
   onRowSelected(event: any) {
     console.log(event);
     this.companyForm.get('company')?.patchValue(event.data.company);
-     this.companyForm.get('Map')?.patchValue(event.data.isDefault);
+    this.companyForm.get('Map')?.patchValue(event.data.isDefault);
     this.companyForm.get('date')?.patchValue(event.data.tranDate);
     // debugger;
     // this.branchCls.branch = event.data.branch;
@@ -251,13 +252,13 @@ export class CompaniesComponent implements OnInit {
     gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
   companyChanges(value: string) {
-    this.companyName= this.companyList.find((o: any) => o.itemCode === value)?.itemName || "";
+    this.companyName = this.companyList.find((o: any) => o.itemCode === value)?.itemName || "";
   }
   formInit() {
     return this.fb.group({
       company: ['', Validators.required],
       date: [new Date(), Validators.required],
-      Map:[false],
+      Map: [false],
     });
   }
   properties() {
