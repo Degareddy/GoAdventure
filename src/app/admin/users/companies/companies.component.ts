@@ -96,6 +96,7 @@ export class CompaniesComponent implements OnInit {
             this.companyList = res1.data;
             if (this.companyList.length === 1) {
               this.companyForm.patchValue({ company: this.companyList[0].itemCode });
+
               // this.accRightsForm.controls['company'].patchValue(this.companyList[0].itemCode, { emitEvent: false });
               // this.companyChanged();
             }
@@ -210,17 +211,21 @@ export class CompaniesComponent implements OnInit {
   }
 
   onRowSelected(event: any) {
+    console.log(event);
+    this.companyForm.get('company')?.patchValue(event.data.company);
+    // this.companyForm.get('date')?.patchValue(event.data.)
+    this.companyForm.get('date')?.patchValue(event.data.isDefault)
     // debugger;
     // this.branchCls.branch = event.data.branch;
-    try {
-      this.companyForm.patchValue({
-        company: event.data.companyId,
-        // date: event.data.dateMapped,
-      })
-    }
-    catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-    }
+    // try {
+    //   this.companyForm.patchValue({
+    //     company: event.data.companyId,
+    //     // date: event.data.dateMapped,
+    //   })
+    // }
+    // catch (ex: any) {
+    //   this.displayMessage("Exception: " + ex.message, "red");
+    // }
 
 
   }
