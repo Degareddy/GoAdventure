@@ -294,7 +294,9 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
           dialogRef.afterClosed().subscribe(result => {
             if(result != true){
               this.grnDetailsForm.controls['product'].patchValue(result.prodName);
+              this.grnDetailsForm.controls['vatRate'].patchValue(result.vatRate);
               this.grnDetailsForm.controls['uom'].patchValue(result.uom);
+              
               this.vatRate = result.vatRate;
               this.productCode = result.prodCode;
               this.grnDetailsForm.controls['unitRate'].patchValue(result.stdSalesRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
