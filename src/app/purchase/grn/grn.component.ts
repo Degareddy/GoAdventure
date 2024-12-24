@@ -209,6 +209,7 @@ export class GrnComponent implements OnInit, OnDestroy {
   }
 
   onSearchCilcked() {
+    
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
@@ -224,32 +225,38 @@ export class GrnComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR" && res.status.toUpperCase() != "FAILED") {
+        
+
         if (res.data.tranCount === 1) {
+          
+
           this.masterParams.tranNo = res.data.selTranNo;
           this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          if (!this.dialogOpen) {
+            
+  
+            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+              width: '90%',
+              disableClose: true,
+              data: { tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN" }  // Pass any data you want to send to CustomerDetailsComponent
+            });
+            dialogRef.afterClosed().subscribe(result => {
+  
+              if (result != true && result != undefined) {
+                
+  
+                this.dialogOpen = false;
+                this.masterParams.tranNo = result;
+                this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
+              }
+            });
+          }
+  
         }
       }
-      else {
-        if (!this.dialogOpen) {
-          const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-            width: '90%',
-            disableClose: true,
-            data: { tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN" }  // Pass any data you want to send to CustomerDetailsComponent
-          });
-          dialogRef.afterClosed().subscribe(result => {
-            if (result != true && result != undefined) {
-              this.dialogOpen = false;
-              this.masterParams.tranNo = result;
-              this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
-            }
-          });
-        }
-
-      }
+      
 
     });
   }
