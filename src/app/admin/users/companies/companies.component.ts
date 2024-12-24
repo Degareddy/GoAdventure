@@ -170,7 +170,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
       UserId: this.data.userId,
       IsDefault: this.companyForm.get('Map')?.value,
       MapStatus: 'map',
-      TranDate: this.companyForm.get('date')?.value
+      TranDate: this.datepipe.transform(this.companyForm.get('date')?.value, 'dd-MM-yyyy')
 
     };
     try {
