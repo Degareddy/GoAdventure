@@ -41,12 +41,12 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   public exportTmp: boolean = true;
   public excelName: string = "";
   autoHeight: boolean = true;
-  public grnDetTmp:boolean=false
+  public grnDetTmp: boolean = false
   columnDefs: any = [{ field: "slNo", headerName: "S.No", flex: 1 },
   { field: "prodName", headerName: "Product", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "uom", headerName: "UOM", resizable: true, flex: 1 },
   {
-    field: "unitRate", headerName: "Unit Rate",  resizable: true, flex: 1, type: 'rightAligned',
+    field: "unitRate", headerName: "Unit Rate", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -73,7 +73,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "vatRate", headerName: "Vat",  resizable: true, flex: 1, type: 'rightAligned',
+    field: "vatRate", headerName: "Vat", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -86,7 +86,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     },
   },
   {
-    field: "netRate", headerName: "Net",  resizable: true, flex: 1, type: 'rightAligned',
+    field: "netRate", headerName: "Net", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -113,7 +113,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   },
 
   {
-    field: "amount", headerName: "Amount",  resizable: true, flex: 1, type: 'rightAligned',
+    field: "amount", headerName: "Amount", resizable: true, flex: 1, type: 'rightAligned',
     cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
@@ -180,7 +180,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   newGRN() {
     this.grnDetailsForm = this.formInit();
     this.slNum = 0;
-    this.grnDetTmp=false;
+    this.grnDetTmp = false;
   }
   prepareDetCls() {
     this.grnDetailsCls.company = this.userDataService.userData.company;
@@ -292,11 +292,11 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
             }
           });
           dialogRef.afterClosed().subscribe(result => {
-            if(result != true){
+            if (result != true) {
               this.grnDetailsForm.controls['product'].patchValue(result.prodName);
               this.grnDetailsForm.controls['vatRate'].patchValue(result.vatRate);
               this.grnDetailsForm.controls['uom'].patchValue(result.uom);
-              
+
               this.vatRate = result.vatRate;
               this.productCode = result.prodCode;
               this.grnDetailsForm.controls['unitRate'].patchValue(result.stdSalesRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -313,10 +313,10 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      poNo: [{value: '', disabled: true}],
+      poNo: [{ value: '', disabled: true }],
       // slNo: [''],
       product: ['', [Validators.required, Validators.maxLength(150)]],
-      uom: [{value: '', disabled: true}],
+      uom: [{ value: '', disabled: true }],
       unitRate: ['0.00'],
       discRate: ['0.00'],
       vatRate: [{ value: "0.00", disabled: true }],
@@ -325,7 +325,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       amount: ['0.00'],
       warehouse: ['', Validators.required],
       unitWeight: ['0'],
-      lotNo: [{value: '0', disabled: true}],
+      lotNo: [{ value: '0', disabled: true }],
       serialNo: [''],
     });
   }
@@ -445,11 +445,12 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     let numQty: number;
     let numNetRate: number;
     let numAmount: number;
+    let vatRate: number;
+    let vat = this.grnDetailsForm.get('vatRate')?.value;
 
     let strUnitRate = this.grnDetailsForm.controls['unitRate'].value.toString();
     let strDiscRate = this.grnDetailsForm.controls['discRate'].value.toString();
     let strQty = this.grnDetailsForm.controls['quantity'].value.toString();
-
     if (strUnitRate == "") {
       return;
     }
@@ -464,21 +465,31 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
+    vatRate = vat;
 
-    if (this.data.applyVat) {
+    if (vatRate) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
     }
     else {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0);
     }
 
-    numAmount = numNetRate * numQty;
 
+    numAmount = numNetRate * numQty;
+    // debugger;
+    // if (vatRate) {
+    //   numNetRate = numNetRate / (1 + this.vatRate / 100.0);
+    //   numAmount = numNetRate + numNetRate * numQty;
+    //   // numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
+    //   // numAmount = numNetRate * numQty;
+    // }
     let options: Intl.NumberFormatOptions = {
       style: 'decimal',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     };
+
+
 
     this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options));
     this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options));
@@ -499,6 +510,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     let numNetRate: number;
     let numAmount: number;
 
+    let vatRate: number;
+    let vat = this.grnDetailsForm.get('vatRate')?.value;
     let strUnitRate = this.grnDetailsForm.controls['unitRate'].value.toString();
     let strNetRate = this.grnDetailsForm.controls['netRate'].value.toString();
     let strQty = this.grnDetailsForm.controls['quantity'].value.toString();
@@ -517,8 +530,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numNetRate = Number(strNetRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
-
-    if (this.data.applyVat) {
+    vatRate = vat;
+    if (vatRate) {
       numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
     }
     else {
@@ -528,7 +541,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     if (numDiscRate < 0) {
       numDiscRate = 0;
 
-      if (this.data.applyVat) {
+      if (vatRate) {
         numUnitRate = numNetRate / (1 + this.vatRate / 100.0);
       }
       else {
@@ -583,6 +596,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     let strUnitRate = this.grnDetailsForm.controls['unitRate'].value.toString();
     let strAmount = this.grnDetailsForm.controls['amount'].value.toString();
     let strQty = this.grnDetailsForm.controls['quantity'].value.toString();
+    let vatRate: number;
+    let vat = this.grnDetailsForm.get('vatRate')?.value;
     if (strAmount == "") {
       return;
     }
@@ -597,8 +612,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numAmount = Number(strAmount.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     numNetRate = numAmount / numQty;
-
-    if (this.data.applyVat) {
+    vatRate = vat;
+    if (vatRate) {
       numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
     }
     else {
