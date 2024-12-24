@@ -140,7 +140,7 @@ export class SupplierProductsComponent implements OnInit {
           if (res.retVal === 0) {
             if (res && res.data && res.data.nameCount === 1) {
               this.supplierProductsForm.controls['supplier'].patchValue(res.data.selName);
-              this.supplierProductsForm.controls['code'].patchValue(res.data.code);
+              this.supplierProductsForm.controls['code'].patchValue(res.data.selCode);
               // this.suppInvCls.supplier = res.data.selCode;
             }
             else {
