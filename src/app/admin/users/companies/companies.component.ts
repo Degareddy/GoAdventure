@@ -45,6 +45,18 @@ export class CompaniesComponent implements OnInit {
     { field: "userName", headerName: "User Name", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "mapStatus", headerName: "Map Status", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "isDefault", headerName: "Is Default", sortable: true, filter: true, resizable: true, flex: 1 },
+    {
+      field: "tranDate", headerName: "Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
+        if (params.value) {
+          const date = new Date(params.value);
+          const day = date.getDate().toString().padStart(2, '0');
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          const year = date.getFullYear();
+          return `${day}-${month}-${year}`;
+        }
+        return null;
+      },
+    },
     // {
     //   field: "dateMapped", headerName: "Mapped On", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
     //     // Format date as dd-MM-yyyy
@@ -158,6 +170,7 @@ export class CompaniesComponent implements OnInit {
       UserId:this.data.userId,
       IsDefault:this.companyForm.get('Map')?.value,
       MapStatus:'map',
+      TranDate :this.companyForm.controls['date'].value
      };
         try {
           this.loader.start();
@@ -186,6 +199,7 @@ export class CompaniesComponent implements OnInit {
       UserId:this.data.userId,
       IsDefault:this.companyForm.get('Map')?.value,
       MapStatus:'unmap',
+      TranDate :this.companyForm.controls['date'].value
      };
         try {
           this.loader.start();
@@ -213,8 +227,8 @@ export class CompaniesComponent implements OnInit {
   onRowSelected(event: any) {
     console.log(event);
     this.companyForm.get('company')?.patchValue(event.data.company);
-    // this.companyForm.get('date')?.patchValue(event.data.)
-    this.companyForm.get('date')?.patchValue(event.data.isDefault)
+     this.companyForm.get('Map')?.patchValue(event.data.isDefault);
+    this.companyForm.get('date')?.patchValue(event.data.tranDate);
     // debugger;
     // this.branchCls.branch = event.data.branch;
     // try {
