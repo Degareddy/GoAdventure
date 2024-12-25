@@ -525,7 +525,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     if (strDiscRate == "") {
       strDiscRate = '0';
     }
-    debugger;
+
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
