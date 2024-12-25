@@ -461,6 +461,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     }
   }
   onRowClick(row: any) {
+    console.log(row);
     this.slNum = row.slNo;
     this.grnDetTmp = true;
     this.grnDetailsForm.controls['product'].patchValue(row.prodName);
@@ -468,6 +469,18 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     this.grnDetailsForm.controls['serialNo'].patchValue(row.serialNo);
     this.grnDetailsForm.controls['poNo'].patchValue(row.poNo);
     this.productCode = row.prodCode;
+
+    // this.grnDetailsForm.patchValue({
+    //   serialNo: row.grnSlNo,
+    //   uom: row.uom,
+    //   chargeItem: row.chargeItem,
+    //   unitRate: row.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 },{emitEvent:false}),
+    //   vatRate: row.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 },{emitEvent:false}),
+    //   netRate: row.netRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 },{emitEvent:false}),
+    //   quantity: row.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 },{emitEvent:false}),
+    //   amount: row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 },{emitEvent:false}),
+    //   discRate: row.discRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 },{emitEvent:false}),
+    // })
     this.grnDetailsForm.patchValue({
       serialNo: row.grnSlNo,
       uom: row.uom,
@@ -477,7 +490,9 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       netRate: row.netRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       quantity: row.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       amount: row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    })
+      discRate: row.discRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    }, { emitEvent: false });
+
   }
   onUnitRateGotFocus() {
     let numUnitRate: number;
@@ -514,7 +529,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
-    if (vatRate) {
+    if (vatRate != undefined && vatRate !=0 && vatRate != null) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
     }
     else {
@@ -578,7 +593,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
 
-    if (vatRate) {
+    if (vatRate != undefined && vatRate !=0 && vatRate != null) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
     }
     else {
@@ -599,8 +614,6 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     };
-
-
 
     this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options),{ emitEvent: false });
     this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options),{ emitEvent: false });
@@ -642,7 +655,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numNetRate = Number(strNetRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
-    if (vatRate) {
+    if (vatRate != undefined && vatRate !=0 && vatRate != null) {
       numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
     }
     else {
@@ -724,7 +737,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     numNetRate = numAmount / numQty;
     vatRate = vat;
-    if (vatRate) {
+    if (vatRate != undefined && vatRate !=0 && vatRate != null) {
       numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
     }
     else {
