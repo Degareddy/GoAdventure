@@ -48,7 +48,7 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
   { field: "address2", headerName: "Address2", sortable: true, filter: true, resizable: true, width: 180 },
   { field: "city", headerName: "City", sortable: true, filter: true, resizable: true, width: 130 },
   { field: "province", headerName: "Province", sortable: true, filter: true, resizable: true, width: 120 },
-  { field: "eMail", headerName: "Email", sortable: true, filter: true, resizable: true, width: 180 },
+  // { field: "eMail", headerName: "Email", sortable: true, filter: true, resizable: true, width: 180 },
   { field: "currStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 100 }
 
   ];
