@@ -159,7 +159,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     // this.rateChnages();
-    this.refresh();
+    //  this.refresh();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -409,6 +409,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
               this.grnDetailsForm.controls['quantity'].patchValue(1);
               this.grnDetailsForm.controls['unitRate'].patchValue(result.stdSalesRate.toLocaleString('en-US',
                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                 this.onUnitRateChanged();
             }
 
           });
