@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subscription } from 'rxjs';
 import { InventoryService } from 'src/app/Services/inventory.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SearchProductComponent } from 'src/app/general/search-product/search-product.component';
@@ -25,6 +25,12 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   masterParams!: MasterParams;
   slNum!: number;
   subSink: SubSink;
+  unitRate!:number;
+  vatRates!:number;
+  discount!:number;
+  netRate!:number;
+  discAmt!:number;
+  amountBeftax!:number
   productCode!: string;
   selectedRowIndex: number = -1;
   wareHouseList: Item[] = [];
@@ -152,6 +158,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit(): void {
+    this.rateChnages();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -235,6 +242,88 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       }
 
     }
+  }
+  rateChnages(){
+    let discEmit=false;
+    let unitEmit=false;
+    
+    this.grnDetailsForm.get('unitRate')?.valueChanges.subscribe((value) => {
+      if(unitEmit){
+        return;
+      }
+      
+      this.unitRate = parseFloat(this.grnDetailsForm.get('unitRate')?.value.replace(/,/g, ''));
+    
+     this.discount=parseFloat(this.grnDetailsForm.get('discRate')?.value);
+     this.vatRate=parseFloat(this.grnDetailsForm.get('vatRate')?.value);
+      this.discAmt= (this.unitRate * this.discount )/ 100;
+     this.vatRates = ((this.unitRate - this.discAmt) * this.vatRate) / 100;
+     this.netRate = (this.unitRate - this.discount) + this.vatRates;
+     this.grnDetailsForm.get('netRate')?.setValue(this.netRate.toFixed(2));
+    }); 
+    this.grnDetailsForm.get('discRate')?.valueChanges.subscribe((value) => {
+      if(discEmit){
+        return;
+      }
+      
+      this.unitRate = parseFloat(this.grnDetailsForm.get('unitRate')?.value.replace(/,/g, ''));
+     this.discount=parseFloat(this.grnDetailsForm.get('discRate')?.value);
+     this.vatRate=parseFloat(this.grnDetailsForm.get('vatRate')?.value);
+     this.discAmt= (this.unitRate * this.discount )/ 100;
+     this.vatRates = ((this.unitRate - this.discAmt) * this.vatRate) / 100;
+     this.netRate = (this.unitRate - this.discAmt) + this.vatRates;
+     this.grnDetailsForm.get('netRate')?.setValue(this.netRate.toFixed(2));
+    });
+    // Declare a subscription variable to hold the subscription reference
+    let isUpdating = false
+
+     this.grnDetailsForm.get('netRate')?.valueChanges.subscribe((value) => {
+      if (isUpdating) {
+        return;  // Prevent re-triggering if we are manually updating the form
+      }
+    
+    try {
+
+      
+      isUpdating=true;
+      this.unitRate = parseFloat(this.grnDetailsForm.get('unitRate')?.value.replace(/,/g, ''));
+      this.discount = parseFloat(this.grnDetailsForm.get('discRate')?.value);
+      this.vatRate = parseFloat(this.grnDetailsForm.get('vatRate')?.value);
+
+    this.discAmt = (this.unitRate * this.discount) / 100;
+    this.vatRates = ((this.unitRate - this.discAmt) * this.vatRate) / 100;
+    this.netRate = (this.unitRate - this.discAmt) + this.vatRates;
+      let chnagedValue:number=parseFloat(this.grnDetailsForm.get('netRate')?.value);
+    if (  chnagedValue < this.netRate) {
+      this.discAmt=0;
+      this.netRate =chnagedValue;
+      this.amountBeftax = this.netRate / (1 + (this.vatRate / 100));
+      this.discAmt = (this.unitRate-this.amountBeftax);
+      this.discount = (this.discAmt * 100) / this.unitRate;
+     
+
+      this.grnDetailsForm.get('discRate')?.setValue(this.discount);
+      discEmit=true;
+    } else if (  chnagedValue > this.netRate) {
+      
+     
+      this.netRate = chnagedValue;
+      this.amountBeftax = this.netRate / (1 + (this.vatRate / 100));
+      this.unitRate = (this.amountBeftax * 100)/(this.discount +100) ;
+      this.grnDetailsForm.get('unitRate')?.setValue(this.unitRate.toFixed(2));
+      unitEmit=true;
+    }
+
+    // Set the final netRate value after all calculations
+    this.grnDetailsForm.get('netRate')?.setValue(this.netRate.toFixed(2));
+  } finally {
+    
+    // Resubscribe to valueChanges after calculations
+    isUpdating = false;
+  }
+});
+
+      
   }
   onItemSubmit() {
 
@@ -476,7 +565,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
 
 
     numAmount = numNetRate * numQty;
-    // debugger;
+    // 
     // if (vatRate) {
     //   numNetRate = numNetRate / (1 + this.vatRate / 100.0);
     //   numAmount = numNetRate + numNetRate * numQty;
