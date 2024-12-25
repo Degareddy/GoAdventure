@@ -158,7 +158,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit(): void {
-    this.rateChnages();
+    // this.rateChnages();
+    this.refresh();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -180,6 +181,23 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       }
     );
     this.getGRNDetails(this.data.tranNum);
+  }
+  refresh(){
+    this.grnDetailsForm.get('unitRate')?.valueChanges.subscribe((newValue) => {
+      this.onUnitRateChanged();
+    });
+    this.grnDetailsForm.get('netRate')?.valueChanges.subscribe((newValue) => {
+      this.onNetRateChanged();
+    });
+    this.grnDetailsForm.get('quantity')?.valueChanges.subscribe((newValue) => {
+      this.onQuantityChanged();
+    });
+    this.grnDetailsForm.get('discRate')?.valueChanges.subscribe((newValue) => {
+      this.onDiscountChanged();
+    });
+    this.grnDetailsForm.get('amount')?.valueChanges.subscribe((newValue) => {
+      this.onAmountChanged();
+    });
   }
   onTabSelected(event: any) {
     this.selectedTabIndex = event.index;
@@ -246,26 +264,26 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   rateChnages(){
     let discEmit=false;
     let unitEmit=false;
-    
+
     this.grnDetailsForm.get('unitRate')?.valueChanges.subscribe((value) => {
       if(unitEmit){
         return;
       }
-      
+
       this.unitRate = parseFloat(this.grnDetailsForm.get('unitRate')?.value.replace(/,/g, ''));
-    
+
      this.discount=parseFloat(this.grnDetailsForm.get('discRate')?.value);
      this.vatRate=parseFloat(this.grnDetailsForm.get('vatRate')?.value);
       this.discAmt= (this.unitRate * this.discount )/ 100;
      this.vatRates = ((this.unitRate - this.discAmt) * this.vatRate) / 100;
      this.netRate = (this.unitRate - this.discount) + this.vatRates;
      this.grnDetailsForm.get('netRate')?.setValue(this.netRate.toFixed(2));
-    }); 
+    });
     this.grnDetailsForm.get('discRate')?.valueChanges.subscribe((value) => {
       if(discEmit){
         return;
       }
-      
+
       this.unitRate = parseFloat(this.grnDetailsForm.get('unitRate')?.value.replace(/,/g, ''));
      this.discount=parseFloat(this.grnDetailsForm.get('discRate')?.value);
      this.vatRate=parseFloat(this.grnDetailsForm.get('vatRate')?.value);
@@ -281,10 +299,10 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       if (isUpdating) {
         return;  // Prevent re-triggering if we are manually updating the form
       }
-    
+
     try {
 
-      
+
       isUpdating=true;
       this.unitRate = parseFloat(this.grnDetailsForm.get('unitRate')?.value.replace(/,/g, ''));
       this.discount = parseFloat(this.grnDetailsForm.get('discRate')?.value);
@@ -300,13 +318,13 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       this.amountBeftax = this.netRate / (1 + (this.vatRate / 100));
       this.discAmt = (this.unitRate-this.amountBeftax);
       this.discount = (this.discAmt * 100) / this.unitRate;
-     
+
 
       this.grnDetailsForm.get('discRate')?.setValue(this.discount);
       discEmit=true;
     } else if (  chnagedValue > this.netRate) {
-      
-     
+
+
       this.netRate = chnagedValue;
       this.amountBeftax = this.netRate / (1 + (this.vatRate / 100));
       this.unitRate = (this.amountBeftax * 100)/(this.discount +100) ;
@@ -317,13 +335,13 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     // Set the final netRate value after all calculations
     this.grnDetailsForm.get('netRate')?.setValue(this.netRate.toFixed(2));
   } finally {
-    
+
     // Resubscribe to valueChanges after calculations
     isUpdating = false;
   }
 });
 
-      
+
   }
   onItemSubmit() {
 
@@ -388,7 +406,9 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
 
               this.vatRate = result.vatRate;
               this.productCode = result.prodCode;
-              this.grnDetailsForm.controls['unitRate'].patchValue(result.stdSalesRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+              this.grnDetailsForm.controls['quantity'].patchValue(1);
+              this.grnDetailsForm.controls['unitRate'].patchValue(result.stdSalesRate.toLocaleString('en-US',
+                 { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
 
           });
@@ -472,6 +492,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     let numQty: number;
     let numNetRate: number;
     let numAmount: number;
+    let vatRate: number;
+    let vat = this.grnDetailsForm.get('vatRate')?.value;
 
     let strUnitRate = this.grnDetailsForm.controls['unitRate'].value.toString();
     let strDiscRate = this.grnDetailsForm.controls['discRate'].value.toString();
@@ -491,8 +513,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
-
-    if (this.data.applyVat) {
+    vatRate = vat;
+    if (vatRate) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
     }
     else {
@@ -507,9 +529,9 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       maximumFractionDigits: 2,
     };
 
-    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options));
+    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options),{ emitEvent: false });
 
   }
 
@@ -565,7 +587,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
 
 
     numAmount = numNetRate * numQty;
-    // 
+    //
     // if (vatRate) {
     //   numNetRate = numNetRate / (1 + this.vatRate / 100.0);
     //   numAmount = numNetRate + numNetRate * numQty;
@@ -580,9 +602,9 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
 
 
 
-    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options));
+    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options),{ emitEvent: false });
   }
 
   // onNetRateGotFocus() {
@@ -646,10 +668,10 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       maximumFractionDigits: 2,
     };
     // discper
-    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['discRate'].patchValue(numDiscRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options));
+    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['discRate'].patchValue(numDiscRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options),{ emitEvent: false });
   }
   onQuantityChanged() {
     let numQty: number;
@@ -672,8 +694,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       maximumFractionDigits: 2,
     };
 
-    this.grnDetailsForm.controls['quantity'].patchValue(numQty.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['amount'].patchValue(amount.toLocaleString(undefined, options));
+    this.grnDetailsForm.controls['quantity'].patchValue(numQty.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['amount'].patchValue(amount.toLocaleString(undefined, options),{ emitEvent: false });
   }
 
   onAmountChanged() {
@@ -726,10 +748,10 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       maximumFractionDigits: 2,
     };
 
-    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['discRate'].patchValue(numDiscRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options));
-    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options));
+    this.grnDetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['discRate'].patchValue(numDiscRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString(undefined, options),{ emitEvent: false });
+    this.grnDetailsForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options),{ emitEvent: false });
   }
 
 }
