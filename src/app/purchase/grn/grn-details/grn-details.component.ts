@@ -525,13 +525,13 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     if (strDiscRate == "") {
       strDiscRate = '0';
     }
-
+    debugger;
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
     if (vatRate != undefined && vatRate !=0 && vatRate != null) {
-      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
+      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0);
@@ -595,7 +595,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     vatRate = vat;
 
     if (vatRate != undefined && vatRate !=0 && vatRate != null) {
-      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
+      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0);
@@ -657,7 +657,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
     if (vatRate != undefined && vatRate !=0 && vatRate != null) {
-      numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
+      numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
       numDiscRate = ((numUnitRate - numNetRate) * 100.0) / (numUnitRate);
@@ -667,7 +667,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       numDiscRate = 0;
 
       if (vatRate) {
-        numUnitRate = numNetRate / (1 + this.vatRate / 100.0);
+        numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
       }
       else {
         numUnitRate = numUnitRate;
@@ -739,7 +739,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numNetRate = numAmount / numQty;
     vatRate = vat;
     if (vatRate != undefined && vatRate !=0 && vatRate != null) {
-      numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
+      numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
       numDiscRate = ((numUnitRate - numNetRate) * 100.0) / (numUnitRate);
@@ -749,7 +749,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
       numDiscRate = 0;
 
       if (this.data.applyVat) {
-        numUnitRate = numNetRate / (1 + this.vatRate / 100.0);
+        numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
       }
       else {
         numUnitRate = numUnitRate;
