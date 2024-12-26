@@ -75,7 +75,7 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
       address1: ['', Validators.required],
       address2: ['', Validators.required],
       address3: [''],
-      pO_PIN_ZIP: ['', Validators.required],
+      pO_PIN_ZIP: ['', Validators.required, Validators.maxLength(12)],
       city: ['', Validators.required],
       province: ['', Validators.required],
       country: ['', Validators.required],
