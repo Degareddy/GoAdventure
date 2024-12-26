@@ -521,22 +521,38 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     numAmount = Number(strAmount.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     numNetRate = numAmount / numQty;
-    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
-      numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
-    }
-    else {
-      numDiscRate = ((numUnitRate - numNetRate) * 100.0) / (numUnitRate);
+    // if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+    //   numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
+    // }
+    // else {
+    //   numDiscRate = ((numUnitRate - numNetRate) * 100.0) / (numUnitRate);
+    // }
+
+    // if (numDiscRate < 0) {
+    //   numDiscRate = 0;
+    //   if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+    //     numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
+    //   }
+    //   else {
+    //     numUnitRate = numUnitRate;
+    //   }
+    // }
+    if (vatRate && vatRate !== 0) {
+      numDiscRate =
+        ((numUnitRate * (1 + Number(vatRate) / 100) - numNetRate) /
+        (numUnitRate * (1 + Number(vatRate) / 100))) * 100;
+    } else {
+      numDiscRate = ((numUnitRate - numNetRate) / numUnitRate) * 100;
     }
 
     if (numDiscRate < 0) {
       numDiscRate = 0;
-      if (vatRate != undefined && vatRate != 0 && vatRate != null) {
-        numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
-      }
-      else {
-        numUnitRate = numUnitRate;
+
+      if (vatRate && vatRate !== 0) {
+        numUnitRate = numNetRate / (1 + Number(vatRate) / 100);
       }
     }
+
     this.supplierdetailsForm.get('unitRate')!.patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
     this.supplierdetailsForm.get('discRate')!.patchValue(numDiscRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
     this.supplierdetailsForm.get('netRate')!.patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
