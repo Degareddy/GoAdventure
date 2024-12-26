@@ -81,12 +81,11 @@
       <button mat-raised-button color="primary" class="btnUp"
       [disabled]="mode !='Modify' || data.status !='Open'|| supplierdetailsForm.invalid">
       <mat-icon>done</mat-icon><b>Apply</b></button>
-
-      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
-        <mat-icon>cancel</mat-icon><b>Close</b>
-      </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
         <mat-icon>clear_all</mat-icon><b>Clear</b>
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+        <mat-icon>cancel</mat-icon><b>Close</b>
       </button>
     </div>
   </form>
