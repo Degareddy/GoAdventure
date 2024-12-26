@@ -244,7 +244,7 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     }
   }
   searchProduct() {
-    
+
     this.suppDetCls.prodName = "";
     const body = {
       ...this.commonParams(),
@@ -254,17 +254,17 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
       ItemSecondLevel: ""
     }
     this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-      
+
       if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-        
+
         if (res && res.data && res.data.nameCount === 1) {
-          
+
           this.supplierdetailsForm.controls['product'].patchValue(res.data.selName);
           this.prodCode = res.data.selCode;
           this.suppDetCls.prodName = res.data.selName;
         }
         else {
-          
+
           this.retMessage = "";
           this.textMessageClass = "";
           const dialogRef: MatDialogRef<SearchProductComponent> = this.dialog.open(SearchProductComponent, {
@@ -276,24 +276,29 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
             }
           });
           dialogRef.afterClosed().subscribe(result => {
-            this.units = result.uom;
-            this.suppDetCls.prodCode = result.prodCode;
-            this.suppDetCls.prodName = result.prodName;
-            this.vatRate = result.vatRate;
-            let numNetRate: number = 0;
-            if (this.data.applyVat) {
-              numNetRate = result.stdPurRate * (1 + this.vatRate / 100.0);
+            // console.log(result);
+            if(result != true){
+              this.units = result.uom;
+              this.suppDetCls.prodCode = result.prodCode;
+              this.suppDetCls.prodName = result.prodName;
+              this.vatRate = Number(result.vatRate);
+              let numNetRate: number = 0;
+              if (this.data.applyVat) {
+                numNetRate = result.stdPurRate * (1 + this.vatRate / 100.0);
+              }
+              else {
+                numNetRate = result.stdPurRate;
+              }
+              this.supplierdetailsForm.controls['product'].patchValue(result.prodName);
+              this.supplierdetailsForm.controls['uom'].patchValue(result.uom);
+              this.supplierdetailsForm.controls['unitRate'].patchValue(result.stdPurRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+              this.supplierdetailsForm.controls['vatRate'].patchValue(result.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+              this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+              this.supplierdetailsForm.controls['quantity'].patchValue(1.00,{emitEvent: false});
+              this.supplierdetailsForm.controls['amount'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+              this.onUnitRateChanged();
             }
-            else {
-              numNetRate = result.stdPurRate;
-            }
-            this.supplierdetailsForm.controls['product'].patchValue(result.prodName);
-            this.supplierdetailsForm.controls['uom'].patchValue(result.uom);
-            this.supplierdetailsForm.controls['unitRate'].patchValue(result.stdPurRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-            this.supplierdetailsForm.controls['vatRate'].patchValue(result.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-            this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-            this.supplierdetailsForm.controls['quantity'].patchValue(1.00);
-            this.supplierdetailsForm.controls['amount'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
 
           });
         }
@@ -335,12 +340,12 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     this.vatRate = row.vatRate;
     this.supplierdetailsForm.controls['product'].patchValue(row.prodName);
     this.supplierdetailsForm.controls['uom'].patchValue(row.uom);
-    this.supplierdetailsForm.controls['unitRate'].patchValue(row.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['quantity'].patchValue(row.quantity.toLocaleString(undefined, qoptions));
-    this.supplierdetailsForm.controls['netRate'].patchValue(row.netRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.controls['unitRate'].patchValue(row.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['quantity'].patchValue(row.quantity.toLocaleString(undefined, qoptions),{emitEvent: false});
+    this.supplierdetailsForm.controls['netRate'].patchValue(row.netRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
     this.supplierdetailsForm.controls['vatRate'].patchValue(row.vatRate);
-    this.supplierdetailsForm.controls['discRate'].patchValue(row.discRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['amount'].patchValue(row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.controls['discRate'].patchValue(row.discRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['amount'].patchValue(row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
   }
   get(tarnNO: string) {
     this.masterParams.tranNo = tarnNO;
@@ -374,6 +379,10 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     let strUnitRate = this.supplierdetailsForm.controls['unitRate'].value.toString();
     let strDiscRate = this.supplierdetailsForm.controls['discRate'].value.toString();
     let strQty = this.supplierdetailsForm.controls['quantity'].value.toString();
+    let vatRate: number;
+    let vat = this.supplierdetailsForm.get('vatRate')?.value;
+    vatRate = vat;
+
     if (strUnitRate == "" || strQty == "") {
       return;
     }
@@ -383,16 +392,16 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
-    if (this.data.applyVat) {
-      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
+    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0);
     }
     numAmount = numNetRate * numQty;
-    this.supplierdetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['amount'].patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['amount'].patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
 
   }
 
@@ -409,6 +418,9 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     let strUnitRate = this.supplierdetailsForm.controls['unitRate'].value.toString();
     let strDiscRate = this.supplierdetailsForm.controls['discRate'].value.toString();
     let strQty = this.supplierdetailsForm.controls['quantity'].value.toString();
+    let vatRate: number;
+    let vat = this.supplierdetailsForm.get('vatRate')?.value;
+    vatRate = vat;
     if (strUnitRate == "" || strQty == "") {
       return;
     }
@@ -419,17 +431,17 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
 
-    if (this.data.applyVat) {
-      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + this.vatRate / 100.0);
+    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+      numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0);
     }
 
     numAmount = numNetRate * numQty;
-    this.supplierdetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['amount'].patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['amount'].patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
   }
 
 
@@ -450,9 +462,11 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numNetRate = Number(strNetRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
-
-    if (this.data.applyVat) {
-      numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
+    let vatRate: number;
+    let vat = this.supplierdetailsForm.get('vatRate')?.value;
+    vatRate = vat;
+    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+      numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
       numDiscRate = ((numUnitRate - numNetRate) * 100.0) / (numUnitRate);
@@ -460,18 +474,18 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
 
     if (numDiscRate < 0) {
       numDiscRate = 0;
-      if (this.data.applyVat) {
-        numUnitRate = numNetRate / (1 + this.vatRate / 100.0);
+      if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+        numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
       }
       else {
         numUnitRate = numUnitRate;
       }
     }
     numAmount = numNetRate * numQty;
-    this.supplierdetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['discRate'].patchValue(numDiscRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.controls['amount'].patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.controls['unitRate'].patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['discRate'].patchValue(numDiscRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['netRate'].patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.controls['amount'].patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
   }
   onQuantityChanged() {
     let numQty: number = 0;
@@ -485,7 +499,7 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     let amount = numNetRate * numQty;
     this.supplierdetailsForm.controls['quantity'].patchValue(numQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-    this.supplierdetailsForm.controls['amount'].patchValue(amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.controls['amount'].patchValue(amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
   }
 
   onAmountChanged() {
@@ -497,7 +511,9 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     let strUnitRate = this.supplierdetailsForm.controls['unitRate'].value.toString();
     let strAmount = this.supplierdetailsForm.controls['amount'].value.toString();
     let strQty = this.supplierdetailsForm.controls['quantity'].value.toString();
-
+    let vatRate: number;
+    let vat = this.supplierdetailsForm.get('vatRate')?.value;
+    vatRate = vat;
     if (strAmount == "" || strUnitRate == "" || strQty == "") {
       return;
     }
@@ -505,8 +521,8 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
     numAmount = Number(strAmount.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     numNetRate = numAmount / numQty;
-    if (this.data.applyVat) {
-      numDiscRate = (numUnitRate * (1 + this.vatRate / 100.0) - numNetRate) / (numUnitRate * (1 + this.vatRate / 100.0)) * 100.0;
+    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+      numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
       numDiscRate = ((numUnitRate - numNetRate) * 100.0) / (numUnitRate);
@@ -514,17 +530,17 @@ export class SupplierQuotaionDetailsComponent implements OnInit, OnDestroy {
 
     if (numDiscRate < 0) {
       numDiscRate = 0;
-      if (this.data.applyVat) {
-        numUnitRate = numNetRate / (1 + this.vatRate / 100.0);
+      if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+        numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
       }
       else {
         numUnitRate = numUnitRate;
       }
     }
-    this.supplierdetailsForm.get('unitRate')!.patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.get('discRate')!.patchValue(numDiscRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.get('netRate')!.patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.supplierdetailsForm.get('amount')!.patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    this.supplierdetailsForm.get('unitRate')!.patchValue(numUnitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.get('discRate')!.patchValue(numDiscRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.get('netRate')!.patchValue(numNetRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
+    this.supplierdetailsForm.get('amount')!.patchValue(numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),{emitEvent: false});
   }
 
 }
