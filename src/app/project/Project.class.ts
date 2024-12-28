@@ -135,6 +135,7 @@ export class FlatClass {
   public employee!: string
   public empName!: string
   public currentTenant!: string
+  public UnitsList!: string
   public tenantJoinDate!: Date
   public tenantName!: string
   public petsAllowed!: boolean
@@ -390,6 +391,7 @@ export class invoiceClass {
   public rentYear!: number
   public invDay!: number
   public isRentInvoice!: boolean
+  public IsUtilityInvoice!: boolean
   public applyVAT!: boolean
   public includeExpenses!: boolean
   public IsMiscInvoice!:boolean;

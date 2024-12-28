@@ -67,13 +67,13 @@
         <div class="col-3">
           <mat-form-field appearance="outline">
             <mat-label>Phone2</mat-label>
-            <input matInput type="text" id="phone2" placeholder="Phone2" formControlName="phone2">
+            <input matInput type="text" id="phone2" placeholder="Phone2" formControlName="phone2"  (focusout)="onPhone1Change($event)">
           </mat-form-field>
         </div>
         <div class="col-3">
           <mat-form-field appearance="outline">
             <mat-label>Phone3</mat-label>
-            <input matInput type="text" id="phone3" placeholder="Phone3" formControlName="phone3">
+            <input matInput type="text" id="phone3" placeholder="Phone3" formControlName="phone3"  (focusout)="onPhone2Change($event)">
           </mat-form-field>
         </div>
         <div class="col-3">

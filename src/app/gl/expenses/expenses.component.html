@@ -1,11 +1,11 @@
 <div class="mat-card container-fluid">
   <div class="left data">Expenses</div>
   <div class="right">
-    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onDetailsCilcked()" [disabled]="expensesForm.invalid">
+    <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onDetailsCilcked()" [disabled]="expensesForm.get('tranNo')!.value.length === 0">
       <mat-icon>info</mat-icon>Details
     </button>
     <button mat-raised-button color="primary" type="button" class="btnUp"
-      (click)="onDocsCilcked(expensesForm.get('tranNo')!.value)"  [disabled]="expensesForm.invalid">
+      (click)="onDocsCilcked(expensesForm.get('tranNo')!.value)"  [disabled]="expensesForm.get('tranNo')!.value.length === 0">
       <mat-icon>scanner</mat-icon>Docs
     </button>
     <button mat-raised-button color="accent" class="btnUp" type="button"

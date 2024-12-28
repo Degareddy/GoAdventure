@@ -486,6 +486,15 @@
               style="margin-left: 10px;background-color: burlywood;border: 1px solid; padding: 4px;">No
               Rent</mat-checkbox>
           </div>
+         
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-full" >
+              <mat-label>Similar</mat-label>
+              <input matInput placeholder="Similar financial units"  formControlName="UnitsList"  
+                type="text "
+                [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">
+            </mat-form-field>
+          </div>
           <!-- <div class="col-md-3">
             <mat-checkbox class="highlight-checkbox" formControlName="multiLandLord"
               style="margin-left: 10px;background-color: burlywood;border: 1px solid; padding: 4px;">Multi LandLord</mat-checkbox>

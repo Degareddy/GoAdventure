@@ -156,7 +156,15 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
       }
     }
   }
-
+  onPhone1Change(value:any){
+    const input = value.target.value.replace(/[^0-9]/g, '');
+    this.addressForm.controls['phone2'].patchValue(input);
+  }
+  
+  onPhone2Change(value:any){
+    const input = value.target.value.replace(/[^0-9]/g, '');
+    this.addressForm.controls['phone3'].patchValue(input);
+  }
   onRowSelected(event: any) {
     this.onViewClicked(event.data);
   }

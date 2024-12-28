@@ -101,12 +101,16 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   populateYears() {
     const currentYear = new Date().getFullYear();
     const previousYear = currentYear - 1;
+    const nextyear=currentYear+1
     this.yearList = [
       {
         itemCode: previousYear, itemName: previousYear
       },
       {
         itemCode: currentYear, itemName: currentYear
+      },
+      {
+        itemCode: nextyear, itemName: nextyear
       }
     ]
   }
@@ -147,10 +151,10 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
           });
           this.invCls.tenant = res.data.tenant;
           this.invCls.tenantName = res.data.tenantName;
-          if (fromInvoiceDate > today) {
-            this.displayMessage(this.datePipe.transform(new Date(res.data.fromInvoiceDate), "dd-MM-yyyy") + " Invoice date is too early to raise an invoice.", "red");
-            return;
-          }
+          // if (fromInvoiceDate > today) {
+          //   this.displayMessage(this.datePipe.transform(new Date(res.data.fromInvoiceDate), "dd-MM-yyyy") + " Invoice date is too early to raise an invoice.", "red");
+          //   return;
+          // }
         }
         else {
           this.displayMessage(res.message, "red");
@@ -197,19 +201,20 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       invMonth: ['', Validators.required],
       penaltyDay: [0, Validators.required],
       isRentInvoice: [false],
+      isUtility:[false],
       isApplyForAll:[false],
       // isFull: [false],
       // transferAmount: ["0.00"],
       // transferTo: [""]
-    }, { validators: this.rentInvoiceValidator() });
+    },);
   }
-  rentInvoiceValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const isRentInvoice = control.get('isRentInvoice')?.value;
-      // return isRentInvoice === true ? null : { rentInvoiceInvalid: true };
-      return null;
-    };
-  }
+  // rentInvoiceValidator(): ValidatorFn {
+  //   return (control: AbstractControl): ValidationErrors | null => {
+  //     const isRentInvoice = control.get('isRentInvoice')?.value;
+  //     // return isRentInvoice === true ? null : { rentInvoiceInvalid: true };
+  //     return null;
+  //   };
+  // }
 
   onExpensesCilcked() {
     const dialogRef: MatDialogRef<InvoiceExpensesComponent> = this.dialog.open(InvoiceExpensesComponent, {
@@ -385,6 +390,7 @@ async  loadData() {
     this.invCls.currency = formValues.currency;
     this.invCls.dueDate = dueDate;
     this.invCls.isRentInvoice = formValues.isRentInvoice;
+    this.invCls.IsUtilityInvoice=formValues.isUtility
     this.invCls.invFromDate = invFromDate;
     this.invCls.invToDate = invToDate;
     this.invCls.IsMiscInvoice=formValues.miscellaneous;
@@ -526,7 +532,7 @@ async  loadData() {
       this.displayMessage("Enter all required fields!", "red");
       return;
     }
-    if(!this.saleForm.controls['includeExpenses'].value && !this.saleForm.controls['isRentInvoice'].value && this.saleForm.controls['mode'].value !== 'Authorize' && !this.saleForm.controls['miscellaneous'].value){
+    if(!this.saleForm.controls['includeExpenses'].value && !this.saleForm.controls['isRentInvoice'].value && this.saleForm.controls['mode'].value !== 'Authorize' && !this.saleForm.controls['miscellaneous'].value && !this.saleForm.controls['isUtility'].value ){
       const message = `Are you sure you want to generate an empty invoice?`;
     const dialogData = new ConfirmDialogModel("Confirm Delete?", message);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

@@ -180,6 +180,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     return null;
   }
   prepareClsToDelete() {
+    
     const formValues = this.invDetForm.value;
     this.invDetailCls.company = this.userDataService.userData.company;
     this.invDetailCls.amount = parseFloat(this.invDetForm.controls['net'].value.toString().replace(/,/g, ''));
@@ -196,7 +197,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     this.invDetailCls.discType = this.invDetForm.controls['discType'].value;
     this.invDetailCls.discAmount = parseFloat((this.invDetForm.get('discAmount')!.value || 0).toString().replace(/,/g, ''));
     this.invDetailCls.discRate = parseFloat(this.invDetForm.controls['discRate'].value.replace(/,/g, ''));
-    this.invDetailCls.NetAmount = parseFloat(this.invDetForm.controls['net'].value.replace(/,/g, ''));
+    this.invDetailCls.NetAmount = parseFloat(this.invDetForm.controls['net'].value.toString().replace(/,/g, ''));
 
   }
   prepareCls() {
@@ -277,17 +278,21 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     }
   }
   deleteInvDetails(){
+    
     this.prepareClsToDelete();
     try {
+      
       this.loader.start();
       this.subSink.sink = this.projectService.UpdateTenantInvoiceDet(this.invDetailCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
+          
           this.dataFlag = true;
           this.getTenantInvoiceDetails(res.tranNoNew);
           this.displayMessage("Success: " + res.message, "green");
         }
         else {
+          
           this.displayMessage("Error: " + res.message, "red");
         }
       });

@@ -106,7 +106,7 @@ export class ExpensesComponent implements OnInit {
       mode: ['View'],
       tranNo: [''],
       tranDate: [new Date(), Validators.required],
-      notes: ['',Validators.required]
+      notes: ['']
     })
   }
 

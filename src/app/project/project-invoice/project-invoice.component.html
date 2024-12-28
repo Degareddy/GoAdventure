@@ -129,6 +129,7 @@
           </div>
         </div>
         <div class="row justify-content-left">
+
           <div class="col-4">
             <mat-form-field appearance="outline" class="search">
               <mat-label class="mat-label-class">Tenent</mat-label>
@@ -252,22 +253,18 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-2 myCustomClass">
+          <div class="col-12 myCustomClass checkbox-container">
+            <mat-checkbox formControlName="isRentInvoice" (change)="onCheckboxChange('isRentInvoice')">Rental</mat-checkbox>
+            <mat-checkbox formControlName="isUtility" (change)="onCheckboxChange('isUtility')">Utility</mat-checkbox>
             <mat-checkbox formControlName="applyVAT" (change)="onCheckboxChange('applyVAT')">Apply VAT</mat-checkbox>
-          </div>
-          <div class="col-2 myCustomClass">
             <mat-checkbox formControlName="miscellaneous" (change)="onCheckboxChange('miscellaneous')">Legal Charges</mat-checkbox>
-          </div>
-          <div class="col-2 myCustomClass">
             <mat-checkbox formControlName="includeExpenses" (change)="onCheckboxChange('includeExpenses')">Expenses</mat-checkbox>
-          </div>
-          <div class="col-2 myCustomClass">
-            <mat-checkbox formControlName="isRentInvoice" (change)="onCheckboxChange('isRentInvoice')">Rental Invoice</mat-checkbox>
-          </div>
-          <div class="col-2 myCustomClass">
-            <mat-checkbox formControlName="isApplyForAll" [disabled]="saleForm.get('mode')!.value !== 'Authorize' || !saleForm.get('miscellaneous')!.value" (change)="onCheckboxChange('isApplyForAll')">All Units</mat-checkbox>
+            <mat-checkbox formControlName="isApplyForAll" 
+                          [disabled]="saleForm.get('mode')!.value !== 'Authorize' || !saleForm.get('miscellaneous')!.value" 
+                          (change)="onCheckboxChange('isApplyForAll')">All Units</mat-checkbox>
           </div>
           
+
         </div>
         <!-- <div class="row justify-content-left myCustomClass">
           <div class="col-4">
@@ -354,6 +351,7 @@
               <td class="side-by-side"><b>Total Amount:</b></td>
               <td class="side-by-side right-align data">{{totalAmount | number: '1.2-2'}}</td>
             </tr>
+            
           </table>
         </div>
       </div>

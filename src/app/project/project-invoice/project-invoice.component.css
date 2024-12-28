@@ -67,6 +67,15 @@
     align-items: center;
   }
 }
+.checkbox-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Three columns */
+  gap: 16px; /* Adjust spacing between items */
+}
+
+mat-checkbox {
+  display: block;
+}
 
 .custom-disabled-button {
   background-color: #ffc107 !important; /* Set the desired color for the disabled button */

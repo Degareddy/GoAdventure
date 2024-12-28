@@ -264,12 +264,14 @@ export class FlatsComponent implements OnInit, OnDestroy {
       extraHall: [false],
       waterDiscount: [false],
       noRent: [false],
+      isSimilar:[false],
       multiLandLord: [false],
       discType: [{ value: '', disabled: true }],
       discRate: [{ value: '0.00', disabled: true }],
       currency: ['', [Validators.required]],
       unitRate: ['0'],
-      furnish: ['', Validators.required]
+      furnish: ['', Validators.required],
+      UnitsList:['']
     })
   }
 
@@ -461,7 +463,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
   refreshData() {
-
+    
     this.unitDetForm.get('landLordName')?.enable();
     this.ifCmpUser();
     this.unitDetForm.get('updateAll')?.valueChanges.subscribe((ch: any) => {
@@ -814,6 +816,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
             else {
               this.onSelectedFlatChanged(res.tranNoNew, this.unitDetForm.get('mode')?.value);
               this.newTranMsg = res.message;
+              this.unitDetForm.get('UnitsList')?.patchValue('');
             }
           }
           else {
@@ -918,7 +921,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       discRate: formControls.discRate.value,
       currency: formControls.currency.value,
       unitCost: formControls.unitRate.value,
-      furnish: formControls.furnish.value
+      furnish: formControls.furnish.value,
+      UnitsList:formControls.UnitsList.value,
     } as FlatClass;
   }
 

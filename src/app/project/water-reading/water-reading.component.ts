@@ -513,7 +513,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       // rate: ['0.00', Validators.required],
       // amount: [{ value: '0.00', disabled: true }],
       tranDate: [new Date(), Validators.required],
-      notes: ['', Validators.required],
+      notes: [''],
       mode: ['View'],
       tranNo: ['']
     });
