@@ -36,7 +36,7 @@
 
         <div class="flex justify-center space-x-2 py-2">
           <button mat-raised-button color="primary" type="submit" class="btnUp"
-            [disabled]="changeLocationForm.invalid || (userData.location.toUpperCase() === changeLocationForm.get('location')!.value.toUpperCase())">
+            [disabled]="changeLocationForm.invalid ">
             <mat-icon>done</mat-icon> Apply
           </button>
 
