@@ -134,10 +134,9 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     }
   }
   locationChanged(event: any) {
-  
     this.displayMessage("", "");
     const foundLocation = this.locationList.find((location: Item) => location.itemCode === this.changeLocationForm.controls['location'].value);
-    if (this.userDataService.userData.location.toUpperCase() ===this.currLoc.toUpperCase() && this.userDataService.userData.company == this.changeLocationForm.controls['company'].value) {
+    if (this.userDataService.userData.location.toUpperCase() === event.toUpperCase() && this.userDataService.userData.company == this.changeLocationForm.controls['company'].value) {
       this.displayMessage(`Your already in ${foundLocation?.itemName} location!`, "red");
       return;
     }
