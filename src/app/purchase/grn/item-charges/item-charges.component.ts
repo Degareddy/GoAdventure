@@ -19,7 +19,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
   styleUrls: ['./item-charges.component.css']
 })
 export class ItemChargesComponent implements OnInit, OnDestroy {
-  @Input() data!: { mode: string, tranNum: string, status: string, applyVat: boolean };
+  @Input() data!: { mode: string, tranNum: string, status: string, vat: boolean };
   itemChargeForm!: FormGroup;
   public dialogOpen: boolean = false;
   rowData: any = [];
@@ -367,7 +367,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
     }
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
-    if (this.data.applyVat) {
+    if (this.data.vat) {
       numNetRate = numUnitRate * (1 + this.itemChargeForm.controls['vatRate'].value / 100.0);
     }
     else {

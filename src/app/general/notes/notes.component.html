@@ -44,8 +44,7 @@
         <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Clear()">
           <mat-icon>clear_all</mat-icon>Clear
         </button>
-        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Delete()" [disabled]="data.mode !='Modify' ||
-        data.status=='Closed' || notesForm.invalid || slNum ==0">
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Delete()" [disabled]="data.mode !='Delete' || notesForm.invalid || slNum ==0">
           <mat-icon>delete</mat-icon> Delete
         </button>
         <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">

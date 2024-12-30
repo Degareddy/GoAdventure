@@ -323,7 +323,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       width: '90%', // Set the width of the dialog
       disableClose: true,
       data: {
-        mode: this.grnForm.controls['mode'].value, status: this.grnStatus,
+        mode: this.grnForm.controls['mode'].value, status: this.grnStatus,vat:this.grnForm.controls['isVatable'].value,
         tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN"
       }
     });

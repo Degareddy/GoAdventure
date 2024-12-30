@@ -19,7 +19,7 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./common-charges.component.css']
 })
 export class CommonChargesComponent implements OnInit, OnDestroy {
-  @Input() data!: { mode: string, tranNum: string, status: string, applyVat: boolean };
+  @Input() data!: { mode: string, tranNum: string, status: string, vat: boolean };
   grnccForm!: FormGroup;
   rowData: any = [];
   masterItemsList: Item[] = [];
@@ -294,7 +294,7 @@ export class CommonChargesComponent implements OnInit, OnDestroy {
     }
     numUnitRate = Number(strUnitRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
-    if (this.data.applyVat) {
+    if (this.data.vat) {
       numNetRate = numUnitRate * (1 + this.grnccForm.controls['vatRate'].value / 100.0);
     }
     else {

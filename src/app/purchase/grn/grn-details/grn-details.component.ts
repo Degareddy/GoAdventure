@@ -140,7 +140,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   constructor(protected purchaseService: PurchaseService, private fb: FormBuilder, private invService: InventoryService,
     private utlService: UtilitiesService, public dialog: MatDialog, private userDataService: UserDataService,
     private loader: NgxUiLoaderService,
-    @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNum: string, status: string, applyVat: boolean },) {
+    @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNum: string, status: string, vat: boolean },) {
     this.masterParams = new MasterParams();
     this.subSink = new SubSink();
     this.grnDetailsForm = this.formInit();
@@ -213,12 +213,30 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     this.grnDetailsCls.user = this.userDataService.userData.userID;
     this.grnDetailsCls.refNo = this.userDataService.userData.sessionID;
     this.grnDetailsCls.warehouse = this.grnDetailsForm.controls['warehouse'].value;
-    this.grnDetailsCls.unitRate = parseFloat(this.grnDetailsForm.controls['unitRate'].value.replace(/,/g, ''));
-    this.grnDetailsCls.discRate = parseFloat(this.grnDetailsForm.controls['discRate'].value.replace(/,/g, ''));
-    this.grnDetailsCls.vatRate = this.grnDetailsForm.controls['vatRate'].value;
-    this.grnDetailsCls.netRate = parseFloat(this.grnDetailsForm.controls['netRate'].value.replace(/,/g, ''));
-    this.grnDetailsCls.quantity = parseFloat(this.grnDetailsForm.controls['quantity'].value.replace(/,/g, ''));
-    this.grnDetailsCls.amount = parseFloat(this.grnDetailsForm.controls['amount'].value.replace(/,/g, ''));
+    // this.grnDetailsCls.unitRate = parseFloat(this.grnDetailsForm.controls['unitRate'].value.replace(/,/g, ''));
+    // this.grnDetailsCls.discRate = parseFloat(this.grnDetailsForm.controls['discRate'].value.replace(/,/g, ''));
+    // this.grnDetailsCls.vatRate = this.grnDetailsForm.controls['vatRate'].value;
+    // this.grnDetailsCls.netRate = parseFloat(this.grnDetailsForm.controls['netRate'].value.replace(/,/g, ''));
+    // this.grnDetailsCls.quantity = parseFloat(this.grnDetailsForm.controls['quantity'].value.replace(/,/g, ''));
+    // this.grnDetailsCls.amount = parseFloat(this.grnDetailsForm.controls['amount'].value.replace(/,/g, ''));
+
+    this.grnDetailsCls.unitRate = parseFloat(
+      String(this.grnDetailsForm.controls['unitRate'].value || '').replace(/,/g, '')
+    );
+    this.grnDetailsCls.discRate = parseFloat(
+      String(this.grnDetailsForm.controls['discRate'].value || '').replace(/,/g, '')
+    );
+    this.grnDetailsCls.vatRate = this.grnDetailsForm.controls['vatRate'].value ?? 0;
+    this.grnDetailsCls.netRate = parseFloat(
+      String(this.grnDetailsForm.controls['netRate'].value || '').replace(/,/g, '')
+    );
+    this.grnDetailsCls.quantity = parseFloat(
+      String(this.grnDetailsForm.controls['quantity'].value || '').replace(/,/g, '')
+    );
+    this.grnDetailsCls.amount = parseFloat(
+      String(this.grnDetailsForm.controls['amount'].value || '').replace(/,/g, '')
+    );
+
     this.grnDetailsCls.uom = this.grnDetailsForm.controls['uom'].value;
     this.grnDetailsCls.slNo = this.slNum;
     this.grnDetailsCls.lotNo = this.grnDetailsForm.controls['lotNo'].value;
@@ -452,6 +470,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
         }
         else {
           this.rowData = res['data'];
+          // this.slNum = this.rowData.length;
         }
       });
     }
@@ -529,7 +548,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numDiscRate = Number(strDiscRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
-    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+    if (vatRate != undefined && vatRate != 0 && vatRate != null && this.data.vat) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
@@ -593,7 +612,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
 
-    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+    if (vatRate != undefined && vatRate != 0 && vatRate != null&& this.data.vat) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
@@ -655,7 +674,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numNetRate = Number(strNetRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
-    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+    if (vatRate != undefined && vatRate != 0 && vatRate != null&& this.data.vat) {
       numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
@@ -737,7 +756,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     numNetRate = numAmount / numQty;
     vatRate = vat;
-    if (vatRate != undefined && vatRate != 0 && vatRate != null) {
+    if (vatRate != undefined && vatRate != 0 && vatRate != null && this.data.vat) {
       numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
@@ -747,7 +766,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     if (numDiscRate < 0) {
       numDiscRate = 0;
 
-      if (this.data.applyVat) {
+      if (this.data.vat) {
         numUnitRate = numNetRate / (1 + Number(vatRate) / 100.0);
       }
       else {
