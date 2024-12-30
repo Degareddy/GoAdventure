@@ -44,23 +44,23 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   invMonthName: string = "";
   rentalInv: string = "";
   inclExpenses: string = "";
-  IncludeUtilities : string = "";
+  IncludeUtilities: string = "";
   authorize: string = "";
   dateGen: string = "";
   currentInvCnt: number = 0;
   lastMontrhInvCnt: number = 0;
   totalUnits: number = 0;
-  revProp:number=0;
-  revLandLord:number=0;
+  revProp: number = 0;
+  revLandLord: number = 0;
 
   nextInvCount: number = 0;
   nextInvMonth: number = 0;
   nextInvDate: string = "";
-  nextInvYear:string="";
+  nextInvYear: string = "";
 
   constructor(private fb: FormBuilder, private projService: ProjectsService, private reportsService: PdfReportsService,
     private masterService: MastersService, private router: Router, private datePipe: DatePipe,
-    private smsService: SmsService, private userDataService: UserDataService,private snackBar: MatSnackBar,
+    private smsService: SmsService, private userDataService: UserDataService, private snackBar: MatSnackBar,
     private loader: NgxUiLoaderService, public dialog: MatDialog) {
     this.autoGenForm = this.formInit();
     this.subsink = new SubSink();
@@ -74,6 +74,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.loadData();
     this.refreshData();
+    console.log(this.userDataService.userData);
   }
 
   refreshData() {
@@ -113,11 +114,11 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     }
   }
 
- async loadData() {
+  async loadData() {
     const propertybody = this.buildRequestParams('PROPERTY');
     const property$ = this.masterService.GetMasterItemsList(propertybody);
     try {
-      this.subsink.sink =await forkJoin([property$]).subscribe(
+      this.subsink.sink = await forkJoin([property$]).subscribe(
         ([propRes]: any) => {
           this.handleDataLoadSuccess(propRes);
         },
@@ -156,7 +157,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.retMessage = ex.message;
       this.textMessageClass = "red";
     }
-    
+
   }
 
   private handleDataLoadError(error: any): void {
@@ -180,14 +181,14 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
   }
 
- async submit() {
+  async submit() {
     const body = {
       ...this.commonParams(),
       isRentInvoice: this.autoGenForm.get('rentInvoice')!.value,
       Property: this.autoGenForm.get('property')!.value,
       block: this.autoGenForm.get('block')!.value,
       includeExpenses: this.autoGenForm.get('includeExpenses')!.value,
-      IncludeUtility : this.autoGenForm.get('IncludeUtility')!.value,
+      IncludeUtility: this.autoGenForm.get('IncludeUtility')!.value,
       authorize: this.autoGenForm.get('authorize')!.value,
       email: this.autoGenForm.get('email')!.value,
       sms: this.autoGenForm.get('sms')!.value,
@@ -196,7 +197,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     try {
       const startTime = new Date().getTime();
       this.loader.start();
-      this.subsink.sink =await this.projService.AutogenerateTenantInvoices(body).subscribe((res: SaveApiResponse) => {
+      this.subsink.sink = await this.projService.AutogenerateTenantInvoices(body).subscribe((res: SaveApiResponse) => {
         const endTime = new Date().getTime(); // Capture the end time
         const elapsedTimeInSeconds = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
         this.loader.stop();
@@ -204,17 +205,17 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
           this.retMessage = res.message + " Time taken : " + elapsedTimeInSeconds;
           this.textMessageClass = "green";
           this.getReportTenantInvoicesData();
-          
-            const dialogRef: MatDialogRef<GeneratedInvoicesComponent> = this.dialog.open(GeneratedInvoicesComponent, {
-              width: '90%',
-              disableClose: false,
-              data: {
-                Company:this.userDataService.userData.company,
-                Location: this.userDataService.userData.location,
-                User: this.userDataService.userData.userID,
-                RefNo: this.userDataService.userData.sessionID
-              }
-            });
+
+          const dialogRef: MatDialogRef<GeneratedInvoicesComponent> = this.dialog.open(GeneratedInvoicesComponent, {
+            width: '90%',
+            disableClose: false,
+            data: {
+              Company: this.userDataService.userData.company,
+              Location: this.userDataService.userData.location,
+              User: this.userDataService.userData.userID,
+              RefNo: this.userDataService.userData.sessionID
+            }
+          });
         }
         else {
           this.handleDataLoadError(res);
@@ -261,7 +262,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     }
   }
 
- async getReportTenantInvoicesData() {
+  async getReportTenantInvoicesData() {
     const body = {
       ...this.commonParams(),
       property: this.autoGenForm.controls['property'].value,
@@ -270,222 +271,197 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
     try {
       this.subsink.sink = await this.projService.GetReportTenantInvoicesData(body).subscribe((resp: any) => {
-        if(resp.status.toUpperCase() === "SUCCESS") {
-        let reportData = resp.data;
-        let type: string = "";
-        if (this.autoGenForm.controls.email.value === true) {
-          type = "EMAIL";
-        }
-        if (this.autoGenForm.controls.sms.value === true) {
-          type = "SMS";
-        }
-        if (type === "EMAIL" || type === "SMS") {
-          if (type.toUpperCase() === "EMAIL") {
-            const groupByInvoiceNo = (arr: any) => {
-              return arr.reduce((acc: any, invoice: any) => {
-                const { invoiceNo, ...rest } = invoice;
-                if (!acc[invoiceNo]) {
-                  acc[invoiceNo] = [];
-                }
-                acc[invoiceNo].push({ invoiceNo, ...rest }); // Include invoiceNo along with the rest of the object
-                return acc;
-              }, {});
-            };
-
-            const groupedInvoices = groupByInvoiceNo(reportData);
-            const filteredInvoices = Object.values(groupedInvoices);
-            // for (let i = 0; i < filteredInvoices.length; i++) {
-            //   const eachfilterData: any = filteredInvoices[i];
-
-            //   const formFile: any = this.reportsService.generatePDF(filteredInvoices[i], 'GINV', new Date(), type.toUpperCase());
-
-            //   // Alternate the recipient email based on the index
-            //   const mailTo = i % 2 === 0 ? 'prathapgundla@gmail.com' : 'dega99@gmail.com';
-            //   const mailToName = eachfilterData[0].tenantName;
-            //   const mailSubject = 'Invoice : ' + eachfilterData[0].invoiceNo;
-            //   const mailMsg = 'Dear ' + eachfilterData[0].tenantName +
-            //     ', find the invoice attached for the month of ' + eachfilterData[0].tranYear.toString() +
-            //     '-' + eachfilterData[0].tranMonthName + '.';
-
-            //   this.subsink.sink = this.projService.sendEmailWithAttachment(formFile, mailTo, mailToName, mailSubject, mailMsg)
-            //     .pipe(timeout(5000))
-            //     .subscribe(
-            //       (res: any) => {
-            //         console.log(res);
-            //         this.retMessage = "Email sent successfully";
-            //         this.textMessageClass = "green";
-            //       },
-            //       (error) => {
-            //         if (error.name === 'TimeoutError') {
-            //           console.error('Request timed out');
-            //         } else {
-            //           console.error('Error:', error);
-            //         }
-            //       }
-            //     );
-            // }
-
-            for (let i = 0; i < filteredInvoices.length; i++) {
-              const eachfilterData: any = filteredInvoices[i];
-              const formFile: any = this.reportsService.generatePDF(filteredInvoices[i], 'GINV', new Date(), type.toUpperCase());
-               const mailTo = eachfilterData[0].emailId;
-              // const mailTo = i % 2 === 0 ? 'prathapgundla@gmail.com' : 'dega99@gmail.com';
-              const mailToName = eachfilterData[0].tenantName;
-              const mailSubject = 'Invoice : ' + eachfilterData[0].invoiceNo;
-              const mailMsg = 'Dear ' + eachfilterData[0].tenantName +
-                ', find the invoice attached for the month of ' + eachfilterData[0].tranYear.toString() +
-                '-' + eachfilterData[0].tranMonthName + '.';
-              this.subsink.sink = this.projService.sendEmailWithAttachment(formFile, mailTo, mailToName, mailSubject, mailMsg).subscribe(
-                (res: any) => {
-                  console.log(res);
-                  this.retMessage = "Email sent successfully";
-                  this.textMessageClass = "green";
-                },
-                (error) => {
-                  if (error.name === 'TimeoutError') {
-                    console.error('Request timed out');
-                  } else {
-                    console.error('Error:', error);
-                  }
-                }
-              );
-            }
+        if (resp.status.toUpperCase() === "SUCCESS") {
+          let reportData = resp.data;
+          let type: string = "";
+          if (this.autoGenForm.controls.email.value === true) {
+            type = "EMAIL";
           }
-          else if (type.toUpperCase() === "SMS") {
-            if(this.PARTNER_ID && this.API_KEY && this.SHORTCODE){
-              const output: { count?: number; smslist: { [key: string]: any }[] } = {
-                smslist: []
+          if (this.autoGenForm.controls.sms.value === true) {
+            type = "SMS";
+          }
+          if (type === "EMAIL" || type === "SMS") {
+            if (type.toUpperCase() === "EMAIL") {
+              const groupByInvoiceNo = (arr: any) => {
+                return arr.reduce((acc: any, invoice: any) => {
+                  const { invoiceNo, ...rest } = invoice;
+                  if (!acc[invoiceNo]) {
+                    acc[invoiceNo] = [];
+                  }
+                  acc[invoiceNo].push({ invoiceNo, ...rest }); // Include invoiceNo along with the rest of the object
+                  return acc;
+                }, {});
               };
-              let count = 0;
-              for (const item of reportData) {
-                const dateObject = new Date(item.tranDate);
-                const dueObject = new Date(item.dueDate);
-                const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
-                const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
-                const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
-                const message = `Dear ${item.tenantName},
 
-  Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-  The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-  Thank you,
-  Nagaad Properties`;
+              const groupedInvoices = groupByInvoiceNo(reportData);
+              const filteredInvoices = Object.values(groupedInvoices);
+              // for (let i = 0; i < filteredInvoices.length; i++) {
+              //   const eachfilterData: any = filteredInvoices[i];
 
-                if (item.slNo === 1) {
-                  if (item.clientContacts) {
-                    count++;
-                    const smsObject = {
-                      partnerID: this.PARTNER_ID,
-                      apikey: this.API_KEY,
-                      pass_type: "plain",
-                      mobile: item.clientContacts.replace(/[\s+]/g, ''),
-                      message: message,
-                      shortcode: this.SHORTCODE
-                    };
-                    output.smslist.push(smsObject);
+              //   const formFile: any = this.reportsService.generatePDF(filteredInvoices[i], 'GINV', new Date(), type.toUpperCase());
+
+              //   // Alternate the recipient email based on the index
+              //   const mailTo = i % 2 === 0 ? 'prathapgundla@gmail.com' : 'dega99@gmail.com';
+              //   const mailToName = eachfilterData[0].tenantName;
+              //   const mailSubject = 'Invoice : ' + eachfilterData[0].invoiceNo;
+              //   const mailMsg = 'Dear ' + eachfilterData[0].tenantName +
+              //     ', find the invoice attached for the month of ' + eachfilterData[0].tranYear.toString() +
+              //     '-' + eachfilterData[0].tranMonthName + '.';
+
+              //   this.subsink.sink = this.projService.sendEmailWithAttachment(formFile, mailTo, mailToName, mailSubject, mailMsg)
+              //     .pipe(timeout(5000))
+              //     .subscribe(
+              //       (res: any) => {
+              //         console.log(res);
+              //         this.retMessage = "Email sent successfully";
+              //         this.textMessageClass = "green";
+              //       },
+              //       (error) => {
+              //         if (error.name === 'TimeoutError') {
+              //           console.error('Request timed out');
+              //         } else {
+              //           console.error('Error:', error);
+              //         }
+              //       }
+              //     );
+              // }
+
+              for (let i = 0; i < filteredInvoices.length; i++) {
+                const eachfilterData: any = filteredInvoices[i];
+                const formFile: any = this.reportsService.generatePDF(filteredInvoices[i], 'GINV', new Date(), type.toUpperCase());
+                const mailTo = eachfilterData[0].emailId;
+                // const mailTo = i % 2 === 0 ? 'prathapgundla@gmail.com' : 'dega99@gmail.com';
+                const mailToName = eachfilterData[0].tenantName;
+                const mailSubject = 'Invoice : ' + eachfilterData[0].invoiceNo;
+                const mailMsg = 'Dear ' + eachfilterData[0].tenantName +
+                  ', find the invoice attached for the month of ' + eachfilterData[0].tranYear.toString() +
+                  '-' + eachfilterData[0].tranMonthName + '.';
+                this.subsink.sink = this.projService.sendEmailWithAttachment(formFile, mailTo, mailToName, mailSubject, mailMsg).subscribe(
+                  (res: any) => {
+                    console.log(res);
+                    this.retMessage = "Email sent successfully";
+                    this.textMessageClass = "green";
+                  },
+                  (error) => {
+                    if (error.name === 'TimeoutError') {
+                      console.error('Request timed out');
+                    } else {
+                      console.error('Error:', error);
+                    }
+                  }
+                );
+              }
+            }
+            else if (type.toUpperCase() === "SMS") {
+              if (this.PARTNER_ID && this.API_KEY && this.SHORTCODE) {
+                const output: { count?: number; smslist: { [key: string]: any }[] } = {
+                  smslist: []
+                };
+                let count = 0;
+                for (const item of reportData) {
+                  const dateObject = new Date(item.tranDate);
+                  const dueObject = new Date(item.dueDate);
+                  const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
+                  const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
+                  const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
+                  let message = "";
+                  if (this.userDataService.userData.company === "NPML") {
+
+                    message = `Dear ${item.tenantName},
+
+                Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+                The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
+                Thank you,
+                Nagaad Properties`;
+                  }
+                  else if (this.userDataService.userData.company === "SADASA") {
+
+                    message = `Mudane/Marwo [${item.tenantName}],
+                    Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
+                    Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+
+                  Mahadsanid,
+                  Omar Mumin Mohammed
+                  Sadasa Construction and Property`
+                  }
+
+                  //               const message = `Dear ${item.tenantName},
+
+                  // Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+                  // The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
+                  // Thank you,
+                  // Nagaad Properties`;
+
+                  if (item.slNo === 1) {
+                    if (item.clientContacts) {
+                      count++;
+                      const smsObject = {
+                        partnerID: this.PARTNER_ID,
+                        apikey: this.API_KEY,
+                        pass_type: "plain",
+                        mobile: item.clientContacts.replace(/[\s+]/g, ''),
+                        message: message,
+                        shortcode: this.SHORTCODE
+                      };
+                      output.smslist.push(smsObject);
+                    }
+                  }
+                  if (count > 0) {
+                    output.count = count;
                   }
                 }
-                if (count > 0) {
-                  output.count = count;
-                }
-              }
-            //   const output: { count?: number; smslist: { [key: string]: any }[] } = {
-            //     smslist: []
-            // };
-            // let count = 0;
+                output.count = count;
 
-            // for (const item of reportData) {
-            //     if (count >= 3) break; // Stop the loop once 3 messages have been added
+                if (output.smslist.length > 0) {
+                  try {
+                    this.subsink.sink = this.smsService.SendBulkSMS(output).subscribe((res: any) => {
 
-            //     const dateObject = new Date(item.tranDate);
-            //     const dueObject = new Date(item.dueDate);
-            //     const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
-            //     const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
-            //     const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
-            //     // const message = "Dear " + item.tenantName + " Rental invoice is generated for " + receiptMonth + " " +
-            //     //     receiptYear + " We request you to pay before due date " + dueDate +
-            //     //     "\nNagaad Properties";
-            //     const message = `Dear ${item.tenantName},
+                      const responses = res.responses;
+                      const successCount = responses.filter((res: any) => res['response-code'] === 200).length;
 
-            //     Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-            //     The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-
-            //     Company Information:
-            //     ${item.companyName}
-            //     Location: ${item.locationName}
-            //     Address: ${item.compAddresses}
-            //     Contact: ${item.compContacts}
-            //     ${item.emailInfo}
-
-            //     Thank you,
-            //     Nagaad Properties`;
-
-            //     if (item.slNo === 1 && item.clientContacts) { // Only process if `slNo` is 1 and `clientContacts` exists
-            //         count++;
-            //         const smsObject = {
-            //             partnerID: this.PARTNER_ID,
-            //             apikey: this.API_KEY,
-            //             pass_type: "plain",
-            //             mobile: '0794465654', // Replace with item.clientContacts when appropriate
-            //             message: message,
-            //             shortcode: this.SHORTCODE
-            //         };
-            //         output.smslist.push(smsObject);
-            //     }
-            // }
-
-            output.count = count; // Set output count to the actual number of messages added, capped at 3
-
-              if (output.smslist.length > 0) {
-                try {
-                  this.subsink.sink = this.smsService.SendBulkSMS(output).subscribe((res: any) => {
-                    // console.log(res);
-
-                    const responses = res.responses;
-                    const successCount = responses.filter((res: any) => res['response-code'] === 200).length;
-
-                    if (successCount > 0) {
-                      this.snackBar.open(`${successCount} message(s) sent successfully`, 'Close', {
-                        duration: 10000,
-                        panelClass: ['mat-toolbar', 'mat-primary'] // customize style here
+                      if (successCount > 0) {
+                        this.snackBar.open(`${successCount} message(s) sent successfully`, 'Close', {
+                          duration: 10000,
+                          panelClass: ['mat-toolbar', 'mat-primary'] // customize style here
+                        });
+                      } else {
+                        this.snackBar.open('Failed to send messages', 'Close', {
+                          duration: 10000,
+                          panelClass: ['mat-toolbar', 'mat-warn'] // customize style here
+                        });
+                      }
+                    },
+                      error => {
+                        this.snackBar.open('Error sending messages', 'Close', {
+                          duration: 10000,
+                          panelClass: ['mat-toolbar', 'mat-warn'] // customize style here
+                        });
+                        console.error('Error:', error);
                       });
-                    } else {
-                      this.snackBar.open('Failed to send messages', 'Close', {
-                        duration: 10000,
-                        panelClass: ['mat-toolbar', 'mat-warn'] // customize style here
-                      });
-                    }
-                  },
-                  error => {
-                    this.snackBar.open('Error sending messages', 'Close', {
-                      duration: 10000,
-                      panelClass: ['mat-toolbar', 'mat-warn'] // customize style here
-                    });
-                    console.error('Error:', error);
-                  });
+                  }
+                  catch (ex: any) {
+                    this.textMessageClass = "red";
+                    this.retMessage = ex.message;
+                  }
+
                 }
-                catch (ex: any) {
+                else {
                   this.textMessageClass = "red";
-                  this.retMessage = ex.message;
+                  this.retMessage = "Mobile numbers empty!";
                 }
-
               }
               else {
                 this.textMessageClass = "red";
-                this.retMessage = "Mobile numbers empty!";
+                this.retMessage = "Credentials not registered for sending bulksms";
               }
-            }
-            else{
-              this.textMessageClass = "red";
-              this.retMessage = "Credentials not registered for sending bulksms";
-            }
 
+            }
           }
         }
-      }
-      else{
-        this.textMessageClass = "red";
-        this.retMessage = "Getting reports with no data found!";
-      }
+        else {
+          this.textMessageClass = "red";
+          this.retMessage = "Getting reports with no data found!";
+        }
       });
 
     } catch (error: any) {
@@ -509,7 +485,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     this.invMonthName = "";
     this.rentalInv = "";
     this.inclExpenses = "";
-    this.IncludeUtilities="";
+    this.IncludeUtilities = "";
     this.authorize = "";
     this.dateGen = "";
   }
@@ -522,7 +498,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     return this.fb.group({
       property: ['', Validators.required],
       block: ['', Validators.required],
-      IncludeUtility : [false],
+      IncludeUtility: [false],
       // invDate: [new Date(), Validators.required],
       rentInvoice: [false],
       includeExpenses: [false],
@@ -530,7 +506,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       email: [false],
       sms: [false],
       whatsapp: [false]
-    }, { validator: this.requireAtLeastOne(['rentInvoice', 'includeExpenses','IncludeUtility']) });
+    }, { validator: this.requireAtLeastOne(['rentInvoice', 'includeExpenses', 'IncludeUtility']) });
   }
 
   requireAtLeastOne(controlNames: string[]) {
@@ -576,7 +552,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
         if (result.data.inclExpenses === true) {
           this.inclExpenses = "YES";
         }
-        if (result.data.IncludeUtility  === true) {
+        if (result.data.IncludeUtility === true) {
           this.IncludeUtilities = "YES";
         }
         else {
@@ -593,8 +569,8 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
         this.lastMontrhInvCnt = result.data.currMonthInvCount;
         this.totalUnits = result.data.totalUnits;
         this.dateGen = result.data.currInvDate;
-        this.revLandLord=result.data.revToLandlord;
-        this.revProp=result.data.revToProperty;
+        this.revLandLord = result.data.revToLandlord;
+        this.revProp = result.data.revToProperty;
 
 
         this.nextInvCount = result.data.nextInvCount;
@@ -625,7 +601,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     }
   }
 
- async onSelectedPropertyChanged() {
+  async onSelectedPropertyChanged() {
     this.resetMessages();
     this.autoGenForm.controls['rentInvoice'].setValue(false);
     this.autoGenForm.controls['includeExpenses'].setValue(false);
@@ -641,7 +617,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.blockCode = propertyValue;
 
       try {
-        this.subsink.sink =await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe(
+        this.subsink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe(
           (result: any) => {
             this.handlePropertyChangedResponse(result);
           },
@@ -659,7 +635,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
 
- async onSelectedBlockChanged() {
+  async onSelectedBlockChanged() {
 
     this.resetMessages();
 
@@ -670,7 +646,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.masterParams.item = this.autoGenForm.controls['block'].value;
 
       try {
-        this.subsink.sink =await this.projService.GetLastGeneratedInvoiceInfo(this.masterParams).subscribe(
+        this.subsink.sink = await this.projService.GetLastGeneratedInvoiceInfo(this.masterParams).subscribe(
           (result: any) => {
             this.handleBlockChangedResponse(result);
           },
@@ -702,19 +678,19 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onCheckboxChange(selectedCheckbox: string) {
-  //   if (selectedCheckbox === 'rentInvoice') {
-  //     this.autoGenForm.patchValue({
-  //       includeExpenses: false,
-  //     });
-  //   } else if (selectedCheckbox === 'includeExpenses') {
-  //     this.autoGenForm.patchValue({
-  //       rentInvoice: false,
-  //     });
-  //   }
-  //   else if (selectedCheckbox === 'IncludeUtility') {
-  //     this.autoGenForm.patchValue({
-  //       IncludeUtility: false,
-  //     });
-  //   }
+    //   if (selectedCheckbox === 'rentInvoice') {
+    //     this.autoGenForm.patchValue({
+    //       includeExpenses: false,
+    //     });
+    //   } else if (selectedCheckbox === 'includeExpenses') {
+    //     this.autoGenForm.patchValue({
+    //       rentInvoice: false,
+    //     });
+    //   }
+    //   else if (selectedCheckbox === 'IncludeUtility') {
+    //     this.autoGenForm.patchValue({
+    //       IncludeUtility: false,
+    //     });
+    //   }
   }
 }
