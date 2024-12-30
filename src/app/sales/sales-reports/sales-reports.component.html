@@ -11,6 +11,16 @@
     <div class="row justify-content-center">
       <div class="col-2">
         <mat-form-field appearance="outline" style="width:150px">
+          <mat-label class="mat-label-class">Balance Type</mat-label>
+          <mat-select formControlName="Report" >
+            <mat-option value="">--Select--</mat-option>
+            <!-- <mat-option value="All">All</mat-option> -->
+            <mat-option *ngFor="let x of balanceType" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" style="width:150px">
           <mat-label class="mat-label-class">Property</mat-label>
           <mat-select formControlName="PropCode" (selectionChange)="onSelectedPropertyChanged()">
             <mat-option value="">--Select--</mat-option>

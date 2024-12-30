@@ -34,6 +34,10 @@ import { NavigationService } from 'src/app/Services/navigation.service';
 export class SalesReportsComponent implements OnInit, OnDestroy {
   saleReportForm!: FormGroup;
   properytList: Item[] = [];
+  balanceType: Item[] = [
+    {itemCode:'CLIENTBAL',itemName:'Client'},
+    {itemCode:'UTILBAL',itemName:'Utility'}
+  ];
   blocksList: Item[] = [];
   flatsList: Item[] = [];
   private columnApi!: ColumnApi;
@@ -438,6 +442,7 @@ refreshData() {
       UnitID: ['All', [Validators.required]],
       FromDate: [new Date()],
       clientType: ['', [Validators.required]],
+      Report: ['', [Validators.required]],
       isSummary: [true]
     });
   }
@@ -759,6 +764,7 @@ async  onSubmit() {
         ...this.commonParams(),
         client: this.custCode || "",
         ClientType: this.saleReportForm.controls['clientType'].value,
+        Report:this.saleReportForm.controls['Report'].value,
         dateAsOn: this.datepipe.transform(this.saleReportForm.controls['FromDate'].value, "yyyy-MM-dd"),
         Property: this.saleReportForm.controls['PropCode'].value,
         Block: this.saleReportForm.controls['BlockCode'].value,

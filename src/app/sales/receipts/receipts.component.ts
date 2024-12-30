@@ -92,6 +92,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   receiptmodes:Item[]=[
     {itemCode:'receiveRent',itemName:'Rent receipt'},
     {itemCode:'payRent',itemName:'Rent payment'},
+    {itemCode:'utilityReceipt',itemName:'Utility receipt'},
     {itemCode:'other',itemName:'...Other'},
   ];
   labelPosition: 'before' | 'after' = 'after';
@@ -299,6 +300,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   receiptTypeChange(event:string){
+    
     if(event.toUpperCase()==='RECEIVERENT'){
       this.filteredpayMode="";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
@@ -314,6 +316,16 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
+
+    }
+    else if(event.toUpperCase()==='UTILITYRECEIPT'){
+      
+      this.filteredpayMode="";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode ==="DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
+      this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
 
     }
     else{
@@ -383,7 +395,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      receiptmode:[this.receiptmodes[2].itemCode],
+      receiptmode:[this.receiptmodes[3].itemCode],
       mode: ['View'],
       receiptNo: [''],
       receiptDate: [new Date(), Validators.required],
@@ -724,7 +736,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendSms(mobile: string) {
-    debugger;
+    
     if (mobile) {
       const dateObject = new Date(this.responseData.data.receiptDate);
       const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
