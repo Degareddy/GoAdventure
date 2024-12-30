@@ -89,10 +89,11 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   receiptsForm!: FormGroup;
   receiptNoValid: boolean = true;
   modes: Item[] = [];
+  Report!:string;
   receiptmodes:Item[]=[
     {itemCode:'receiveRent',itemName:'Rent receipt'},
     {itemCode:'payRent',itemName:'Rent payment'},
-    {itemCode:'utilityReceipt',itemName:'Utility receipt'},
+    {itemCode:'utilityReceipt',itemName:'Utility Receipt'},
     {itemCode:'other',itemName:'...Other'},
   ];
   labelPosition: 'before' | 'after' = 'after';
@@ -308,6 +309,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      this.Report='CLIENTBAL'
     }
     else if(event.toUpperCase()==='PAYRENT'){
       this.filteredpayMode="";
@@ -316,7 +318,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
-
+      this.Report='CLIENTBAL'
     }
     else if(event.toUpperCase()==='UTILITYRECEIPT'){
       
@@ -326,7 +328,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
-
+      this.Report='UTILBAL'
     }
     else{
       this.receiptsForm.controls['mode'].patchValue('View');
@@ -1146,6 +1148,7 @@ async  submitWithData() {
       ClientType: clientTypeTemp,
       txnFor: this.receiptsForm.controls['tranFor'].value || '',
       isSummary: true,
+      Report:this.Report
     };
     try {
       this.subSink.sink =await this.saleService.GetClientBalances(body).subscribe((res: any) => {
