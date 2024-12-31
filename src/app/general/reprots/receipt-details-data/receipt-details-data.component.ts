@@ -15,7 +15,8 @@ export class ReceiptDetailsDataComponent implements OnInit {
   private subSink!: SubSink;
   private gridApi!: GridApi;
   private columnApi!: ColumnApi;
-
+  retMessage: string = "";
+  textMessageClass: string = "";
   columnDefs: any=[
     {
       field: "tranNo", headerName: "Inv No", flex: 1, cellRenderer: 'agLnkRenderer', resizable: true, cellStyle: function (params: any) {
@@ -118,13 +119,17 @@ export class ReceiptDetailsDataComponent implements OnInit {
           
         }
         else {
-          // this.displayMessage("No transactions available at the moment.", "red");
+          this.displayMessage("This transactions is not allocated at the moment.", "red");
         }
       })
     }
     catch (ex: any) {
       // this.displayMessage("Exception: " + ex.message, "red");
     }
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
 
 }

@@ -25,7 +25,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-3">
+      <div class="col-2">
         <mat-form-field appearance="outline" class="search">
           <mat-label>Tran No</mat-label>
           <input matInput type="text" placeholder="Tran No" formControlName="tranNo" />
@@ -47,7 +47,46 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
+    
+    <div class="col-2" >
+      <mat-form-field appearance="outline" class="mat-mode">
+        <mat-label class="mat-label-class">Client Type</mat-label>
+        <mat-select formControlName="clientType">
+          <mat-option value="">--Select--</mat-option>
+          <mat-option *ngFor="let x of clientTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
+    <div class="col-2">
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label class="mat-label-class">Client</mat-label>
+      <input matInput type="text" placeholder="Client" formControlName="client" />
+      <button matSuffix mat-icon-button aria-label="Clear" *ngIf="expensesForm.get('client')!.value"
+        (click)="expensesForm.get('client')!.setValue('')" type="button"
+       >
+        <mat-icon class="mat-clear-icon">clear</mat-icon>
+      </button>
+      <button matSuffix mat-icon-button aria-label="Search" (click)="onClientSearch()" type="button"
+        >
+        <mat-icon class="mat-search-icon">search</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  </div>
+  
+    <!-- <div class="matfield">
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label class="mat-label-class">Customer/Tenant/Others</mat-label>
+        <input matInput type="text" placeholder="Customer/Tenant/Others" formControlName="customer" />
+        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="expensesForm.get('customer')!.value"
+          (click)="expensesForm.get('customer')?.setValue('')" type="button">
+          <mat-icon class="mat-clear-icon">clear</mat-icon>
+        </button>
+        <button matSuffix mat-icon-button aria-label="Search" [disabled]="expensesForm.get('mode')!.value == 'View'" (click)="onTenantSearch()" type="button">
+          <mat-icon class="mat-search-icon">search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div> -->
     <div class="row  justify-content-center">
       <div class="col-3">
         <mat-form-field appearance="outline" aria-colspan="2">
@@ -75,6 +114,8 @@
         (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
       <button mat-raised-button color="warn" type="button" class="btnUp"
         (click)="close()"><mat-icon>cancel</mat-icon>Close</button>
+        <mat-label class="myCustomClass">Cash Balance:&nbsp;<b class="data">{{balanceAmount |
+            number:'1.2-2'}}</b></mat-label>
     </div>
   </form>
 </mat-card>

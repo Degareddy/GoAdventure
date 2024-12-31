@@ -39,7 +39,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     { itemCode: 'Revenue', itemName: 'Revenue' },
     { itemCode: 'CASHTRF', itemName: 'Cashflow' },
     { itemCode: 'DEPOSIT', itemName: 'Deposit' },
-    { itemCode: 'LOANSTATEMENT', itemName: 'Loan Statement' },
+    { itemCode: 'LOANSTATEMENT', itemName: 'Unit B/bf' },
   ];
   clientTypes: Item[] = [
     { itemCode: 'ACCOUNT', itemName: 'Bank Account' },
@@ -70,8 +70,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
-  pageSizes = [25, 50, 100, 250, 500];
-  pageSize = 25;
+  pageSizes = [100, 250, 500];
+  pageSize = 100;
   columnDefs: any;
   debitAmount: number = 0;
   creditAmount: number = 0;
@@ -382,6 +382,16 @@ export class ReprotsComponent implements OnInit, OnDestroy {
             },
           },
           { field: "unitName", headerName: "Unit", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+            const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
+            const isNegative = params.value < 0;
+            return {
+              color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
+              fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+              fontSize: isLastRow ? '12px' : 'inherit',
+              backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
+            };
+          }, },
+          { field: "txnClientName", headerName: "Client", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
             const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
             const isNegative = params.value < 0;
             return {
@@ -1346,6 +1356,7 @@ async  ngOnInit() {
     this.router.navigate(['property/receipts-payments'], { state: { data, type } });
   }
   onDtlClicked(event: any) {
+    console.log(event);
     if (!this.reportForm.controls.summary.value) {
       this.displayMessage("", "");
       this.masterParams.tranNo = event.data.tranNo;

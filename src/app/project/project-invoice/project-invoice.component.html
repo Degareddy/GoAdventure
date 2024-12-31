@@ -115,7 +115,7 @@
           <div class="col-2 ">
             <mat-form-field appearance="outline" class="mat-date">
               <mat-label class="mat-label-class">Invoice Date</mat-label>
-              <input matInput [matDatepicker]="picker1" formControlName="saleDate" [max]="today"
+              <input matInput [matDatepicker]="picker1" formControlName="saleDate" 
                 (dateChange)="invDateChanged($event.value)" />
               <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
               <mat-datepicker #picker1></mat-datepicker>
@@ -359,7 +359,7 @@
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
       <button mat-raised-button color="primary" type="submit" class="btnUp"
-        [disabled]="saleForm.invalid || saleForm.controls['mode'].value==='View'">
+        [disabled]=" saleForm.controls['mode'].value==='View'">
         <mat-icon>done</mat-icon>Apply
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">

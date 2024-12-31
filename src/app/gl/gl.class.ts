@@ -69,6 +69,7 @@ export class ExpenseHdr {
   public mode!: string
   public user!: string
   public refNo!: string
+  public Supplier!:string
 }
 
 export class ExpenseDet {

@@ -352,12 +352,71 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                 );
               }
             }
+            // else if (type.toUpperCase() === "SMS") {
+            //   if (this.PARTNER_ID && this.API_KEY && this.SHORTCODE) {
+            //     const output: { count?: number; smslist: { [key: string]: any }[] } = {
+            //       smslist: []
+            //     };
+            //     let count = 0;
+            //     for (const item of reportData) {
+            //       const dateObject = new Date(item.tranDate);
+            //       const dueObject = new Date(item.dueDate);
+            //       const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
+            //       const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
+            //       const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
+            //       let message = "";
+            //       if (this.userDataService.userData.company === "NPML") {
+
+            //         message = `Dear ${item.tenantName},
+
+            //     Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+            //     The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
+            //     Thank you,
+            //     Nagaad Properties`;
+            //       }
+            //       else if (this.userDataService.userData.company === "SADASA") {
+
+            //         message = `Mudane/Marwo [${item.tenantName}],
+            //         Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
+            //         Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+
+            //       Mahadsanid,
+            //       Omar Mumin Mohammed
+            //       Sadasa Construction and Property`
+            //       }
+
+            //       //               const message = `Dear ${item.tenantName},
+
+            //       // Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+            //       // The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
+            //       // Thank you,
+            //       // Nagaad Properties`;
+
+            //       if (item.slNo === 1) {
+            //         if (item.clientContacts) {
+            //           count++;
+            //           const smsObject = {
+            //             partnerID: this.PARTNER_ID,
+            //             apikey: this.API_KEY,
+            //             pass_type: "plain",
+            //             mobile: item.clientContacts.replace(/[\s+]/g, ''),
+            //             message: message,
+            //             shortcode: this.SHORTCODE
+            //           };
+            //           output.smslist.push(smsObject);
+            //         }
+            //       }
+            //       if (count > 0) {
+            //         output.count = count;
+            //       }
+            // //     }
             else if (type.toUpperCase() === "SMS") {
               if (this.PARTNER_ID && this.API_KEY && this.SHORTCODE) {
                 const output: { count?: number; smslist: { [key: string]: any }[] } = {
                   smslist: []
                 };
                 let count = 0;
+            
                 for (const item of reportData) {
                   const dateObject = new Date(item.tranDate);
                   const dueObject = new Date(item.dueDate);
@@ -365,33 +424,24 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                   const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
                   const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
                   let message = "";
+            
                   if (this.userDataService.userData.company === "NPML") {
-
                     message = `Dear ${item.tenantName},
-
-                Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-                The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-                Thank you,
-                Nagaad Properties`;
-                  }
-                  else if (this.userDataService.userData.company === "SADASA") {
-
+            
+            Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+            The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
+            Thank you,
+            Nagaad Properties`;
+                  } else if (this.userDataService.userData.company === "SADASA") {
                     message = `Mudane/Marwo [${item.tenantName}],
-                    Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
-                    Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-
-                  Mahadsanid,
-                  Omar Mumin Mohammed
-                  Sadasa Construction and Property`
+            Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
+            Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+            
+            Mahadsanid,
+            Omar Mumin Mohammed
+            Sadasa Construction and Property`;
                   }
-
-                  //               const message = `Dear ${item.tenantName},
-
-                  // Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-                  // The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-                  // Thank you,
-                  // Nagaad Properties`;
-
+            
                   if (item.slNo === 1) {
                     if (item.clientContacts) {
                       count++;
@@ -406,56 +456,58 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                       output.smslist.push(smsObject);
                     }
                   }
-                  if (count > 0) {
-                    output.count = count;
-                  }
                 }
-                output.count = count;
-
+            
                 if (output.smslist.length > 0) {
-                  try {
-                    this.subsink.sink = this.smsService.SendBulkSMS(output).subscribe((res: any) => {
-
+                  const batches:any[] = [];
+                  for (let i = 0; i < output.smslist.length; i += 20) {
+                    batches.push(output.smslist.slice(i, i + 20));
+                  }
+            
+                  const sendBatchSMS = async (batch: { [key: string]: any }[]) => {
+                    const batchOutput = { smslist: batch };
+                    try {
+                      const res = await this.smsService.SendBulkSMS(batchOutput).toPromise();
                       const responses = res.responses;
                       const successCount = responses.filter((res: any) => res['response-code'] === 200).length;
-
+            
                       if (successCount > 0) {
                         this.snackBar.open(`${successCount} message(s) sent successfully`, 'Close', {
                           duration: 10000,
-                          panelClass: ['mat-toolbar', 'mat-primary'] // customize style here
+                          panelClass: ['mat-toolbar', 'mat-primary']
                         });
                       } else {
                         this.snackBar.open('Failed to send messages', 'Close', {
                           duration: 10000,
-                          panelClass: ['mat-toolbar', 'mat-warn'] // customize style here
+                          panelClass: ['mat-toolbar', 'mat-warn']
                         });
                       }
-                    },
-                      error => {
-                        this.snackBar.open('Error sending messages', 'Close', {
-                          duration: 10000,
-                          panelClass: ['mat-toolbar', 'mat-warn'] // customize style here
-                        });
-                        console.error('Error:', error);
+                    } catch (error) {
+                      this.snackBar.open('Error sending messages', 'Close', {
+                        duration: 10000,
+                        panelClass: ['mat-toolbar', 'mat-warn']
                       });
-                  }
-                  catch (ex: any) {
-                    this.textMessageClass = "red";
-                    this.retMessage = ex.message;
-                  }
-
-                }
-                else {
+                      console.error('Error:', error);
+                    }
+                  };
+            
+                  const processBatches = async () => {
+                    for (const batch of batches) {
+                      await sendBatchSMS(batch);
+                    }
+                  };
+            
+                  processBatches();
+                } else {
                   this.textMessageClass = "red";
                   this.retMessage = "Mobile numbers empty!";
                 }
-              }
-              else {
+              } else {
                 this.textMessageClass = "red";
                 this.retMessage = "Credentials not registered for sending bulksms";
               }
-
             }
+            
           }
         }
         else {

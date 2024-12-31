@@ -73,7 +73,7 @@
 
     </div>
     <div *ngIf="!checked">
-      <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="500"
+      <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="500" [exportPDF]="true" [exportExcel]="true"
         (linkClicked)="onLnkClicked($event)" [gridHeight]="'320px'" [showRecordCount]="true"></app-access-grid>
     </div>
 

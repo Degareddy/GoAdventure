@@ -14,7 +14,15 @@ import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.com
 import { ExpenseHdr } from '../gl.class'
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { SalesService } from 'src/app/Services/sales.service';
+import { UtilitiesService } from 'src/app/Services/utilities.service';
+import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
 
+
+interface Item {
+  itemCode: string;
+  itemName: string;
+}
 @Component({
   selector: 'app-expenses',
   templateUrl: './expenses.component.html',
@@ -33,18 +41,29 @@ export class ExpensesComponent implements OnInit {
   modeIndex!: number;
   selMode!: string;
   detdialogOpen = false;
-
+  balanceAmount:number=0;
   // userData: any;
   masterParams!: MasterParams;
   modes!: any[];
   tranStatus!: string;
   tranAmount!: number;
+  clientCode!:string;
   private subSink!: SubSink;
+  clientTypeList: Item[] = [
+    {itemCode:'',itemName:'Select'},
+    { itemCode: 'TENANT', itemName: 'Tenant' },
+    { itemCode: 'STAFF', itemName: 'Staff' },
+    { itemCode: 'LANDLORD', itemName: 'Landlord' },
+    { itemCode: 'VENDOR', itemName: 'Vendor' },
+    { itemCode: 'CUSTOMER', itemName: 'Customer' },
+    { itemCode: 'SUPPLIER', itemName: 'Supplier' },
+    { itemCode: 'EMPLOYEE', itemName: 'Employee' },
 
+  ];
 
   // @ViewChild('frmClear') public expenfrm !: NgForm;
 
-  constructor(protected route: ActivatedRoute,
+  constructor(protected route: ActivatedRoute, private saleService: SalesService,private utlService: UtilitiesService,
     protected router: Router, private userDataService: UserDataService,
     private loader: NgxUiLoaderService,
     protected glService: GeneralLedgerService,
@@ -71,9 +90,39 @@ export class ExpensesComponent implements OnInit {
         this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
 
       }
+      this.searchData();
+      this.getCashBalace();
     });
   }
+  async getCashBalace() {
+    const balBody = {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID,
+      asOnDate: new Date(),
+      reportType: 'XYZ',
+    };
+
+    try {
+      this.subSink.sink =await this.saleService.GetUserCashBalance(balBody).subscribe((res: any) => {
+        if (res.status.toUpperCase() === 'SUCCESS') {
+          this.balanceAmount = res.data.totalAmount;
+          // this.pendingAmount = res.data.pendingAmount;
+        }
+        else {
+          this.retMessage = res.message;
+          this.textMessageClass = 'red';
+        }
+      });
+    } catch (ex: any) {
+
+      this.retMessage = ex.message;
+      this.textMessageClass = 'red';
+    }
+  }
   ngOnInit(): void {
+    this.getCashBalace();
     // const storedUserData = sessionStorage.getItem('userData');
     // if (storedUserData) {
     //   this.userData = JSON.parse(storedUserData) as UserData;
@@ -106,15 +155,127 @@ export class ExpensesComponent implements OnInit {
       mode: ['View'],
       tranNo: [''],
       tranDate: [new Date(), Validators.required],
-      notes: ['']
+      notes: [''],
+      clientType:[''],
+      client:['',Validators.required]
     })
   }
-
+  
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID,
+    };
+  }
+ async onClientSearch() {
+     const body = {
+       ...this.commonParams(),
+       Type: "CLIENT",
+       item: this.expensesForm.controls['client'].value || "",
+       ItemSecondLevel: ""
+     }
+     try {
+       this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
+         if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+           if (res && res.data && res.data.nameCount === 1) {
+             this.expensesForm.controls['client'].patchValue(res.data.selName);
+             this.clientCode = res.data.selCode;
+           }
+           else {
+             if (!this.dialogOpen) {
+               const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+                 width: '90%',
+                 disableClose: true,
+                 data: {
+                   'PartyName': this.expensesForm.controls['client'].value,
+                   'PartyType': this.expensesForm.controls['clientType'].value,
+                   'search': 'Client Search'
+                 }
+               });
+               this.dialogOpen = true;
+               dialogRef.afterClosed().subscribe(result => {
+                 if (result != true) {
+                   this.expensesForm.controls['client'].patchValue(result.partyName);
+                   this.clientCode = result.code;
+                 }
+ 
+                 this.dialogOpen = false;
+               });
+             }
+ 
+           }
+         }
+         else {
+          this.retMessage=res.message;
+         }
+       });
+     }
+     catch (ex: any) {
+      this.retMessage=ex.message;
+    }
+   }
   onSubmit() {
+    debugger;
+    
     if (this.expensesForm.invalid) {
+      
       return;
     }
+    if(this.expensesForm.get('mode')?.value.toUpperCase() === "AUTHORIZE"){
+      debugger;
+      if(this.tranAmount > this.balanceAmount){
+        this.retMessage = "You don't have enough funds to authorize this transaction";
+        this.textMessageClass = "red";
+        return;
+      }
+      else {
+        debugger;
+        this.expCls.company = this.userDataService.userData.company;
+        this.expCls.location = this.userDataService.userData.location;
+        this.expCls.langId = this.userDataService.userData.langId;
+        this.expCls.user = this.userDataService.userData.userID;
+        this.expCls.refNo = this.userDataService.userData.sessionID;
+        this.expCls.mode = this.expensesForm.controls['mode'].value;
+        this.expCls.notes = this.expensesForm.controls['notes'].value;
+        this.expCls.tranStatus = this.tranStatus;
+        this.expCls.tranDate = this.expensesForm.controls['tranDate'].value;
+        this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
+        this.expCls.Supplier=this.clientCode;
+        try {
+          debugger;
+          this.loader.start();
+          this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: any) => {
+            this.loader.stop();
+            if (res.retVal > 100 && res.retVal < 200) {
+              this.newTranMsg = res.message;
+              this.masterParams.tranNo = res.tranNoNew;
+  
+              if (this.expensesForm.controls['mode'].value == "Add") {
+                // this.selMode = 'Add';
+                this.modeChange("Modify");
+              }
+              this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
+  
+              this.retMessage = res.message;
+              this.textMessageClass = "green";
+            }
+            else {
+              this.retMessage = res.message;
+              this.textMessageClass = "red";
+            }
+          });
+        } catch (ex: any) {
+          this.retMessage = ex;
+          this.textMessageClass = "red";
+        }
+        return;
+      }
+      
+    }
     else {
+      
       this.expCls.company = this.userDataService.userData.company;
       this.expCls.location = this.userDataService.userData.location;
       this.expCls.langId = this.userDataService.userData.langId;
@@ -125,6 +286,7 @@ export class ExpensesComponent implements OnInit {
       this.expCls.tranStatus = this.tranStatus;
       this.expCls.tranDate = this.expensesForm.controls['tranDate'].value;
       this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
+      this.expCls.Supplier=this.clientCode;
       try {
         this.loader.start();
         this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: any) => {
@@ -152,6 +314,7 @@ export class ExpensesComponent implements OnInit {
         this.textMessageClass = "red";
       }
     }
+    
   }
 
   Close() {

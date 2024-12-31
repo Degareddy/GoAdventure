@@ -480,10 +480,10 @@ async  loadData() {
         }
       });
     };
-    if (mode !== 'ACTIVATE' && tranStatus === "DELETED") {
-      this.displayMessage(`Failed: Tenant invoice ${tranNo} already deleted, to modify activate.`, "red");
-      return;
-    }
+    // if (mode !== 'ACTIVATE' && tranStatus === "DELETED") {
+    //   this.displayMessage(`Failed: Tenant invoice ${tranNo} already deleted, to modify activate.`, "red");
+    //   return;
+    // }
     const invSaleDate = new Date(this.saleForm.controls.saleDate.value);
     const invDate = new Date(this.saleForm.controls.invFromDate.value);
 

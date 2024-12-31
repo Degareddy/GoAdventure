@@ -193,6 +193,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     }
     return data;
   }
+  
   formatAmount(amount: any): string {
     const numAmount = parseFloat(amount);
     return isNaN(numAmount) ? '' : numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

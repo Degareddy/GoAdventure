@@ -114,7 +114,7 @@
       </div>
       
       <!-- <div class="balance-amount balance-debit">{{ custName }}</div> -->
-      <mat-label class="myCustomClass" *ngIf="reportForm.get('reportType')!.value ==='Statement'">Loan Balances:-&nbsp;
+      <mat-label class="myCustomClass" *ngIf="reportForm.get('reportType')!.value ==='Statement'">Unit B/bf:-&nbsp;
         <b class="data">{{ loanBalAmount | currency: 'USD':'symbol':'1.2-2' }}</b></mat-label>
       <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="!isFormValid()">
         <mat-icon>download</mat-icon>Report
@@ -131,7 +131,7 @@
   <div style="margin-top: -30px;">
     <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
       (linkClicked)="onLnkClicked($event)" (cellClicked)="onPayment($event)" [gridHeight]="'320px'" [fromDate]="fromDate" [toDate]="toDate"
-      (gridReady)="onGridReady($event)" [globalSearch]="true" [paginationPageSize]="25"
+      (gridReady)="onGridReady($event)" [globalSearch]="true" [paginationPageSize]="100"
       (filterChanges)="onFilterData($event)" [showToolPanel]="true" [reportName]="rprtName"
       (columnVisibilityChanged)="onColumnVisibilityChanged($event)" (detailClicked)="onDtlClicked($event)"
       [showRecordCount]="true">
