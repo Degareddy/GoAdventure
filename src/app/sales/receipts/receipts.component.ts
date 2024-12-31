@@ -282,12 +282,12 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       switch (tarnType) {
         case "RECEIPT":
           this.filteredItemsTranFor = "";
-          this.filteredItemsTranFor = this.overHeadsLsit.filter(item => item.itemCode === "BORROW" || item.itemCode === "LENDR" || item.itemCode === "RENTPMT" || item.itemCode === "RENTDPST" || item.itemCode === "REFUND"
+          this.filteredItemsTranFor = this.overHeadsLsit.filter(item => item.itemCode === "BORROW" || item.itemCode === "LENDR" || item.itemCode === "RENTPMT" || item.itemCode === "RENTDPST" || item.itemCode === "REFUND" || item.itemCode === "UTILITY"
           );
           break;
         case "PAYMENT":
           this.filteredItemsTranFor = "";
-          this.filteredItemsTranFor = this.overHeadsLsit.filter(item => item.itemCode === "BORROWR" || item.itemCode === "LENDR" || item.itemCode === "RENTPMT" || item.itemCode === "CASHTRF" || item.itemCode === "RENTDPST" || item.itemCode === "REFUND"
+          this.filteredItemsTranFor = this.overHeadsLsit.filter(item => item.itemCode === "BORROWR" || item.itemCode === "LENDR" || item.itemCode === "RENTPMT" || item.itemCode === "CASHTRF" || item.itemCode === "RENTDPST" || item.itemCode === "REFUND" || item.itemCode === "EXPENSE"
           );
           break;
         default:
@@ -301,7 +301,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   receiptTypeChange(event:string){
-    
+    console.log(event);
     if(event.toUpperCase()==='RECEIVERENT'){
       this.filteredpayMode="";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
@@ -1128,15 +1128,22 @@ async  submitWithData() {
   // SUPPLIES
 
  async onSearchCustomer() {
+
     this.displayMessage("", "");
     let clientTypeTemp='';
     if(this.receiptsForm.controls['receiptmode'].value.toUpperCase()==='RECEIVERENT'){
+       this.Report='CLIENTBAL'
       clientTypeTemp='TENANT';
     }
     else if(this.receiptsForm.controls['receiptmode'].value.toUpperCase()==='PAYRENT'){
+       this.Report='CLIENTBAL'
       clientTypeTemp='LANDLORD';
     }
+   else if(this.receiptsForm.controls['receiptmode'].value.toUpperCase()==='utilityReceipt'){
+    this.Report='UTILBAL'
+   }
     else{
+      this.Report='UTILBAL'
       clientTypeTemp=this.receiptsForm.controls['clientType'].value || 'ALL';
     }
     const body = {

@@ -170,6 +170,7 @@ export class ExpensesComponent implements OnInit {
     };
   }
  async onClientSearch() {
+  this.clientCode='';
      const body = {
        ...this.commonParams(),
        Type: "CLIENT",
@@ -435,6 +436,8 @@ export class ExpensesComponent implements OnInit {
           this.expensesForm.controls['tranNo'].patchValue(res['data'].tranNo);
           this.expensesForm.controls['tranDate'].patchValue(res['data'].tranDate);
           this.expensesForm.controls['notes'].patchValue(res['data'].notes);
+          this.expensesForm.controls['client'].patchValue(res['data'].supplierName);
+          this.clientCode=res['data'].supplier;
           this.textMessageClass = 'green';
           if (mode != 'View') {
             this.retMessage = this.newTranMsg;
