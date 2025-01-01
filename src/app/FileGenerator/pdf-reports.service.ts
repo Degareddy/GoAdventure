@@ -12,7 +12,7 @@ import { LogoService } from '../Services/logo.service';
 })
 export class PdfReportsService {
   logoPath: string = "";
-  constructor(private userService: UserDataService,private fileUploadService: MastersService,    private logoService: LogoService
+  constructor(private userService: UserDataService, private fileUploadService: MastersService, private logoService: LogoService
 
   ) {
     const logoFileName = sessionStorage.getItem('logo') as string;
@@ -103,25 +103,55 @@ export class PdfReportsService {
       }
     });
   }
+  previewOrPrintPDF(pdfBlob: Blob, filename: string) {
+    const url = URL.createObjectURL(pdfBlob);
+
+    const preview = confirm("Do you want to preview the PDF?");
+    if (preview) {
+      const newTab = window.open(url, '_blank');
+      if (newTab) {
+        newTab.onload = () => {
+          URL.revokeObjectURL(url);
+        };
+      } else {
+        alert('Pop-up blocked! Please allow pop-ups to preview the PDF.');
+      }
+      return;
+    }
+
+    const print = confirm("Do you want to print the PDF?");
+    if (print) {
+      const newTab = window.open(url, '_blank');
+      if (newTab) {
+        newTab.onload = () => {
+          newTab.print();
+          URL.revokeObjectURL(url);
+        };
+      } else {
+        alert('Pop-up blocked! Please allow pop-ups to print the PDF.');
+      }
+    } else {
+      saveAs(pdfBlob, filename);
+    }
+  }
+
   generatePDF(cmpData: any, extitle: string, exdate: Date, type: string) {
 
-    // const data: any = [];
     const data = cmpData;
     const doc = new jsPDF();
     const text = extitle;
-    const textWidth = doc.getStringUnitWidth(text) * 14;  // Adjust the font size accordingly
+    const textWidth = doc.getStringUnitWidth(text) * 14;
     const startX = (doc.internal.pageSize.width - textWidth) / 2;
     const startY = 11.3;
     doc.setLineWidth(0.5);
     doc.line(startX, startY, startX + textWidth, startY);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);  // Reset to black color
+    doc.setTextColor(0, 0, 0);
     doc.text(text, 105, 10, { align: 'center' });
 
-    // Set the initial position for left and right columns
     doc.setFont('helvetica', 'normal');
     let leftColumnX = 10;
-    let rightColumnX = doc.internal.pageSize.width - 90; // Adjust the value based on your requirement
+    let rightColumnX = doc.internal.pageSize.width - 90;
     const formatDate = (dateString: any) => {
       const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
       const dateObject = new Date(dateString);
@@ -138,19 +168,19 @@ export class PdfReportsService {
     const logoImage = this.logoImageBlob;
     doc.addImage(logoImage, 'PNG', rightColumnX + 30, 10, 20, 20);
     data.forEach((item: any, index: number) => {
-      doc.setTextColor(52, 152, 219); // Light Blue Color
+      doc.setTextColor(52, 152, 219);
       doc.setFontSize(10);
       doc.text('Tenant:', leftColumnX + 5, 30);
-      // doc.text('TenantName:', leftColumnX + 5, 35);
+
       doc.text('Property:', leftColumnX + 5, 35);
-      // doc.text('Block:', leftColumnX + 5, 65);
+
       doc.text('Unit:', leftColumnX + 5, 40);
       doc.text('Email:', leftColumnX + 5, 45);
       doc.text('Date:', leftColumnX + 5, 50);
       doc.text('Due Date:', leftColumnX + 5, 55);
       doc.text('Invoice No:', leftColumnX + 5, 60);
       doc.text('Invoice Month:', leftColumnX + 5, 65);
-      doc.setTextColor(139, 69, 19); // Brown Color
+      doc.setTextColor(139, 69, 19);
       doc.text(`${item.tenantName}`, leftColumnX + 30, 30);
       doc.text(`${item.property}`, leftColumnX + 30, 35);
       doc.text(`${item.unit}`, leftColumnX + 30, 40);
@@ -159,15 +189,15 @@ export class PdfReportsService {
       doc.text(`${formatDate(item.dueDate)}`, leftColumnX + 30, 55);
       doc.text(`${item.invoiceNo}`, leftColumnX + 30, 60);
       doc.text(`${item.tranMonthName}-${item.tranYear}`, leftColumnX + 30, 65);
-      doc.setTextColor(139, 69, 19); // Brown Color
+      doc.setTextColor(139, 69, 19);
 
 
       doc.setFontSize(10);
       const compAddressesLines = doc.splitTextToSize(item.compAddresses, 50);
       doc.text(compAddressesLines, rightColumnX + 30, 35);
-      const compContactsLines = doc.splitTextToSize(item.compContacts, 50); // Adjust the width as needed
+      const compContactsLines = doc.splitTextToSize(item.compContacts, 50);
       doc.text(compContactsLines, rightColumnX + 30, 50);
-      const emailInfoLines = doc.splitTextToSize(item.emailInfo, 50); // Adjust the width as needed
+      const emailInfoLines = doc.splitTextToSize(item.emailInfo, 50);
       doc.text(emailInfoLines, rightColumnX + 30, 60);
       leftColumnX = 10;
       const headers = [
@@ -181,17 +211,14 @@ export class PdfReportsService {
       let totalVatAmount = 0;
       let totalNetAmount = 0;
       const data1 = data.map((item: any) => {
-        // Convert amounts to numbers if they are not already
         const itemAmount = parseFloat(item.itemAmount);
         const vatAmount = parseFloat(item.vatAmount);
         const netAmount = parseFloat(item.netAmount);
 
-        // Add amounts to totals
         totalItemAmount += itemAmount;
         totalVatAmount += vatAmount;
         totalNetAmount += netAmount;
 
-        // Return the formatted row
         return [
           item.slNo,
           item.costItemDesc,
@@ -201,8 +228,8 @@ export class PdfReportsService {
         ];
       });
       const totalRow = [
-        { content: '' }, // SLNO
-        { content: '' }, // Item
+        { content: '' },
+        { content: '' },
         { content: totalItemAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), styles: { fillColor: [169, 169, 169], textColor: [0, 0, 0], fontSize: 10, fontStyle: 'bold' } }, // VAT Amount
         { content: totalVatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), styles: { fillColor: [169, 169, 169], textColor: [0, 0, 0], fontSize: 10, fontStyle: 'bold' } }, // VAT Amount
         { content: totalNetAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), styles: { fillColor: [169, 169, 169], textColor: [0, 0, 0], fontSize: 10, fontStyle: 'bold' } },
@@ -214,8 +241,8 @@ export class PdfReportsService {
           fillColor: [169, 169, 169],
           textColor: [0, 0, 0],
           fontSize: 10,
-          lineWidth: 0.1, // Add border width for the headers
-          lineColor: [0, 0, 0], // Specify border color (black)
+          lineWidth: 0.1,
+          lineColor: [0, 0, 0],
           border: [0, 0, 0, 1]
         },
         bodyStyles: { fontSize: 10 },
@@ -229,8 +256,8 @@ export class PdfReportsService {
 
       (doc as any).autoTable({ head: [headers], body: data1, ...options });
       const noteText = 'This is a system-generated invoice. It does not need any signature.';
-      doc.setFontSize(10); // Set the font size for the note
-      doc.setTextColor(0); // Set the text color
+      doc.setFontSize(10);
+      doc.setTextColor(0);
       doc.text(noteText, 105, (doc as any).autoTable.previous.finalY + 10, { align: 'center' });
 
     });
@@ -241,7 +268,8 @@ export class PdfReportsService {
       return fileWithFilename;
     }
     else if (extitle.toUpperCase() != "GINV") {
-      saveAs(blob, extitle + '.pdf');
+      this.previewOrPrintPDF(blob, extitle);
+      // saveAs(blob, extitle + '.pdf');
       return;
     }
     else {
