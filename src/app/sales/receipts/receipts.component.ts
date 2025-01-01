@@ -837,7 +837,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (
         rctAmountValue > this.receiptAmount &&
-        this.receiptsForm.controls.tranFor.value.toUpperCase() != 'CASHTRF' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROW' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROWR' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LEND' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LENDR'
+        this.receiptsForm.controls.tranFor.value.toUpperCase() != 'CASHTRF' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROW' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROWR' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LEND' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LENDR'  && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'PAYMENT'
       ) {
         const message = `The payment amount of <b>${rctAmountValue.toLocaleString(
           'en-US',
@@ -1050,7 +1050,10 @@ async  submitWithData() {
     this.payStatus = res['data'].tranStatus;
     this.allocStatus = res['data'].allocStatus;
     this.supCode = res['data'].customer;
+    
+    this.receiptsForm.get('receiptmode')?.patchValue(this.receiptmodes[3].itemCode);
     this.receiptsForm.patchValue({
+      // receiptmode:this.receiptmodes[3].itemCode,
       rctType: res['data'].rctType,
       receiptNo: res['data'].receiptNo,
       receiptDate: res['data'].receiptDate,
@@ -1087,10 +1090,10 @@ async  submitWithData() {
       paidCurrency: res['data'].paidCurrency,
       tranFor: res['data'].txnFor,
     });
-    if(this.receiptsForm.get('rctType')?.value ==="RECEIPT"){
+    if(this.receiptsForm.get('rctType')?.value ==="RECEIPT" && this.receiptsForm.get('tranFor')?.value ==="RENTPMT"){
       this.receiptsForm.get('receiptmode')?.patchValue("receiveRent");
     }
-    else  if(this.receiptsForm.get('rctType')?.value ==="PAYMENT"){
+    else  if(this.receiptsForm.get('rctType')?.value ==="PAYMENT" && this.receiptsForm.get('tranFor')?.value ==="RENTPMT"){
       this.receiptsForm.get('receiptmode')?.patchValue("payRent");
     }
     else{
@@ -1198,7 +1201,7 @@ async  submitWithData() {
                     return;
                   }
                   this.receiptsForm.controls['customer'].patchValue(result.clientName);
-                  if(this.receiptsForm.controls['clientType'].value.toUpperCase() === "LANDLORD"){
+                  if(this.receiptsForm.controls['rctType'].value.toUpperCase() === "PAYMENT"){
                     if(result.balAmount<0){
                       const positiveBal=result.balAmount * -1;
                       this.receiptsForm.controls['rctAmount'].patchValue(positiveBal.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);

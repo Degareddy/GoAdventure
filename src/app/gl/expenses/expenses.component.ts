@@ -224,57 +224,57 @@ export class ExpensesComponent implements OnInit {
       
       return;
     }
-    if(this.expensesForm.get('mode')?.value.toUpperCase() === "AUTHORIZE"){
-      debugger;
-      if(this.tranAmount > this.balanceAmount){
-        this.retMessage = "You don't have enough funds to authorize this transaction";
-        this.textMessageClass = "red";
-        return;
-      }
-      else {
-        debugger;
-        this.expCls.company = this.userDataService.userData.company;
-        this.expCls.location = this.userDataService.userData.location;
-        this.expCls.langId = this.userDataService.userData.langId;
-        this.expCls.user = this.userDataService.userData.userID;
-        this.expCls.refNo = this.userDataService.userData.sessionID;
-        this.expCls.mode = this.expensesForm.controls['mode'].value;
-        this.expCls.notes = this.expensesForm.controls['notes'].value;
-        this.expCls.tranStatus = this.tranStatus;
-        this.expCls.tranDate = this.expensesForm.controls['tranDate'].value;
-        this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
-        this.expCls.Supplier=this.clientCode;
-        try {
-          debugger;
-          this.loader.start();
-          this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: any) => {
-            this.loader.stop();
-            if (res.retVal > 100 && res.retVal < 200) {
-              this.newTranMsg = res.message;
-              this.masterParams.tranNo = res.tranNoNew;
+    // if(this.expensesForm.get('mode')?.value.toUpperCase() === "AUTHORIZE"){
+    //   debugger;
+    //   if(this.tranAmount > this.balanceAmount){
+    //     this.retMessage = "You don't have enough funds to authorize this transaction";
+    //     this.textMessageClass = "red";
+    //     return;
+    //   }
+    //   else {
+    //     debugger;
+    //     this.expCls.company = this.userDataService.userData.company;
+    //     this.expCls.location = this.userDataService.userData.location;
+    //     this.expCls.langId = this.userDataService.userData.langId;
+    //     this.expCls.user = this.userDataService.userData.userID;
+    //     this.expCls.refNo = this.userDataService.userData.sessionID;
+    //     this.expCls.mode = this.expensesForm.controls['mode'].value;
+    //     this.expCls.notes = this.expensesForm.controls['notes'].value;
+    //     this.expCls.tranStatus = this.tranStatus;
+    //     this.expCls.tranDate = this.expensesForm.controls['tranDate'].value;
+    //     this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
+    //     this.expCls.Supplier=this.clientCode;
+    //     try {
+    //       debugger;
+    //       this.loader.start();
+    //       this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: any) => {
+    //         this.loader.stop();
+    //         if (res.retVal > 100 && res.retVal < 200) {
+    //           this.newTranMsg = res.message;
+    //           this.masterParams.tranNo = res.tranNoNew;
   
-              if (this.expensesForm.controls['mode'].value == "Add") {
-                // this.selMode = 'Add';
-                this.modeChange("Modify");
-              }
-              this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
+    //           if (this.expensesForm.controls['mode'].value == "Add") {
+    //             // this.selMode = 'Add';
+    //             this.modeChange("Modify");
+    //           }
+    //           this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
   
-              this.retMessage = res.message;
-              this.textMessageClass = "green";
-            }
-            else {
-              this.retMessage = res.message;
-              this.textMessageClass = "red";
-            }
-          });
-        } catch (ex: any) {
-          this.retMessage = ex;
-          this.textMessageClass = "red";
-        }
-        return;
-      }
+    //           this.retMessage = res.message;
+    //           this.textMessageClass = "green";
+    //         }
+    //         else {
+    //           this.retMessage = res.message;
+    //           this.textMessageClass = "red";
+    //         }
+    //       });
+    //     } catch (ex: any) {
+    //       this.retMessage = ex;
+    //       this.textMessageClass = "red";
+    //     }
+    //     return;
+    //   }
       
-    }
+    // }
     else {
       
       this.expCls.company = this.userDataService.userData.company;
