@@ -19,13 +19,13 @@ import { DatePipe } from '@angular/common';
 })
 export class AccessGridComponent implements OnInit, OnDestroy {
   @Input() tableName!: string;
-  @Input() tranLabel: string="";
+  @Input() tranLabel: string = "";
   @Input() reportName: string = "";
   @Input() columnDefs: any = [
 
   ];
   public themeClass: string =
-  "ag-theme-quartz";
+    "ag-theme-quartz";
 
   @Input() rowData: any = [];
   @Input() paginationPageSize: any;
@@ -74,7 +74,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
   //     this.menuState = !this.menuState;
   //   }
   // }
-  constructor(private _el: ElementRef, private router: Router,private datePipe: DatePipe) {
+  constructor(private _el: ElementRef, private router: Router, private datePipe: DatePipe) {
     this.gridOptions = {
       rowSelection: 'single',
       enableCellTextSelection: true,
@@ -102,7 +102,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
   }
   addSerialNumberColumn() {
     const isSerialNumberColumnPresent = this.columnDefs.some(
-      (col:any) => col.headerName === 'S.No'
+      (col: any) => col.headerName === 'S.No'
     );
 
     if (!isSerialNumberColumnPresent) {
@@ -184,7 +184,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
     // setTimeout(() => {
     //   this.gridApi.sizeColumnsToFit();
     // }, 3000);
-     this.gridApi.sizeColumnsToFit();
+    this.gridApi.sizeColumnsToFit();
 
   }
 
@@ -341,7 +341,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
       if (column && column.toLowerCase().includes('date')) {
         dateColumnIndices.push(index);
       }
-      if (column && (column.toLowerCase().includes('amount') || column.toLowerCase().includes('balance') || column.toLowerCase().includes('debit') || column.toLowerCase().includes('credit') || column.toLowerCase().includes('rent') || column.toLowerCase().includes('service') || column.toLowerCase().includes('price') || column.toLowerCase().includes('total') || column.toLowerCase().includes('holdings') || column.toLowerCase().includes('deposit') )) {
+      if (column && (column.toLowerCase().includes('amount') || column.toLowerCase().includes('balance') || column.toLowerCase().includes('debit') || column.toLowerCase().includes('credit') || column.toLowerCase().includes('rent') || column.toLowerCase().includes('service') || column.toLowerCase().includes('price') || column.toLowerCase().includes('total') || column.toLowerCase().includes('holdings') || column.toLowerCase().includes('deposit'))) {
         numberColumnIndices.push(index);
       }
     });
@@ -372,22 +372,22 @@ export class AccessGridComponent implements OnInit, OnDestroy {
     });
 
     if (content) {
-      let formattedFromDate:any;
-      let formattedToDate:any;
-      let toDateLabel!:any;
-      let fromDateLabel!:any;
-      if(this.reportName.includes('Statement')){
-         formattedFromDate = this.datePipe.transform(this.fromDate, 'dd-MM-yyyy');
+      let formattedFromDate: any;
+      let formattedToDate: any;
+      let toDateLabel!: any;
+      let fromDateLabel!: any;
+      if (this.reportName.includes('Statement')) {
+        formattedFromDate = this.datePipe.transform(this.fromDate, 'dd-MM-yyyy');
         formattedToDate = this.datePipe.transform(this.toDate, 'dd-MM-yyyy');
-        fromDateLabel='From Date:' + formattedFromDate;
-        toDateLabel='To Date:' + formattedToDate;
+        fromDateLabel = 'From Date:' + formattedFromDate;
+        toDateLabel = 'To Date:' + formattedToDate;
       }
-      else{
-         formattedFromDate = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
-         toDateLabel ='';
-         fromDateLabel='Report Date:' + formattedFromDate;
+      else {
+        formattedFromDate = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
+        toDateLabel = '';
+        fromDateLabel = 'Report Date:' + formattedFromDate;
       }
-      
+
       const options = {
         startY: 15,
         head: [filteredColumns],
@@ -437,7 +437,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
                 pdfDoc.setFontSize(12); // Larger font size for the last row
                 pdfDoc.text(data.cell.text, cell.x, cell.y + 4);
               }
-              else if(isLastRow){
+              else if (isLastRow) {
                 pdfDoc.setFillColor(255, 255, 200); // Light yellow color for the last row
                 pdfDoc.rect(cell.x, cell.y, cell.width, cell.height, 'F'); // Fill the cell background
                 pdfDoc.setTextColor(0, 0, 0); // Set text color to black
@@ -446,12 +446,12 @@ export class AccessGridComponent implements OnInit, OnDestroy {
               }
             }
           }
-          else{
+          else {
             if (data.section === 'body') {
               const { cell, table } = data;
               const isFirstRow = data.row.index === 0;
               const isLastRow = data.row.index === table.body.length - 1;
-              if(isLastRow){
+              if (isLastRow) {
                 pdfDoc.setFillColor(255, 255, 200); // Light yellow color for the last row
                 pdfDoc.rect(cell.x, cell.y, cell.width, cell.height, 'F'); // Fill the cell background
                 pdfDoc.setTextColor(0, 0, 0); // Set text color to black
@@ -487,11 +487,46 @@ export class AccessGridComponent implements OnInit, OnDestroy {
       // pdfDoc.text(footerText, footerXPosition, footerYPosition);
 
       const sanitizedReportName = this.reportName.replace(/\s+/g, '');
-      pdfDoc.save(sanitizedReportName + 'Report.pdf');
+      // pdfDoc.save(sanitizedReportName + 'Report.pdf');
+
+      const pdfBlob = pdfDoc.output('blob');
+
+      this.previewOrPrintPDF(pdfBlob, sanitizedReportName + ' Report.pdf');
     }
   }
 
+  previewOrPrintPDF(pdfBlob: Blob, filename: string) {
+    const url = URL.createObjectURL(pdfBlob);
 
+    const preview = confirm("Do you want to preview the PDF?");
+    if (preview) {
+      const newTab = window.open(url, '_blank');
+      if (newTab) {
+        newTab.onload = () => {
+          URL.revokeObjectURL(url);
+        };
+      } else {
+        alert('Pop-up blocked! Please allow pop-ups to preview the PDF.');
+      }
+      return;
+    }
+
+    // const print = confirm("Do you want to print the PDF?");
+    // if (print) {
+    //   const newTab = window.open(url, '_blank');
+    //   if (newTab) {
+    //     newTab.onload = () => {
+    //       newTab.print();
+    //       URL.revokeObjectURL(url);
+    //     };
+    //   } else {
+    //     alert('Pop-up blocked! Please allow pop-ups to print the PDF.');
+    //   }
+    // }
+    else {
+      saveAs(pdfBlob, filename);
+    }
+  }
   autoSizeRows(params: any) {
     // Reset the row heights to automatically adjust based on content
     params.api.resetRowHeights();
@@ -503,7 +538,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
       allColumnIds.push(column.colId);
     });
     params.columnApi.autoSizeColumns(allColumnIds);
-}
+  }
 
 
   // autoSizeAllColumns(params: any) {
