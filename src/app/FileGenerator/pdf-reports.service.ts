@@ -119,18 +119,19 @@ export class PdfReportsService {
       return;
     }
 
-    const print = confirm("Do you want to print the PDF?");
-    if (print) {
-      const newTab = window.open(url, '_blank');
-      if (newTab) {
-        newTab.onload = () => {
-          newTab.print();
-          URL.revokeObjectURL(url);
-        };
-      } else {
-        alert('Pop-up blocked! Please allow pop-ups to print the PDF.');
-      }
-    } else {
+    // const print = confirm("Do you want to print the PDF?");
+    // if (print) {
+    //   const newTab = window.open(url, '_blank');
+    //   if (newTab) {
+    //     newTab.onload = () => {
+    //       newTab.print();
+    //       URL.revokeObjectURL(url);
+    //     };
+    //   } else {
+    //     alert('Pop-up blocked! Please allow pop-ups to print the PDF.');
+    //   }
+    // }
+    else {
       saveAs(pdfBlob, filename);
     }
   }
@@ -309,16 +310,10 @@ export class PdfReportsService {
     pdf.setFontSize(14);
     const rightImage = new Image();
     rightImage.src = "assets/img/TKGlogo.jpg";
-    // const rightImageWidth = 20; // Adjust the width as needed
-    // const rightImageHeight = 20; // Adjust the height as needed
-    // pdf.addImage(rightImage, 'PNG', pdf.internal.pageSize.width - rightImageWidth - 10, 10, rightImageWidth, rightImageHeight)
-    // pdf.setTextColor(165, 42, 42);
     pdf.setFont('Helvetica', 'bold');
     pdf.text('TENANCY AGREEMENT ', 70, 20);
     pdf.setFontSize(10);
     pdf.text('OF ', 90, 25);
-    // const selectedProp = this.props.find((p: any) => p.itemCode === this.unitDetForm.get('property')?.value);
-    // const selectedPropertyName = selectedProp.itemName;
     pdf.text('UNIT NO. ' + property + ",  " + unit, 65, 30);
     pdf.setTextColor('');
     pdf.setFontSize(10);
@@ -330,15 +325,6 @@ export class PdfReportsService {
     const idNumber = res.data.idNo;
     const rentAmount = res.data.rentAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const refundAmount = res.data.depositAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    // const fontSize = 12;
-    // const fontSize = 12;
-    // const lineHeight = 1;
-    // function drawUnderlinedText(value: string, textColor: [number, number, number]) {
-    //   pdf.text(value, 0, 0)
-    //   pdf.setTextColor(...textColor);
-    //   // pdf.text(value, 0, 0);// Set text color
-    //   pdf.setTextColor(0);
-    // }
     const textLine1 = 'THIS AGREEMENT is made on ' + date + ' BETWEEN ' + company + ' (hereinafter called "the Landlord" and ' + tenantName + ' a' + idtype + ' and ' + idNumber + ' (hereinafter called "the Tenant").';
     const textLine2 = 'WHEREAS the Landlord demises unto the Tenant ALL THAT Unit.'
     const textLine3 = 'NOW THIS AGREEMENT WITNESSETH that in consideration of the rent hereinafter reserved and of the covenants conditions agreements restrictions  stipulations  and provisions hereinafter' +
@@ -453,7 +439,10 @@ export class PdfReportsService {
       "Drawn By:\nAbdullahi & Associate Advocates\nHughes Building, 4th floor,\nKenyatta Avenue,\nP.O.Box 42724-00100\nNairobi."
     const splitText24 = pdf.splitTextToSize(textLine25, maxWidth);
     pdf.text(splitText24, leftMargin + 5, 60);
-    pdf.save('rental_agreement.pdf');
+    // pdf.save('rental_agreement.pdf');
+    const pdfBlob = pdf.output('blob');
+
+    this.previewOrPrintPDF(pdfBlob, 'rental_agreement.pdf');
   }
   generateQuotationPDF(cmpData: any, extitle: string, exdate: Date, type: string) {
     const data = cmpData;
@@ -724,7 +713,8 @@ export class PdfReportsService {
       return fileWithFilename;
     }
     else if (extitle != "GINV") {
-      saveAs(blob, extitle + '.pdf');
+      // saveAs(blob, extitle + '.pdf');
+      this.previewOrPrintPDF(blob, extitle + '.pdf');
       return;
     }
     else {
@@ -831,7 +821,10 @@ export class PdfReportsService {
         x = 15;
         y += 5;
       }
-      pdf.save('history.pdf');
+      // pdf.save('history.pdf');
+      const pdfBlob = pdf.output('blob');
+
+      this.previewOrPrintPDF(pdfBlob, 'history.pdf');
     }
     else if (history === "Grievances History") {
       var headers = ['S.No', 'Tenant', 'Complaint', 'Raised On', 'Allocated On', 'Closed On', 'Time Taken', 'Cost To Mgmt', 'Cost To Llrd', 'Cost To Tnt'];
@@ -868,7 +861,7 @@ export class PdfReportsService {
       for (var j = 0; j < tableData.length; j++) {
         for (var k = 0; k < tableData[j].length; k++) {
           pdf.rect(x, y, columnWidths[k], 5);
-          if (k >= 7) { // Right align column data for 'Cost To Mgmt', 'Cost To Llrd', and 'Cost To Tnt'
+          if (k >= 7) {
             pdf.text(String(tableData[j][k]), x + columnWidths[k] - pdf.getStringUnitWidth(String(tableData[j][k])), y + 4, 'right' as any);
           } else {
             pdf.text(String(tableData[j][k]), x + 1, y + 4);
@@ -878,7 +871,10 @@ export class PdfReportsService {
         x = 5;
         y += 5;
       }
-      pdf.save('GrievancesHistory.pdf');
+      // pdf.save('GrievancesHistory.pdf');
+      const pdfBlob = pdf.output('blob');
+
+      this.previewOrPrintPDF(pdfBlob, 'GrievancesHistory.pdf');
     }
 
   }
