@@ -25,6 +25,9 @@ export interface SaleReportState {
   FromDate: Date;
   PropCode: string;
   UnitID: string;
+  BalanceType:string;
+  receiptType:string;
+  isSummary:boolean;
   data: any[];
   pagination: {
     pageIndex: number;
@@ -112,6 +115,9 @@ export const initialState2: SaleReportState = {
   FromDate: new Date(),
   PropCode: '',
   UnitID: '',
+  BalanceType:'',
+  receiptType:'',
+  isSummary:false,
   data: [],
   pagination: {
     pageIndex: 0,
