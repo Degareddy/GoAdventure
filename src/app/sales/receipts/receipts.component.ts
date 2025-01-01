@@ -1189,6 +1189,7 @@ async  submitWithData() {
                   PartyType: this.receiptsForm.controls['clientType'].value.toUpperCase(),
                   search: this.receiptsForm.controls['clientType'].value + ' Search',
                   serData: res.data,
+                  searchFor:this.receiptsForm.get('receiptmode')?.value
                 },
               });
               this.dialogOpen = true;

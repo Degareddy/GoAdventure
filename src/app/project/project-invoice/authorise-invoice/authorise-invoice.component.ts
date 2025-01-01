@@ -191,31 +191,41 @@ export class AuthoriseInvoiceComponent implements OnInit {
     }
     async apply() {
       
+      
       let response = 1;
     
       // Iterate over the dataSource and make async calls
-      for (let i = 0; i < (this.dataSource.data.length && this.count > 0) ; i++) {
+      for (let i = 0; i < (this.dataSource.data.length) ; i++) {
+        if(this.count > 0){
+          console.log(this.dataSource.data.length)
+        console.log(this.count)
         
     
         if (this.dataSource.data[i].mapped && response && this.count > 0) {
+          console.log(this.dataSource.data[i].mapped)
           const body = {
             ...this.commonParams(),
             TranType: this.authoriseInvoiceForm.controls['tranType'].value,
             SubTranType: this.authoriseInvoiceForm.controls['subTranType'].value,
             TranNo: this.dataSource.data[i].tranNo,
           };
+          
     
           try {
+            
             this.loader.start();
             // Wait for the Observable to complete before continuing
             const res: any = await this.projService.authoriseSelectedData(body).toPromise();
     
             this.loader.stop();
             if (res['status'].toUpperCase() === 'SUCCESS') {
+              
               this.handelError(res, 'green');
               response = 1;
               --this.count;
+              
             } else {
+              
               this.handelError(res, 'red');
               response = 0;
             }
@@ -224,10 +234,16 @@ export class AuthoriseInvoiceComponent implements OnInit {
             response = 0;
           }
         }
-      }
+        }
+        else {
+          this.count=0;
+          // Call submit only after all requests have been processed
+          this.submit();
     
-      // Call submit only after all requests have been processed
-      this.submit();
+          return;
+        }
+        
+      }
     }
     
     authoriseSelectedInvoice(){

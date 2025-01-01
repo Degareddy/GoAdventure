@@ -27,6 +27,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   partyCls!: partySearchClass;
   dataSource: any;
   tranNo!: any[];
+  searchFor!:string;
   searchName!: string;
   private subSink!: SubSink;
   rowData: any = [];
@@ -85,6 +86,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     this.partyCls = new partySearchClass();
     this.SearchPartyForm = this.formInit();
     this.subSink = new SubSink();
+   
   }
 
   ngOnDestroy(): void {
@@ -161,6 +163,12 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     }
   }
   search() {
+    if(this.data.searchFor === 'utilityReceipt'){
+      this.searchFor='UTILBAL'
+    }
+    else{
+      this.searchFor='CLIENGBAL'
+    }
     const body = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
@@ -171,7 +179,8 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       unit: this.SearchPartyForm.controls['flat'].value,
       Client: this.SearchPartyForm.controls['name'].value,
       isSummary: this.SearchPartyForm.controls['isSummary'].value,
-      ClientType: this.data.PartyType
+      ClientType: this.data.PartyType,
+      Report:this.searchFor
     }
     try {
       this.loader.start();
