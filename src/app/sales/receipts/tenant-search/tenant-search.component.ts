@@ -163,12 +163,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     }
   }
   search() {
-    if(this.data.searchFor === 'utilityReceipt'){
-      this.searchFor='UTILBAL'
-    }
-    else{
-      this.searchFor='CLIENGBAL'
-    }
+   
     const body = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
@@ -180,7 +175,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       Client: this.SearchPartyForm.controls['name'].value,
       isSummary: this.SearchPartyForm.controls['isSummary'].value,
       ClientType: this.data.PartyType,
-      Report:this.searchFor
+      Report:this.data.searchFor
     }
     try {
       this.loader.start();
@@ -253,7 +248,6 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     // this.SearchPartyForm.controls['blockCode'].setValue(this.SearchPartyForm.controls['block'].value);
     try {
       this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-        //console.log(result);
         if (result.status.toUpperCase() === "SUCCESS") {
           this.flats = result['data'];
         }

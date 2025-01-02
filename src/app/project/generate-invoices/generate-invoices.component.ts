@@ -425,14 +425,34 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                   const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
                   let message = "";
             
-                  if (this.userDataService.userData.company === "NPML") {
+                  if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('rentInvoice')?.value ) {
                     message = `Dear ${item.tenantName},
             
             Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
             The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
             Thank you,
             Nagaad Properties`;
-                  } else if (this.userDataService.userData.company === "SADASA") {
+                  }
+                  else if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('IncludeUtility')?.value ) {
+                    message = `Dear ${item.tenantName},
+            
+            Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+            The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
+            Thank you,
+            Nagaad Properties`;
+                  }
+                  else if (this.userDataService.userData.company === "TAJOW" && this.autoGenForm.get('IncludeUtility')?.value) {
+                    message = `Mudane/Marwo [${item.tenantName}],
+
+                    Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
+                    Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+                    
+                    Mahadsanid,  
+                    Omar Mumin Mohammed  
+                    Sadasa Construction and Property`;
+                    
+                  }
+                   else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('rentInvoice')?.value) {
                     message = `Mudane/Marwo [${item.tenantName}],
             Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
             Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
@@ -522,7 +542,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       this.textMessageClass = "red";
     }
   }
-
+  
   handleSuccess(res: any) {
     this.retMessage = res.message;
     this.textMessageClass = "green";
@@ -744,5 +764,10 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     //       IncludeUtility: false,
     //     });
     //   }
+    if(!this.autoGenForm.get('authorize')?.value){
+      this.autoGenForm.get('email')?.setValue(false);
+      this.autoGenForm.get('sms')?.setValue(false);
+      this.autoGenForm.get('whatsapp')?.setValue(false);
+    }
   }
 }

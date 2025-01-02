@@ -69,18 +69,18 @@
             </mat-checkbox>
           </div>
           <div class="col-md-3">
-            <mat-checkbox [labelPosition]="labelPosition" formControlName="authorize">Authorize Invoices</mat-checkbox>
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="authorize" (change)="onCheckboxChange('authorize')">Authorize Invoices</mat-checkbox>
           </div>
         </div>
         <div class="row myCustomClass">
           <div class="col-md-3">
-            <mat-checkbox [labelPosition]="labelPosition" formControlName="sms">SMS</mat-checkbox>
+            <mat-checkbox [labelPosition]="labelPosition" [disabled]="!autoGenForm.get('authorize')!.value" formControlName="sms">SMS</mat-checkbox>
           </div>
           <div class="col-md-3">
-            <mat-checkbox [labelPosition]="labelPosition" formControlName="whatsapp">WhatsApp</mat-checkbox>
+            <mat-checkbox [labelPosition]="labelPosition" [disabled]="!autoGenForm.get('authorize')!.value" formControlName="whatsapp">WhatsApp</mat-checkbox>
           </div>
           <div class="col-md-3">
-            <mat-checkbox [labelPosition]="labelPosition" formControlName="email">Email</mat-checkbox>
+            <mat-checkbox [labelPosition]="labelPosition" [disabled]="!autoGenForm.get('authorize')!.value" formControlName="email">Email</mat-checkbox>
           </div>
         </div>
         <div class="row myCustomClass">
