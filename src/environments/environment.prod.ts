@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   envName: 'prod',
-  Url: 'https://degatech.in/dme/api/',
+  Url: 'http://degatech.in/dme/api/',
   // Url: 'http://183.83.32.116:5000/api/',
 
   version: "1.0.0"
