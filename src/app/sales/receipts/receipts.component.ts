@@ -89,22 +89,22 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   receiptsForm!: FormGroup;
   receiptNoValid: boolean = true;
   modes: Item[] = [];
-  Report!:string;
-  receiptmodes:Item[]=[
-    {itemCode:'receiveRent',itemName:'Rent receipt'},
-    {itemCode:'payRent',itemName:'Rent payment'},
-    {itemCode:'utilityReceipt',itemName:'Utility Receipt'},
-    {itemCode:'other',itemName:'...Other'},
+  Report!: string;
+  receiptmodes: Item[] = [
+    { itemCode: 'receiveRent', itemName: 'Rent receipt' },
+    { itemCode: 'payRent', itemName: 'Rent payment' },
+    { itemCode: 'utilityReceipt', itemName: 'Utility Receipt' },
+    { itemCode: 'other', itemName: '...Other' },
   ];
   labelPosition: 'before' | 'after' = 'after';
   formName: string = 'Receipts / Payments';
   fromName: string = 'From';
   toName: string = 'To';
   payMode: Item[] = [];
-  filteredpayMode:any='';
+  filteredpayMode: any = '';
   currency: Item[] = [];
   bank: Item[] = [];
-  filteredbank:any="";
+  filteredbank: any = "";
   receiptAmount: number = 0;
   masterParams!: MasterParams;
   recptCls: recieptsClass;
@@ -122,7 +122,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     { itemCode: 'Bounced', itemName: 'Bounced' },
     { itemCode: 'Pending', itemName: 'Pending' },
   ];
-  filteredStatusList:any="";
+  filteredStatusList: any = "";
   @Input() max: any;
   today = new Date();
   tomorrow = new Date();
@@ -130,7 +130,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   textMessageClass!: string;
   balanceAmount: number = 0;
   pendingAmount: number = 0;
-  filteredItemsClientType: Item[]=[];
+  filteredItemsClientType: Item[] = [];
   filteredItemsTranFor: any;
   filteredItemsTranType: any;
   isBalanceVisible: boolean = false;
@@ -198,23 +198,23 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "TENANT");
             this.receiptsForm.controls['clientType'].patchValue("TENANT");
             this.receiptsForm.controls['clientType'].disable();
-            this.filteredpayMode="";
+            this.filteredpayMode = "";
             this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
           }
-          else if(tranFor==="REFUND"){
+          else if (tranFor === "REFUND") {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "LANDLORD");
             this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
             this.receiptsForm.controls['clientType'].disable();
-            this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
-          }else {
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
+          } else {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList;
             this.receiptsForm.controls['clientType'].patchValue("");
             this.receiptsForm.controls['clientType'].enable();
-            this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
           }
           break;
         case "PAYMENT":
@@ -223,55 +223,55 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "STAFF");
             this.receiptsForm.controls['clientType'].patchValue("STAFF");
             this.receiptsForm.controls['clientType'].disable();
-            this.filteredpayMode="";
+            this.filteredpayMode = "";
             this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
           }
-          else if(tranFor==="REFUND"){
+          else if (tranFor === "REFUND") {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "TENANT");
             this.receiptsForm.controls['clientType'].patchValue("TENANT");
             this.receiptsForm.controls['clientType'].disable();
-            this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
           }
           else if (tranFor === "SUPPLIES") {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "SUPPLIER");
             this.receiptsForm.controls['clientType'].patchValue("SUPPLIER");
             this.receiptsForm.controls['clientType'].disable();
-            this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
           }
           else if (tranFor === "RENTPMT" || tranFor === "RENTDPST") {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "LANDLORD");
             this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
             this.receiptsForm.controls['clientType'].disable();
-            this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
           }
           else {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList;
             this.receiptsForm.controls['clientType'].patchValue("");
             this.receiptsForm.controls['clientType'].enable();
-            this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
           }
           break;
         default:
-        this.filteredItemsClientType = [];
+          this.filteredItemsClientType = [];
           this.filteredItemsClientType = this.clientTypeList;
           this.receiptsForm.controls['clientType'].patchValue("");
           this.receiptsForm.controls['clientType'].enable();
-          this.filteredpayMode="";
-            this.filteredpayMode=this.payMode;
+          this.filteredpayMode = "";
+          this.filteredpayMode = this.payMode;
           break;
       }
     }
     else {
       this.filteredItemsTranFor = this.overHeadsLsit;
-      this.filteredItemsClientType =this.payMode;
+      this.filteredItemsClientType = this.payMode;
     }
 
   }
@@ -300,37 +300,37 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.filteredItemsTranFor = this.overHeadsLsit;
     }
   }
-  receiptTypeChange(event:string){
+  receiptTypeChange(event: string) {
     console.log(event);
-    if(event.toUpperCase()==='RECEIVERENT'){
-      this.filteredpayMode="";
+    if (event.toUpperCase() === 'RECEIVERENT') {
+      this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
-      this.Report='CLIENTBAL'
+      this.Report = 'CLIENTBAL'
     }
-    else if(event.toUpperCase()==='PAYRENT'){
-      this.filteredpayMode="";
-      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode ==="DEDUCTION");
+    else if (event.toUpperCase() === 'PAYRENT') {
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
-      this.Report='CLIENTBAL'
+      this.Report = 'CLIENTBAL'
     }
-    else if(event.toUpperCase()==='UTILITYRECEIPT'){
-      
-      this.filteredpayMode="";
-      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode ==="DEDUCTION");
+    else if (event.toUpperCase() === 'UTILITYRECEIPT') {
+
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
-      this.Report='UTILBAL'
+      this.Report = 'UTILBAL'
     }
-    else{
+    else {
       this.receiptsForm.controls['mode'].patchValue('View');
       this.receiptsForm.controls['rctType'].patchValue('');
       this.receiptsForm.controls['tranFor'].patchValue('');
@@ -373,7 +373,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
           tranType: 'RECEIPT',
           tranAmount: this.receiptsForm.controls['rctAmount'].value,
           allocStatus: this.allocStatus,
-          tranFor:this.receiptsForm.controls['tranFor'].value
+          tranFor: this.receiptsForm.controls['tranFor'].value
         },
       }
     );
@@ -397,7 +397,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      receiptmode:[this.receiptmodes[3].itemCode],
+      receiptmode: [this.receiptmodes[3].itemCode],
       mode: ['View'],
       receiptNo: [''],
       receiptDate: [new Date(), Validators.required],
@@ -441,7 +441,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.receiptsForm.get('exchRate')?.patchValue(isNaN(value) ? null : value);
   }
 
- async getCashBalace() {
+  async getCashBalace() {
     const balBody = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
@@ -452,7 +452,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     try {
-      this.subSink.sink =await this.saleService.GetUserCashBalance(balBody).subscribe((res: any) => {
+      this.subSink.sink = await this.saleService.GetUserCashBalance(balBody).subscribe((res: any) => {
         if (res.status.toUpperCase() === 'SUCCESS') {
           this.balanceAmount = res.data.totalAmount;
           this.pendingAmount = res.data.pendingAmount;
@@ -466,7 +466,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.displayMessage("Error " + ex.message, 'red');
     }
   }
- async ngOnInit() {
+  async ngOnInit() {
     this.refreshData();
     this.getCashBalace();
     const logoFileName = sessionStorage.getItem('logo') as string;
@@ -481,7 +481,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       item: 'ST210',
     };
     try {
-      this.subSink.sink =await this.masterService.getModesList(modeBody).subscribe((res: any) => {
+      this.subSink.sink = await this.masterService.getModesList(modeBody).subscribe((res: any) => {
         if (res.status.toUpperCase() === 'SUCCESS') {
           this.modes = res['data'];
         } else {
@@ -650,7 +650,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID,
     };
   }
- async loadData() {
+  async loadData() {
     const service = this.saleService.GetMasterItemsList({
       ...this.commonParams(),
       item: 'PAYMODE',
@@ -668,7 +668,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       item: 'RCTPMT',
     });
     // this.loader.start();
-    this.subSink.sink =await forkJoin([
+    this.subSink.sink = await forkJoin([
       service,
       service1,
       service2,
@@ -738,7 +738,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   sendSms(mobile: string) {
-    
+
     if (mobile) {
       const dateObject = new Date(this.responseData.data.receiptDate);
       const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
@@ -837,7 +837,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (
         rctAmountValue > this.receiptAmount &&
-        this.receiptsForm.controls.tranFor.value.toUpperCase() != 'CASHTRF' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROW' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROWR' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LEND' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LENDR'  && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'PAYMENT'
+        this.receiptsForm.controls.tranFor.value.toUpperCase() != 'CASHTRF' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROW' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'BORROWR' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LEND' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'LENDR' && this.receiptsForm.controls.tranFor.value.toUpperCase() != 'PAYMENT'
       ) {
         const message = `The payment amount of <b>${rctAmountValue.toLocaleString(
           'en-US',
@@ -885,11 +885,11 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-async  submitWithData() {
+  async submitWithData() {
     this.prepareRecieptCls();
     try {
       this.loader.start();
-      this.subSink.sink =await this.saleService
+      this.subSink.sink = await this.saleService
         .UpdateReceiptDetails(this.recptCls)
         .subscribe((res: any) => {
           this.loader.stop();
@@ -948,11 +948,11 @@ async  submitWithData() {
     // if (formData.rctMode.toUpperCase() === 'DEDUCTION') {
     //   this.recptCls.rctAmount = this.recptCls.paidAmt
     // } else {
-      const rctAmountValue = this.receiptsForm.controls['rctAmount'].value;
-      if (rctAmountValue !== null && rctAmountValue !== undefined) {
-        const parsedValue = typeof rctAmountValue === 'string' ? rctAmountValue.replace(/,/g, '') : rctAmountValue;
-        this.recptCls.rctAmount = Number(parsedValue);
-      }
+    const rctAmountValue = this.receiptsForm.controls['rctAmount'].value;
+    if (rctAmountValue !== null && rctAmountValue !== undefined) {
+      const parsedValue = typeof rctAmountValue === 'string' ? rctAmountValue.replace(/,/g, '') : rctAmountValue;
+      this.recptCls.rctAmount = Number(parsedValue);
+    }
     // }
 
     this.recptCls.instrumentDate = this.formatDate(formData.instrumentDate);
@@ -970,14 +970,14 @@ async  submitWithData() {
     this.refreshData();
     this.responseData = [];
     this.allocStatus = '';
-    this.filteredItemsClientType=[];
+    this.filteredItemsClientType = [];
   }
 
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
 
- async onSearchCilcked() {
+  async onSearchCilcked() {
     this.selMode = '';
     const currentDate = new Date();
     const firstDayOfMonth = new Date(
@@ -996,7 +996,7 @@ async  submitWithData() {
       ToDate: formattedCurrentDate,
       TranStatus: 'CLOSED',
     };
-    this.subSink.sink =await this.purchaseService.GetTranCount(body).subscribe((res: any) => {
+    this.subSink.sink = await this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.status.toUpperCase() != 'FAIL' && res.status.toUpperCase() != 'ERROR') {
         if (res && res.data && res.data.tranCount === 1) {
           this.masterParams.tranNo = res.data.selTranNo;
@@ -1015,6 +1015,7 @@ async  submitWithData() {
                   tranNum: this.receiptsForm.controls['receiptNo'].value,
                   search: 'Receipt Search',
                   TranType: 'RECEIPT',
+                  cashBalance: this.balanceAmount
                 },
               });
             this.dialogOpen = true;
@@ -1044,13 +1045,14 @@ async  submitWithData() {
 
 
   bindDataToForm(res: any) {
-    this.filteredpayMode=this.payMode;
-    this.filteredStatusList=this.StatusList;
-    this.filteredbank=this.bank;
+    this.filteredpayMode = this.payMode;
+    this.filteredStatusList = this.StatusList;
+    this.filteredbank = this.bank;
     this.payStatus = res['data'].tranStatus;
     this.allocStatus = res['data'].allocStatus;
     this.supCode = res['data'].customer;
-    
+
+    // console.log(res.data);
     this.receiptsForm.get('receiptmode')?.patchValue(this.receiptmodes[3].itemCode);
     this.receiptsForm.patchValue({
       // receiptmode:this.receiptmodes[3].itemCode,
@@ -1090,20 +1092,20 @@ async  submitWithData() {
       paidCurrency: res['data'].paidCurrency,
       tranFor: res['data'].txnFor,
     });
-    if(this.receiptsForm.get('rctType')?.value ==="RECEIPT" && this.receiptsForm.get('tranFor')?.value ==="RENTPMT"){
+    if (this.receiptsForm.get('rctType')?.value === "RECEIPT" && this.receiptsForm.get('tranFor')?.value === "RENTPMT") {
       this.receiptsForm.get('receiptmode')?.patchValue("receiveRent");
     }
-    else  if(this.receiptsForm.get('rctType')?.value ==="PAYMENT" && this.receiptsForm.get('tranFor')?.value ==="RENTPMT"){
+    else if (this.receiptsForm.get('rctType')?.value === "PAYMENT" && this.receiptsForm.get('tranFor')?.value === "RENTPMT") {
       this.receiptsForm.get('receiptmode')?.patchValue("payRent");
     }
-    else{
+    else {
       this.receiptsForm.get('receiptmode')?.patchValue("other");
     }
   }
- async getReceiptDetails(masterParams: MasterParams, mode: string) {
+  async getReceiptDetails(masterParams: MasterParams, mode: string) {
     try {
       this.loader.start();
-      this.subSink.sink =await this.saleService.GetReceiptDetails(masterParams).subscribe((res: any) => {
+      this.subSink.sink = await this.saleService.GetReceiptDetails(masterParams).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === 'SUCCESS') {
           this.responseData = res;
@@ -1130,24 +1132,24 @@ async  submitWithData() {
   }
   // SUPPLIES
 
- async onSearchCustomer() {
+  async onSearchCustomer() {
 
     this.displayMessage("", "");
-    let clientTypeTemp='';
-    if(this.receiptsForm.controls['receiptmode'].value.toUpperCase()==='RECEIVERENT'){
-       this.Report='CLIENTBAL'
-      clientTypeTemp='TENANT';
+    let clientTypeTemp = '';
+    if (this.receiptsForm.controls['receiptmode'].value.toUpperCase() === 'RECEIVERENT') {
+      this.Report = 'CLIENTBAL'
+      clientTypeTemp = 'TENANT';
     }
-    else if(this.receiptsForm.controls['receiptmode'].value.toUpperCase()==='PAYRENT'){
-       this.Report='CLIENTBAL'
-      clientTypeTemp='LANDLORD';
+    else if (this.receiptsForm.controls['receiptmode'].value.toUpperCase() === 'PAYRENT') {
+      this.Report = 'CLIENTBAL'
+      clientTypeTemp = 'LANDLORD';
     }
-   else if(this.receiptsForm.controls['receiptmode'].value.toUpperCase()==='utilityReceipt'){
-    this.Report='UTILBAL'
-   }
-    else{
-      this.Report='UTILBAL'
-      clientTypeTemp=this.receiptsForm.controls['clientType'].value || 'ALL';
+    else if (this.receiptsForm.controls['receiptmode'].value.toUpperCase() === 'utilityReceipt') {
+      this.Report = 'UTILBAL'
+    }
+    else {
+      this.Report = 'UTILBAL'
+      clientTypeTemp = this.receiptsForm.controls['clientType'].value || 'ALL';
     }
     const body = {
       ...this.commonParams(),
@@ -1158,10 +1160,10 @@ async  submitWithData() {
       ClientType: clientTypeTemp,
       txnFor: this.receiptsForm.controls['tranFor'].value || '',
       isSummary: true,
-      Report:this.Report
+      Report: this.Report
     };
     try {
-      this.subSink.sink =await this.saleService.GetClientBalances(body).subscribe((res: any) => {
+      this.subSink.sink = await this.saleService.GetClientBalances(body).subscribe((res: any) => {
         if (res.status.toUpperCase() === 'SUCCESS') {
           if (res && res.data && res.data.length === 1) {
             if (this.userDataService.userData.userID === res.data[0].clientCode) {
@@ -1189,7 +1191,7 @@ async  submitWithData() {
                   PartyType: this.receiptsForm.controls['clientType'].value.toUpperCase(),
                   search: this.receiptsForm.controls['clientType'].value + ' Search',
                   serData: res.data,
-                  searchFor:this.receiptsForm.get('receiptmode')?.value
+                  searchFor: this.receiptsForm.get('receiptmode')?.value
                 },
               });
               this.dialogOpen = true;
@@ -1202,15 +1204,15 @@ async  submitWithData() {
                     return;
                   }
                   this.receiptsForm.controls['customer'].patchValue(result.clientName);
-                  if(this.receiptsForm.controls['rctType'].value.toUpperCase() === "PAYMENT"){
-                    if(result.balAmount<0){
-                      const positiveBal=result.balAmount * -1;
+                  if (this.receiptsForm.controls['rctType'].value.toUpperCase() === "PAYMENT") {
+                    if (result.balAmount < 0) {
+                      const positiveBal = result.balAmount * -1;
                       this.receiptsForm.controls['rctAmount'].patchValue(positiveBal.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
                     }
-                    else{
+                    else {
                       this.receiptsForm.controls['rctAmount'].patchValue(result.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
                     }
-                  }else{
+                  } else {
                     this.receiptsForm.controls['rctAmount'].patchValue(result.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
 
                   }
@@ -1429,7 +1431,7 @@ async  submitWithData() {
         rightImageWidth,
         rightImageHeight
       );
-      const address=res.compAdd1 + ',' + res.compAdd2;
+      const address = res.compAdd1 + ',' + res.compAdd2;
       pdf.setTextColor(0, 0, 0);
       pdf.setFont('Helvetica', 'bold');
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -1475,9 +1477,9 @@ async  submitWithData() {
       const fontSize = 10;
       const lineHeight = 1;
       const location = res.locationName;
-      const propName=res.propName;
-      const block=res.blockName;
-      const unit=res.unitName;
+      const propName = res.propName;
+      const block = res.blockName;
+      const unit = res.unitName;
       const availableWidth = pdf.internal.pageSize.width - marginFromRight;
       let receiptContentLine1 = ""
       function pdfgeneratorWithTable(headers: any, data: any, pdf: jsPDF) {
@@ -1542,7 +1544,7 @@ async  submitWithData() {
           finalY = (pdf as any).lastAutoTable.finalY || 70;
           const property = `Property: ${propName}\t  Unit: ${unit}`;
           const textWidth = pdf.getTextWidth(property);
-          xCoordinate=(pageWidth - textWidth) / 2
+          xCoordinate = (pageWidth - textWidth) / 2
           pdf.text(property, xCoordinate, finalY + 10);
         }
           break;
@@ -1626,205 +1628,205 @@ async  submitWithData() {
     };
   }
 
-//   generatePDF(res: any) {
-//     let pdf = new jsPDF();
-//     pdf.setFontSize(14);
+  //   generatePDF(res: any) {
+  //     let pdf = new jsPDF();
+  //     pdf.setFontSize(14);
 
-//     const rightImage = new Image();
-//     rightImage.src = this.logoImageBlob;
-//     const rightImageWidth = 30;
-//     const rightImageHeight = 20;
-//     const form = this.receiptsForm;
-//     let finalY = 0;
+  //     const rightImage = new Image();
+  //     rightImage.src = this.logoImageBlob;
+  //     const rightImageWidth = 30;
+  //     const rightImageHeight = 20;
+  //     const form = this.receiptsForm;
+  //     let finalY = 0;
 
-//     rightImage.onload = function () {
-//       // Adding logo image
-//       pdf.addImage(
-//         rightImage,
-//         'PNG',
-//         pdf.internal.pageSize.width - rightImageWidth - 10,
-//         10,
-//         rightImageWidth,
-//         rightImageHeight
-//       );
+  //     rightImage.onload = function () {
+  //       // Adding logo image
+  //       pdf.addImage(
+  //         rightImage,
+  //         'PNG',
+  //         pdf.internal.pageSize.width - rightImageWidth - 10,
+  //         10,
+  //         rightImageWidth,
+  //         rightImageHeight
+  //       );
 
-//       // Title Header with Background Color
-//       pdf.setFillColor(0, 102, 204); // Dark Blue Background
-//       pdf.rect(0, 10, pdf.internal.pageSize.width, 20, 'F');
-//       pdf.setTextColor(255, 255, 255); // White Text
-//       pdf.setFont('Helvetica', 'bold');
-//       const pageWidth = pdf.internal.pageSize.getWidth();
-//       let textWidth = pdf.getTextWidth(form.controls.rctType.value.toUpperCase());
-//       let xCoordinate = (pageWidth - textWidth) / 2;
-//       pdf.text(form.controls.rctType.value.toUpperCase(), xCoordinate, 25);
+  //       // Title Header with Background Color
+  //       pdf.setFillColor(0, 102, 204); // Dark Blue Background
+  //       pdf.rect(0, 10, pdf.internal.pageSize.width, 20, 'F');
+  //       pdf.setTextColor(255, 255, 255); // White Text
+  //       pdf.setFont('Helvetica', 'bold');
+  //       const pageWidth = pdf.internal.pageSize.getWidth();
+  //       let textWidth = pdf.getTextWidth(form.controls.rctType.value.toUpperCase());
+  //       let xCoordinate = (pageWidth - textWidth) / 2;
+  //       pdf.text(form.controls.rctType.value.toUpperCase(), xCoordinate, 25);
 
-//       // Company Information Section with Underlined Separator
-//       pdf.setTextColor(0, 0, 0); // Black text for body
-//       pdf.setFontSize(12);
-//       const company = res.companyName;
-//       textWidth = pdf.getTextWidth(company);
-//       xCoordinate = (pageWidth - textWidth) / 2;
-//       pdf.text(company, xCoordinate, 40);
-//       pdf.setLineWidth(0.5);
-//       pdf.setDrawColor(0, 102, 204); // Dark Blue underline
-//       pdf.line(xCoordinate, 42, xCoordinate + textWidth, 42);
+  //       // Company Information Section with Underlined Separator
+  //       pdf.setTextColor(0, 0, 0); // Black text for body
+  //       pdf.setFontSize(12);
+  //       const company = res.companyName;
+  //       textWidth = pdf.getTextWidth(company);
+  //       xCoordinate = (pageWidth - textWidth) / 2;
+  //       pdf.text(company, xCoordinate, 40);
+  //       pdf.setLineWidth(0.5);
+  //       pdf.setDrawColor(0, 102, 204); // Dark Blue underline
+  //       pdf.line(xCoordinate, 42, xCoordinate + textWidth, 42);
 
-//       // Address and Other Details in smaller font
-//       pdf.setFontSize(10);
-//       pdf.text(res.compAdd1 +',', 70, 47);
-//       pdf.text(res.compAdd2, 70, 47);
-//       pdf.text(res.compPhone, 70, 52);
-//       const beignPaymentOf = res.txnFor.toLowerCase() === "renttmt" ? "Rent Payment" : res.txnFor;
+  //       // Address and Other Details in smaller font
+  //       pdf.setFontSize(10);
+  //       pdf.text(res.compAdd1 +',', 70, 47);
+  //       pdf.text(res.compAdd2, 70, 47);
+  //       pdf.text(res.compPhone, 70, 52);
+  //       const beignPaymentOf = res.txnFor.toLowerCase() === "renttmt" ? "Rent Payment" : res.txnFor;
 
-//       // Section for Receipt Information
-//       pdf.setFontSize(11);
-//       pdf.setFont('Helvetica', 'bold');
-//       pdf.setTextColor(0, 102, 204); // Dark Blue for the receipt title
-//       pdf.text(`RECEIPT No: ${res.tranNo}`, 20, 60);
-//       pdf.text(`Date: ${formatDate(res.tranDate)}`, 80, 60);
+  //       // Section for Receipt Information
+  //       pdf.setFontSize(11);
+  //       pdf.setFont('Helvetica', 'bold');
+  //       pdf.setTextColor(0, 102, 204); // Dark Blue for the receipt title
+  //       pdf.text(`RECEIPT No: ${res.tranNo}`, 20, 60);
+  //       pdf.text(`Date: ${formatDate(res.tranDate)}`, 80, 60);
 
-//       // Styling Table Content
-//       const headers = [
-//         { header: 'Currency', data: `${res.currency}` },
-//         { header: 'Received From', data: `${res.customerName}` },
-//         { header: 'Amount', data: `${res.rctAmount.toFixed(2)}` },
-//         { header: 'Amount in Words', data: `${res.amountInWords}` },
-//         { header: 'Mode of Payment', data: `${res.rctMode}` },
-//         { header: 'Begin Payment of ', data: `${beignPaymentOf}` },
-//         { header: 'Property', data: `Property: ${res.locationName}` },
-//       ];
-//       const data = headers.map(item => item.data);
+  //       // Styling Table Content
+  //       const headers = [
+  //         { header: 'Currency', data: `${res.currency}` },
+  //         { header: 'Received From', data: `${res.customerName}` },
+  //         { header: 'Amount', data: `${res.rctAmount.toFixed(2)}` },
+  //         { header: 'Amount in Words', data: `${res.amountInWords}` },
+  //         { header: 'Mode of Payment', data: `${res.rctMode}` },
+  //         { header: 'Begin Payment of ', data: `${beignPaymentOf}` },
+  //         { header: 'Property', data: `Property: ${res.locationName}` },
+  //       ];
+  //       const data = headers.map(item => item.data);
 
-//       // Table with Colored Header and Alternating Row Colors
-//       function pdfgeneratorWithTable(headers: any, data: any, pdf: jsPDF) {
-//         const rows = headers.map((item: any, index: number) => [item.header, data[index]]);
-//         const tableWidth = 140;
-//         const margin = (pageWidth - tableWidth) / 2;
+  //       // Table with Colored Header and Alternating Row Colors
+  //       function pdfgeneratorWithTable(headers: any, data: any, pdf: jsPDF) {
+  //         const rows = headers.map((item: any, index: number) => [item.header, data[index]]);
+  //         const tableWidth = 140;
+  //         const margin = (pageWidth - tableWidth) / 2;
 
-//         autoTable(pdf, {
-//           body: rows,
-//           columnStyles: {
-//             0: { cellWidth: 80, fontStyle: 'bold' },
-//             1: { cellWidth: 80 },
-//           },
-//           styles: {
-//             fontSize: 10,
-//             cellPadding: 4,
-//           },
-//           headStyles: { fillColor: [0, 102, 204], textColor: [255, 255, 255] }, // Blue header with white text
-//           bodyStyles: {
-//             textColor: [0, 0, 0],
-//             fillColor: [245, 245, 245], // Light gray alternating row
-//             lineColor: [240, 240, 240], // Light gray row lines
-//           },
-//           alternateRowStyles: { fillColor: [255, 255, 255] }, // White for alternate rows
-//           margin: { top: 65, left: margin, right: margin },
-//           startY: 65,
-//         });
-//       }
+  //         autoTable(pdf, {
+  //           body: rows,
+  //           columnStyles: {
+  //             0: { cellWidth: 80, fontStyle: 'bold' },
+  //             1: { cellWidth: 80 },
+  //           },
+  //           styles: {
+  //             fontSize: 10,
+  //             cellPadding: 4,
+  //           },
+  //           headStyles: { fillColor: [0, 102, 204], textColor: [255, 255, 255] }, // Blue header with white text
+  //           bodyStyles: {
+  //             textColor: [0, 0, 0],
+  //             fillColor: [245, 245, 245], // Light gray alternating row
+  //             lineColor: [240, 240, 240], // Light gray row lines
+  //           },
+  //           alternateRowStyles: { fillColor: [255, 255, 255] }, // White for alternate rows
+  //           margin: { top: 65, left: margin, right: margin },
+  //           startY: 65,
+  //         });
+  //       }
 
-//       // Generate the Table
-//       pdfgeneratorWithTable(headers, data, pdf);
+  //       // Generate the Table
+  //       pdfgeneratorWithTable(headers, data, pdf);
 
-//       // Footer Section with Receiver Information
-//       finalY = (pdf as any).lastAutoTable.finalY || 70;
-//       pdf.setFontSize(10);
-//       pdf.setTextColor(0, 102, 204); // Dark blue for the footer text
-//       const receiverText = form.controls.rctType.value.toUpperCase() === "RECEIPT" ? 'Receiver' : 'Paid by';
-//       pdf.text(receiverText, 20, finalY + 20);
+  //       // Footer Section with Receiver Information
+  //       finalY = (pdf as any).lastAutoTable.finalY || 70;
+  //       pdf.setFontSize(10);
+  //       pdf.setTextColor(0, 102, 204); // Dark blue for the footer text
+  //       const receiverText = form.controls.rctType.value.toUpperCase() === "RECEIPT" ? 'Receiver' : 'Paid by';
+  //       pdf.text(receiverText, 20, finalY + 20);
 
-//       // Save the PDF
-//       pdf.save(`${res.customerName} ${form.controls.rctType.value.toUpperCase()}.pdf`);
-//     };
+  //       // Save the PDF
+  //       pdf.save(`${res.customerName} ${form.controls.rctType.value.toUpperCase()}.pdf`);
+  //     };
 
 
-//   // Helper Function to Format Dates
-//   function formatDate(inputDate: string): string {
-//     const date = new Date(inputDate);
-//     const day = String(date.getDate()).padStart(2, '0');
-//     const month = String(date.getMonth() + 1).padStart(2, '0');
-//     const year = date.getFullYear();
-//     return `${day}-${month}-${year}`;
-//   }
-// }
+  //   // Helper Function to Format Dates
+  //   function formatDate(inputDate: string): string {
+  //     const date = new Date(inputDate);
+  //     const day = String(date.getDate()).padStart(2, '0');
+  //     const month = String(date.getMonth() + 1).padStart(2, '0');
+  //     const year = date.getFullYear();
+  //     return `${day}-${month}-${year}`;
+  //   }
+  // }
 
 
   PayModeChanged() {
 
     // if (this.receiptsForm.controls['mode'].value.toUpperCase() == 'ADD') {
-      if (this.receiptsForm.controls['rctMode'].value.toUpperCase() == 'CASH') {
-        this.receiptsForm.controls['custAccount'].patchValue('CASH');
-        this.receiptsForm.controls['instrumentNo'].patchValue('NA');
-        this.receiptsForm.controls['rctBank'].patchValue('CASHBOOK');
-        this.receiptsForm.controls['rctAccount'].patchValue(
-          this.userDataService.userData.userID
-        );
-        this.receiptsForm.controls['customerBank'].patchValue('CASH', {
-          emitEvent: false,
-        });
-        this.receiptsForm.controls['customerBank'].disable();
-        this.filteredbank = '';
-        this.filteredbank=this.bank.filter(item => item.itemCode === "CASH");
-        this.filteredStatusList="";
-        this.filteredStatusList=this.StatusList.filter(item => item.itemCode === "Paid");
-        this.receiptsForm.controls['instrumentStatus'].patchValue('Paid');
-        // this.receiptsForm.controls['instrumentStatus'].disable();
-        this.receiptsForm.controls['rctStatus'].patchValue('Paid');
-        // this.receiptsForm.controls['rctStatus'].disable();
-      }
-      else if (this.receiptsForm.controls['rctMode'].value.toUpperCase() == 'DEDUCTION') {
-        this.receiptsForm.controls['customerBank'].patchValue('LOAN');
-        this.receiptsForm.controls['rctAccount'].patchValue(this.receiptsForm.controls['customer'].value);
-        this.receiptsForm.controls['customerBank'].disable();
-        this.receiptsForm.controls['accname'].disable();
-        this.receiptsForm.controls['rctAccount'].disable();
-        this.receiptsForm.controls['custAccount'].patchValue(this.supCode);
-        this.receiptsForm.controls['custAccount'].disable();
-        this.receiptsForm.controls['rctBank'].patchValue('RENT');
-        this.receiptsForm.controls['rctBank'].disable();
-        this.receiptsForm.controls['instrumentNo'].clearValidators();
-        this.receiptsForm.controls['instrumentNo'].updateValueAndValidity();
-        this.filteredbank = '';
-        this.filteredbank=this.bank.filter(item => item.itemCode === "LOAN" || item.itemCode === "RENT");
-        this.filteredStatusList="";
-        this.filteredStatusList=this.StatusList.filter(item => item.itemCode === "Cleared");
-        this.receiptsForm.controls['instrumentStatus'].patchValue('Cleared');
-        // this.receiptsForm.controls['instrumentStatus'].disable();
-        this.receiptsForm.controls['rctStatus'].patchValue('Cleared');
-        // this.receiptsForm.controls['rctStatus'].disable();
-      }
-      else if(this.receiptsForm.controls['rctMode'].value.toUpperCase() === 'TRANSFER'){
-        this.receiptsForm.controls['rctBank'].enable();
-        this.receiptsForm.controls['customerBank'].enable();
-        this.receiptsForm.controls['custAccount'].enable();
-        this.receiptsForm.controls['instrumentNo'].patchValue('');
-        this.receiptsForm.controls['rctAccount'].patchValue('');
-        this.receiptsForm.controls['rctBank'].patchValue('');
-        this.receiptsForm.controls['customerBank'].patchValue('');
-        this.receiptsForm.controls['rctBank'].enable();
-        this.filteredbank = '';
-        this.filteredbank=this.bank.filter(item => item.itemCode !== "LOAN" && item.itemCode !== "RENT" && item.itemCode !== "CASH");
-        this.filteredStatusList="";
-        this.filteredStatusList=this.StatusList;
-        this.receiptsForm.controls['instrumentStatus'].patchValue('Select');
-        this.receiptsForm.controls['instrumentStatus'].enable();
-        this.receiptsForm.controls['rctStatus'].patchValue('Select');
-        this.receiptsForm.controls['rctStatus'].enable();
-      }
-      else {
-        this.receiptsForm.controls['rctBank'].enable();
-        this.receiptsForm.controls['customerBank'].enable();
-        this.receiptsForm.controls['custAccount'].enable();
-        this.receiptsForm.controls['instrumentNo'].patchValue('');
-        this.receiptsForm.controls['rctAccount'].patchValue('');
-        this.receiptsForm.controls['rctBank'].patchValue('');
-        this.receiptsForm.controls['rctBank'].enable();
-        this.filteredbank = '';
-        this.filteredbank = this.bank;
-        this.filteredStatusList="";
-        this.filteredStatusList=this.StatusList;
-      }
+    if (this.receiptsForm.controls['rctMode'].value.toUpperCase() == 'CASH') {
+      this.receiptsForm.controls['custAccount'].patchValue('CASH');
+      this.receiptsForm.controls['instrumentNo'].patchValue('NA');
+      this.receiptsForm.controls['rctBank'].patchValue('CASHBOOK');
+      this.receiptsForm.controls['rctAccount'].patchValue(
+        this.userDataService.userData.userID
+      );
+      this.receiptsForm.controls['customerBank'].patchValue('CASH', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['customerBank'].disable();
+      this.filteredbank = '';
+      this.filteredbank = this.bank.filter(item => item.itemCode === "CASH");
+      this.filteredStatusList = "";
+      this.filteredStatusList = this.StatusList.filter(item => item.itemCode === "Paid");
+      this.receiptsForm.controls['instrumentStatus'].patchValue('Paid');
+      // this.receiptsForm.controls['instrumentStatus'].disable();
+      this.receiptsForm.controls['rctStatus'].patchValue('Paid');
+      // this.receiptsForm.controls['rctStatus'].disable();
     }
+    else if (this.receiptsForm.controls['rctMode'].value.toUpperCase() == 'DEDUCTION') {
+      this.receiptsForm.controls['customerBank'].patchValue('LOAN');
+      this.receiptsForm.controls['rctAccount'].patchValue(this.receiptsForm.controls['customer'].value);
+      this.receiptsForm.controls['customerBank'].disable();
+      this.receiptsForm.controls['accname'].disable();
+      this.receiptsForm.controls['rctAccount'].disable();
+      this.receiptsForm.controls['custAccount'].patchValue(this.supCode);
+      this.receiptsForm.controls['custAccount'].disable();
+      this.receiptsForm.controls['rctBank'].patchValue('RENT');
+      this.receiptsForm.controls['rctBank'].disable();
+      this.receiptsForm.controls['instrumentNo'].clearValidators();
+      this.receiptsForm.controls['instrumentNo'].updateValueAndValidity();
+      this.filteredbank = '';
+      this.filteredbank = this.bank.filter(item => item.itemCode === "LOAN" || item.itemCode === "RENT");
+      this.filteredStatusList = "";
+      this.filteredStatusList = this.StatusList.filter(item => item.itemCode === "Cleared");
+      this.receiptsForm.controls['instrumentStatus'].patchValue('Cleared');
+      // this.receiptsForm.controls['instrumentStatus'].disable();
+      this.receiptsForm.controls['rctStatus'].patchValue('Cleared');
+      // this.receiptsForm.controls['rctStatus'].disable();
+    }
+    else if (this.receiptsForm.controls['rctMode'].value.toUpperCase() === 'TRANSFER') {
+      this.receiptsForm.controls['rctBank'].enable();
+      this.receiptsForm.controls['customerBank'].enable();
+      this.receiptsForm.controls['custAccount'].enable();
+      this.receiptsForm.controls['instrumentNo'].patchValue('');
+      this.receiptsForm.controls['rctAccount'].patchValue('');
+      this.receiptsForm.controls['rctBank'].patchValue('');
+      this.receiptsForm.controls['customerBank'].patchValue('');
+      this.receiptsForm.controls['rctBank'].enable();
+      this.filteredbank = '';
+      this.filteredbank = this.bank.filter(item => item.itemCode !== "LOAN" && item.itemCode !== "RENT" && item.itemCode !== "CASH");
+      this.filteredStatusList = "";
+      this.filteredStatusList = this.StatusList;
+      this.receiptsForm.controls['instrumentStatus'].patchValue('Select');
+      this.receiptsForm.controls['instrumentStatus'].enable();
+      this.receiptsForm.controls['rctStatus'].patchValue('Select');
+      this.receiptsForm.controls['rctStatus'].enable();
+    }
+    else {
+      this.receiptsForm.controls['rctBank'].enable();
+      this.receiptsForm.controls['customerBank'].enable();
+      this.receiptsForm.controls['custAccount'].enable();
+      this.receiptsForm.controls['instrumentNo'].patchValue('');
+      this.receiptsForm.controls['rctAccount'].patchValue('');
+      this.receiptsForm.controls['rctBank'].patchValue('');
+      this.receiptsForm.controls['rctBank'].enable();
+      this.filteredbank = '';
+      this.filteredbank = this.bank;
+      this.filteredStatusList = "";
+      this.filteredStatusList = this.StatusList;
+    }
+  }
   // }
 
   RctBankChanged() {
@@ -1851,27 +1853,27 @@ async  submitWithData() {
     // }
     const body = {
       ...this.commonParams(),
-      tranNo:this.receiptsForm.controls['receiptNo'].value,
+      tranNo: this.receiptsForm.controls['receiptNo'].value,
     };
-    try{
+    try {
       this.loader.start();
       this.subSink.sink = this.saleService.getDetailsPdf(body).subscribe((result: any) => {
         this.loader.stop();
-        if(result.status.toUpperCase()==="SUCCESS"){
+        if (result.status.toUpperCase() === "SUCCESS") {
 
           this.generatePDF(result.data);
-          this.retMessage=result.message;
-          this.textMessageClass='green';
+          this.retMessage = result.message;
+          this.textMessageClass = 'green';
         }
-        else{
-          this.retMessage=result.message;
-          this.textMessageClass='red'
+        else {
+          this.retMessage = result.message;
+          this.textMessageClass = 'red'
         }
       });
     }
-    catch(ex:any){
-      this.retMessage=ex.message;
-      this.textMessageClass='red'
+    catch (ex: any) {
+      this.retMessage = ex.message;
+      this.textMessageClass = 'red'
     }
   }
 
