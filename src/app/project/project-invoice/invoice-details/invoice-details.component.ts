@@ -161,9 +161,9 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       discAmount: [{ value: 0.00, disabled: true }],
       isRepeat: [false]
     }, { validator: this.discRateRequired });
-    
+
   }
-  
+
   discRateRequired(control: AbstractControl): { [key: string]: boolean } | null {
     const discType = control.get('discType');
     const discRate = control.get('discRate');
@@ -180,7 +180,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     return null;
   }
   prepareClsToDelete() {
-    
+
     const formValues = this.invDetForm.value;
     this.invDetailCls.company = this.userDataService.userData.company;
     this.invDetailCls.amount = parseFloat(this.invDetForm.controls['net'].value.toString().replace(/,/g, ''));
@@ -278,21 +278,21 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     }
   }
   deleteInvDetails(){
-    
+
     this.prepareClsToDelete();
     try {
-      
+
       this.loader.start();
       this.subSink.sink = this.projectService.UpdateTenantInvoiceDet(this.invDetailCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
-          
+
           this.dataFlag = true;
           this.getTenantInvoiceDetails(res.tranNoNew);
           this.displayMessage("Success: " + res.message, "green");
         }
         else {
-          
+
           this.displayMessage("Error: " + res.message, "red");
         }
       });
@@ -356,16 +356,20 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   onRowSelected(event: any) {
     this.slNum = event.data.slNo;
     this.vatAmount = event.data.vatAmount;
-    this.invDetForm.patchValue({
-      itemType: event.data.chargeItem,
-      amount: Number(event.data.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      net: Number(event.data.netAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      discRate: Number(event.data.discRate).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      discAmount: Number(event.data.discAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      discType: event.data.discType,
-      vatType: event.data.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      vatAmount: event.data.vatAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    });
+    this.invDetForm.patchValue(
+      {
+        itemType: event.data.chargeItem,
+        amount: Number(event.data.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        net: Number(event.data.netAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        discRate: Number(event.data.discRate).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        discAmount: Number(event.data.discAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        discType: event.data.discType,
+        vatType: event.data.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        vatAmount: event.data.vatAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      },
+      { emitEvent: false }
+    );
+
   }
 
   onPageSizeChanged() {
@@ -439,10 +443,10 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 		this.textMessageClass = cssClass;
 	  }
 
- 
-  
+
+
   // doCalculation() {
-    
+
   //   let numAmount: number=0;
   //   let numDiscRate: number=0;
   //   let numDiscAmount: number=0;
