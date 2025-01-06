@@ -142,7 +142,8 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
       location: this.userDataService.userData.location,
       item: "CURRENCY",
       refNo: this.userDataService.userData.sessionID,
-      user: this.userDataService.userData.userID
+      user: this.userDataService.userData.userID,
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     try {
       const currencies$ = this.masterService.GetMasterItemsList(curbody);
@@ -200,7 +201,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
                   // this.getUserData(result.code);
                 }
                 this.dialogOpen = false;
-                
+
               });
             }
           }

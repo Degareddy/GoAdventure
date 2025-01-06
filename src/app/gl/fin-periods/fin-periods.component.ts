@@ -66,6 +66,9 @@ export class FinPeriodsComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit(): void {
+   this.loadData();
+  }
+  loadData(){
     const modebody: getPayload = {
       ...this.commonParams(),
       item: 'ST110',
@@ -73,7 +76,8 @@ export class FinPeriodsComponent implements OnInit, OnDestroy {
 
     const periodBody: getPayload = {
       ...this.commonParams(),
-      item: "FINYEAR"
+      item: "FINYEAR",
+      mode:this.finPeriodsForm.get('mode')?.value
     };
 
     try {
@@ -103,10 +107,12 @@ export class FinPeriodsComponent implements OnInit, OnDestroy {
 
   modeChange(event: string) {
     if (this.finPeriodsForm.get('mode')?.value === "Add") {
-      this.finPeriodsForm.get('mode')?.patchValue(event, { emitEvent: false });
-      this.finPeriodsForm.get('list')?.disable();
       this.clearMsg();
       this.finPeriodsForm = this.formInit();
+      this.finPeriodsForm.get('mode')?.patchValue(event, { emitEvent: false });
+      this.finPeriodsForm.get('list')?.disable();
+      this.loadData();
+
     }
     else {
       this.finPeriodsForm.get('mode')?.patchValue(event, { emitEvent: false });

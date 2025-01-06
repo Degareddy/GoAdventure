@@ -73,7 +73,8 @@ export class BanksComponent implements OnInit, OnDestroy {
   loadData() {
     const bankbody: getPayload = {
       ...this.commonParams(),
-      item: "BANK"
+      item: "BANK",
+      mode:this.bankForm.get('mode')?.value
     };
     const Modebody: getPayload = {
       ...this.commonParams(),
@@ -226,6 +227,7 @@ export class BanksComponent implements OnInit, OnDestroy {
       this.bankForm.controls['list'].disable({ emitEvent: false });
       this.bankForm.controls['code'].enable({ emitEvent: false });
       this.clearMsg();
+      this.loadData();
 
     } else {
       this.bankForm.controls['mode'].patchValue(event, { emitEvent: false });

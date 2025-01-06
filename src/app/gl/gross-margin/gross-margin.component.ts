@@ -62,7 +62,7 @@ export class GrossMarginComponent implements OnInit {
     catch (ex) {
       //console.log(ex);
     }
-    this.loadData();
+    // this.loadData();
   }
 
   loadData(){

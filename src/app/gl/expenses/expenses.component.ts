@@ -28,7 +28,7 @@ interface Item {
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.css']
 })
-export class ExpensesComponent implements OnInit {
+export class ExpensesComponent implements OnInit,OnDestroy {
   expensesForm!: FormGroup;
   @Input() max: any;
   tomorrow = new Date();
@@ -74,6 +74,9 @@ export class ExpensesComponent implements OnInit {
     this.expensesForm = this.formInit();
     this.expCls = new ExpenseHdr();
     this.subSink = new SubSink();
+  }
+  ngOnDestroy(): void {
+    this.subSink.unsubscribe();
   }
   onDetailsCilcked() {
     const dialogRef: MatDialogRef<ExpenseDetailsComponent> = this.dialog.open(ExpenseDetailsComponent, {
@@ -160,7 +163,7 @@ export class ExpensesComponent implements OnInit {
       client:['',Validators.required]
     })
   }
-  
+
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -201,11 +204,11 @@ export class ExpensesComponent implements OnInit {
                    this.expensesForm.controls['client'].patchValue(result.partyName);
                    this.clientCode = result.code;
                  }
- 
+
                  this.dialogOpen = false;
                });
              }
- 
+
            }
          }
          else {
@@ -218,10 +221,7 @@ export class ExpensesComponent implements OnInit {
     }
    }
   onSubmit() {
-    debugger;
-    
     if (this.expensesForm.invalid) {
-      
       return;
     }
     // if(this.expensesForm.get('mode')?.value.toUpperCase() === "AUTHORIZE"){
@@ -252,13 +252,13 @@ export class ExpensesComponent implements OnInit {
     //         if (res.retVal > 100 && res.retVal < 200) {
     //           this.newTranMsg = res.message;
     //           this.masterParams.tranNo = res.tranNoNew;
-  
+
     //           if (this.expensesForm.controls['mode'].value == "Add") {
     //             // this.selMode = 'Add';
     //             this.modeChange("Modify");
     //           }
     //           this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
-  
+
     //           this.retMessage = res.message;
     //           this.textMessageClass = "green";
     //         }
@@ -273,10 +273,10 @@ export class ExpensesComponent implements OnInit {
     //     }
     //     return;
     //   }
-      
+
     // }
     else {
-      
+
       this.expCls.company = this.userDataService.userData.company;
       this.expCls.location = this.userDataService.userData.location;
       this.expCls.langId = this.userDataService.userData.langId;
@@ -311,11 +311,11 @@ export class ExpensesComponent implements OnInit {
           }
         });
       } catch (ex: any) {
-        this.retMessage = ex;
+        this.retMessage = ex.message;
         this.textMessageClass = "red";
       }
     }
-    
+
   }
 
   Close() {
@@ -334,6 +334,7 @@ export class ExpensesComponent implements OnInit {
       this.expensesForm.get('tranNo')!.clearValidators();
       this.expensesForm.get('tranNo')!.updateValueAndValidity();
       this.expensesForm.controls['tranDate'].patchValue(new Date);
+
     }
     else {
       this.expensesForm.controls['mode'].patchValue(event, { emitEvent: false });

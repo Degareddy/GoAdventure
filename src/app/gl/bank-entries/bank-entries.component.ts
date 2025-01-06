@@ -66,7 +66,7 @@ export class BankEntriesComponent implements OnInit, OnDestroy {
     catch (ex) {
       //console.log(ex);
     }
-    this.loadData();
+    // this.loadData();
   }
 
   loadData() {

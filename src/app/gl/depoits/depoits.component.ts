@@ -66,7 +66,6 @@ export class DepoitsComponent implements OnInit, OnDestroy {
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
-    console.log(this.masterParams);
     this.loadData();
   }
 
@@ -91,12 +90,14 @@ export class DepoitsComponent implements OnInit, OnDestroy {
 
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY"
+      item: "CURRENCY",
+      mode:this.bankDeptForm.get('mode')?.value
     };
 
     const banksbody: getPayload = {
       ...this.commonParams(),
-      item: "BANK"
+      item: "BANK",
+      mode:this.bankDeptForm.get('mode')?.value
     };
 
     try {
@@ -122,7 +123,7 @@ export class DepoitsComponent implements OnInit, OnDestroy {
       );
 
     } catch (ex: any) {
-      this.retMessage = ex;
+      this.retMessage = ex.message;
       this.textMessageClass = 'red';
     }
   }
@@ -196,7 +197,6 @@ export class DepoitsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.glService.getBankDepositsHdr(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        console.log(res);
         if (res.status.toUpperCase() === "SUCCESS") {
           this.bankDeptForm.controls['tranNo'].setValue(res['data'].tranNo);
           this.bankDeptForm.controls['tranDate'].setValue(res['data'].tranDate);

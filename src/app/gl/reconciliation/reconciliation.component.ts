@@ -57,6 +57,7 @@ export class ReconciliationComponent implements OnInit, OnDestroy {
       this.reconForm.get('tranNo')!.patchValue('');
       this.reconForm.get('tranNo')!.disable();
       this.reconForm.get('tranNo')!.clearValidators();
+      this.loadData();
     }
     else {
       this.reconForm.get('mode')!.patchValue(mode, { emitEvent: false });
@@ -87,7 +88,8 @@ export class ReconciliationComponent implements OnInit, OnDestroy {
   loadData() {
     const bankbody: getPayload = {
       ...this.commonParams(),
-      item: "BANK"
+      item: "BANK",
+      mode:this.reconForm.get('mode')?.value
     };
     const Modebody: getPayload = {
       ...this.commonParams(),
@@ -95,7 +97,8 @@ export class ReconciliationComponent implements OnInit, OnDestroy {
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY"
+      item: "CURRENCY",
+      mode:this.reconForm.get('mode')?.value
     };
     const service3 = this.adminService.GetMasterItemsList(curbody)
     const service1 = this.masterService.getModesList(Modebody);

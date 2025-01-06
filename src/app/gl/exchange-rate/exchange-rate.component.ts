@@ -138,7 +138,7 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   }
   loadData() {
     const service1 = this.invService.getModesList({ ...this.commonParams(), item: 'SM406' });
-    const service2 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: "CURRENCY" });
+    const service2 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: "CURRENCY",mode:this.exrtForm.get('mode')?.value });
     this.subSink.sink = forkJoin([service1, service2]).subscribe(
       (results: any[]) => {
         this.loader.stop();
