@@ -53,7 +53,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const body: getPayload = {
-    ...this.commonParams(),
+      ...this.commonParams(),
       item: 'ST905'
     };
     this.subSink.sink = this.masterService.getModesList(body).subscribe((res: getResponse) => {
@@ -78,11 +78,13 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
   loadData() {
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY"
+      Item: "CURRENCY",
+      mode: this.unitSalesForm.get('mode')?.value
     };
     const payTerm = {
       ...this.commonParams(),
-      Item: "PAYTERM"
+      Item: "PAYTERM",
+      mode: this.unitSalesForm.get('mode')?.value
     };
     const service2 = this.invService.GetMasterItemsList(curbody);
     const service3 = this.invService.GetMasterItemsList(payTerm);
@@ -91,22 +93,22 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
         this.loader.stop();
         const res1 = results[0];
         const res2 = results[1];
-        if(res2.status.toUpperCase()=== "SUCCESS"){
+        if (res2.status.toUpperCase() === "SUCCESS") {
           this.paytemList = res2.data;
 
         }
-        else{
-          this.retMessage="Payterm list empty!"
-          this.textMessageClass="red";
+        else {
+          this.retMessage = "Payterm list empty!"
+          this.textMessageClass = "red";
           return;
         }
-        if(res1.status.toUpperCase()=== "SUCCESS"){
+        if (res1.status.toUpperCase() === "SUCCESS") {
           this.currencyList = res1.data;
 
         }
-        else{
-          this.retMessage="Currency list empty!"
-          this.textMessageClass="red";
+        else {
+          this.retMessage = "Currency list empty!"
+          this.textMessageClass = "red";
           return;
         }
 
@@ -202,6 +204,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
       this.textMessageClass = "";
       this.unitSalesForm.get('mode')?.patchValue(event, { emitEvent: false });
       this.unitSalesForm.get('tranNo')?.disable()
+      this.loadData();
     }
     else {
       this.unitSalesForm.get('mode')?.patchValue(event, { emitEvent: false });
@@ -252,7 +255,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
 
         }
       }
-      else{
+      else {
         this.retMessage = "No transactions found!";
         this.textMessageClass = "red";
         return;
@@ -297,7 +300,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
         this.unitCls.SalesRep = res['data'].salesRep;
         this.tranStatus = res['data'].tranStatus;
         this.unitSalesForm.patchValue({
-          tranNo:tranNo,
+          tranNo: tranNo,
           itemType: res['data'].itemType,
           tranDate: res['data'].tranDate,
           custRefNo: res['data'].custRefNo,
@@ -322,7 +325,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
     this.textMessageClass = "";
     if (this.unitSalesForm.invalid) {
       this.retMessage = "Enter mandatory fields";
-    this.textMessageClass = "";
+      this.textMessageClass = "";
       return;
     }
     else {
@@ -356,7 +359,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() === "SUCCESS") {
           this.tranNewMsg = res.message;
           this.unitSalesForm.get('tranNo')?.patchValue(res.tranNoNew);
-          if(this.unitSalesForm.get('mode')!.value ==="Add"){
+          if (this.unitSalesForm.get('mode')!.value === "Add") {
             this.modeChange("Modify");
           }
           this.getUnitSales(res.tranNoNew, this.unitSalesForm.get('mode')!.value)
@@ -391,7 +394,7 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
         ScrId: "ST905",
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
@@ -407,18 +410,20 @@ export class UnitSalesComponent implements OnInit, OnDestroy {
 
   }
 
-  NotesDetails(tranNo:any){
+  NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
-      data: { 'tranNo': tranNo,
-      'mode': this.unitSalesForm.controls['mode'].value,
-      'note':this.unitSalesForm.controls['remarks'].value ,
-      'TranType': "FPINV",  // Pass any data you want to send to CustomerDetailsComponent
-      'search' :"Unit Sales Notes"}
+      data: {
+        'tranNo': tranNo,
+        'mode': this.unitSalesForm.controls['mode'].value,
+        'note': this.unitSalesForm.controls['remarks'].value,
+        'TranType': "FPINV",  // Pass any data you want to send to CustomerDetailsComponent
+        'search': "Unit Sales Notes"
+      }
     });
   }
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,

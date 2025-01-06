@@ -17,6 +17,7 @@ import { MasterParams } from 'src/app/modals/masters.modal';
 import { DecimalPipe } from '@angular/common';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
+import { runInThisContext } from 'vm';
 
 @Component({
   selector: 'app-legal-charges',
@@ -277,11 +278,11 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
   //   gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   // }
   async loadData() {
-    const mode$ = this.masterService.getModesList({ ...this.commonParams(), item: 'SM809' });
-    const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', })
-    const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATRATE' });
-    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY' });
-    const legalfee$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE' });
+    const mode$ = this.masterService.getModesList({ ...this.commonParams(), item: 'SM809',mode:this.legaChargeForm.get('mode')?.value });
+    const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY',mode:this.legaChargeForm.get('mode')?.value })
+    const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATRATE',mode:this.legaChargeForm.get('mode')?.value });
+    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY',mode:this.legaChargeForm.get('mode')?.value });
+    const legalfee$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE' ,mode:this.legaChargeForm.get('mode')?.value});
     this.subSink.sink = await forkJoin([vbody$, property$, legalfee$, currency$, mode$]).subscribe(
       ([vatRes, propertyRes, chargeRes, currencyRes, mode]: any) => {
         this.handleloadRes(vatRes, propertyRes, chargeRes, currencyRes, mode)
@@ -305,8 +306,10 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
   }
   modeChange(value: any) {
     if (value === 'Add') {
+        this.legaChargeForm= this.formInit();
       this.Clear();
-      this.legaChargeForm.get('mode')!.patchValue('Add');
+      this.legaChargeForm.get('mode')!.patchValue('Add', { emitEvent: false });
+      this.loadData();
     }
   }
   handleloadRes(vatRes: getResponse, propertyRes: getResponse, legalfee: getResponse, currencyRes: getResponse, mode: getResponse) {

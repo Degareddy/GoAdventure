@@ -349,12 +349,13 @@ export class ProjectUnitsComponent implements OnInit,OnDestroy {
   }
   loadData(): void {
     const modeBody = this.createRequestData('SM806');
-    const propertyBody = this.createRequestData('PROPERTY');
-    const comfortBody = this.createRequestData('COMFORT');
-    const floorBody = this.createRequestData('FLOORTYPE');
-    const useTypeBody = this.createRequestData('USAGETYPE');
-    const flatTypeBody = this.createRequestData('FLATTYPE');
-    const bedroomBody = this.createRequestData('BEDROOM');
+
+    const propertyBody = {...this.createRequestData('PROPERTY'),mode:this.unitDetForm.get('mode')?.value};
+    const comfortBody = {...this.createRequestData('COMFORT'),mode:this.unitDetForm.get('mode')?.value};
+    const floorBody = {...this.createRequestData('FLOORTYPE'),mode:this.unitDetForm.get('mode')?.value};
+    const useTypeBody = {...this.createRequestData('USAGETYPE'),mode:this.unitDetForm.get('mode')?.value};
+    const flatTypeBody = {...this.createRequestData('FLATTYPE'),mode:this.unitDetForm.get('mode')?.value};
+    const bedroomBody = {...this.createRequestData('BEDROOM'),mode:this.unitDetForm.get('mode')?.value};
     try {
       const modes$ = this.masterService.getModesList(modeBody);
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
@@ -378,7 +379,6 @@ export class ProjectUnitsComponent implements OnInit,OnDestroy {
   }
   refreshData() {
     this.unitDetForm.get('updateAll')?.valueChanges.subscribe((ch: any) => {
-      console.log(ch);
       if (ch) {
         this.unitDetForm.get('tenantName')?.patchValue('');
         this.unitDetForm.get('empName')?.patchValue('');
@@ -464,6 +464,7 @@ export class ProjectUnitsComponent implements OnInit,OnDestroy {
       this.blocks = [];
       this.updateAll();
       this.waterdiscChanges();
+      this.loadData();
     } else {
       this.isDisabled = true;
       this.unitDetForm.controls.mode.patchValue(event, { emitEvent: false });
@@ -1158,10 +1159,10 @@ export class ProjectUnitsComponent implements OnInit,OnDestroy {
       if (!isNaN(date.getTime())) {
         control?.patchValue(date);
       } else {
-        console.error('Invalid date:', inputValue);
+        // console.error('Invalid date:', inputValue);
       }
     } else {
-      console.error('Invalid date format:', inputValue);
+      // console.error('Invalid date format:', inputValue);
     }
   }
 

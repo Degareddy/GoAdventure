@@ -105,8 +105,11 @@ export class BlocksComponent implements OnInit, OnDestroy {
   }
  async loadData() {
     const modebody = this.buildRequestParams('SM804');
-    const propertybody = this.buildRequestParams('PROPERTY');
     const modes$ = this.masterService.getModesList(modebody);
+    const propertybody = {
+      ...this.buildRequestParams('PROPERTY'),
+      mode: this.blkHdrForm.get('mode')!.value
+    };
     const property$ = this.masterService.GetMasterItemsList(propertybody);
     this.subSink.sink = await forkJoin([modes$, property$]).subscribe(
       ([modesRes, propRes]: any) => {
@@ -166,6 +169,9 @@ export class BlocksComponent implements OnInit, OnDestroy {
       this.blkHdrForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.blkHdrForm.controls['block'].disable({ emitEvent: false });
       this.blkHdrForm.controls['blockID'].enable({ emitEvent: false });
+      this.loadData();
+
+
     } else {
       this.blkHdrForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.blkHdrForm.controls['block'].enable({ emitEvent: false });

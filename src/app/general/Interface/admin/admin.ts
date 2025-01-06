@@ -58,7 +58,7 @@ export interface getPayload {
   user: string;
   refNo: string;
   item: string;
-
+  mode?: string;
 }
 
 export interface transactionsPayload {

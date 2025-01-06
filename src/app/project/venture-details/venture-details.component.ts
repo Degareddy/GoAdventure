@@ -33,13 +33,13 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
   tranNoNew!: string;
   modes: Item[] = [];
   ventureList: Item[] = [];
-  retMessage: string="";
-  textMessageClass: string="";
+  retMessage: string = "";
+  textMessageClass: string = "";
   masterParams!: MasterParams;
   private subSink: SubSink;
   private ventureCls!: venturnClass;
   public disableDetail: boolean = true;
-  
+
   dialogOpen = false;
   public fetchStatus: boolean = true;
   ventureDetails!: string;
@@ -65,7 +65,7 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
     this.subSink.unsubscribe();
   }
   multiClient() {
-    
+
     const dialogRef: MatDialogRef<StakeholderDetailsComponent> = this.dialog.open(StakeholderDetailsComponent, {
       width: '90%',
       disableClose: false,
@@ -73,7 +73,7 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
         type: '',
         Trantype: "",
         Project: this.vtrDetForm.get('ventureName')?.value,
-        Code:this.vtrDetForm.get('code')!.value ,
+        Code: this.vtrDetForm.get('code')!.value,
         Flat: '',
         mode: this.vtrDetForm.get('mode')?.value,
         status: ''
@@ -109,6 +109,10 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadData();
+  }
+
+  loadData() {
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
@@ -119,7 +123,8 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
     };
     const venturebody: getPayload = {
       ...this.commonParams(),
-      item: "VENTURE"
+      item: "VENTURE",
+      mode: this.vtrDetForm.get('mode')?.value
     };
 
     this.masterService.getModesList(body).subscribe((res: getResponse) => {
@@ -141,9 +146,7 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
         this.textMessageClass = "red";
       }
     });
-
   }
-
   onSelectedItemChanged(event: any) {
     this.vtrDetForm.controls['venture'].patchValue(event.value);
     this.ventureDetails = event.value;
@@ -318,6 +321,7 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
       this.retMessage = "";
       this.textMessageClass = "";
       this.vtrDetForm.get('venture')!.disable();
+      this.loadData();
     }
     else {
       this.vtrDetForm.controls['mode'].patchValue(event, { emitEvent: false });
@@ -356,7 +360,7 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
         ScrId: "SM801",
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
@@ -366,22 +370,24 @@ export class VentureDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  NotesDetails(tranNo:any){
+  NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
-      data: { 'tranNo': tranNo,
-      'mode': this.vtrDetForm.controls['mode'].value,
-      'note':this.vtrDetForm.controls['remarks'].value ,
-      'TranType': "VENTURE",  // Pass any data you want to send to CustomerDetailsComponent
-      'search' :"Venture Notes"}
+      data: {
+        'tranNo': tranNo,
+        'mode': this.vtrDetForm.controls['mode'].value,
+        'note': this.vtrDetForm.controls['remarks'].value,
+        'TranType': "VENTURE",  // Pass any data you want to send to CustomerDetailsComponent
+        'search': "Venture Notes"
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
 
     });
   }
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,

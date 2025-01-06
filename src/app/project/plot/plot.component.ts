@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
-import { getPayload } from 'src/app/general/Interface/admin/admin';
+import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 
@@ -116,11 +116,13 @@ export class PlotComponent implements OnInit, OnDestroy {
   loadData() {
     const body: getPayload = {
       ...this.commonParams(),
-      item: 'SM802'
+      item: 'SM802',
+      mode: this.pltDetForm.get('mode')?.value
     };
     const venturebody: getPayload = {
       ...this.commonParams(),
-      item: "VENTURE"
+      item: "VENTURE",
+      mode: this.pltDetForm.get('mode')?.value
     };
     try {
       const modes$ = this.masterService.getModesList(body);
@@ -155,11 +157,14 @@ export class PlotComponent implements OnInit, OnDestroy {
       this.pltDetForm.get('plot')!.disable();
       this.pltDetForm.get('plot')!.clearValidators();
       this.pltDetForm.get('plot')!.updateValueAndValidity();
+      this.pltDetForm.get('mode')!.patchValue(event, { emitEvent: false });
+      this.loadData();
     }
     else {
       this.pltDetForm.get('plot')!.enable();
+      this.pltDetForm.get('mode')!.patchValue(event, { emitEvent: false });
+
     }
-    this.pltDetForm.get('mode')!.patchValue(event, { emitEvent: false });
   }
   clear() {
     this.pltDetForm = this.formInit();
@@ -299,7 +304,7 @@ export class PlotComponent implements OnInit, OnDestroy {
         this.plotCls.availableFrom = avblFromDate;
         this.plotCls.remarks = this.pltDetForm.get('remarks')!.value;
         this.loader.start();
-        this.subSink.sink = this.projectService.updatePlotDetails(this.plotCls).subscribe((res: any) => {
+        this.subSink.sink = this.projectService.updatePlotDetails(this.plotCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
             this.newTranMsg = res.message;

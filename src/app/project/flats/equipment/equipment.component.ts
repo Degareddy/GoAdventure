@@ -106,7 +106,8 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   loadData() {
     const serbody = {
       ...this.commonParams(),
-      item: 'ASSETS'
+      item: 'ASSETS',
+      mode:this.data.mode
     };
     const Sbody$ = this.masterService.GetMasterItemsList(serbody);
     this.subSink.sink = forkJoin([Sbody$]).subscribe(

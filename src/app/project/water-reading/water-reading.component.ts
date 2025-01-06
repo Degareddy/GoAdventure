@@ -398,7 +398,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
   }
   loadData() {
     const modeBody = this.createRequestData('ST915');
-    const propertyBody = this.createRequestData('PROPERTY');
+    const propertyBody ={...this.createRequestData('PROPERTY'),mode:this.waterReadingForm.get('mode')?.value};
     try {
       const modes$ = this.masterService.getModesList(modeBody);
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
@@ -448,11 +448,6 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     this.textMessageClass = "";
     this.retMessage = "";
     if (this.waterReadingForm.valid) {
-      // if (this.waterReadingForm.get('rate')?.value <= 0) {
-      //   this.retMessage = "Rate can not be zero!";
-      //   this.textMessageClass = "red";
-      //   return;
-      // }
       this.populateWaterReadingCls();
       this.loader.start();
       this.subSink.sink = this.projService.UpdateExtendedBillsHdr(this.waterCls).subscribe((res: SaveApiResponse) => {
@@ -484,7 +479,6 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
   }
   populateWaterReadingCls() {
     const formControls = this.waterReadingForm.controls;
-    // const tranDate =this.datePipe.transform(formControls.date.value, 'yyyy-MM-dd');
     this.waterCls = {
       mode: formControls.mode.value || "",
       ...this.commonParams(),
@@ -494,11 +488,6 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       block: formControls.block.value || "",
       unit: this.flatCode || "",
       tranDate: this.datePipe.transform(formControls.tranDate.value, 'yyyy-MM-dd') || "",
-      // tenant: this.tenantCode,
-      // reading: parseFloat(formControls.currentReading.value.includes(',') ? formControls.currentReading.value.replace(/,/g, '') : formControls.currentReading.value) || 0,
-      // unitCount: parseFloat(formControls.unit.value.includes(',') ? formControls.unit.value.replace(/,/g, '') : formControls.unit.value) || 0,
-      // rate: parseFloat(formControls.rate.value.includes(',') ? formControls.rate.value.replace(/,/g, '') : formControls.rate.value) || 0,
-      // amount: parseFloat(formControls.amount.value.includes(',') ? formControls.amount.value.replace(/,/g, '') : formControls.amount.value) || 0,
       notes: formControls.notes.value,
     } as waterReading
   }
@@ -508,10 +497,6 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       property: ['', Validators.required],
       block: ['', Validators.required],
       flat: ['', Validators.required],
-      // currentReading: [0, Validators.required],
-      // unit: [{ value: 0, disabled: true }],
-      // rate: ['0.00', Validators.required],
-      // amount: [{ value: '0.00', disabled: true }],
       tranDate: [new Date(), Validators.required],
       notes: [''],
       mode: ['View'],
@@ -808,6 +793,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       // this.clearMsgs();
       this.waterReadingForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.waterReadingForm.get('tranNo')!.disable();
+      this.loadData();
     }
     else {
       this.waterReadingForm.get('tranNo')!.enable();

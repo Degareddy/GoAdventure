@@ -6,8 +6,6 @@ import { forkJoin } from 'rxjs';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { SubSink } from 'subsink';
 import { BudgetDetailsCls } from '../../Project.class';
-import { SearchProductComponent } from 'src/app/general/search-product/search-product.component';
-import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { ProjectsService } from 'src/app/Services/projects.service';
 import { MastersService } from 'src/app/Services/masters.service';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
@@ -242,7 +240,8 @@ export class BudgetDetailsComponent implements OnInit, OnDestroy {
   loadData() {
     const workbody: getPayload = {
       ...this.commonParams(),
-      item: "WRKMAIN"
+      item: "WRKMAIN",
+      mode:this.data.mode
     };
     try {
       const wtypes$ = this.mastService.GetMasterItemsList(workbody);

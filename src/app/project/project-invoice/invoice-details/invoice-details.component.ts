@@ -30,8 +30,8 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   retMessage!: string;
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
-  discountLabel='Discount';
-  vatAmountLabel='Vat Amount';
+  discountLabel = 'Discount';
+  vatAmountLabel = 'Vat Amount';
 
   public gridOptions!: GridOptions;
   public vatTypes: Item[] = [];
@@ -126,7 +126,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: {
       mode: string, tranNo: string, status: string,
       complaintType: string, unit: string, block: string, complaint: string,
-      tenant: string, priority: string, complaintTypeName: string, property: string,isMiscellaneous:boolean
+      tenant: string, priority: string, complaintTypeName: string, property: string, isMiscellaneous: boolean
     }) {
     this.subSink = new SubSink();
     this.invDetForm = this.formInit();
@@ -179,47 +179,39 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     }
     return null;
   }
+  private parseCurrency(value: string): number {
+    return parseFloat(value.replace(/,/g, '')) || 0;
+  }
+
+  private setCommonValues(mode: string) {
+    const formValues = this.invDetForm.value;
+
+    this.invDetailCls.company = this.userDataService.userData.company;
+    this.invDetailCls.amount = this.parseCurrency(this.invDetForm.controls['net'].value);
+    this.invDetailCls.ChargeItem = formValues.itemType;
+    this.invDetailCls.itemRate = this.parseCurrency(this.invDetForm.controls['amount'].value);
+    this.invDetailCls.location = this.userDataService.userData.location;
+    this.invDetailCls.slNo = this.slNum;
+    this.invDetailCls.tranNo = this.data.tranNo;
+    this.invDetailCls.vatAmount = this.parseCurrency(this.invDetForm.controls['vatAmount'].value);
+    this.invDetailCls.vatRate = formValues.vatType;
+    this.invDetailCls.mode = mode;
+    this.invDetailCls.user = this.userDataService.userData.userID;
+    this.invDetailCls.refNo = this.userDataService.userData.sessionID;
+    this.invDetailCls.discType = this.invDetForm.controls['discType'].value;
+    this.invDetailCls.discAmount = this.parseCurrency(this.invDetForm.get('discAmount')!.value.toString());
+    this.invDetailCls.discRate = this.parseCurrency(this.invDetForm.controls['discRate'].value);
+    this.invDetailCls.NetAmount = this.parseCurrency(this.invDetForm.controls['net'].value);
+  }
+
   prepareClsToDelete() {
-
-    const formValues = this.invDetForm.value;
-    this.invDetailCls.company = this.userDataService.userData.company;
-    this.invDetailCls.amount = parseFloat(this.invDetForm.controls['net'].value.toString().replace(/,/g, ''));
-    this.invDetailCls.ChargeItem = formValues.itemType;
-    this.invDetailCls.itemRate = parseFloat(this.invDetForm.controls['amount'].value.toString().replace(/,/g, ''));
-    this.invDetailCls.location = this.userDataService.userData.location;
-    this.invDetailCls.slNo = this.slNum;
-    this.invDetailCls.tranNo = this.data.tranNo;
-    this.invDetailCls.vatAmount = parseFloat(this.invDetForm.controls['vatAmount'].value.replace(/,/g, ''));
-    this.invDetailCls.vatRate = formValues.vatType;
-    this.invDetailCls.mode = 'Delete';
-    this.invDetailCls.user = this.userDataService.userData.userID;
-    this.invDetailCls.refNo = this.userDataService.userData.sessionID;
-    this.invDetailCls.discType = this.invDetForm.controls['discType'].value;
-    this.invDetailCls.discAmount = parseFloat((this.invDetForm.get('discAmount')!.value || 0).toString().replace(/,/g, ''));
-    this.invDetailCls.discRate = parseFloat(this.invDetForm.controls['discRate'].value.replace(/,/g, ''));
-    this.invDetailCls.NetAmount = parseFloat(this.invDetForm.controls['net'].value.toString().replace(/,/g, ''));
-
+    this.setCommonValues('Delete');
   }
+
   prepareCls() {
-    const formValues = this.invDetForm.value;
-    this.invDetailCls.company = this.userDataService.userData.company;
-    this.invDetailCls.amount = parseFloat(this.invDetForm.controls['net'].value.toString().replace(/,/g, ''));
-    this.invDetailCls.ChargeItem = formValues.itemType;
-    this.invDetailCls.itemRate = parseFloat(this.invDetForm.controls['amount'].value.toString().replace(/,/g, ''));
-    this.invDetailCls.location = this.userDataService.userData.location;
-    this.invDetailCls.slNo = this.slNum;
-    this.invDetailCls.tranNo = this.data.tranNo;
-    this.invDetailCls.vatAmount = parseFloat(this.invDetForm.controls['vatAmount'].value.replace(/,/g, ''));
-    this.invDetailCls.vatRate = formValues.vatType;
-    this.invDetailCls.mode = this.data.mode;
-    this.invDetailCls.user = this.userDataService.userData.userID;
-    this.invDetailCls.refNo = this.userDataService.userData.sessionID;
-    this.invDetailCls.discType = this.invDetForm.controls['discType'].value;
-    this.invDetailCls.discAmount = parseFloat((this.invDetForm.get('discAmount')!.value || 0).toString().replace(/,/g, ''));
-    this.invDetailCls.discRate = parseFloat((this.invDetForm.controls['discRate'].value).toString().replace(/,/g, ''));
-    this.invDetailCls.NetAmount = parseFloat((this.invDetForm.controls['net'].value).toString().replace(/,/g, ''));
-
+    this.setCommonValues(this.data.mode);
   }
+
   apply() {
     if (this.invDetForm.invalid) {
       return;
@@ -251,21 +243,21 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
     }
   }
-  itemChange(value:any){
-    const body={
+  itemChange(value: any) {
+    const body = {
       ...this.commonParams(),
-      PropCode:this.data.property,
-      BlockCode:this.data.block,
-      UnitCode:this.data.unit,
-      chargeItem:this.invDetForm.get('itemType')?.value
+      PropCode: this.data.property,
+      BlockCode: this.data.block,
+      UnitCode: this.data.unit,
+      chargeItem: this.invDetForm.get('itemType')?.value
     };
-    try{
+    try {
       this.loader.start();
-      this.subSink.sink=this.projectService.getLegalChargesCalcs(body).subscribe((res:any) =>{
+      this.subSink.sink = this.projectService.getLegalChargesCalcs(body).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
           this.dataFlag = true;
-         this.invDetForm.get('amount')?.patchValue(res.data[0].amount);
+          this.invDetForm.get('amount')?.patchValue(res.data[0].amount);
           this.displayMessage("Success: " + res.message, "green");
         }
         else {
@@ -273,11 +265,11 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
         }
       });
     }
-    catch(ex:any){
+    catch (ex: any) {
       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
-  deleteInvDetails(){
+  deleteInvDetails() {
 
     this.prepareClsToDelete();
     try {
@@ -387,11 +379,11 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
   loadData() {
     try {
-      let cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'RENTCHARGE' });
-      let vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATR' });
-      if(this.data.isMiscellaneous){
-       cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE' });
-       vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATR' });
+      let cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'RENTCHARGE', mode: this.data.mode });
+      let vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATR', mode: this.data.mode });
+      if (this.data.isMiscellaneous) {
+        cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE', mode: this.data.mode });
+        vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATR', mode: this.data.mode });
       }
       this.subSink.sink = forkJoin([cbody$, vatbody$]).subscribe(
         ([chargeRes, vatRes]: any) => {
@@ -439,9 +431,9 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   private displayMessage(message: string, cssClass: string) {
-		this.retMessage = message;
-		this.textMessageClass = cssClass;
-	  }
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
 
 
 
@@ -515,10 +507,10 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
   calculateNetAmount() {
 
-    const amount:number = parseFloat( this.invDetForm.get('amount')?.value || 0);
-    const discRate:number = parseFloat(this.invDetForm.get('discRate')?.value) || 0;
-    const discType:string = this.invDetForm.get('discType')?.value;
-    const vatAmount :number= this.invDetForm.get('vatAmount')?.value || 0;
+    const amount: number = parseFloat(this.invDetForm.get('amount')?.value || 0);
+    const discRate: number = parseFloat(this.invDetForm.get('discRate')?.value) || 0;
+    const discType: string = this.invDetForm.get('discType')?.value;
+    const vatAmount: number = this.invDetForm.get('vatAmount')?.value || 0;
 
     let discAmount = 0;
 
@@ -530,7 +522,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
     this.invDetForm.get('discAmount')?.setValue(discAmount, { emitEvent: false });
 
-    const netAmount:number = parseFloat(amount.toString()) - parseFloat(discAmount.toString()) + parseFloat(vatAmount.toString());
+    const netAmount: number = parseFloat(amount.toString()) - parseFloat(discAmount.toString()) + parseFloat(vatAmount.toString());
     this.invDetForm.get('net')?.setValue(netAmount, { emitEvent: false });
   }
 }

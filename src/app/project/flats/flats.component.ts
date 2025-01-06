@@ -430,15 +430,42 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
   async loadData() {
     this.ifCmpUser();
-
     const modeBody = this.createRequestData('SM806');
-    const propertyBody = this.createRequestData('PROPERTY');
-    const comfortBody = this.createRequestData('COMFORT');
-    const floorBody = this.createRequestData('FLOORTYPE');
-    const useTypeBody = this.createRequestData('USAGETYPE');
-    const flatTypeBody = this.createRequestData('FLATTYPE');
-    const bedroomBody = this.createRequestData('BEDROOM');
-    const unitTypeBody = this.createRequestData('FURNISH');
+    const propertyBody = {
+      ...this.createRequestData('PROPERTY'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
+    const comfortBody = {
+      ...this.createRequestData('COMFORT'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
+    const floorBody = {
+      ...this.createRequestData('FLOORTYPE'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
+    const useTypeBody = {
+      ...this.createRequestData('USAGETYPE'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
+    const flatTypeBody = {
+      ...this.createRequestData('FLATTYPE'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
+    const bedroomBody = {
+      ...this.createRequestData('BEDROOM'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
+    const unitTypeBody = {
+      ...this.createRequestData('FURNISH'),
+      mode: this.unitDetForm.get('mode')!.value
+    };
+
     try {
       const modes$ = this.masterService.getModesList(modeBody);
       const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', })
@@ -463,11 +490,10 @@ export class FlatsComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
   refreshData() {
-    
+
     this.unitDetForm.get('landLordName')?.enable();
     this.ifCmpUser();
     this.unitDetForm.get('updateAll')?.valueChanges.subscribe((ch: any) => {
-      console.log(ch);
       if (ch) {
         this.unitDetForm.get('tenantName')?.patchValue('');
         this.unitDetForm.get('empName')?.patchValue('');
@@ -565,6 +591,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
       this.blocks = [];
       this.updateAll();
       this.waterdiscChanges();
+      this.loadData();
       if (this.props.length === 1) {
         this.unitDetForm.get('property')!.patchValue(this.props[0].itemCode);
         this.onSelectedPropertyChanged();
@@ -589,6 +616,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     this.unitDetForm.controls.flat.patchValue("");
     if (this.unitDetForm.controls.property.value != "") {
       this.masterParams.type = 'BLOCK';
+      this.masterParams.mode=this.unitDetForm.get('mode')!.value;
       this.masterParams.item = this.unitDetForm.controls.property.value;
       this.unitDetForm.controls.propCode.patchValue(this.unitDetForm.controls.property.value);
       try {

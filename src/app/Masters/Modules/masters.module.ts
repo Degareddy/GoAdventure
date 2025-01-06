@@ -12,6 +12,7 @@ export class MasterParams {
   public refNo: string = '';
   public langId: number = 0;
   public tranNo: string = '';
+  public mode:string = '';
 }
 
 export class MasterList {

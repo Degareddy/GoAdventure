@@ -172,14 +172,14 @@ export class BudgetsComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
+      this.retMessage = ex.message;
       this.textMessageClass = 'red';
     }
   }
 
   getBudgetData(masterParams: MasterParams, mode: string) {
     try {
-    this.loader.start();
+      this.loader.start();
       this.subSink.sink = this.projectService.getBudget(masterParams).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() == "SUCCESS") {
@@ -220,7 +220,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
 
   typeChange(event: any) {
     this.projType = this.bgtForm.controls['projectType'].value;
-    this.bgtForm.controls['projectName'].patchValue("");
+    this.bgtForm.controls['projectName'].patchValue("", { emitEvent: false });
   }
 
 
@@ -280,11 +280,13 @@ export class BudgetsComponent implements OnInit, OnDestroy {
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY"
+      item: "CURRENCY",
+      mode:this.bgtForm.get('mode')?.value
     };
     const venturebody: getPayload = {
       ...this.commonParams(),
-      item: "VENTURE"
+      item: "VENTURE",
+      mode:this.bgtForm.get('mode')?.value
     };
     try {
       const modes$ = this.masterService.getModesList(modebody);
@@ -295,7 +297,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
           this.modes = modesRes['data'];
           this.currencyList = curRes['data'];
           this.projectList = projectRes['data'];
-          if(this.projectList.length === 1){
+          if (this.projectList.length === 1) {
             this.bgtForm.get('projectName')?.patchValue(this.projectList[0].itemCode)
           }
         },
@@ -343,6 +345,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
       this.clear();
       this.bgtForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.bgtForm.controls['tranNo'].disable({ onlySelf: false });
+      this.loadData();
     } else {
       this.bgtForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.bgtForm.controls['tranNo'].enable({ onlySelf: false });
@@ -424,22 +427,24 @@ export class BudgetsComponent implements OnInit, OnDestroy {
     }
   }
 
-  NotesDetails(tranNo:any){
+  NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
-      data: { 'tranNo': tranNo,
-      'mode': this.bgtForm.controls['mode'].value,
-      'note':this.bgtForm.controls['remarks'].value ,
-      'TranType': "BUGETS",  // Pass any data you want to send to CustomerDetailsComponent
-      'search' :"Bugets Notes"}
+      data: {
+        'tranNo': tranNo,
+        'mode': this.bgtForm.controls['mode'].value,
+        'note': this.bgtForm.controls['remarks'].value,
+        'TranType': "BUGETS",  // Pass any data you want to send to CustomerDetailsComponent
+        'search': "Bugets Notes"
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
 
     });
   }
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
@@ -459,7 +464,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
         ScrId: "ST901",
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }

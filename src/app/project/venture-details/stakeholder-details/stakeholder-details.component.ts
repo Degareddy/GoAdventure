@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { SubSink } from 'subsink';
@@ -17,7 +17,7 @@ import { SearchPartyComponent } from 'src/app/general/search-party/search-party.
   templateUrl: './stakeholder-details.component.html',
   styleUrls: ['./stakeholder-details.component.css']
 })
-export class StakeholderDetailsComponent implements OnInit {
+export class StakeholderDetailsComponent implements OnInit,OnDestroy {
 
   mulitClientsForm!: FormGroup;
   slNum = 0;
@@ -40,7 +40,7 @@ export class StakeholderDetailsComponent implements OnInit {
     { field: "slNo", headerName: "slNo", width: 70 },
     // { field: "tranNo", headerName: "Tran No", resizable: true, flex: 1 },
     { field: "name", headerName: "Stake Holder", sortable: true, filter: true, resizable: true, width: 180, },
-    
+
     {
       field: "share", headerName: "Share", resizable: true, flex: 1, type: 'rightAligned',
       cellStyle: { justifyContent: "flex-end" },
@@ -89,12 +89,12 @@ export class StakeholderDetailsComponent implements OnInit {
       width: 180,
       cellStyle: (params:any) => {
         if (params.value === 'Deleted') {
-          return { color: 'red' }; 
+          return { color: 'red' };
         }
-        return { color: 'green' }; 
+        return { color: 'green' };
       }
     },
-    
+
   ];
   constructor(protected router: Router,
     private fb: FormBuilder,
@@ -126,7 +126,7 @@ export class StakeholderDetailsComponent implements OnInit {
     this.stakeHolderCode=event.data.landlord;
     this.mulitClientsForm.patchValue({
       landlord:event.data.landlordName,
-      
+
       joinDate:event.data.dateJoined,
       dateLeft:event.data.dateLeft,
       share: event.data.share,
@@ -142,7 +142,7 @@ export class StakeholderDetailsComponent implements OnInit {
     }
   }
   ngOnDestroy(): void {
-
+        this.subSink.unsubscribe();
   }
   commonParams() {
     return {
@@ -165,11 +165,11 @@ export class StakeholderDetailsComponent implements OnInit {
     };
   }
   ngOnInit(): void {
-    
+
     this.getstakeHoldersData(this.data.Project, this.data.Code, this.data.Flat);
   }
   async searchParty() {
-    
+
     const body = this.createRequestDataForSearch(this.mulitClientsForm.get('stakeHolder')!.value || "", "STAKER");
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
@@ -205,13 +205,13 @@ export class StakeholderDetailsComponent implements OnInit {
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex;
+      this.retMessage = "Exception " + ex.message;
       this.textMessageClass = 'red';
     }
   }
- 
-  
-  onSubmit(mode:any) {
+
+
+  onSubmit(mode:string) {
     if(this.data.mode === "Modify"){
       if (this.stakeHolderCode === null || this.stakeHolderCode === undefined || this.stakeHolderCode === '') {
         this.displayMessage("Enter Landlord", "red");
@@ -269,7 +269,7 @@ export class StakeholderDetailsComponent implements OnInit {
         }
       }
     }
-    
+
 
   }
   getstakeHoldersData(Project: string, block: string, flat: string) {
@@ -283,7 +283,7 @@ export class StakeholderDetailsComponent implements OnInit {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
           this.displayMessage( res.message + " : Data Retrived " , "green");
-          this.rowData=res['data'];  
+          this.rowData=res['data'];
         }
         else {
           this.displayMessage("Error: " + res.message, "red");
@@ -294,7 +294,7 @@ export class StakeholderDetailsComponent implements OnInit {
       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
-  prepareCls(mode:any) {
+  prepareCls(mode:string) {
     this.stakeMulClass.Mode=this.data.mode;
     this.stakeMulClass.Project=this.data.Code;
     this.stakeMulClass.Code='NHL102';
@@ -315,9 +315,10 @@ export class StakeholderDetailsComponent implements OnInit {
     this.stakeMulClass.RefNo= this.userDataService.userData.sessionID;
   }
   newItem() {
-   this.mulitClientsForm.get('landlord')?.patchValue('');
-   this.mulitClientsForm.get('share')?.patchValue('');
-   this.mulitClientsForm.get('joinDate')?.patchValue(new Date());
-   this.mulitClientsForm.get('dateLeft')?.patchValue(new Date());
+  //  this.mulitClientsForm.get('landlord')?.patchValue('');
+  //  this.mulitClientsForm.get('share')?.patchValue('');
+  //  this.mulitClientsForm.get('joinDate')?.patchValue(new Date());
+  //  this.mulitClientsForm.get('dateLeft')?.patchValue(new Date());
+  this.mulitClientsForm = this.formInit();
   }
 }

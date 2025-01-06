@@ -125,7 +125,8 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
   loadData() {
     const serbody = {
    ...this.commonParams(),
-      item: 'SERNUMBER'
+      item: 'SERNUMBER',
+      mode:this.data.mode
     };
     const Sbody$ = this.masterService.GetMasterItemsList(serbody);
     this.subSink.sink = forkJoin([Sbody$]).subscribe(

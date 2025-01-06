@@ -101,7 +101,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   populateYears() {
     const currentYear = new Date().getFullYear();
     const previousYear = currentYear - 1;
-    const nextyear=currentYear+1
+    const nextyear = currentYear + 1
     this.yearList = [
       {
         itemCode: previousYear, itemName: previousYear
@@ -122,17 +122,17 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
- async fetchTenantData() {
-    if ( this.flatCode) {
+  async fetchTenantData() {
+    if (this.flatCode) {
       const tbody = {
         ...this.commonParams(),
-        property : this.saleForm.get('property')?.value,
-        block : this.saleForm.get('block')?.value,
-        unit : this.flatCode,
+        property: this.saleForm.get('property')?.value,
+        block: this.saleForm.get('block')?.value,
+        unit: this.flatCode,
         // tenant: this.invCls.tenant
-       
+
       }
-      this.subSink.sink =await this.projService.FetchTenantInvoiceData(tbody).subscribe((res: any) => {
+      this.subSink.sink = await this.projService.FetchTenantInvoiceData(tbody).subscribe((res: any) => {
         if (res.status.toUpperCase() === "SUCCESS") {
           this.invPeriodicity = res.data.invPeriodicity;
           this.invDateChanged(res.data.fromInvoiceDate);
@@ -192,7 +192,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       excutive: ['', [Validators.maxLength(50)]],
       lpoNo: ['', [Validators.maxLength(18)]],
       applyVAT: [false],
-      miscellaneous:[false],
+      miscellaneous: [false],
       remarks: ['', [Validators.maxLength(512)]],
       includeExpenses: [false],
       dueDate: [new Date(), Validators.required],
@@ -201,8 +201,8 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       invMonth: ['', Validators.required],
       penaltyDay: [0, Validators.required],
       isRentInvoice: [false],
-      isUtility:[false],
-      isApplyForAll:[false],
+      isUtility: [false],
+      isApplyForAll: [false],
       // isFull: [false],
       // transferAmount: ["0.00"],
       // transferTo: [""]
@@ -236,7 +236,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<InvoiceDetailsComponent> = this.dialog.open(InvoiceDetailsComponent, {
       width: '90%', // Set the width of the dialog
       disableClose: true,
-      data: { 'tranType': "TENINV", 'tranNo': this.saleForm.controls['tranNo'].value, 'mode': this.saleForm.controls['mode'].value, 'status': this.tranStatus,'isMiscellaneous' :this.saleForm.controls['miscellaneous']!.value,'property':this.saleForm.controls['property']!.value,'block':this.saleForm.controls['block']!.value,'unit':this.saleForm.controls['flat']!.value }  // Pass any data you want to send to CustomerDetailsComponent
+      data: { 'tranType': "TENINV", 'tranNo': this.saleForm.controls['tranNo'].value, 'mode': this.saleForm.controls['mode'].value, 'status': this.tranStatus, 'isMiscellaneous': this.saleForm.controls['miscellaneous']!.value, 'property': this.saleForm.controls['property']!.value, 'block': this.saleForm.controls['block']!.value, 'unit': this.saleForm.controls['flat']!.value }  // Pass any data you want to send to CustomerDetailsComponent
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.isAltered === true) {
@@ -295,13 +295,13 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
 
   }
 
-async  loadData() {
-    const propertyBody = this.createRequestData('PROPERTY');
+  async loadData() {
+    const propertyBody = {...this.createRequestData('PROPERTY'),mode: this.saleForm.get('mode')?.value };
     try {
-      const service1 = this.masterService.getModesList({ ...this.commonParams(), item: 'ST913' });
-      const service2 = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY' });
+      const service1 = this.masterService.getModesList({ ...this.commonParams(), item: 'ST913'});
+      const service2 = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', mode: this.saleForm.get('mode')?.value });
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
-      this.subSink.sink =await forkJoin([service1, service2, property$]).subscribe(
+      this.subSink.sink = await forkJoin([service1, service2, property$]).subscribe(
         (results: any[]) => {
           const res1 = results[0];
           const res2 = results[1];
@@ -390,10 +390,10 @@ async  loadData() {
     this.invCls.currency = formValues.currency;
     this.invCls.dueDate = dueDate;
     this.invCls.isRentInvoice = formValues.isRentInvoice;
-    this.invCls.IsUtilityInvoice=formValues.isUtility
+    this.invCls.IsUtilityInvoice = formValues.isUtility
     this.invCls.invFromDate = invFromDate;
     this.invCls.invToDate = invToDate;
-    this.invCls.IsMiscInvoice=formValues.miscellaneous;
+    this.invCls.IsMiscInvoice = formValues.miscellaneous;
     this.invCls.exchRate = formValues.exchRate.replace(/,/g, '');
     this.invCls.invPeriodicity = this.invPeriodicity;
     this.invCls.executive = this.salesExecCode;
@@ -416,8 +416,8 @@ async  loadData() {
     this.invCls.unit = this.flatCode;
 
     this.invCls.transferAmount = this.saleForm.get('transferAmount')?.value
-    ? parseFloat(this.saleForm.get('transferAmount')?.value.replace(/,/g, '')) || 0
-    : 0;
+      ? parseFloat(this.saleForm.get('transferAmount')?.value.replace(/,/g, '')) || 0
+      : 0;
 
     // this.invCls.transferTo = this.saleForm.get('transferTo')?.value;
     this.invCls.isFull = this.saleForm.get('isFull')?.value;
@@ -438,7 +438,7 @@ async  loadData() {
       }
     });
   }
-  apply(){
+  apply() {
     this.displayMessage("", "");
     let isSubmitted = false;
     // if (this.saleForm.controls.isFull.value) {
@@ -532,35 +532,35 @@ async  loadData() {
       this.displayMessage("Enter all required fields!", "red");
       return;
     }
-    if(!this.saleForm.controls['includeExpenses'].value && !this.saleForm.controls['isRentInvoice'].value && this.saleForm.controls['mode'].value !== 'Authorize' && !this.saleForm.controls['miscellaneous'].value && !this.saleForm.controls['isUtility'].value ){
+    if (!this.saleForm.controls['includeExpenses'].value && !this.saleForm.controls['isRentInvoice'].value && this.saleForm.controls['mode'].value !== 'Authorize' && !this.saleForm.controls['miscellaneous'].value && !this.saleForm.controls['isUtility'].value) {
       const message = `Are you sure you want to generate an empty invoice?`;
-    const dialogData = new ConfirmDialogModel("Confirm Delete?", message);
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      maxWidth: "400px",
-      height: '200px',
-      data: dialogData,
-      disableClose: true
-    });
-    dialogRef.afterClosed().subscribe(dialogResult => {
-      if (dialogResult != true && dialogResult === 'YES') {
-        this.apply();
-      }
+      const dialogData = new ConfirmDialogModel("Confirm Delete?", message);
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        maxWidth: "400px",
+        height: '200px',
+        data: dialogData,
+        disableClose: true
+      });
+      dialogRef.afterClosed().subscribe(dialogResult => {
+        if (dialogResult != true && dialogResult === 'YES') {
+          this.apply();
+        }
       });
     }
-    else{
+    else {
       this.apply();
     }
 
   }
 
- async submit() {
-  if(this.saleForm.controls['isApplyForAll'].value && this.saleForm.controls['mode'].value === 'Authorize'){
-    this.invCls.AllUnits=true;
-  }
+  async submit() {
+    if (this.saleForm.controls['isApplyForAll'].value && this.saleForm.controls['mode'].value === 'Authorize') {
+      this.invCls.AllUnits = true;
+    }
     this.prepareInvCls();
     try {
       this.loader.start();
-      this.subSink.sink =await this.projService.UpdateTenantInvoiceHdr(this.invCls).subscribe((res: SaveApiResponse) => {
+      this.subSink.sink = await this.projService.UpdateTenantInvoiceHdr(this.invCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
           this.handleSuccessfulUpdate(res);
@@ -603,7 +603,7 @@ async  loadData() {
     this.getInvoiceData(this.masterParams, this.saleForm.controls.mode.value);
   }
 
- async searchData() {
+  async searchData() {
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
@@ -619,7 +619,7 @@ async  loadData() {
     }
     try {
       this.loader.start();
-      this.subSink.sink =await this.masterService.GetTranCount(body).subscribe((res: any) => {
+      this.subSink.sink = await this.masterService.GetTranCount(body).subscribe((res: any) => {
         this.loader.stop()
         if (res.retVal === 0) {
           if (res && res.data && res.data.tranCount === 1) {
@@ -680,6 +680,7 @@ async  loadData() {
       this.saleForm.controls['property'].enable({ emitEvent: false });
       this.saleForm.controls['block'].enable({ emitEvent: false });
       this.saleForm.controls['flat'].enable({ emitEvent: false });
+      this.loadData();
       if (this.props.length === 1) {
         this.saleForm.get('property')!.patchValue(this.props[0].itemCode);
         this.onSelectedPropertyChanged();
@@ -724,7 +725,7 @@ async  loadData() {
       isFull: res['data'].isFull,
       transferAmount: res['data'].transferAmount,
       transferTo: res['data'].transferTo,
-      miscellaneous:res['data'].isMiscInvoice
+      miscellaneous: res['data'].isMiscInvoice
     });
 
     this.invCls.tenant = res['data'].tenant;
@@ -738,10 +739,10 @@ async  loadData() {
     this.vatAmount = res['data'].vatAmount;
     this.totalAmount = res['data'].totalCharges;
   }
- async getInvoiceData(masterParams: MasterParams, mode: string) {
+  async getInvoiceData(masterParams: MasterParams, mode: string) {
     try {
       this.loader.start();
-      this.subSink.sink =await this.saleService.getTenantInvoiceHeaderData(masterParams).subscribe((res: any) => {
+      this.subSink.sink = await this.saleService.getTenantInvoiceHeaderData(masterParams).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
           this.bindFormData(res);
@@ -782,14 +783,14 @@ async  loadData() {
       return '';
     }
   }
- async onCustomerSearch() {
+  async onCustomerSearch() {
     const body = {
       ...this.commonParams(),
       Type: "TENANT",
       item: this.saleForm.controls['customer'].value || ""
     }
     try {
-      this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+      this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['customer'].patchValue(res.data.selName);
@@ -797,7 +798,7 @@ async  loadData() {
             // this.invCls.tenant = res.data.selCode;
             this.invCls.unit = res.data.selCode
             // this.custCode = res.data.selCode;
-            if ( this.invCls.unit) {
+            if (this.invCls.unit) {
               this.fetchTenantData();
             }
           }
@@ -840,14 +841,14 @@ async  loadData() {
     }
   }
 
- async onTransferSearch() {
+  async onTransferSearch() {
     const body = {
       ...this.commonParams(),
       Type: "TENANT",
       item: this.saleForm.controls['transferTo'].value || ""
     }
     try {
-      this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+      this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['transferTo'].patchValue(res.data.selName);
@@ -895,14 +896,14 @@ async  loadData() {
     }
   }
 
-async  onEmployeeSearch() {
+  async onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
       Type: "EMPLOYEE",
       PartyName: this.saleForm.controls['excutive'].value
     }
     try {
-      this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+      this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['excutive'].patchValue(res.data.selName);
@@ -972,19 +973,19 @@ async  onEmployeeSearch() {
     this.generatePDF("Download");
   }
 
- async generatePDF(type: string) {
+  async generatePDF(type: string) {
     const reportBody = {
       ...this.commonParams(),
       LangId: this.userDataService.userData.langId,
       TranNo: this.saleForm.get('tranNo')!.value
     }
     this.loader.start();
-    this.subSink.sink =await this.projService.GetReportTenantInvoice(reportBody).subscribe((res: any) => {
+    this.subSink.sink = await this.projService.GetReportTenantInvoice(reportBody).subscribe((res: any) => {
       this.loader.stop();
       if (res.status.toUpperCase() === "SUCCESS") {
         if (type.toUpperCase() === "EMAIL") {
           const mailTo = res.data[0].emailId;
-          if(mailTo){
+          if (mailTo) {
             const formFile: any = this.reportsService.generatePDF(res.data, 'Invoice', new Date(), type);
             const mailToName = res.data[0].tenantName;
             const mailSubject = 'Invoice : ' + res.data[0].invoiceNo;
@@ -1000,7 +1001,7 @@ async  onEmployeeSearch() {
               });
             this.displayMessage("Success: " + res.message, "green");
           }
-          else{
+          else {
             this.displayMessage("No registered email address found for the client. Please update the contact information.", "red");
 
           }
@@ -1040,8 +1041,8 @@ async  onEmployeeSearch() {
       });
     }
   }
- async onSelectedPropertyChanged() {
-  
+  async onSelectedPropertyChanged() {
+
     this.saleForm.controls.flat.patchValue('');
     if (this.saleForm.controls.property.value != "") {
       this.blocks = [];
@@ -1049,7 +1050,7 @@ async  onEmployeeSearch() {
       this.masterParams.item = this.saleForm.controls.property.value;
       this.saleForm.controls.property.value;
       try {
-        this.subSink.sink =await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
+        this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
           if (result.status.toUpperCase() === 'SUCCESS') {
             this.blocks = result.data;
             if (this.blocks.length === 1) {
@@ -1074,7 +1075,7 @@ async  onEmployeeSearch() {
     this.saleForm.controls.flat.patchValue('');
   }
 
-async  onFlatSearch() {
+  async onFlatSearch() {
     this.retMessage = ""
     this.textMessageClass = "";
     if (this.saleForm.get('property')!.value === "" || this.saleForm.get('property')!.value === undefined) {
@@ -1095,7 +1096,7 @@ async  onFlatSearch() {
       ItemSecondLevel: ""
     }
     try {
-      this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+      this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['flat'].patchValue(res.data.selName);

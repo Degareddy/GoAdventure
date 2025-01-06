@@ -185,7 +185,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
       discType: [''],
       discRate: [0,],
       discAmount: [{ value: 0, disabled: true }],
-      vatRate: ['',Validators.required],
+      vatRate: ['', Validators.required],
       vatAmount: [{ value: 0, disabled: true }],
       netAmount: [{ value: 0, disabled: true }],
       lastReviewed: [new Date(), Validators.required],
@@ -198,8 +198,8 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    const vatBody = this.createRequestData('VATRATE');
-    const chargeBody = this.createRequestData('RENTCHARGE');
+    const vatBody = { ...this.createRequestData('VATRATE'), mode: this.data.mode };
+    const chargeBody = { ...this.createRequestData('RENTCHARGE'), mode: this.data.mode };
     const vat$ = this.masterService.GetMasterItemsList(vatBody);
     const charge$ = this.masterService.GetMasterItemsList(chargeBody);
     this.subSink.sink = forkJoin([vat$, charge$]).subscribe(
@@ -429,7 +429,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   addNew() {
     this.clearMsgs();
     this.slNum = 0;
-    this.totalAmount=0;
+    this.totalAmount = 0;
     this.financeForm1 = this.formInit1();
   }
 

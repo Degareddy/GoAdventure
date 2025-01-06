@@ -163,7 +163,7 @@ export class UnitSaleDetailsComponent implements OnInit, OnDestroy {
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
-    const propertyBody = this.createRequestData('PROPERTY');
+    const propertyBody = {...this.createRequestData('PROPERTY'),mode:this.data.mode};
     const property$ = this.masterService.GetMasterItemsList(propertyBody);
     this.subSink.sink = forkJoin([property$]).subscribe(([propRes]: any) => {
       this.props = propRes.data;
