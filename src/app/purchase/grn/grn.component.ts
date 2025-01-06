@@ -119,7 +119,8 @@ export class GrnComponent implements OnInit, OnDestroy {
     };
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY"
+      Item: "CURRENCY",
+      mode:this.grnForm.get('mode')?.value
     };
     const service1 = this.invService.getModesList(modebody);
     const service2 = this.invService.GetMasterItemsList(curbody);
@@ -504,6 +505,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       this.grnForm.get('tranNo')!.clearValidators();
       this.grnForm.get('tranNo')!.updateValueAndValidity();
       this.grnForm.controls['tranDate'].patchValue(new Date());
+      this.loadData();
 
     }
     else {

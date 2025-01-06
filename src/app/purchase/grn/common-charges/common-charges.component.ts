@@ -175,11 +175,13 @@ export class CommonChargesComponent implements OnInit, OnDestroy {
     this.masterParams.tranNo = this.data.tranNum;
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY"
+      Item: "CURRENCY",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     const body = {
       ...this.commonParams(),
-      item: "CHARGES"
+      item: "CHARGES",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     }
     this.subSink.sink = this.purService.GetMasterItemsList(body).subscribe((res: any) => {
       if (res.status.toUpperCase() === "SUCCESS") {

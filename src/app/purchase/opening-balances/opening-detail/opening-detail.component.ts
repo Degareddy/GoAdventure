@@ -85,6 +85,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     const currency = {
       ...this.commonParams(),
       item: 'CURRENCY',
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     }
     try {
       this.subSink.sink = this.purchorddetervice.GetPartyOpeningBalanceDetails(body).subscribe((res: any) => {

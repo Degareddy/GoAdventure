@@ -103,7 +103,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       balAmt: [{ value: '0.00', disabled: true }],
       remarks: [''],
       mode: ['View'],
-      
+
     });
   }
   commonParams() {
@@ -140,7 +140,8 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     }
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY"
+      Item: "CURRENCY",
+      mode:this.supinvForm.get('mode')?.value
     };
     this.subSink.sink = this.masterService.getModesList(body).subscribe((res: any) => {
       if (res.status.toUpperCase() === "SUCCESS") {
@@ -279,10 +280,11 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       }
     });
   }
-  modChange(event: string) {
+  modeChange(event: string) {
     if (event === "Add") {
       this.reset();
       this.supinvForm.controls['mode'].patchValue(event, { emitEvent: false });
+      this.loadData();
     }
     else {
       this.supinvForm.controls['supplier'].disable();
@@ -386,7 +388,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
           this.newMessage = res.message;
           this.masterParams.tranNo = res.tranNoNew;
           if (this.supinvForm.get('mode')?.value === "Add") {
-            this.modChange("Modify");
+            this.modeChange("Modify");
           }
           this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
 

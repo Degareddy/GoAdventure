@@ -167,7 +167,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const wrbody = {
       ...this.commonParams(),
-      Item: "WAREHOUSE"
+      Item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     const service1 = this.invService.GetMasterItemsList(wrbody);
     this.subSink.sink = forkJoin([service1]).subscribe(

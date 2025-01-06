@@ -103,17 +103,17 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     this.suppQuation.supplier=this.supplierCode;
   }
   onSubmit() {
-    
+
     this.retMessage="";
     this.textMessageClass="";
     // if(this.suppQuation.supplier === "" || this.suppQuation.supplier === undefined){
-      
+
     //   this.retMessage = "Please select Supplier";
     //   this.textMessageClass = "red";
     //   return;
     // }
     if(this.supplierCode === "" || this.supplierCode === undefined){
-      
+
       this.retMessage = "Please select Supplier";
       this.textMessageClass = "red";
       return;
@@ -218,12 +218,14 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     };
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY"
+      Item: "CURRENCY",
+      mode:this.sqhForm.get('mode')?.value
     };
 
     const payTerm = {
       ...this.commonParams(),
-      Item: "PAYTERM"
+      Item: "PAYTERM",
+      mode:this.sqhForm.get('mode')?.value
     };
 
     const service1 = this.invService.getModesList(modebody);
@@ -296,15 +298,11 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
 
   modeChange(event: string) {
     if (event === "Add") {
-      // if (this.fetchStatus) {
-      //   this.disableDetail = true;
-      // } else {
-      //   this.disableDetail = false;
-      // }
       this.reset();
       this.status = "";
       this.sqhForm.controls['mode'].setValue(event, { emitEvent: false });
       this.updateTranNoDisabledState();
+      this.loadData();
     }
     else {
       this.sqhForm.controls['mode'].setValue(event, { emitEvent: false });
@@ -337,7 +335,7 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
   }
 
   onSupplierSearch(itemType: string) {
-    
+
     this.retMessage="";
     this.textMessageClass="";
     this.suppQuation.supplier ="";
@@ -350,9 +348,9 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-        
+
         if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-          
+
           if (res.data.nameCount === 1) {
             if (itemType == 'SUPPLIER') {
               this.sqhForm.controls['supplier'].patchValue(res.data.selName);
@@ -366,9 +364,9 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            
+
             if (!this.dialogOpen) {
-              
+
               const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
                 width: '90%',
                 disableClose: true,
@@ -379,11 +377,8 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                //console.log(`Dialog result: ${result}`);
                 if (itemType == 'SUPPLIER') {
-                  
                   this.sqhForm.controls['supplier'].setValue(result.partyName);
-                  // this.suppQuation.supplier = result.code;
                   this.supplierCode= result.code;
                 }
                 else {

@@ -146,7 +146,7 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     private excelService: ExcelReportsService,
     private pdfService: PdfReportsService,
     private loader: NgxUiLoaderService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: {tranNo:string,mode:string,status:string},
     public dialog: MatDialog,
     private utlService: UtilitiesService) {
     this.masterParams = new MasterParams();
@@ -280,19 +280,41 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     }
   }
   loadData() {
+    // const body = {
+    //   ...this.commonParams(),
+    //   Item: "PRODUCTS",
+    //   mode:this.data.mode
+
+    // };
+    // const supbody = {
+    //   ...this.commonParams(),
+    //   Item: "SUPPLIER",
+    //   mode:this.data.mode
+    // };
+    // const wrbody = {
+    //   ...this.commonParams(),
+    //   Item: "WAREHOUSE",
+    //   mode:this.data.mode
+
+    // };
     const body = {
       ...this.commonParams(),
       Item: "PRODUCTS",
-
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
+
     const supbody = {
       ...this.commonParams(),
-      Item: "SUPPLIER"
+      Item: "SUPPLIER",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
+
     const wrbody = {
       ...this.commonParams(),
-      Item: "WAREHOUSE"
+      Item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
+
     const service1 = this.invService.GetMasterItemsList(body);
     const service2 = this.invService.GetMasterItemsList(supbody);
     const service3 = this.invService.GetMasterItemsList(wrbody);
