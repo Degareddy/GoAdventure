@@ -85,7 +85,8 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const bonusTypes: getPayload = {
       ...this.commonParams(),
-      item: "BONUSTYPES"
+      item: "BONUSTYPES",
+      mode:this.bonusTypeForm.get('mode')?.value
     };
     const requests = [
       this.invService.GetMasterItemsList(bonusTypes)
@@ -101,10 +102,6 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
 
       }
     );
-  }
-
-  ngOnInit(): void {
-    this.loadData();
     const body: getPayload = {
       ...this.commonParams(),
       item: 'SM603'
@@ -122,6 +119,11 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
       this.textMessageClass = 'red';
       this.retMessage = ex.message;
     }
+  }
+
+  ngOnInit(): void {
+    this.loadData();
+
 
   }
 
@@ -231,6 +233,7 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
       this.bonusTypeForm = this.formInit();
       this.bonusTypeForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.bonusTypeForm.get('bonusTypes')!.disable();
+      this.loadData();
     }
     else {
       this.bonusTypeForm.controls['mode'].patchValue(event, { emitEvent: false });

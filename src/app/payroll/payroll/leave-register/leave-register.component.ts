@@ -92,7 +92,8 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
   loadData() {
     const empbody: getPayload = {
       ...this.commonParams(),
-      item: "EMPLOYEE"
+      item: "EMPLOYEE",
+      mode: this.plrHdrForm.get('mode')?.value
     };
     const modebody: getPayload = {
       ...this.commonParams(),
@@ -100,7 +101,8 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
     };
     const leavebody: getPayload = {
       ...this.commonParams(),
-      item: "PAYROLLLEAVETYPES"
+      item: "PAYROLLLEAVETYPES",
+      mode: this.plrHdrForm.get('mode')?.value
     };
 
     try {
@@ -111,9 +113,30 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        this.modes = res1.data;
-        this.empList = res2.data;
-        this.leaveList = res3.data;
+
+        if (res1.status.toUpperCase() === "SUCCESS") {
+          this.modes = res1.data;
+
+        } else {
+          this.retMessage = "Modes List empty!";
+          this.textMessageClass = "red";
+        }
+        if (res2.status.toUpperCase() === "SUCCESS") {
+          this.empList = res2.data;
+
+        }
+        else {
+          this.retMessage = "Employee List empty!";
+          this.textMessageClass = "red";
+        }
+        if (res3.status.toUpperCase() === "SUCCESS") {
+          this.leaveList = res3.data;
+
+        }
+        else {
+          this.retMessage = "Leave List empty!";
+          this.textMessageClass = "red";
+        }
       });
 
     } catch (ex: any) {

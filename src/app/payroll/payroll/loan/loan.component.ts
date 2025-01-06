@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
@@ -21,7 +21,7 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
   templateUrl: './loan.component.html',
   styleUrls: ['./loan.component.css']
 })
-export class LoanComponent implements OnInit {
+export class LoanComponent implements OnInit,OnDestroy {
   lnHdrForm!: FormGroup;
   modes!: any[];
   textMessageClass!: string;
@@ -46,6 +46,9 @@ export class LoanComponent implements OnInit {
     this.loanCls = new LonesClass();
     this.masterParams = new MasterParams();
 
+  }
+  ngOnDestroy(): void {
+    this.subSink.unsubscribe();
   }
   formInit() {
     return this.fb.group({

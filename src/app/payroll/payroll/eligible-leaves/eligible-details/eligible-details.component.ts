@@ -53,14 +53,24 @@ export class EligibleDetailsComponent implements OnInit, OnDestroy {
     this.getData();
     const body: getPayload = {
       ...this.commonParams(),
-      item: "PAYROLLLEAVETYPES"
+      item: "PAYROLLLEAVETYPES",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res: any) => {
-      this.leaveList = res.data;
+      if (res.status.toUpperCase() === "SUCCESS") {
+        this.leaveList = res.data;
+
+      }
+      else {
+        this.retMessage = "Leave Types Not Found";
+        this.textMessageClass = "red";
+      }
     })
   }
   clear() {
-
+    this.textMessageClass = "";
+    this.retMessage = "";
+    this.eligibleForm = this.formInit();
   }
   commonParams() {
     return {
@@ -108,12 +118,12 @@ export class EligibleDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.payService.UpdateEligibleLeaveDetails(this.eligibleCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if(res.status.toUpperCase()==="SUCCESS"){
+        if (res.status.toUpperCase() === "SUCCESS") {
           this.textMessageClass = 'green';
           this.retMessage = res.message;
           this.getData();
         }
-        else{
+        else {
           this.textMessageClass = 'red';
           this.retMessage = res.message;
         }

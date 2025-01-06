@@ -106,7 +106,6 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
   }
 
   searchData() {
-    debugger;
     try {
       const currentDate = new Date();
       const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -227,7 +226,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     this.shiftCls.location = this.userDataService.userData.location
     //this.shiftCls.langID = this.userDataService.userData.langId
     this.shiftCls.typeCode = this.pstForm.controls['typeCode'].value;
-   
+
     this.shiftCls.toTime = this.pstForm.controls['toTime'].value;
     this.shiftCls.fromTime = this.pstForm.controls['fromTime'].value;
     this.shiftCls.typeDesc = this.pstForm.controls['typeDesc'].value;
@@ -240,7 +239,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
 
   }
 
-  
+
   modeChange(event: string) {
     if (event === "Add") {
       this.reset();
@@ -289,7 +288,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     }
 
     Close(){
-      
+
     }
     onHelpCilcked() {
       const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
@@ -297,8 +296,6 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
         disableClose: true,
         data: {
           ScrId: "SM607",
-          // Page: "Shift Details",
-          // SlNo: 36,
           SlNo: 0,
           IsPrevious: false,
           IsNext: false,

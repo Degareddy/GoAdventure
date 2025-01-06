@@ -75,6 +75,9 @@ export class TablesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+   this.loadData();
+  }
+  loadData() {
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -87,7 +90,8 @@ export class TablesComponent implements OnInit, OnDestroy {
 
     const taxbody: getPayload = {
       ...this.commonParams(),
-      item: 'TAXTYPES'
+      item: 'TAXTYPES',
+      mode:this.tthForm.get('mode')?.value
     };
     try {
       this.loader.start();
@@ -96,12 +100,28 @@ export class TablesComponent implements OnInit, OnDestroy {
       this.subSink.sink = forkJoin([modes$, taxTypes$]).subscribe(
         ([modesRes, taxTypeRes]: any) => {
           this.loader.stop();
-          // console.log(taxTypeRes);
-          this.modes = modesRes['data'];
+          if(modesRes.status.toUpperCase() === 'SUCCESS'){
+            this.modes = modesRes['data'];
+
+          }
+          else{
+            this.retMessage="Modes List empty!";
+            this.textMessageClass="red";
+
+          }
+          if(taxTypeRes.status.toUpperCase() === 'SUCCESS'){
           this.taxTypesList = taxTypeRes['data'];
+
+          }
+          else{
+            this.retMessage="Tax Types List empty!";
+            this.textMessageClass="red";
+
+          }
         },
         error => {
-          console.error(error);
+          this.retMessage= error.message;
+          this.textMessageClass="red";
         }
       );
     }
@@ -198,6 +218,7 @@ export class TablesComponent implements OnInit, OnDestroy {
     if (event.toUpperCase() === "ADD") {
       this.tthForm.get('taxType')?.disable({ emitEvent: false });
       this.tthForm.get('mode')?.patchValue(event, { emitEvent: false });
+      this.loadData();
     }
     else {
       this.tthForm.get('taxType')?.enable({ emitEvent: false });

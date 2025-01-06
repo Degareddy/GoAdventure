@@ -71,6 +71,9 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadData();
+  }
+  loadData() {
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -83,7 +86,8 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     };
     const yearBody: getPayload = {
       ...this.commonParams(),
-      item: "ANNUALLEAVES"
+      item: "ANNUALLEAVES",
+      mode: this.eligibleLeavesForm.get('mode')?.value
     };
 
     try {
@@ -109,7 +113,6 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
       this.retMessage = ex.message;
       this.textMessageClass = 'red';
     }
-
   }
   prepareCls() {
     this.elgCls.company = this.userDataService.userData.company;
@@ -236,15 +239,11 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
       this.eligibleLeavesForm = this.formInit();
       this.clearMsg();
       this.tranStatus = "";
-      // this.eligibleLeavesForm.get('leaveCode')?.disable();
-      // this.eligibleLeavesForm.get('code')?.enable();
       this.eligibleLeavesForm.get('mode')?.patchValue(event, { emitEvent: false });
-
+      this.loadData();
     }
     else {
-      // this.eligibleLeavesForm.get('leaveCode')?.enable();
       this.eligibleLeavesForm.get('mode')?.patchValue(event, { emitEvent: false });
-      // this.eligibleLeavesForm.get('code')?.disable();
     }
   }
   onHelpCilcked() {

@@ -51,7 +51,7 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
       this.ltDetForm.get('leaveCode')?.disable();
       this.ltDetForm.get('code')?.enable();
       this.ltDetForm.get('mode')?.patchValue(event,{emitEvent:false});
-
+      this.loadData();
     }
     else {
       this.ltDetForm.get('leaveCode')?.enable();
@@ -88,7 +88,8 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
     };
     const leavebody: getPayload = {
       ...this.commonParams(),
-      item: "PAYROLLLEAVETYPES"
+      item: "PAYROLLLEAVETYPES",
+      mode:this.ltDetForm.get('mode')?.value
     };
 
     try {

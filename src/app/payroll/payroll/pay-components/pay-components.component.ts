@@ -47,6 +47,7 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
       this.ppcForm = this.formInit();
       this.ppcForm.get('mode')?.patchValue(event, { emitEvent: false });
       this.ppcForm.get('payList')?.disable();
+      this.loadData();
     }
     else {
       this.ppcForm.get('mode')?.patchValue(event, { emitEvent: false });
@@ -81,6 +82,9 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadData();
+  }
+  loadData(){
     const modebody: getPayload = {
       ...this.commonParams(),
       item: 'SM602',
@@ -88,7 +92,8 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
 
     const yearBody: getPayload = {
       ...this.commonParams(),
-      item: "PAYROLLCOMP"
+      item: "PAYROLLCOMP",
+      mode:this.ppcForm.get('mode')?.value
     };
 
     try {
