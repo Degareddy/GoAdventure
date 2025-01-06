@@ -120,6 +120,7 @@ export class TransferReceiptComponent implements OnInit, OnDestroy {
       this.stockRecptForm.get('tranNo')!.disable({ emitEvent: false });
       this.stockRecptForm.get('tranNo')!.clearValidators();
       this.stockRecptForm.get('tranNo')!.updateValueAndValidity();
+      this.loadData();
     }
     else {
       this.stockRecptForm.controls['mode'].patchValue(event, { emitEvent: false });
@@ -245,17 +246,15 @@ export class TransferReceiptComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const locations: getPayload = {
       ...this.commonParams(),
-      item: "LOCATION"
+      item: "LOCATION",
+      mode: this.stockRecptForm.get('mode')?.value
     };
     const wareHouses: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: "WAREHOUSE",
+      mode: this.stockRecptForm.get('mode')?.value
     };
-    const authBody = {
-      ...this.commonParams(),
-      type: "MATREQ",
-      SelLocation: ""
-    }
+
 
     const requests = [
       this.invService.GetMasterItemsList(locations),
@@ -265,12 +264,24 @@ export class TransferReceiptComponent implements OnInit, OnDestroy {
       if (results[0].status.toUpperCase() === "SUCCESS") {
         this.locations = results[0]['data'];
       }
+      else{
+        this.retMessage="Locations list empty!";
+        this.textMessageClass="red";
+      }
       if (results[1].status.toUpperCase() === "SUCCESS") {
         this.warehouse = results[1]['data'];
+      }
+      else{
+        this.retMessage="Warehouse list empty!";
+        this.textMessageClass="red";
       }
 
     },
       (error: any) => {
+
+          this.retMessage=error.message;
+          this.textMessageClass="red";
+
       }
     );
 

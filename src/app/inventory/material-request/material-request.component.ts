@@ -72,6 +72,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
       this.mrhForm.get('tranNo')!.disable();
       this.mrhForm.get('tranNo')!.clearValidators();
       this.mrhForm.get('tranNo')!.updateValueAndValidity();
+      this.loadData();
     }
     else {
       this.mrhForm.controls['mode'].setValue(event, { emitEvent: false });
@@ -372,7 +373,8 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
     this.locationList = [];
     const locationbody = {
       ...this.commonParams(),
-      item: "LOCATION"
+      item: "LOCATION",
+      mode:this.mrhForm.get('mode')?.value
     };
     try {
       this.subSink.sink = this.invService.GetMasterItemsList(locationbody).subscribe((res: any) => {

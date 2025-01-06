@@ -113,7 +113,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     // const propertyBody = this.createRequestData('PROPERTY');
-    const propertyBody = this.createRequestData('VENTPROP');
+    const propertyBody ={...this.createRequestData('VENTPROP'),mode:this.consumptionForm.get('mode')?.value};
     try {
       const service1 = this.masterService.getModesList({ ...this.commonParams(), item: 'ST913' });
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
@@ -411,6 +411,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       this.consumptionForm.get('tranNo')!.disable();
       this.consumptionForm.get('tranNo')!.clearValidators();
       this.consumptionForm.get('tranNo')!.updateValueAndValidity();
+      this.loadData();
     }
     else {
       this.consumptionForm.controls['mode'].patchValue(event, { emitEvent: false });

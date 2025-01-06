@@ -163,6 +163,7 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
       this.PhysicalStockForm.get('tranNo')!.disable();
       this.PhysicalStockForm.get('tranNo')!.clearValidators();
       this.PhysicalStockForm.get('tranNo')!.updateValueAndValidity();
+      this.loadData();
     }
     else {
       this.PhysicalStockForm.controls['mode'].setValue(event, { emitEvent: false });
@@ -183,7 +184,8 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
     const warehouseBody = {
       ...this.commonParams(),
       item: "WAREHOUSE",
-      SelLocation:this.userDataService.userData.location
+      SelLocation:this.userDataService.userData.location,
+      mode:this.PhysicalStockForm.get('mode')?.value
     };
     this.subSink.sink = this.invService.GetMasterItemsListSelLocation(warehouseBody).subscribe((res: getResponse) => {
       if (res.status.toUpperCase() === "SUCCESS") {

@@ -107,13 +107,13 @@ export class StockTransferComponent implements OnInit, OnDestroy {
   }
 
   modeChange(event: string) {
-    console.log(this.stockTransferForm)
     if (event === "Add") {
       this.clear();
       this.stockTransferForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.stockTransferForm.get('tranNo')!.disable({ emitEvent: false });
       this.stockTransferForm.get('tranNo')!.clearValidators();
       this.stockTransferForm.get('tranNo')!.updateValueAndValidity();
+      this.loadData();
     }
     else {
       this.stockTransferForm.controls['mode'].patchValue(event, { emitEvent: false });
@@ -232,11 +232,13 @@ export class StockTransferComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const locations = {
       ...this.commonParams(),
-      Item: "LOCATION"
+      Item: "LOCATION",
+      mode:this.stockTransferForm.get('mode')?.value
     };
     const wareHouses = {
       ...this.commonParams(),
-      Item: "WAREHOUSE"
+      Item: "WAREHOUSE",
+      mode:this.stockTransferForm.get('mode')?.value
     };
     const requests = [
       this.invService.GetMasterItemsList(locations),
@@ -246,8 +248,16 @@ export class StockTransferComponent implements OnInit, OnDestroy {
       if (results[0].status.toUpperCase() === "SUCCESS") {
         this.locations = results[0]['data'];
       }
+      else{
+        this.retMessage="Locations list empty!";
+        this.textMessageClass="red";
+      }
       if (results[1].status.toUpperCase() === "SUCCESS") {
         this.warehouse = results[1]['data'];
+      }
+      else{
+        this.retMessage="Warehouse list empty!";
+        this.textMessageClass="red";
       }
     },
       (error: any) => {

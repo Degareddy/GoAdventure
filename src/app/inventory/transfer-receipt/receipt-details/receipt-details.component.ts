@@ -121,7 +121,8 @@ export class ReceiptDetailsComponent implements OnInit, OnDestroy {
     this.getTransferReceiptDetails(this.data.tranNo, this.trfDetForm.get('mode')?.value);
     const body: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     this.subSink.sink = this.invService.GetMasterItemsList(body).subscribe((res: getResponse) => {
       if (res.status.toUpperCase() === "SUCCESS") {

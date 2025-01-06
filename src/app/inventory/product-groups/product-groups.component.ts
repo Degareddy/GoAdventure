@@ -71,6 +71,7 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
       }
     });
     this.masterParams.item = 'PRODUCTGROUP';
+
     this.subSink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: getResponse) => {
       if (res.status.toUpperCase() === "SUCCESS") {
         this.typeNamesList = res['data'];

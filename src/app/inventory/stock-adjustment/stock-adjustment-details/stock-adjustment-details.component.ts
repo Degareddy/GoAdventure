@@ -155,7 +155,8 @@ export class StockAdjustmentDetailsComponent implements OnInit, OnDestroy {
   loadData() {
     const warehouseBody: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
 
     this.subSink.sink = this.invService.GetMasterItemsList(warehouseBody).subscribe((res: getResponse) => {

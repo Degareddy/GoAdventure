@@ -22,10 +22,7 @@ import { MaterialRequestComponent } from './material-request/material-request.co
 import { InventoryGuard } from './_guard/inventory.guard';
 import { ProductGroupsComponent } from './product-groups/product-groups.component';
 const routes: Routes = [
-  // {
-  // path: 'inventory',
-  // component: DefaultComponent,
-  // children: [
+
   { path: 'warehouse', component: WarehouseComponent ,canActivate:[InventoryGuard]},
   { path: 'product-parameters', component: ProductParametersComponent ,canActivate:[InventoryGuard]},
   { path: 'products', component: ProductsComponent,canActivate:[InventoryGuard] },
@@ -44,7 +41,6 @@ const routes: Routes = [
   { path: 'stock-dashboard', component: StockDashboardComponent ,canActivate:[InventoryGuard]},
   { path: 'material-request', component: MaterialRequestComponent ,canActivate:[InventoryGuard]}
 ]
-// inventory/material-request
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

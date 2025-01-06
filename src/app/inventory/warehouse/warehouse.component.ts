@@ -101,6 +101,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
       this.warehouseForm.controls['mode'].setValue(event, { emitEvent: false });
       this.warehouseForm.controls['whid'].enable();
       this.warehouseForm.get('list')!.disable({ emitEvent: false });
+      this.loadData();
     }
     else {
       this.warehouseForm.controls['mode'].setValue(event, { emitEvent: false });
@@ -165,7 +166,8 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const body = {
       ...this.commonParams(),
-      Item: "WAREHOUSE"
+      Item: "WAREHOUSE",
+      mode:this.warehouseForm.get('mode')?.value
     };
     try {
       const service1 = this.invService.getModesList(this.masterParams);

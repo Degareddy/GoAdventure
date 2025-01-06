@@ -84,7 +84,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
       if (result) {
         const wrbody = {
           ...this.commonPrams(),
-          item: 'WAREHOUSE'
+          item: 'WAREHOUSE',
+          mode:this.productForm.get('mode')?.value,
         }
         this.subSink.sink = this.invService.GetMasterItemsList(wrbody).subscribe((res: any) => {
           if (res.status.toUpperCase() === "SUCCESS") {
@@ -104,11 +105,11 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
   loadData() {
     const service1 = this.invService.getModesList({ ...this.commonPrams(), item: 'SM303' });
-    const service2 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'PRODUCTS' });
-    const service3 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'VAT' });
-    const service4 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'UOM' });
-    const service5 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'WAREHOUSE' });
-    const service6 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'PRODUCTGROUP' });
+    const service2 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'PRODUCTS',  mode:this.productForm.get('mode')?.value, });
+    const service3 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'VAT',  mode:this.productForm.get('mode')?.value, });
+    const service4 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'UOM',  mode:this.productForm.get('mode')?.value, });
+    const service5 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'WAREHOUSE',  mode:this.productForm.get('mode')?.value, });
+    const service6 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'PRODUCTGROUP',  mode:this.productForm.get('mode')?.value, });
     this.loader.start();
     this.subSink.sink = forkJoin([service1, service2, service3, service4, service5, service6]).subscribe(
       (results: any[]) => {
@@ -385,6 +386,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.productForm = this.formInit();
       this.productForm.controls['mode'].setValue(event, { emitEvent: false });
       this.productForm.controls['productGroup'].disable();
+      this.loadData();
     }
     else {
       this.productForm.controls['mode'].setValue(event, { emitEvent: false });

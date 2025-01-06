@@ -161,17 +161,20 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
 
     const warehouseBody: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
 
     const mainWorksBody: getPayload = {
       ...this.commonParams(),
-      item: "WRKMAIN"
+      item: "WRKMAIN",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
 
     const subWorksBody: getPayload = {
       ...this.commonParams(),
-      item: "WORKTYPE"
+      item: "WORKTYPE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
 
     this.subSink.sink = this.invService.GetMasterItemsList(warehouseBody).subscribe((res: getResponse) => {
