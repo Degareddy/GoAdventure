@@ -654,18 +654,22 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     const service = this.saleService.GetMasterItemsList({
       ...this.commonParams(),
       item: 'PAYMODE',
+      mode:this.receiptsForm.get('mode')?.value
     });
     const service1 = this.saleService.GetMasterItemsList({
       ...this.commonParams(),
       item: 'CURRENCY',
+      mode:this.receiptsForm.get('mode')?.value
     });
     const service2 = this.saleService.GetMasterItemsList({
       ...this.commonParams(),
       item: 'BANK',
+      mode:this.receiptsForm.get('mode')?.value
     });
     const service3 = this.saleService.GetMasterItemsList({
       ...this.commonParams(),
       item: 'RCTPMT',
+      mode:this.receiptsForm.get('mode')?.value
     });
     // this.loader.start();
     this.subSink.sink = await forkJoin([
@@ -720,6 +724,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
         emitEvent: false,
       });
       this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
     } else {
       this.receiptsForm.controls['receiptNo'].enable();
       this.receiptsForm.controls['mode'].patchValue(event, {

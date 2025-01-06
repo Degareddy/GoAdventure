@@ -115,7 +115,8 @@ export class CustomerContactsComponent implements OnInit, OnDestroy {
 
     const body = {
       ...this.commonParams(),
-      item: 'NATIONAL'
+      item: 'NATIONAL',
+      ...(this.mode === "Add" ? { mode: this.mode } : {})
     };
     this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res:any)=>{
         if(res.status.toUpperCase()==="SUCCESS"){
@@ -189,7 +190,7 @@ export class CustomerContactsComponent implements OnInit, OnDestroy {
     }
   }
   countryChanged(country:any){
-    
+
   }
   refresh(code: any, serialNum: number, mode: string) {
     this.mode = mode || this.mode;

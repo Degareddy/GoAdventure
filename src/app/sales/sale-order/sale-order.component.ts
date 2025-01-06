@@ -93,15 +93,18 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY"
+      item: "CURRENCY",
+      mode:this.saleOrderForm.get('mode')?.value
     };
     const payTerm: getPayload = {
       ...this.commonParams(),
-      item: "PAYTERM"
+      item: "PAYTERM",
+      mode:this.saleOrderForm.get('mode')?.value
     };
     const pricing: getPayload = {
       ...this.commonParams(),
-      item: "PRICING"
+      item: "PRICING",
+      mode:this.saleOrderForm.get('mode')?.value
     };
     try {
       this.loader.start();
@@ -553,6 +556,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       this.saleOrderForm.get('saleNo')!.patchValue('');
       this.saleOrderForm.get('saleNo')!.disable();
       this.saleOrderForm.get('saleNo')!.clearValidators();
+      this.loadData();
     }
     else {
       this.saleOrderForm.get('mode')!.patchValue(event, { emitEvent: false });

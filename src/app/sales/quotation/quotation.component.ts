@@ -75,6 +75,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
       this.quotationForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.quotationForm.get('tranNo')!.patchValue('');
       this.quotationForm.get('tranNo')!.disable();
+      this.loadData();
     }
     else {
       this.quotationForm.get('mode')!.patchValue(event, { emitEvent: false });
@@ -168,12 +169,14 @@ export class QuotationComponent implements OnInit, OnDestroy {
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY"
+      item: "CURRENCY",
+      mode:this.quotationForm.get('mode')!.value
 
     };
     const payTerm: getPayload = {
       ...this.commonParams(),
-      item: "PAYTERM"
+      item: "PAYTERM",
+      mode:this.quotationForm.get('mode')!.value
     };
     const service1 = this.invService.getModesList(modebody);
     const service2 = this.invService.GetMasterItemsList(curbody);

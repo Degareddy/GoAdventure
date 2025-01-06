@@ -143,11 +143,13 @@ export class DirectInvoiceComponent implements OnInit, OnDestroy {
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY"
+      item: "CURRENCY",
+      mode:this.saleForm.get('mode')?.value
     };
     const payTerm = {
       ...this.commonParams(),
-      Item: "PAYTERM"
+      Item: "PAYTERM",
+      mode:this.saleForm.get('mode')?.value
     };
     try {
       this.loader.start();
@@ -339,6 +341,7 @@ export class DirectInvoiceComponent implements OnInit, OnDestroy {
       this.saleForm.get('tranNo')!.patchValue('');
       this.saleForm.get('tranNo')!.disable();
       this.saleForm.get('tranNo')!.clearValidators();
+      this.loadData();
     }
     else {
       this.saleForm.get('mode')!.patchValue(event, { emitEvent: false });

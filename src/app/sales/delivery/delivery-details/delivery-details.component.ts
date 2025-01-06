@@ -84,7 +84,8 @@ export class DeliveryDetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const body = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     this.subSink.sink = this.invService.GetMasterItemsList(body).subscribe((res: any) => {
       if (res.status.toUpperCase() === "SUCCESS") {

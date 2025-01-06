@@ -182,11 +182,16 @@ export class DirectInvoiceDetailsComponent implements OnInit, OnDestroy {
     this.tranStatus = this.data.status;
     const body: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: "WAREHOUSE",
+      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
     };
     this.subSink.sink = this.invService.GetMasterItemsList(body).subscribe((res: getResponse) => {
       if (res.status.toUpperCase() === "SUCCESS") {
         this.warehouseList = res.data;
+      }
+      else{
+        this.retMessage="Warehouse list empty!";
+        this.textMessageClass="red";
       }
     });
   }
@@ -206,7 +211,7 @@ export class DirectInvoiceDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.salesService.getInvoiceDetailsData(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != 'FAIL') {
+        if (res.status.toUpperCase() != 'FAIL' && res.status.toUpperCase() != 'ERROR') {
           this.rowData = res.data;
         } else {
           this.retMessage = res.message;
