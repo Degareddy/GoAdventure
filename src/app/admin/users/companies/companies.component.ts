@@ -94,7 +94,8 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   loadData() {
     const companybody: getPayload = {
       ...this.commonParams(),
-      item: "COMPANY"
+      item: "COMPANY",
+      mode:this.data.mode
 
     };
     const mappedCompanyList = {

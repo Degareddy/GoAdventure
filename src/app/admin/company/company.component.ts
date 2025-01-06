@@ -76,6 +76,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
       this.enableFormControls();
       this.retMessage = "";
       this.isDisabled = false;
+      this.loadData();
     } else {
       this.companyForm.controls['mode'].patchValue(event, { emitEvent: false, onlySelf: false });
       this.companyForm.controls['companyList'].enable({ emitEvent: false, onlySelf: false })
@@ -105,7 +106,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
     this.companyCls.user = this.userDataService.userData.userID;
     this.companyCls.item = this.userDataService.userData.company;
     const modebody = this.createRequestData("SA1");
-    const companybody = this.createRequestData("COMPANY");
+    const companybody = {...this.createRequestData("COMPANY"),mode:this.companyForm.get('mode')?.value};
     try {
       const modes$ = this.masterService.getModesList(modebody);
       const company$ = this.adminService.GetMasterItemsList(companybody);

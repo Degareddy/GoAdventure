@@ -175,6 +175,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       this.userForm = this.formInit();
       this.userForm.controls['mode'].patchValue(event, { emitEvent: false });
      this.displayMessage("","");
+     this.loadData();
     }
     else {
       this.userForm.controls['user'].enable();
@@ -215,9 +216,9 @@ async  ngOnInit() {
     this.userForm.get('user')!.patchValue('');
   }
  async loadData() {
-    const service1 = this.adminService.GetMasterItemsList(this.createRequestData("PROFILE"));
-    const service2 = this.adminService.GetMasterItemsList(this.createRequestData("COMPANY"));
-    const service3 = this.adminService.GetMasterItemsList(this.createRequestData("LOCATION"));
+    const service1 = this.adminService.GetMasterItemsList({...this.createRequestData("PROFILE"),mode:this.userForm.get('mode')!.value});
+    const service2 = this.adminService.GetMasterItemsList({...this.createRequestData("COMPANY"),mode:this.userForm.get('mode')!.value});
+    const service3 = this.adminService.GetMasterItemsList({...this.createRequestData("LOCATION"),mode:this.userForm.get('mode')!.value});
     this.subSink.sink = await forkJoin([service1, service2, service3]).subscribe(
       (results: any[]) => {
         const res1 = results[0];

@@ -128,7 +128,8 @@ export class PropertiesComponent implements OnInit, OnDestroy {
     this.getUserBranchDetails(this.data.userId);
     const branchBody: getPayload = {
       ...this.commonParams(),
-      item: 'CMPUSERBRANCH'
+      item: 'CMPUSERBRANCH',
+      mode:this.data.mode
     };
     try {
       this.subsink.sink = this.masterService.GetMasterItemsList(branchBody).subscribe((res: getResponse) => {

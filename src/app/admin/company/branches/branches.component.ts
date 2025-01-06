@@ -113,6 +113,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
       ...this.commonParams(),
       company:this.data.company,
       item: "LOCATION",
+      mode:this.data.mode
     };
     try {
       this.subSink.sink = this.adminService.GetMasterItemsList(lcnbody).subscribe((res: getResponse) => {
