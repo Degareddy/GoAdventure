@@ -179,9 +179,16 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     }
     return null;
   }
-  private parseCurrency(value: string): number {
-    return parseFloat(value.replace(/,/g, '')) || 0;
+  private parseCurrency(value: any): number {
+    if (typeof value === 'string') {
+      return parseFloat(value.replace(/,/g, '')) || 0;
+    } else if (typeof value === 'number') {
+      return value; // If already a number, return it as is
+    } else {
+      return 0; // Handle null, undefined, or unexpected types
+    }
   }
+  
 
   private setCommonValues(mode: string) {
     const formValues = this.invDetForm.value;
@@ -213,10 +220,12 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   apply() {
-    if (this.invDetForm.invalid) {
-      return;
-    }
-    else {
+    debugger;
+    // if (!this.invDetForm.invalid) {
+    //   debugger;
+    //   return;
+    // }
+     {
       if (this.invDetForm.get('isRepeat')?.value) {
         const message = `The current invoice amount of ${this.invDetForm.controls['itemType'].value} ${this.invDetForm.controls['net'].value} will be applied to subsequent invoices.`;
         const dialogData = new ConfirmDialogModel("Confirm repeat invoice?", message);
