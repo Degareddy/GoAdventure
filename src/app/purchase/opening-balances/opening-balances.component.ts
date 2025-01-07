@@ -189,7 +189,7 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
       tranNo: [''],
       tranDate: [new Date(), Validators.required],
       balType: ['', Validators.required],
-      notes: ['', Validators.required]
+      notes: ['']
     })
   }
   commonParams() {

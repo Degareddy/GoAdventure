@@ -1199,7 +1199,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.subSink.sink = await this.saleService.GetClientBalances(body).subscribe((res: any) => {
         if (res.status.toUpperCase() === 'SUCCESS') {
           if (res && res.data && res.data.length === 1) {
-            if (this.userDataService.userData.userID === res.data[0].clientCode) {
+            if (this.userDataService.userData.userID === res.data[0].clientCode && this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
               this.displayMessage("Error: You can't make payment to yourself.", "red");
               return;
             }
@@ -1231,7 +1231,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
               dialogRef.afterClosed().subscribe((result) => {
                 // console.log(result);
                 if (result != true) {
-                  if (this.userDataService.userData.userID === result.clientCode) {
+                  if (this.userDataService.userData.userID === res.data[0].clientCode && this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
                     this.displayMessage("Error: You can't make payment to yourself.", "red");
                     this.dialogOpen = false;
                     return;
