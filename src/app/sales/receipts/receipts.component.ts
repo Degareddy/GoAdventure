@@ -301,7 +301,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   receiptTypeChange(event: string) {
-    console.log(event);
+    // console.log(event);
     if (event.toUpperCase() === 'RECEIVERENT') {
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
@@ -309,7 +309,13 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
-      this.Report = 'CLIENTBAL'
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+      
     }
     else if (event.toUpperCase() === 'PAYRENT') {
       this.filteredpayMode = "";
@@ -318,7 +324,12 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
-      this.Report = 'CLIENTBAL'
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
     }
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
 
@@ -328,10 +339,19 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
-      this.Report = 'UTILBAL'
+      this.Report = 'UTILBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
     }
     else {
-      this.receiptsForm.controls['mode'].patchValue('View');
+      this.receiptsForm.controls['mode'].patchValue('View', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].enable();
+      this.loadData();
       this.receiptsForm.controls['rctType'].patchValue('');
       this.receiptsForm.controls['tranFor'].patchValue('');
       this.receiptsForm.controls['clientType'].patchValue("");
@@ -718,7 +738,15 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   modeChange(event: string) {
-    if (event === 'Add') {
+    // if(event === 'Other'){
+    //   this.receiptsForm.controls['mode'].patchValue(event, {
+    //     emitEvent: false,
+    //   });
+    //   this.receiptsForm.controls['receiptNo'].disable();
+    //   this.loadData();
+    // }
+    
+  if (event === 'Add') {
       this.clear();
       this.receiptsForm.controls['mode'].patchValue(event, {
         emitEvent: false,

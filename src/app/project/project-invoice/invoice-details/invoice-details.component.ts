@@ -183,9 +183,9 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     if (typeof value === 'string') {
       return parseFloat(value.replace(/,/g, '')) || 0;
     } else if (typeof value === 'number') {
-      return value; // If already a number, return it as is
+      return value; 
     } else {
-      return 0; // Handle null, undefined, or unexpected types
+      return 0; 
     }
   }
   

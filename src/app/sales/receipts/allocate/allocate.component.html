@@ -7,92 +7,147 @@
       <mat-icon class="mr-1">check_box</mat-icon>
       <b>{{this.data.search | titlecase}}</b><b class="ml-2 data text-sm">{{data.tranNo}}</b>
     </div>
+    <div class="flex items-center text-white text-sm">
+      <mat-icon class="mr-1">check_box</mat-icon>
+      <b>Bal</b><b class="ml-2 data text-sm">{{remBal}}</b>
+    </div>
+    
     <div class="flex items-end space-x-1 mb-2.5">
       <button mat-raised-button color="accent" class=btnUp (click)="reAllocate()">
         <mat-icon>clear_all</mat-icon>Re-Allocate</button>
     </div>
+    
+    
   </div>
 </div>
-<div class="mat-card">
-  <table mat-table [dataSource]="dataSource" class="mat-table" matSort style="max-height: 300px;">
-    <!-- <ng-container matColumnDef="SlNo">
+ <!-- <ng-container matColumnDef="SlNo">
       <th mat-header-cell *matHeaderCellDef>S.No</th>
       <td mat-cell *matCellDef="let element">
         <mat-checkbox [(ngModel)]="element.SlNo" [ngModelOptions]="{standalone: true}"
           (click)="$event.stopPropagation()"></mat-checkbox>
       </td>
     </ng-container> -->
-    <ng-container matColumnDef="tranNo">
-      <th mat-header-cell *matHeaderCellDef> Tran No </th>
-      <td mat-cell *matCellDef="let element"> {{element.tranNo}} </td>
-    </ng-container>
-    <ng-container matColumnDef="partyName">
-      <th mat-header-cell *matHeaderCellDef> Party </th>
-      <td mat-cell *matCellDef="let element"> {{element.partyName}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="propName">
-      <th mat-header-cell *matHeaderCellDef> Property </th>
-      <td mat-cell *matCellDef="let element"> {{element.propName}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="blockName">
-      <th mat-header-cell *matHeaderCellDef> Block </th>
-      <td mat-cell *matCellDef="let element"> {{element.blockName}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="unitName">
-      <th mat-header-cell *matHeaderCellDef> Unit </th>
-      <td mat-cell *matCellDef="let element"> {{element.unitName}} </td>
-    </ng-container>
-    <ng-container matColumnDef="tranDate">
-      <th mat-header-cell *matHeaderCellDef> Tran Date </th>
-      <td mat-cell *matCellDef="let element"> {{formatDate(element.tranDate)}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="dueDate">
-      <th mat-header-cell *matHeaderCellDef> Due Date </th>
-      <td mat-cell *matCellDef="let element"> {{formatDate(element.dueDate)}} </td>
-    </ng-container>
-    <ng-container matColumnDef="actAmount">
-      <th mat-header-cell *matHeaderCellDef> Act Amount </th>
-      <td mat-cell *matCellDef="let element"> {{element.actAmount | number:'1.2-2'}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="dueAmount">
-      <th mat-header-cell *matHeaderCellDef> Due Amount </th>
-      <td mat-cell *matCellDef="let element"> {{element.dueAmount| number:'1.2-2'}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="allocatedAmount">
-      <th mat-header-cell *matHeaderCellDef> Allocated Amount </th>
-      <td mat-cell *matCellDef="let element;let i=index">
-        <input matInput [(ngModel)]="element.allocatedAmount" placeholder="Enter Amount" separator appNumberFormat
-          [ngModelOptions]="{standalone: true}" (focusout)="amountChanged(element,i)" class="right-align-input"
-          [disabled]="element.remarks === 'Allocation is done'"
-          style="background-color: rgb(214, 232, 232);width:120px;border: 1px solid;" />
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="balAmount">
-      <th mat-header-cell *matHeaderCellDef> Balance Amount </th>
-      <td mat-cell *matCellDef="let element"> {{element.balAmount | number:'1.2-2'}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="remarks">
-      <th mat-header-cell *matHeaderCellDef>Remarks</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-icon *ngIf="element.remarks === 'Allocation is done'"
-          style="color: green; margin:0">check_circle</mat-icon>
-        <mat-icon *ngIf="element.remarks === 'Yet to allocate'" color="warn">hourglass_empty</mat-icon>
-        {{element.remarks}}
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns; let i=index;"></tr>
-  </table>
-</div>
+    <div class="mat-card">
+      <!-- Scrollable container -->
+      <div style="max-height: 300px; overflow-y: auto; overflow-x: hidden; display: block;">
+        <table mat-table [dataSource]="dataSource" class="mat-table" matSort>
+          <!-- Select column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox 
+                (change)="toggleAllSelection($event.checked)" 
+                [checked]="isAllSelected()" 
+                [disabled]="true">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox 
+                [(ngModel)]="element.checked" 
+                [ngModelOptions]="{standalone: true}" 
+                [disabled]="isDis(element)" 
+                (change)="toggleSelection(element)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+    
+          <!-- Tran No -->
+          <ng-container matColumnDef="tranNo">
+            <th mat-header-cell *matHeaderCellDef> Tran No </th>
+            <td mat-cell *matCellDef="let element">  </td>
+          </ng-container>
+    
+          <!-- Party Name -->
+          <ng-container matColumnDef="partyName">
+            <th mat-header-cell *matHeaderCellDef> Party </th>
+            <td mat-cell *matCellDef="let element"> {{element.partyName}} </td>
+          </ng-container>
+    
+          <!-- Property Name -->
+          <ng-container matColumnDef="propName">
+            <th mat-header-cell *matHeaderCellDef> Property </th>
+            <td mat-cell *matCellDef="let element"> {{element.propName}} </td>
+          </ng-container>
+    
+          <!-- Block Name -->
+          <ng-container matColumnDef="blockName">
+            <th mat-header-cell *matHeaderCellDef> Block </th>
+            <td mat-cell *matCellDef="let element"> {{element.blockName}} </td>
+          </ng-container>
+    
+          <!-- Unit Name -->
+          <ng-container matColumnDef="unitName">
+            <th mat-header-cell *matHeaderCellDef> Unit </th>
+            <td mat-cell *matCellDef="let element"> {{element.unitName}} </td>
+          </ng-container>
+    
+          <!-- Transaction Date -->
+          <ng-container matColumnDef="tranDate">
+            <th mat-header-cell *matHeaderCellDef> Tran Date </th>
+            <td mat-cell *matCellDef="let element"> {{formatDate(element.tranDate)}} </td>
+          </ng-container>
+    
+          <!-- Due Date -->
+          <ng-container matColumnDef="dueDate">
+            <th mat-header-cell *matHeaderCellDef> Due Date </th>
+            <td mat-cell *matCellDef="let element"> {{formatDate(element.dueDate)}} </td>
+          </ng-container>
+    
+          <!-- Actual Amount -->
+          <ng-container matColumnDef="actAmount">
+            <th mat-header-cell *matHeaderCellDef> Act Amount </th>
+            <td mat-cell *matCellDef="let element"> {{element.actAmount | number:'1.2-2'}} </td>
+          </ng-container>
+    
+          <!-- Due Amount -->
+          <ng-container matColumnDef="dueAmount">
+            <th mat-header-cell *matHeaderCellDef> Due Amount </th>
+            <td mat-cell *matCellDef="let element"> {{element.dueAmount | number:'1.2-2'}} </td>
+          </ng-container>
+    
+          <!-- Allocated Amount -->
+          <ng-container matColumnDef="allocatedAmount">
+            <th mat-header-cell *matHeaderCellDef> Allocated Amount </th>
+            <td mat-cell *matCellDef="let element; let i = index">
+              <input
+                matInput
+                [(ngModel)]="element.allocatedAmount"
+                placeholder="Enter Amount"
+                separator
+                appNumberFormat
+                [ngModelOptions]="{ standalone: true }"
+                (focusout)="amountChanged(element, i)"
+                (input)="checkAllocatedAmount(element)"
+                class="right-align-input"
+                [disabled]="isDis(element)"
+                style="background-color: rgb(214, 232, 232); width: 120px; border: 1px solid;"
+              />
+            </td>
+          </ng-container>
+    
+          <!-- Balance Amount -->
+          <ng-container matColumnDef="balAmount">
+            <th mat-header-cell *matHeaderCellDef> Balance Amount </th>
+            <td mat-cell *matCellDef="let element"> {{element.balAmount | number:'1.2-2'}} </td>
+          </ng-container>
+    
+          <!-- Remarks -->
+          <ng-container matColumnDef="remarks">
+            <th mat-header-cell *matHeaderCellDef> Remarks </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-icon *ngIf="element.remarks === 'Allocation is done'" 
+                style="color: green; margin:0">check_circle</mat-icon>
+              <mat-icon *ngIf="element.remarks === 'Yet to allocate'" color="warn">hourglass_empty</mat-icon>
+              {{element.remarks}}
+            </td>
+          </ng-container>
+    
+          <!-- Table Rows -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index;"></tr>
+        </table>
+      </div>
+    </div>
+    
 
 <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
 <div class="btnAlignment">
@@ -103,3 +158,6 @@
     <mat-icon>cancel</mat-icon><b>Close</b>
   </button>
 </div>
+
+
+

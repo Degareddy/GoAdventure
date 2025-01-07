@@ -11,6 +11,7 @@ import { concatMap, catchError } from 'rxjs/operators';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { debug } from 'console';
+import { MatSnackBar } from '@angular/material/snack-bar';
 export interface Transaction {
   company: string;
   location: string;
@@ -31,6 +32,9 @@ export interface Transaction {
   styleUrls: ['./allocate.component.css']
 })
 export class AllocateComponent implements OnInit, OnDestroy {
+checkAllocatedAmount(_t152: any) {
+// throw new Error('Method not implemented.');
+}
   formName: string = "";
   allocateForm!: FormGroup;
   retMessage: string = "";
@@ -41,6 +45,8 @@ export class AllocateComponent implements OnInit, OnDestroy {
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
   private subSink!: SubSink;
+  isCheck:boolean=false;
+  remBal:number=0;
   pageSizes = [50, 50, 100, 250, 500];
   pageSize = 50;
   altered: boolean = false;
@@ -103,11 +109,11 @@ export class AllocateComponent implements OnInit, OnDestroy {
   }
   ];
 
-  displayedColumns: string[] = ['propName','blockName','unitName', 'tranNo', 'tranDate', 'dueDate', 'actAmount', 'dueAmount', 'allocatedAmount', 'balAmount', 'remarks'];
+  displayedColumns: string[] = ['select','propName','blockName','unitName', 'tranNo', 'tranDate', 'dueDate', 'actAmount', 'dueAmount', 'allocatedAmount', 'balAmount', 'remarks'];
   dataSource: any = [];
   initialTotalAllocated: number = 0;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: {
+  constructor(private snackBar: MatSnackBar,@Inject(MAT_DIALOG_DATA) public data: {
     mode: string,
     tranNo: string,
     search: string,
@@ -129,9 +135,9 @@ export class AllocateComponent implements OnInit, OnDestroy {
     this.getAllocationData(this.data.tranNo, this.data.mode, true,this.data.tranFor);
     this.loader.stop();
   }
-  toggleSelection(row: Transaction) {
-    row.selected = !row.selected;
-  }
+  // toggleSelection(row: Transaction) {
+  //   row.selected = !row.selected;
+  // }
 
   formatDate(date: string): string {
     const formattedDate = new Date(date);
@@ -143,6 +149,13 @@ export class AllocateComponent implements OnInit, OnDestroy {
   }
 
   amountChanged(element: any, i: number) {
+    
+    if(parseFloat(element.allocatedAmount) > 0.0 || parseFloat(element.allocatedAmount)>0){
+      element.checked=true;
+    }
+    else{
+      element.checked=false;
+    }
     this.displayMessage("", "");
     element.SlNo = true;
     const safeParse = (value: any) => {
@@ -156,16 +169,33 @@ export class AllocateComponent implements OnInit, OnDestroy {
     this.dataSource[i].allocatedAmount = element.allocatedAmount;
     totalAllocated = this.dataSource.map((item: any) => safeParse(item.allocatedAmount)).reduce((a: any, b: any) => a + b, 0);
     // totalAllocated = this.initialTotalAllocated - totalAllocated;
-    // debugger;
+    // 
     if (totalAllocated <= totalAmount) {
-      const remainingAmount = totalAmount - totalAllocated;
+      
+      
+      let remainingAmount = totalAmount - totalAllocated;
       element.balAmount = safeParse(element.dueAmount) - safeParse(element.allocatedAmount);
-      if (i + 1 < this.dataSource.length) {
-        this.dataSource[i + 1].allocatedAmount = safeParse(this.dataSource[i + 1].allocatedAmount) + remainingAmount;
+      // if (i + 1 < this.dataSource.length) {
+      
+      // }
+        if(remainingAmount >this.dataSource[i + 1].dueAmount){
+          
+          // this.dataSource[i + 1].allocatedAmount = safeParse(this.dataSource[i + 1].dueAmount) ;
+          // remainingAmount=remainingAmount-safeParse(this.dataSource[i + 1].allocatedAmount)
+        }
+        else{
+          
+          // this.dataSource[i + 1].allocatedAmount =remainingAmount;
+
+         if(this.remBal>0 && remainingAmount>0 && element.allocatedAmount < this.remBal  && element.allocatedAmount < remainingAmount ){
+          remainingAmount=remainingAmount-element.allocatedAmount ;
+         }
+        }
+        // this.dataSource[i + 1].allocatedAmount = safeParse(this.dataSource[i + 1].allocatedAmount) + remainingAmount;
         this.dataSource[i + 1].balAmount = safeParse(this.dataSource[i + 1].actAmount) - safeParse(this.dataSource[i + 1].allocatedAmount);
         // element.SlNo=true;
         this.dataSource[i + 1].SlNo = true;
-      }
+      this.remBal=remainingAmount;
     }
     else {
       this.displayMessage("The allocated amount exceeds the available transaction amount.", "red");
@@ -196,9 +226,35 @@ export class AllocateComponent implements OnInit, OnDestroy {
     // console.log(this.data);
     if (this.data.tranNo) {
       this.getAllocationData(this.data.tranNo, this.data.mode, false,this.data.tranFor);
-
     }
+    for(let j=0;j<this.dataSource.length;j++){
+      if(this.dataSource[j].allocatedAmount >0){
+        this.dataSource[j].checked=true;
+        this.dataSource[j]
+      }
+      else{
+        this.dataSource[j].checked=false;
+      }
+    }
+    
 
+  }
+    isDis(element:any):boolean{
+    if(element.allocatedAmount >0){
+      element.checked=true;
+      return false;
+    }
+    else if(element.allocatedAmount <= 0 && this.remBal <=0){
+      element.checked=false;
+      return true;
+    }
+    else if(this.remBal > 0){
+      return false
+    }
+    else if(element.remarks === 'Allocation is done'){
+      return true;
+    }
+    return false
   }
   getAllocationData(tranNo: string, mode: string, reAllocate: boolean, tranFor:string) {
     const body = {
@@ -214,6 +270,7 @@ export class AllocateComponent implements OnInit, OnDestroy {
       this.subSink.sink = this.saleService.FetchPaymentsReceiptsToAllocate(body).subscribe((res: any) => {
         if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
           this.dataSource = res.data;
+          
           const safeParse = (value: any) => {
             const parsedValue = parseFloat(value?.toString().replace(/,/g, '') || '0');
             return isNaN(parsedValue) ? 0 : parsedValue;
@@ -230,6 +287,73 @@ export class AllocateComponent implements OnInit, OnDestroy {
     catch (ex: any) {
       this.displayMessage("Exception: " + ex.message, "red");
     }
+  }
+  toggleAllSelection(checked: boolean): void {
+    this.dataSource.forEach((item: { checked: boolean; allocatedAmount: null; dueAmount: any; }) => {
+      item.checked = checked;
+      if (checked) {
+        item.allocatedAmount = item.dueAmount;
+      } else {
+        item.allocatedAmount = null;
+      }
+    });
+  }
+  
+  toggleSelection(element: any): void {
+    
+    if(!element.checked){
+      this.remBal = this.remBal + element.allocatedAmount
+    }
+    // if(element.checked){
+    //   if()
+    //   this.remBal = this.remBal + element.allocatedAmount
+    // }
+    if (this.remBal === 0 && element.checked) {
+      this.snackBar.open('Balance amount is 0 or negative', 'Close', {
+        duration: 5000, // Popup will stay for 5 seconds
+        panelClass: ['mat-toolbar', 'mat-warn'] // You can customize the style, like using 'mat-warn' for a warning color
+      });
+      element.checked = false;
+    }
+    else{
+      
+      if(element.checked && this.remBal >= parseFloat(element.dueAmount)){
+        element.allocatedAmount=(element.dueAmount);
+        this.remBal=this.remBal- (element.allocatedAmount);
+        element.balAmount=0;
+      }
+      else if(element.checked && this.remBal < parseFloat(element.dueAmount)){
+        element.allocatedAmount = this.remBal;
+        this.remBal=0;
+        element.balAmount=element.dueAmount-element.allocatedAmount;
+      }
+      else if(!element.checked){
+        element.allocatedAmount=0;
+        element.balAmount=element.dueAmount;
+      }
+    }
+    // if(this.remBal >0){
+    //   for(let j=0;j<element.length();j++){
+    //     if(element[j].checked || element[j].allocatedAmount>0){
+    //       element[j].checked=true;
+    //     }
+    //     else if(this.remBal <=0 && !element[j].checked){
+    //       element[j].checked= false;
+    //     }
+    // }
+    
+    // }
+    
+    // console.log(element);
+    // if (element.checked) {
+    //   element.allocatedAmount = element.dueAmount;
+    // } else {
+    //   element.allocatedAmount = null;
+    // }
+  }
+  
+  isAllSelected(): boolean {
+    return this.dataSource.every((item: { checked: any; }) => item.checked);
   }
 
   onSubmit(): void {
@@ -312,4 +436,5 @@ export class AllocateComponent implements OnInit, OnDestroy {
   onRowSelected(event: any) {
     this.dialogRef.close(event.data.tranNo);
   }
+
 }

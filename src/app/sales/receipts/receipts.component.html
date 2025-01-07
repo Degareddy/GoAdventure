@@ -95,7 +95,7 @@
         <div class="matfield">
           <mat-form-field appearance="outline" style="width: 99%;" >
             <mat-label>Receipt No</mat-label>
-            <input matInput type="text" placeholder="Receipt No" formControlName="receiptNo" />
+            <input matInput type="text" placeholder="Receipt No" formControlName="receiptNo" [disabled]="receiptsForm.get('mode')!.value == 'Add'" />
             <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('receiptNo')!.value"
               (click)="receiptsForm.get('receiptNo')?.setValue('')" type="button">
               <mat-icon class="mat-clear-icon">clear</mat-icon>
