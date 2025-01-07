@@ -158,7 +158,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     this.userProfile = this.userDataService.userData.userProfile;
     if (this.userProfile.toUpperCase() === 'CMPUSER') {
       this.filteredPartyTypeList = this.partyTypeList.filter(item =>
-        ['*Tenants', '*Landlords', 'Tenants', 'Landlords', 'All'].includes(item.itemCode)
+        ['*Tenants', '*Landlords', 'Tenants', 'Landlords', 'All','CareTaker'].includes(item.itemCode)
       );
     } else {
       this.filteredPartyTypeList = this.partyTypeList;
