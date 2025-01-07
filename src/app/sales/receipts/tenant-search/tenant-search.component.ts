@@ -135,6 +135,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       }
     });
     this.loadData();
+    this. search();
   }
 
   private createRequestData(item: string): any {
@@ -153,7 +154,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       property: [''],
       block: [''],
       flat: [''],
-      isSummary: [true]
+      isSummary: [false]
     });
   }
   loadData() {
