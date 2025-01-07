@@ -31,6 +31,7 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
   patyTypeList: Item[] = [
     { itemCode: 'OPNBAL', itemName: 'Opening Balance' },
     { itemCode: 'LOANBAL', itemName: 'Loan Balance' },
+    { itemCode: 'UTILITY', itemName: 'Utility' },
   ];
   rowData: any = [];
   masterParams!: MasterParams;
