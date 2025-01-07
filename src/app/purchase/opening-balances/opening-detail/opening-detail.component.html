@@ -11,6 +11,15 @@
       <div class="col-1">
         <mat-label>SlNo:&nbsp;<b class="data">{{slNum}}</b></mat-label>
       </div>
+      <div class="matfield" >
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Client Type</mat-label>
+          <mat-select formControlName="clientType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of clientTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
       <div class="col-3">
         <mat-form-field appearance="outline" class="search">
           <mat-label for="partyName" class="mat-label-class">Party Name</mat-label>

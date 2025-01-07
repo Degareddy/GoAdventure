@@ -57,6 +57,16 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       },
     },
   ];
+  clientTypeList: Item[] = [
+    { itemCode: 'TENANT', itemName: 'Tenant' },
+    { itemCode: 'STAFF', itemName: 'Staff' },
+    { itemCode: 'LANDLORD', itemName: 'Landlord' },
+    { itemCode: 'VENDOR', itemName: 'Vendor' },
+    { itemCode: 'CUSTOMER', itemName: 'Customer' },
+    { itemCode: 'SUPPLIER', itemName: 'Supplier' },
+    { itemCode: 'EMPLOYEE', itemName: 'Employee' },
+
+  ];
   currency: Item[] = [];
   constructor(private fb: FormBuilder, protected purchorddetervice: PurchaseService, private saleService: SalesService,
     public dialog: MatDialog, private userDataService: UserDataService, private utlService: UtilitiesService,
@@ -351,7 +361,8 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       // partyType: ['', Validators.required],
       partyName: ['', Validators.required],
       balAmount: ['0.00', Validators.required],
-      currency: ['', Validators.required]
+      currency: ['', Validators.required],
+      clientType:['clientType']
       // CrAmount: ['0.00', Validators.required],
     })
 
@@ -359,7 +370,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   searchParty() {
     const body = {
       ...this.commonParams(),
-      Type: "ALL",
+      Type: this.openinBalDetForm.get('clientType')?.value,
       item: this.openinBalDetForm.controls['partyName'].value || "",
       ItemSecondLevel: ""
     }
@@ -378,8 +389,8 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
                 disableClose: true,
                 data: {
                   'PartyName': this.openinBalDetForm.controls['partyName'].value,
-                  'PartyType': "ALL",
-                  'search': "Client " + ' Search'
+                  'PartyType': this.openinBalDetForm.get('clientType')?.value,
+                  'search': this.openinBalDetForm.get('clientType')?.value +" " + ' Search'
                 }
               });
               this.dialogOpen = true;
