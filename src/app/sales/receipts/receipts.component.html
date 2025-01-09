@@ -11,7 +11,7 @@
         class="btnUp"
         type="button"
         (click)="allocate()"
-        [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value == 'CASHTRF'">
+        [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value == 'CASHTRF' || receiptsForm.get('mode')!.value.toUpperCase() == 'REVERSE'">
         <mat-icon>check_box</mat-icon> Invoice Allocate
       </button>
       <button

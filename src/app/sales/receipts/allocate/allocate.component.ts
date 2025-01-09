@@ -242,13 +242,22 @@ checkAllocatedAmount(_t152: any) {
     isDis(element:any):boolean{
     if(element.allocatedAmount >0){
       element.checked=true;
+      if(element.remarks === 'Allocation is done'){
+        return true;
+      }
       return false;
     }
     else if(element.allocatedAmount <= 0 && this.remBal <=0){
       element.checked=false;
+      if(element.remarks === 'Allocation is done'){
+        return true;
+      }
       return true;
     }
     else if(this.remBal > 0){
+      if(element.remarks === 'Allocation is done'){
+        return true;
+      }
       return false
     }
     else if(element.remarks === 'Allocation is done'){
@@ -288,6 +297,7 @@ checkAllocatedAmount(_t152: any) {
       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
+
   toggleAllSelection(checked: boolean): void {
     this.dataSource.forEach((item: { checked: boolean; allocatedAmount: null; dueAmount: any; }) => {
       item.checked = checked;

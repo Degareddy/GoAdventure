@@ -303,6 +303,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   receiptTypeChange(event: string) {
     // console.log(event);
     if (event.toUpperCase() === 'RECEIVERENT') {
+      this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -315,9 +316,9 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
-      
     }
     else if (event.toUpperCase() === 'PAYRENT') {
+      this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -332,7 +333,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadData();
     }
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
-
+      this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -347,6 +348,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadData();
     }
     else {
+      this.clear();
       this.receiptsForm.controls['mode'].patchValue('View', {
         emitEvent: false,
       });
@@ -823,13 +825,13 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       const rctAmountValue = parseFloat(
         this.receiptsForm.controls.rctAmount.value.replace(/,/g, '')
       );
-      if (this.receiptsForm.controls['mode'].value.toUpperCase() == 'REVERSE' && this.receiptsForm.controls['tranFor'].value.toUpperCase() != "CASHTRF") {
-        this.displayMessage(
-          'Error: Reverse  transction is not allowed!',
-          'red'
-        );
-        return;
-      }
+      // if (this.receiptsForm.controls['mode'].value.toUpperCase() == 'REVERSE' && this.receiptsForm.controls['tranFor'].value.toUpperCase() != "CASHTRF") {
+      //   this.displayMessage(
+      //     'Error: Reverse  transction is not allowed!',
+      //     'red'
+      //   );
+      //   return;
+      // }
       if (this.receiptsForm.controls['tranFor'].value.toUpperCase() == '' || this.receiptsForm.controls['tranFor'].value.toUpperCase() == undefined) {
         this.displayMessage(
           'Error: Please select Transction For',
