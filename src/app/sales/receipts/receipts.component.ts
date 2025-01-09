@@ -303,7 +303,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
   receiptTypeChange(event: string) {
     // console.log(event);
     if (event.toUpperCase() === 'RECEIVERENT') {
-      this.clear();
+      // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -318,7 +318,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadData();
     }
     else if (event.toUpperCase() === 'PAYRENT') {
-      this.clear();
+      // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -333,7 +333,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadData();
     }
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
-      this.clear();
+      // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -348,7 +348,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadData();
     }
     else {
-      this.clear();
+      // this.clear();
       this.receiptsForm.controls['mode'].patchValue('View', {
         emitEvent: false,
       });
