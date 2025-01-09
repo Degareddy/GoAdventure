@@ -5,56 +5,28 @@
       <b>{{ formName | titlecase }}</b>
     </div>
     <div class="flex items-end space-x-1">
-      <button
-        mat-raised-button
-        color="accent"
-        class="btnUp"
-        type="button"
-        (click)="allocate()"
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="allocate()"
         [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value == 'CASHTRF' || receiptsForm.get('mode')!.value.toUpperCase() == 'REVERSE'">
         <mat-icon>check_box</mat-icon> Invoice Allocate
       </button>
-      <button
-        mat-raised-button
-        color="primary"
-        class="btnUp"
-        type="button"
-        (click)="loanallocate()"
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="loanallocate()"
         [disabled]="receiptsForm.get('rctMode')!.value != 'DEDUCTION' || receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value=='CASHTRF'">
         <mat-icon>check_box</mat-icon> Loan Statement
       </button>
-      <button
-        mat-raised-button
-        color="accent"
-        class="btnUp"
-        type="button"
+      <button mat-raised-button color="accent" class="btnUp" type="button"
         (click)="onDocsCilcked(receiptsForm.get('receiptNo')!.value)"
         [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid">
         <mat-icon>cloud_upload</mat-icon> Docs
       </button>
-      <button
-        mat-raised-button
-        color="primary"
-        class="btnUp"
-        type="button"
-        (click)="downloadPDF()"
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="downloadPDF()"
         [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid">
         <mat-icon>picture_as_pdf</mat-icon> PDF
       </button>
-      <button
-        mat-raised-button
-        class="btnUp"
-        type="button"
-        (click)="NotesDetails(receiptsForm.get('receiptNo')!.value)"
+      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(receiptsForm.get('receiptNo')!.value)"
         [disabled]="receiptsForm.get('receiptNo')!.value === '' || receiptsForm.get('receiptNo')!.value === null">
         <mat-icon>note_add</mat-icon> Notes
       </button>
-      <button
-        mat-raised-button
-        color="accent"
-        class="btnUp"
-        type="button"
-        (click)="onHelpCilcked()">
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
         <mat-icon>help</mat-icon> Help
       </button>
     </div>
@@ -66,26 +38,28 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <div class="bg-white p-2 border rounded-lg shadow-md">
         <div class="text-center text-gray-800 font-semibold">Details</div>
-        <mat-form-field appearance="outline" class="w-full mt-2" >
+        <mat-form-field appearance="outline" class="w-full mt-2">
           <mat-label>Receipt Type</mat-label>
           <mat-select formControlName="receiptmode" (selectionChange)="receiptTypeChange($event.value)">
             <mat-option *ngFor="let x of receiptmodes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full mt-2" >
+        <mat-form-field appearance="outline" class="w-full mt-2">
           <mat-label>Mode</mat-label>
           <mat-select formControlName="mode" (selectionChange)="modeChange(receiptsForm.controls['mode'].value)">
             <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full mt-2" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
+        <mat-form-field appearance="outline" class="w-full mt-2"
+          *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
           <mat-label>Tran Type</mat-label>
           <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full mt-2" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
+        <mat-form-field appearance="outline" class="w-full mt-2"
+          *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
           <mat-label>Tran For</mat-label>
           <mat-select formControlName="tranFor" (selectionChange)="onSelectionChangeClientType()">
             <mat-option value="">--Select--</mat-option>
@@ -93,9 +67,10 @@
           </mat-select>
         </mat-form-field>
         <div class="matfield">
-          <mat-form-field appearance="outline" style="width: 99%;" >
+          <mat-form-field appearance="outline" style="width: 99%;">
             <mat-label>Receipt No</mat-label>
-            <input matInput type="text" placeholder="Receipt No" formControlName="receiptNo" [disabled]="receiptsForm.get('mode')!.value == 'Add'" />
+            <input matInput type="text" placeholder="Receipt No" formControlName="receiptNo"
+              [disabled]="receiptsForm.get('mode')!.value == 'Add'" />
             <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('receiptNo')!.value"
               (click)="receiptsForm.get('receiptNo')?.setValue('')" type="button">
               <mat-icon class="mat-clear-icon">clear</mat-icon>
@@ -106,26 +81,26 @@
             </button>
           </mat-form-field>
         </div>
-        <div class="flex flex-col md:flex-row gap-4 matfield" >
-        <div class="matfield">
-          <mat-form-field appearance="outline" class="mat-date">
-            <mat-label class="mat-label-class">Receipt Date</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="receiptDate" [max]="tomorrow"
-              (dateChange)="tranDateChanged()" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
+        <div class="flex flex-col md:flex-row gap-4 matfield">
+          <div class="matfield">
+            <mat-form-field appearance="outline" class="mat-date">
+              <mat-label class="mat-label-class">Receipt Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="receiptDate" [max]="tomorrow"
+                (dateChange)="tranDateChanged()" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="matfield" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">Client Type</mat-label>
+              <mat-select formControlName="clientType">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of filteredItemsClientType" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </div>
-        <div class="matfield" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
-          <mat-form-field appearance="outline" class="mat-mode">
-            <mat-label class="mat-label-class">Client Type</mat-label>
-            <mat-select formControlName="clientType">
-              <mat-option value="">--Select--</mat-option>
-              <mat-option *ngFor="let x of filteredItemsClientType" [value]="x.itemCode">{{x.itemName}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
         <div class="matfield">
           <mat-form-field appearance="outline" style="width: 100%;">
             <mat-label class="mat-label-class">Customer/Tenant/Others</mat-label>
@@ -147,221 +122,420 @@
         </div>
 
 
-        <!-- Additional Fields -->
       </div>
 
-      <div class="bg-white p-2 border rounded-lg shadow-md">
-        <div class="text-center text-gray-800 font-semibold">{{ fromName }}</div>
 
-        <mat-form-field appearance="outline" class="w-full mt-2">
+
+      <!-- <div> -->
+        <div class="bg-white p-2 border rounded-lg shadow-md"  *ngIf="isPayment">
+          <div class="text-center text-gray-800 font-semibold">{{ toName }}</div>
+          <mat-form-field appearance="outline" class="w-full mt-2">
+            <mat-label>Account of</mat-label>
+            <mat-select formControlName="rctBank" (selectionChange)="RctBankChanged()">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of bank" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div class="matfield w-full mt-2">
+            <mat-form-field class="mat-label-class" appearance="outline" class="search">
+              <mat-label class="mat-label-class">Account</mat-label>
+              <input matInput type="text" placeholder="Account" formControlName="rctAccount" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('rctAccount')!.value"
+                (click)="receiptsForm.get('rctAccount')!.setValue('')" type="button"
+                [disabled]="receiptsForm.controls['rctBank'].value==='CASHBOOK'|| receiptsForm.controls['rctBank'].value==='CASH' ">
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button
+                [disabled]="receiptsForm.controls['rctBank'].value==='CASHBOOK' || receiptsForm.controls['rctBank'].value==='CASH'"
+                aria-label="Search" (click)="searchAccount()" type="button">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="flex flex-col md:flex-row gap-4">
+            <mat-form-field appearance="outline" class="w-full mt-2 md:w-1/2">
+              <mat-label>Date</mat-label>
+              <input matInput [matDatepicker]="picker3" formControlName="rctDate" />
+              <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+              <mat-datepicker #picker3></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class=" mt-2" style="width: 120px;">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="rctStatus">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Flex container with adjusted spacing and width for Exchange Rate -->
+          <div class="flex flex-col md:flex-row gap-2">
+            <mat-form-field appearance="outline" class="w-full mt-2 md:w-1/2">
+              <mat-label>Paid Currency</mat-label>
+              <mat-select formControlName="paidCurrency" class="right-align-input">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="mt-2" style="width: 120px;">
+              <mat-label>Exchange Rate</mat-label>
+              <input matInput placeholder="Exchange Rate" type="number" class="right-align-input"
+                (change)="formatExchangeRate()" formControlName="exchRate" />
+            </mat-form-field>
+          </div>
+
+          <!-- Adjusted spacing between Charges and Amount fields -->
+          <div class="flex flex-col md:flex-row gap-2">
+            <mat-form-field appearance="outline" class="mt-2" class="w-full mt-2 md:w-1/2">
+              <mat-label>Charges</mat-label>
+              <input matInput placeholder="Charges" separator formControlName="charges" appNumberFormat type="text"
+                class="right-align-input" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mt-2 md:w-1/2">
+              <mat-label>Amount</mat-label>
+              <input matInput placeholder="Amount" appNumberFormat separator formControlName="paidAmt" type="text"
+                class="right-align-input" />
+            </mat-form-field>
+          </div>
+
+          <div class="matfield">
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="sms" class="small-label">Send
+              SMS</mat-checkbox>
+          </div>
+
+          <div class="matfield">
+            <b class="myCustomClass">Cash Balance:</b>
+            <b class="data" [ngClass]="{ 'blur-text': !isBalanceVisible }">
+              {{ isBalanceVisible ? (balanceAmount | number:'1.2-2') : '•••••' }}
+            </b>
+            <button class="toggle-button" (click)="toggleBalanceVisibility()" type="button">
+              <mat-icon>{{ isBalanceVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+
+          <div class="matfield">
+            <b class="myCustomClass">Pending Txn Amount:</b>&nbsp;<b class="data">{{pendingAmount | number:'1.2-2'}}</b>
+          </div>
+          <br>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Notes</mat-label>
+              <input matInput placeholder="Notes" formControlName="remarks" type="text" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="bg-white p-2 border rounded-lg shadow-md" *ngIf="isPayment">
+          <div class="text-center text-gray-800 font-semibold">{{ fromName }}</div>
+          <mat-form-field appearance="outline" class="w-full mt-2">
             <mat-label>Pay Mode</mat-label>
             <mat-select formControlName="rctMode" (selectionChange)="PayModeChanged()">
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of filteredpayMode" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of filteredpayMode" [value]="x.itemCode">{{ x.itemName }}</mat-option>
             </mat-select>
-        </mat-form-field>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-full mt-2">
+          <mat-form-field appearance="outline" class="w-full mt-2">
             <mat-label>Client Bank</mat-label>
             <mat-select formControlName="customerBank">
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of filteredbank" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of filteredbank" [value]="x.itemCode">{{ x.itemName }}</mat-option>
             </mat-select>
-        </mat-form-field>
+          </mat-form-field>
 
-        <div class="matfield">
+          <div class="matfield">
             <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Client Account</mat-label>
-                <input matInput type="text" placeholder="Account" formControlName="custAccount" />
-                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('custAccount')!.value"
-                    (click)="receiptsForm.get('custAccount')!.setValue('')" type="button">
-                    <mat-icon>clear</mat-icon>
-                </button>
-                <button matSuffix mat-icon-button *ngIf="receiptsForm.get('tranFor')!.value === 'DEPOSIT'"
-                    [disabled]="receiptsForm.controls['customerBank'].value === ''" aria-label="Search"
-                    (click)="searchClientAccount()" type="button">
-                    <mat-icon>search</mat-icon>
-                </button>
+              <mat-label>Client Account</mat-label>
+              <input matInput type="text" placeholder="Account" formControlName="custAccount" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('custAccount')!.value"
+                (click)="receiptsForm.get('custAccount')!.setValue('')" type="button">
+                <mat-icon>clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button *ngIf="receiptsForm.get('tranFor')!.value === 'DEPOSIT'"
+                [disabled]="receiptsForm.controls['customerBank'].value === ''" aria-label="Search"
+                (click)="searchClientAccount()" type="button">
+                <mat-icon>search</mat-icon>
+              </button>
             </mat-form-field>
-        </div>
+          </div>
 
-        <div class="matfield">
+          <div class="matfield">
             <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Account Name</mat-label>
-                <input matInput placeholder="Account Name" formControlName="accname" type="text" />
+              <mat-label>Account Name</mat-label>
+              <input matInput placeholder="Account Name" formControlName="accname" type="text" />
             </mat-form-field>
-        </div>
+          </div>
 
-        <div class="matfield">
+          <div class="matfield">
             <mat-form-field appearance="outline" class="w-full">
-                <mat-label>Cheque RefNo</mat-label>
-                <input matInput type="text" placeholder="Cheque RefNo" formControlName="instrumentNo" />
-                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('instrumentNo')!.value"
-                    (click)="receiptsForm.get('instrumentNo')?.setValue('')" type="button">
-                    <mat-icon>clear</mat-icon>
-                </button>
-                <button matSuffix mat-icon-button aria-label="Search"
-                    [disabled]="receiptsForm.get('rctMode')!.value != 'DEDUCTION' || receiptsForm.get('rctMode')!.value == ''"
-                    (click)="onSearchRefNo()" type="button">
-                    <mat-icon>search</mat-icon>
-                </button>
+              <mat-label>Cheque RefNo</mat-label>
+              <input matInput type="text" placeholder="Cheque RefNo" formControlName="instrumentNo" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('instrumentNo')!.value"
+                (click)="receiptsForm.get('instrumentNo')?.setValue('')" type="button">
+                <mat-icon>clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search"
+                [disabled]="receiptsForm.get('rctMode')!.value != 'DEDUCTION' || receiptsForm.get('rctMode')!.value == ''"
+                (click)="onSearchRefNo()" type="button">
+                <mat-icon>search</mat-icon>
+              </button>
             </mat-form-field>
-        </div>
+          </div>
 
-        <!-- Flex container for Cheque/Ref Date and Currency fields with gap for spacing -->
-        <div class="flex flex-col md:flex-row gap-4 matfield" >
+          <!-- Flex container for Cheque/Ref Date and Currency fields with gap for spacing -->
+          <div class="flex flex-col md:flex-row gap-4 matfield">
             <mat-form-field appearance="outline" class="w-120px md:w-1/2">
-                <mat-label>Cheque/Ref Date</mat-label>
-                <input matInput [matDatepicker]="picker1" formControlName="instrumentDate" />
-                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                <mat-datepicker #picker1></mat-datepicker>
+              <mat-label>Cheque/Ref Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="instrumentDate" />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-120px md:w-1/4">
-                <mat-label>Currency</mat-label>
-                <mat-select formControlName="currency">
-                    <mat-option value="">--Select--</mat-option>
-                    <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-                </mat-select>
+              <mat-label>Currency</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
             </mat-form-field>
-        </div>
+          </div>
 
-        <!-- Flex container for Tran Amount and Cheque/Ref Status fields with gap for spacing -->
-        <div class="flex flex-col md:flex-row gap-4 mt-2">
+          <!-- Flex container for Tran Amount and Cheque/Ref Status fields with gap for spacing -->
+          <div class="flex flex-col md:flex-row gap-4 mt-2">
             <mat-form-field appearance="outline" class="w-120px md:w-1/2">
-                <mat-label>Tran Amount</mat-label>
-                <input matInput placeholder="Tran Amount" class="right-align-input" formControlName="rctAmount" type="text"
-                    appNumberFormat separator />
+              <mat-label>Tran Amount</mat-label>
+              <input matInput placeholder="Tran Amount" class="right-align-input" formControlName="rctAmount" type="text"
+                appNumberFormat separator />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class=" mt-1/2" style="width: 120px;">
               <mat-label>Cheque/Ref Status</mat-label>
               <mat-select formControlName="instrumentStatus">
-                  <mat-option value="">--Select--</mat-option>
-                  <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
               </mat-select>
+            </mat-form-field>
+
+          </div>
+          <br>
+
+          <div class="matfield myCustomClass" *ngIf="receiptsForm.get('tranFor')!.value != 'CASHTRF'">
+            <mat-label>Allocation Status:&nbsp;</mat-label><b class="data">{{ allocStatus |uppercase}}</b>
+          </div>
+        </div>
+      <!-- </div> -->
+      <!-- <div > -->
+        <div class="bg-white p-2 border rounded-lg shadow-md" *ngIf="!isPayment">
+          <div class="text-center text-gray-800 font-semibold">{{ fromName }}</div>
+          <mat-form-field appearance="outline" class="w-full mt-2">
+            <mat-label>Pay Mode</mat-label>
+            <mat-select formControlName="rctMode" (selectionChange)="PayModeChanged()">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of filteredpayMode" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+            </mat-select>
           </mat-form-field>
 
+          <mat-form-field appearance="outline" class="w-full mt-2">
+            <mat-label>Client Bank</mat-label>
+            <mat-select formControlName="customerBank">
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of filteredbank" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="matfield">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Client Account</mat-label>
+              <input matInput type="text" placeholder="Account" formControlName="custAccount" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('custAccount')!.value"
+                (click)="receiptsForm.get('custAccount')!.setValue('')" type="button">
+                <mat-icon>clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button *ngIf="receiptsForm.get('tranFor')!.value === 'DEPOSIT'"
+                [disabled]="receiptsForm.controls['customerBank'].value === ''" aria-label="Search"
+                (click)="searchClientAccount()" type="button">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="matfield">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Account Name</mat-label>
+              <input matInput placeholder="Account Name" formControlName="accname" type="text" />
+            </mat-form-field>
+          </div>
+
+          <div class="matfield">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Cheque RefNo</mat-label>
+              <input matInput type="text" placeholder="Cheque RefNo" formControlName="instrumentNo" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('instrumentNo')!.value"
+                (click)="receiptsForm.get('instrumentNo')?.setValue('')" type="button">
+                <mat-icon>clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search"
+                [disabled]="receiptsForm.get('rctMode')!.value != 'DEDUCTION' || receiptsForm.get('rctMode')!.value == ''"
+                (click)="onSearchRefNo()" type="button">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <!-- Flex container for Cheque/Ref Date and Currency fields with gap for spacing -->
+          <div class="flex flex-col md:flex-row gap-4 matfield">
+            <mat-form-field appearance="outline" class="w-120px md:w-1/2">
+              <mat-label>Cheque/Ref Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="instrumentDate" />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-120px md:w-1/4">
+              <mat-label>Currency</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Flex container for Tran Amount and Cheque/Ref Status fields with gap for spacing -->
+          <div class="flex flex-col md:flex-row gap-4 mt-2">
+            <mat-form-field appearance="outline" class="w-120px md:w-1/2">
+              <mat-label>Tran Amount</mat-label>
+              <input matInput placeholder="Tran Amount" class="right-align-input" formControlName="rctAmount" type="text"
+                appNumberFormat separator />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class=" mt-1/2" style="width: 120px;">
+              <mat-label>Cheque/Ref Status</mat-label>
+              <mat-select formControlName="instrumentStatus">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+          <br>
+
+          <div class="matfield myCustomClass" *ngIf="receiptsForm.get('tranFor')!.value != 'CASHTRF'">
+            <mat-label>Allocation Status:&nbsp;</mat-label><b class="data">{{ allocStatus |uppercase}}</b>
+          </div>
+
         </div>
-        <br>
-
-        <div class="matfield myCustomClass" *ngIf="receiptsForm.get('tranFor')!.value != 'CASHTRF'">
-          <mat-label>Allocation Status:&nbsp;</mat-label><b class="data">{{ allocStatus  |uppercase}}</b>
-        </div>
-        <!-- <div  class="flex items-center space-x-2 whitespace-nowrap data">
-          <span>Allocation Status:&nbsp; {{ allocStatus }}</span>
-      </div> -->
-    </div>
-
-      <div class="bg-white p-2 border rounded-lg shadow-md">
-        <div class="text-center text-gray-800 font-semibold">{{ toName }}</div>
-
-        <mat-form-field appearance="outline" class="w-full mt-2">
+        <div class="bg-white p-2 border rounded-lg shadow-md" *ngIf="!isPayment">
+          <div class="text-center text-gray-800 font-semibold">{{ toName }}</div>
+          <mat-form-field appearance="outline" class="w-full mt-2">
             <mat-label>Account of</mat-label>
             <mat-select formControlName="rctBank" (selectionChange)="RctBankChanged()">
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of bank" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              <mat-option value="">--Select--</mat-option>
+              <mat-option *ngFor="let x of bank" [value]="x.itemCode">{{ x.itemName }}</mat-option>
             </mat-select>
-        </mat-form-field>
-        <div class="matfield w-full mt-2">
-          <mat-form-field class="mat-label-class" appearance="outline" class="search">
-            <mat-label class="mat-label-class">Account</mat-label>
-            <input matInput type="text" placeholder="Account" formControlName="rctAccount" />
-            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('rctAccount')!.value"
-              (click)="receiptsForm.get('rctAccount')!.setValue('')" type="button"
-              [disabled]="receiptsForm.controls['rctBank'].value==='CASHBOOK'|| receiptsForm.controls['rctBank'].value==='CASH' ">
-              <mat-icon class="mat-clear-icon">clear</mat-icon>
-            </button>
-            <button matSuffix mat-icon-button
-              [disabled]="receiptsForm.controls['rctBank'].value==='CASHBOOK' || receiptsForm.controls['rctBank'].value==='CASH'"
-              aria-label="Search" (click)="searchAccount()" type="button">
-              <mat-icon class="mat-search-icon">search</mat-icon>
-            </button>
           </mat-form-field>
-        </div>
+          <div class="matfield w-full mt-2">
+            <mat-form-field class="mat-label-class" appearance="outline" class="search">
+              <mat-label class="mat-label-class">Account</mat-label>
+              <input matInput type="text" placeholder="Account" formControlName="rctAccount" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('rctAccount')!.value"
+                (click)="receiptsForm.get('rctAccount')!.setValue('')" type="button"
+                [disabled]="receiptsForm.controls['rctBank'].value==='CASHBOOK'|| receiptsForm.controls['rctBank'].value==='CASH' ">
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button
+                [disabled]="receiptsForm.controls['rctBank'].value==='CASHBOOK' || receiptsForm.controls['rctBank'].value==='CASH'"
+                aria-label="Search" (click)="searchAccount()" type="button">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
 
-        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex flex-col md:flex-row gap-4">
             <mat-form-field appearance="outline" class="w-full mt-2 md:w-1/2">
-                <mat-label>Date</mat-label>
-                <input matInput [matDatepicker]="picker3" formControlName="rctDate" />
-                <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
-                <mat-datepicker #picker3></mat-datepicker>
+              <mat-label>Date</mat-label>
+              <input matInput [matDatepicker]="picker3" formControlName="rctDate" />
+              <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+              <mat-datepicker #picker3></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class=" mt-2" style="width: 120px;">
-                <mat-label>Status</mat-label>
-                <mat-select formControlName="rctStatus">
-                    <mat-option value="">--Select--</mat-option>
-                    <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-                </mat-select>
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="rctStatus">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
             </mat-form-field>
-        </div>
+          </div>
 
-        <!-- Flex container with adjusted spacing and width for Exchange Rate -->
-        <div class="flex flex-col md:flex-row gap-2">
+          <!-- Flex container with adjusted spacing and width for Exchange Rate -->
+          <div class="flex flex-col md:flex-row gap-2">
             <mat-form-field appearance="outline" class="w-full mt-2 md:w-1/2">
-                <mat-label>Paid Currency</mat-label>
-                <mat-select formControlName="paidCurrency" class="right-align-input">
-                    <mat-option value="">--Select--</mat-option>
-                    <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-                </mat-select>
+              <mat-label>Paid Currency</mat-label>
+              <mat-select formControlName="paidCurrency" class="right-align-input">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="mt-2" style="width: 120px;">
-                <mat-label>Exchange Rate</mat-label>
-                <input matInput placeholder="Exchange Rate" type="number" class="right-align-input"
-                    (change)="formatExchangeRate()" formControlName="exchRate" />
+              <mat-label>Exchange Rate</mat-label>
+              <input matInput placeholder="Exchange Rate" type="number" class="right-align-input"
+                (change)="formatExchangeRate()" formControlName="exchRate" />
             </mat-form-field>
-        </div>
+          </div>
 
-        <!-- Adjusted spacing between Charges and Amount fields -->
-        <div class="flex flex-col md:flex-row gap-2">
+          <!-- Adjusted spacing between Charges and Amount fields -->
+          <div class="flex flex-col md:flex-row gap-2">
             <mat-form-field appearance="outline" class="mt-2" class="w-full mt-2 md:w-1/2">
-                <mat-label>Charges</mat-label>
-                <input matInput placeholder="Charges" separator formControlName="charges" appNumberFormat type="text"
-                    class="right-align-input" />
+              <mat-label>Charges</mat-label>
+              <input matInput placeholder="Charges" separator formControlName="charges" appNumberFormat type="text"
+                class="right-align-input" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-full mt-2 md:w-1/2">
-                <mat-label>Amount</mat-label>
-                <input matInput placeholder="Amount" appNumberFormat separator formControlName="paidAmt" type="text"
-                    class="right-align-input" />
+              <mat-label>Amount</mat-label>
+              <input matInput placeholder="Amount" appNumberFormat separator formControlName="paidAmt" type="text"
+                class="right-align-input" />
             </mat-form-field>
-        </div>
+          </div>
 
-        <div class="matfield">
-            <mat-checkbox [labelPosition]="labelPosition" formControlName="sms" class="small-label">Send SMS</mat-checkbox>
-        </div>
+          <div class="matfield">
+            <mat-checkbox [labelPosition]="labelPosition" formControlName="sms" class="small-label">Send
+              SMS</mat-checkbox>
+          </div>
 
-        <div class="matfield">
+          <div class="matfield">
             <b class="myCustomClass">Cash Balance:</b>
             <b class="data" [ngClass]="{ 'blur-text': !isBalanceVisible }">
-                {{ isBalanceVisible ? (balanceAmount | number:'1.2-2') : '•••••' }}
+              {{ isBalanceVisible ? (balanceAmount | number:'1.2-2') : '•••••' }}
             </b>
             <button class="toggle-button" (click)="toggleBalanceVisibility()" type="button">
-                <mat-icon>{{ isBalanceVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+              <mat-icon>{{ isBalanceVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
-        </div>
+          </div>
 
-        <div class="matfield">
+          <div class="matfield">
             <b class="myCustomClass">Pending Txn Amount:</b>&nbsp;<b class="data">{{pendingAmount | number:'1.2-2'}}</b>
+          </div>
+          <br>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Notes</mat-label>
+              <input matInput placeholder="Notes" formControlName="remarks" type="text" />
+            </mat-form-field>
+          </div>
         </div>
-        <br>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Notes</mat-label>
-            <input matInput placeholder="Notes" formControlName="remarks" type="text" />
-          </mat-form-field>
-        </div>
+      <!-- </div> -->
     </div>
-
-
-  </div>
 
 
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="flex justify-center mt-4 space-x-2">
-      <button mat-raised-button color="primary" class="btnUp" type="submit" [disabled]="receiptsForm.get('mode')!.value === 'View' || receiptsForm.invalid">
+      <button mat-raised-button color="primary" class="btnUp" type="submit"
+        [disabled]="receiptsForm.get('mode')!.value === 'View' || receiptsForm.invalid">
         <mat-icon>done</mat-icon> Apply
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">

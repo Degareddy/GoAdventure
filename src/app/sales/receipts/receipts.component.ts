@@ -81,6 +81,7 @@ interface ReceiptFormData {
   styleUrls: ['./receipts.component.css'],
 })
 export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
+isPayment: boolean=false;
   onSearchRefNo() {
     this.displayMessage("", "");
 
@@ -605,18 +606,21 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (data === 'RECEIPT') {
         this.fromName = 'Receipt From';
         this.toName = 'Receipt To';
+        this.isPayment=false;
         // this.receiptsForm.get('customer')?.enable();
         // this.receiptsForm.controls.tranFor.patchValue('RENTPMT');
         this.receiptsForm.controls.tranFor.get('Rent')?.disabled;
       } else if (data === 'PAYMENT') {
         this.fromName = 'Payment To';
         this.toName = 'Payment From';
+        this.isPayment=true;
         // this.receiptsForm.get('customer')?.enable();
         this.receiptsForm.controls.tranFor.patchValue('');
         this.receiptsForm.controls.tranFor.get('Rent')?.enabled;
       } else {
         this.fromName = 'From';
         this.toName = 'To';
+        this.isPayment=false;
         // this.receiptsForm.get('customer')?.disable();
       }
     });
@@ -747,7 +751,7 @@ export class ReceiptsComponent implements OnInit, AfterViewInit, OnDestroy {
     //   this.receiptsForm.controls['receiptNo'].disable();
     //   this.loadData();
     // }
-    
+
   if (event === 'Add') {
       this.clear();
       this.receiptsForm.controls['mode'].patchValue(event, {
