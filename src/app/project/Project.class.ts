@@ -334,6 +334,7 @@ export class serviceClass {
   public user!: string
   public mode!: string
   public refNo !: string;
+  public devicedate!:Date;
 }
 
 export class equipmentClass {

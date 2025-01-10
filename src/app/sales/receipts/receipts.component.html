@@ -165,7 +165,7 @@
               <mat-label>Status</mat-label>
               <mat-select formControlName="rctStatus">
                 <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of filteredStatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+                <mat-option *ngFor="let x of StatusList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>

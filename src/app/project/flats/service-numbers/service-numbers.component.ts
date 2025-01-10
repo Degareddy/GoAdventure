@@ -71,7 +71,8 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
       serviceNo: ['', Validators.required],
       deviceNo: [''],
       serviceStatus: [{ value: '', disabled: true }],
-      notes: ['']
+      notes: [''],
+      deviceDate: [new Date(), [Validators.required]]
     });
   }
 
@@ -197,6 +198,7 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
     this.serviceCls.unitCode = this.data.Flat;
     this.serviceCls.mode = this.data.mode;
     this.serviceCls.refNo = this.userDataService.userData.sessionID;
+    this.serviceCls.devicedate=this.serviceForm.get('deviceDate')?.value
   }
   onSubmit() {
     if (this.serviceForm.invalid) {

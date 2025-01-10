@@ -49,6 +49,15 @@
           <input type="text" matInput formControlName="notes">
         </mat-form-field>
       </div>
+      <div class="col-md-3">
+        <mat-form-field class="mat-date" appearance="outline">
+          <mat-label class="mat-label-class">Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="deviceDate"
+             />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
