@@ -37,8 +37,16 @@
         </mat-form-field>
       </div>
       <div class="col-2">
-        <mat-label class="myCustomClass"> Prevoius Reading: </mat-label> <b class="data">{{previousReading}}</b>
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Prev Reading</mat-label>
+          <input matInput formControlName="prevReading" type="text" placeholder="Reading" class="right-align-input"
+            [disabled]="true">
+          
+        </mat-form-field>
       </div>
+      <!-- <div class="col-2">
+        <mat-label class="myCustomClass"> Prevoius Reading: </mat-label> <b class="data">{{previousReading}}</b>
+      </div> -->
     </div>
     <div class="row justify-content-center">
       <div class="col-2">
@@ -46,7 +54,7 @@
       </div>
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label class="mat-label-class">Reading</mat-label>
+          <mat-label class="mat-label-class">Curr Reading</mat-label>
           <input matInput formControlName="reading" type="text" placeholder="Reading" class="right-align-input"
             (focusout)="onCurrentReadingChanged()">
           <mat-error *ngIf="updateBillsForm.get('reading')?.hasError('required')">

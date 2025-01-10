@@ -563,7 +563,8 @@ export class TransactionDetails {
   public tranNo!: string
   public slNo!: number
   public serviceType!: string
-  public reading!: number
+  public PrevRdg!: number
+  public CurrRdg!: number
   public unitCount!: number
   public rate!: number
   public amount!: number

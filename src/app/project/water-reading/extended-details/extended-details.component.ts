@@ -128,6 +128,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
       unit: [{ value: '0', disabled: true }],
       rate: ['0.00', Validators.required],
       amount: [{ value: '0.00', disabled: true }],
+      prevReading:[{value:'',disabled:true}]
     });
   }
   serviceChange(event: any) {
@@ -147,6 +148,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
         // console.log(res);
         if (res.status.toUpperCase() === "SUCCESS") {
           this.previousReading = res.data.prevRdg;
+          this.updateBillsForm.get('prevReading')?.patchValue(res.data.prevRdg);
           this.tenantName = res.data.tenant;
           this.lastReading = res.data.prevRdgDate
         }
@@ -246,7 +248,8 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     this.tranCls.slNo = this.slNo;
     this.tranCls.serviceType = this.updateBillsForm.get('serviceType')?.value;
     this.tranCls.expenseType = this.updateBillsForm.get('expenseType')?.value;
-    this.tranCls.reading = parseFloat(this.updateBillsForm.get('reading')?.value.replace(/,/g, ''));
+    this.tranCls.PrevRdg = parseFloat(this.updateBillsForm.get('prevReading')?.value);
+    this.tranCls.CurrRdg = parseFloat(this.updateBillsForm.get('reading')?.value.replace(/,/g, ''));
     this.tranCls.unitCount = parseFloat(this.updateBillsForm.get('unit')?.value.replace(/,/g, ''));
     this.tranCls.rate = parseFloat(this.updateBillsForm.get('rate')?.value.replace(/,/g, ''));
     this.tranCls.amount = parseFloat(this.updateBillsForm.get('amount')?.value.replace(/,/g, ''));
