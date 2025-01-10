@@ -23,8 +23,10 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     {itemCode:'Water Meter',itemName:'Water Meter'},
   ]
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
-  { field: "serviceType", headerName: "Service Type", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
-  { field: "expenseType", headerName: "Expense Type", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
+  { field: "serviceTypeDesc", headerName: "Service Type", sortable: true, filter: true, resizable: true, flex: 1 },
+  // { field: "expenseType", headerName: "Expense Type", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
+  { field: "prevRdg", headerName: "Prev Reading", sortable: true, filter: true, resizable: true, flex: 1 },
+  { field: "currRdg", headerName: "Current Reading", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "unitCount", headerName: "Unit Count", sortable: true, filter: true, resizable: true, flex: 1 },
   {
     field: "rate", headerName: "Rate", sortable: true, filter: true, resizable: true, flex: 1,
