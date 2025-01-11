@@ -95,7 +95,7 @@
   <div class="balance-container" *ngIf="!balanceTmp && gridData.length > 0">
     <span class="balance-label" *ngIf="!loanToal && gridData.length > 0">Loan Amount:</span>
     <span class="balance-amount balance-credit" *ngIf="!loanToal && gridData.length > 0">{{ totalLoanAmt | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
-    <span class="balance-label">Negetive Amount:</span>
+    <span class="balance-label">Payble Amount:</span>
     <span class="balance-amount balance-debit">{{ balanceAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
     <span class="balance-label">Positive Amount:</span>
     <span class="balance-amount balance-credit">{{ totalAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;

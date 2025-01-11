@@ -57,7 +57,7 @@
 </div>
 
 <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine" style="width: 100%; height:250px;"
-  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="25"
+  #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="100"
   [rowSelection]="rowSelection" [suppressRowClickSelection]="true" (rowSelected)="onRowSelected($event)"
   [gridOptions]="gridOptions">
 </ag-grid-angular>

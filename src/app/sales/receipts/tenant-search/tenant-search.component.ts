@@ -35,8 +35,8 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
-  pageSizes = [25, 50, 100, 250, 500];
-  pageSize = 25;
+  pageSizes = [100, 250, 500];
+  pageSize = 100;
   public exportTmp: boolean = true;
   public excelName: string = "";
   props: Item[] = [];
