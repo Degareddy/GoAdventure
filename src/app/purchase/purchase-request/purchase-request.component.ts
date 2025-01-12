@@ -98,10 +98,14 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() === "SUCCESS") {
           this.modes = res['data'];
         }
+        else{
+          this.retMessage=res.message;
+          this.textMessageClass='red';
+        }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
+      this.retMessage = ex.message;
       this.textMessageClass = 'red';
     }
   }
@@ -189,7 +193,7 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
       this.totalAmount=0;
       this.purReqHdrForm.get('tranDate')?.patchValue(new Date());
       this.purReqHdrForm.get('purpose')?.patchValue('');
-      
+
       this.clearValues();
     }
     else {
@@ -203,7 +207,6 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
 
   getpurchaseDetails(tarnNum: any) {
     this.masterParams.tranNo = tarnNum;
-    debugger;
     try {
       this.loader.start();
       this.subSink.sink = this.purchreqservice.GetPurRequestDetails(this.masterParams).subscribe((res: any) => {
@@ -221,7 +224,7 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
+      this.retMessage = ex.message;
       this.textMessageClass = 'red';
     }
   }
