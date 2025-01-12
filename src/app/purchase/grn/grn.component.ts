@@ -120,7 +120,7 @@ export class GrnComponent implements OnInit, OnDestroy {
     const curbody = {
       ...this.commonParams(),
       Item: "CURRENCY",
-      mode:this.grnForm.get('mode')?.value
+      mode: this.grnForm.get('mode')?.value
     };
     const service1 = this.invService.getModesList(modebody);
     const service2 = this.invService.GetMasterItemsList(curbody);
@@ -226,28 +226,19 @@ export class GrnComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR" && res.status.toUpperCase() != "FAILED") {
-
-
-        if (res.data.tranCount === 1) {
-
-
+        if (res && res.data && res.data.tranCount === 1) {
           this.masterParams.tranNo = res.data.selTranNo;
           this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
         }
         else {
           if (!this.dialogOpen) {
-
-
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
               width: '90%',
               disableClose: true,
               data: { tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN" }  // Pass any data you want to send to CustomerDetailsComponent
             });
             dialogRef.afterClosed().subscribe(result => {
-
               if (result != true && result != undefined) {
-
-
                 this.dialogOpen = false;
                 this.masterParams.tranNo = result;
                 this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
@@ -255,6 +246,21 @@ export class GrnComponent implements OnInit, OnDestroy {
             });
           }
 
+        }
+      } else {
+        if (!this.dialogOpen) {
+          const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+            width: '90%',
+            disableClose: true,
+            data: { tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN" }  // Pass any data you want to send to CustomerDetailsComponent
+          });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result != true && result != undefined) {
+              this.dialogOpen = false;
+              this.masterParams.tranNo = result;
+              this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
+            }
+          });
         }
       }
 
@@ -295,7 +301,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.purchaseService.getGrnData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase()==="ERROR") {
+        if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
           this.retMessage = res.message;
           this.textMessageClass = "red";
         }
@@ -324,7 +330,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       width: '90%', // Set the width of the dialog
       disableClose: true,
       data: {
-        mode: this.grnForm.controls['mode'].value, status: this.grnStatus,vat:this.grnForm.controls['isVatable'].value,
+        mode: this.grnForm.controls['mode'].value, status: this.grnStatus, vat: this.grnForm.controls['isVatable'].value,
         tranNum: this.grnForm.controls['tranNo'].value, search: 'GRN Search', TranType: "GRN"
       }
     });
@@ -332,7 +338,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       if (result.isAltered === true) {
         this.dialogOpen = false;
         this.masterParams.tranNo = this.grnForm.controls['tranNo'].value;
-        this.newTranMsg="Modified Successfully";
+        this.newTranMsg = "Modified Successfully";
         this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
       }
     });
