@@ -135,7 +135,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       }
     });
     this.loadData();
-    this. search();
+    // this. search();
   }
 
   private createRequestData(item: string): any {

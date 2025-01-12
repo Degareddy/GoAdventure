@@ -28,6 +28,7 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
   public gridOptions!: GridOptions;
   pageSizes: number[] = [25, 50, 100, 250, 500];
   pageSize: number = 25;
+  today = new Date();
   private subSink: SubSink = new SubSink();
   private serviceCls: serviceClass = new serviceClass();
   rowData: any[] = [];
@@ -40,6 +41,19 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
     { field: "deviceNo", headerName: "Device No", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "serviceStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "notes", headerName: "Notes", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
+    {
+      field: "deviceDate", headerName: "Recorded Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
+        // Format date as dd-MM-yyyy
+        if (params.value) {
+          const date = new Date(params.value);
+          const day = date.getDate().toString().padStart(2, '0');
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          const year = date.getFullYear();
+          return `${day}-${month}-${year}`;
+        }
+        return null;
+      },
+    },
   ];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   onRowClick: any;
@@ -263,7 +277,8 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
       serviceNo: event.data.serviceNo,
       deviceNo: event.data.deviceNo,
       serviceStatus: event.data.serviceStatus,
-      notes: event.data.notes
+      notes: event.data.notes,
+      deviceDate: event.data.deviceDate
     });
   }
 

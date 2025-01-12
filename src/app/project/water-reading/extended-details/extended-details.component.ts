@@ -133,6 +133,16 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
       prevReading:[{value:'',disabled:true}]
     });
   }
+  expenseChange(event :any){
+    console.log(event);
+    if(event.value === 'WM'){
+      this.updateBillsForm.get('expenseType')?.patchValue('WATEXP');
+    }
+    else if(event.value === 'ESN'){
+      this.updateBillsForm.get('expenseType')?.patchValue('ELECEXP');
+    }
+    this.serviceChange(event.value);
+  }
   serviceChange(event: any) {
     // console.log(event.value);
     const body = {
@@ -153,6 +163,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
           this.updateBillsForm.get('prevReading')?.patchValue(res.data.prevRdg);
           this.tenantName = res.data.tenant;
           this.lastReading = res.data.prevRdgDate
+          this.updateBillsForm.get('expenseType')?.disable();
         }
         else {
           this.displayMessage(res.message, "red")
@@ -283,13 +294,14 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     }
   }
   onRowSelected(event: any) {
-    // console.log(event.data);
+    console.log(event.data);
     this.slNo = event.data.slNo;
-    this.previousReading=event.data.prevReading;
+    this.previousReading=event.data.prevRdg;
     this.updateBillsForm.patchValue({
       serviceType:event.data.serviceType,
       expenseType: event.data.expenseType,
-      reading:event.data.reading.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      prevReading:event.data.prevRdg.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      reading:event.data.currRdg.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       unit: event.data.unitCount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       rate:event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       amount:event.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),

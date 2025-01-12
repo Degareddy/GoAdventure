@@ -1198,7 +1198,7 @@ isPayment: boolean=false;
       Client: this.receiptsForm.controls['customer'].value || '',
       ClientType: clientTypeTemp,
       txnFor: this.receiptsForm.controls['tranFor'].value || '',
-      isSummary: true,
+      isSummary: false,
       Report: this.Report
     };
     try {
