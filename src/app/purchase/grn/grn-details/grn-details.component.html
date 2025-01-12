@@ -123,7 +123,7 @@
           <button mat-raised-button color="accent" type="button" (click)="newGRN()" class=btnUp>
             <mat-icon>add</mat-icon><b>New</b>
           </button>
-          <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+          <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{ isAltered: dataFlag}">
             <mat-icon>cancel</mat-icon><b>Close</b>
           </button>
         </div>

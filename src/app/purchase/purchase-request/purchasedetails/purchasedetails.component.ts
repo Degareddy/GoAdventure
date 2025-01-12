@@ -191,13 +191,14 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
+    this.onRowClick(event);
   }
 
   onGridReady(params: any) {
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
     const gridApi = params.api;
-    gridApi.addEventListener('rowClicked', this.onRowClick.bind(this));
+    gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
 
   ngOnInit(): void {
@@ -238,13 +239,6 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() != 'FAIL' && res.status.toUpperCase() != 'ERROR') {
           this.exportTmp = false;
           this.rowData = res['data'];
-          // if (this.slValue) {
-          //   const lastRowIndex = this.dataSource.data.length - 1;
-          //   const lastRowData = this.dataSource.data[lastRowIndex];
-          //   this.purchaseDetCls.slNo = lastRowData.slNo;
-          //   this.slNum = lastRowData.slNo;
-          // }
-
         } else {
           this.retMessage = res.message;
           this.textMessageClass = 'red';
@@ -253,7 +247,7 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
+      this.retMessage = ex.message;
       this.textMessageClass = 'red';
     }
 
@@ -280,23 +274,6 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     }
   }
   loadData() {
-    // const body = {
-    //   ...this.commonParams(),
-    //   Item: "PRODUCTS",
-    //   mode:this.data.mode
-
-    // };
-    // const supbody = {
-    //   ...this.commonParams(),
-    //   Item: "SUPPLIER",
-    //   mode:this.data.mode
-    // };
-    // const wrbody = {
-    //   ...this.commonParams(),
-    //   Item: "WAREHOUSE",
-    //   mode:this.data.mode
-
-    // };
     const body = {
       ...this.commonParams(),
       Item: "PRODUCTS",
@@ -413,24 +390,28 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     this.searchProduct();
   }
 
-  onRowClick(row: any, i: number) {
-    // this.purReqDetForm.patchValue(row.data);
-    this.slNum = row.data.slNo;
-    this.prodCode = row.data.prodCode;
-    this.purchaseDetCls.product = row.data.prodCode;
-    this.purchaseDetCls.prodCode = row.data.prodCode;
-    this.suppCode = row.data.suppCode;
-    this.purReqDetForm.controls['supplier'].patchValue(row.data.suppCode);
-    this.purReqDetForm.controls['product'].patchValue(row.data.product);
-    this.purReqDetForm.controls['warehouse'].patchValue(row.data.whCode);
-    this.purReqDetForm.controls['quantity'].patchValue(row.data.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-    this.purReqDetForm.controls['availableQty'].patchValue(row.data.availableQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-    this.purReqDetForm.controls['pendingQty'].patchValue(row.data.pendingQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-    this.purReqDetForm.controls['orderingQty'].patchValue(row.data.orderingQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 
-    this.purReqDetForm.controls['unitRate'].patchValue(row.data.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    this.purReqDetForm.controls['amount'].patchValue(row.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-
+  onRowClick(row: any) {
+    try{
+      this.slNum = row.data.slNo;
+      this.prodCode = row.data.prodCode;
+      this.purchaseDetCls.product = row.data.prodCode;
+      this.purchaseDetCls.prodCode = row.data.prodCode;
+      this.suppCode = row.data.suppCode;
+      this.purReqDetForm.controls['supplier'].patchValue(row.data.suppCode);
+      this.purReqDetForm.controls['product'].patchValue(row.data.product);
+      this.purReqDetForm.controls['warehouse'].patchValue(row.data.whCode);
+      this.purReqDetForm.controls['quantity'].patchValue(row.data.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+      this.purReqDetForm.controls['availableQty'].patchValue(row.data.availableQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+      this.purReqDetForm.controls['pendingQty'].patchValue(row.data.pendingQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+      this.purReqDetForm.controls['orderingQty'].patchValue(row.data.orderingQty.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+      this.purReqDetForm.controls['unitRate'].patchValue(row.data.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      this.purReqDetForm.controls['amount'].patchValue(row.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+    catch(ex:any){
+      this.retMessage= ex.message;
+      this.textMessageClass="red";
+    }
   }
 
   addPurchase() {

@@ -10,7 +10,7 @@ import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { SubSink } from 'subsink';
 import { PurchaseOrderDetails } from 'src/app/purchase/purchase.class';
 import { UserDataService } from 'src/app/Services/user-data.service';
-import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
 @Component({
   selector: 'app-purchasedetails',
@@ -240,7 +240,7 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
     // //console.log(this.masterParams);
     try {
       this.loader.start();
-      this.purchorddetervice.getPurchaseDetailsData(this.masterParams).subscribe((res: any) => {
+      this.subSink.sink = this.purchorddetervice.getPurchaseDetailsData(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
           this.handleChargeSuccess(res);
@@ -287,9 +287,9 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
       ItemFirstLevel: "",
       ItemSecondLevel: "",
     }
-    this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
+    this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
       if (res.status.toUpperCase() != "FAIL") {
-        if (res.data.nameCount === 1) {
+        if (res && res.data && res.data.nameCount === 1) {
           this.purDetForm.controls['prodName'].patchValue(res.data.selName);
           this.prodCode = res.data.selCode;
         }
@@ -303,26 +303,27 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
             }
           });
           dialogRef.afterClosed().subscribe(result => {
-            this.prodCode = result.prodCode;
-            this.purDetForm.controls['prodName'].patchValue(result.prodName);
-            this.units = result.uom;
-            this.purDetForm.controls['unitRate'].patchValue(result.stdPurRate);
-            this.purDetForm.controls['discPer'].patchValue(0);
-            this.vatRate = result.vatRate;
+            if (result) {
+              this.prodCode = result.prodCode;
+              this.purDetForm.controls['prodName'].patchValue(result.prodName);
+              this.units = result.uom;
+              this.purDetForm.controls['unitRate'].patchValue(result.stdPurRate);
+              this.purDetForm.controls['discPer'].patchValue(0);
+              this.vatRate = result.vatRate;
 
-            let numNetRate: number = 0;
-            if (this.data.applyVat) {
-              numNetRate = result.stdPurRate * (1 + this.vatRate / 100.0);
+              let numNetRate: number = 0;
+              if (this.data.applyVat) {
+                numNetRate = result.stdPurRate * (1 + this.vatRate / 100.0);
+              }
+              else {
+                numNetRate = result.stdPurRate;
+              }
+              this.purDetForm.controls['netRate'].patchValue(numNetRate);
+              this.purDetForm.controls['quantity'].patchValue(1.00);
+              this.purDetForm.controls['receivedQty'].patchValue(0);
+              this.purDetForm.controls['rowValue'].patchValue(numNetRate);
+              this.formatNumbers();
             }
-            else {
-              numNetRate = result.stdPurRate;
-            }
-
-            this.purDetForm.controls['netRate'].patchValue(numNetRate);
-            this.purDetForm.controls['quantity'].patchValue(1.00);
-            this.purDetForm.controls['receivedQty'].patchValue(0);
-            this.purDetForm.controls['rowValue'].patchValue(numNetRate);
-            this.formatNumbers();
           });
         }
       }
@@ -346,7 +347,7 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
     this.rowValue = row.rowValue;
     this.prodCode = row.prodCode;
 
-    this.purDetForm.patchValue(row);
+    //  this.purDetForm.patchValue(row);
     this.purDetForm.controls['prodName'].patchValue(row.prodName);
     this.units = row.uom;
     this.vatRate = row.vatRate;
@@ -394,7 +395,8 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
           this.textMessageClass = "green";
           this.purDetForm = this.formInit();
           this.slNum = 0;
-
+          this.vatRate = 0;
+          this.units = "";
         }
       });
     }
