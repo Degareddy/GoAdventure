@@ -27,15 +27,16 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
   textMessageClass!: string;
   masterParams!: MasterParams;
   selTranNo!: string;
+  isAltered: boolean = false;
   expToList: Item[] = [
     { itemCode: "Management", itemName: "Management" },
     { itemCode: "Property", itemName: "Property" }
   ];
   tblData: any;
-  props: Item[]=[];
-  blocks: Item[]=[];
-  flats: Item[]=[];
-  itemsList: Item[]=[];
+  props: Item[] = [];
+  blocks: Item[] = [];
+  flats: Item[] = [];
+  itemsList: Item[] = [];
   tranData!: any[];
   private subSink: SubSink;
   slno!: number;
@@ -106,7 +107,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
       remarks: [''],
     })
   }
-  onAddExpense(){
+  onAddExpense() {
 
   }
   ngOnInit(): void {
@@ -161,14 +162,12 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
   }
 
   onUpdate() {
-
     this.clearMsgs();
     if (this.expDetForm.invalid) {
       return;
     }
     else {
       const formValues = this.expDetForm.value;
-
       this.expDetCls.mode = this.data.mode;
       this.expDetCls.company = this.userDataService.userData.company;
       this.expDetCls.location = this.userDataService.userData.location;
@@ -176,9 +175,9 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
       this.expDetCls.tranNo = this.selTranNo;
       this.expDetCls.slNo = this.slno;
 
-       this.expDetCls.property = this.expDetForm.controls['property'].value;
-       this.expDetCls.block = "ALL";
-       this.expDetCls.unit = "ALL";
+      this.expDetCls.property = this.expDetForm.controls['property'].value;
+      this.expDetCls.block = "ALL";
+      this.expDetCls.unit = "ALL";
       this.expDetCls.expenseItem = this.expDetForm.controls['expenseItem'].value;
 
       this.expDetCls.amount = Number(this.expDetForm.controls['amount'].value.toString().replace(/,(?=\d*\.\d*)/g, ''));
@@ -197,6 +196,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
           if (res.status.toUpperCase() === "SUCCESS") {
             this.retMessage = res.message;
             this.textMessageClass = "green";
+            this.isAltered=true
             this.getExpenseDetails(res.tranNoNew);
           }
           else {
@@ -368,9 +368,6 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
         slNo: this.slno,
         mode: this.data.mode
       }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-
     });
   }
 }

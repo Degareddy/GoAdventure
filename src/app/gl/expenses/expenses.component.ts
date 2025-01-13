@@ -89,12 +89,11 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result != true && result != undefined) {
+      if (result.isAltered === true) {
         this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
-
+        this.searchData();
+        this.getCashBalace();
       }
-      this.searchData();
-      this.getCashBalace();
     });
   }
   async getCashBalace() {
