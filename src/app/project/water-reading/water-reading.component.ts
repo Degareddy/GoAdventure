@@ -618,7 +618,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       tranType: 'EXTDBILL',
-      Item: this.waterReadingForm.controls['tranNo'].value || '',
+      TranNo: this.waterReadingForm.controls['tranNo'].value || '',
       ItemFirstLevel: "",
       ItemSecondLevel: "",
       FromDate:formattedFirstDayOfMonth,
