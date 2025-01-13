@@ -685,7 +685,9 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.onTranSearch();
+      if(result.isAltered){
+        this.onTranSearch();
+      }
     });
 
   }

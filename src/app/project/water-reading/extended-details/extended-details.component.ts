@@ -20,7 +20,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 export class ExtendedDetailsComponent implements OnInit, OnDestroy {
   updateBillsForm!: FormGroup;
   serviceTypes: Item[] = [
-    {itemCode:'Water Meter',itemName:'Water Meter'},
+    { itemCode: 'Water Meter', itemName: 'Water Meter' },
   ]
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
   { field: "serviceTypeDesc", headerName: "Service Type", sortable: true, filter: true, resizable: true, flex: 1 },
@@ -65,7 +65,8 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     },
   },
   ];
-  rowData: any = []
+  rowData: any = [];
+  isAltered: boolean = false;
   expenseTypes: any = [];
   gridOptions!: GridOptions;
   private subSink: SubSink;
@@ -108,9 +109,9 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     this.displayMessage("", "");
     this.slNo = 0;
     this.formInit();
-    this.previousReading=0;
-    this.tenantName="";
-    this.lastReading='';
+    this.previousReading = 0;
+    this.tenantName = "";
+    this.lastReading = '';
   }
 
   onPageSizeChanged() {
@@ -130,15 +131,15 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
       unit: [{ value: '0', disabled: true }],
       rate: ['0.00', Validators.required],
       amount: [{ value: '0.00', disabled: true }],
-      prevReading:[{value:'',disabled:true}]
+      prevReading: [{ value: '', disabled: true }]
     });
   }
-  expenseChange(event :any){
+  expenseChange(event: any) {
     console.log(event);
-    if(event.value === 'WM'){
+    if (event.value === 'WM') {
       this.updateBillsForm.get('expenseType')?.patchValue('WATEXP');
     }
-    else if(event.value === 'ESN'){
+    else if (event.value === 'ESN') {
       this.updateBillsForm.get('expenseType')?.patchValue('ELECEXP');
     }
     this.serviceChange(event.value);
@@ -281,6 +282,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
           // console.log(res);
           if (res.status.toUpperCase() === "SUCCESS") {
             this.displayMessage("Success: " + res.message, "green");
+            this.isAltered= true;
             this.getExtendedDet();
           }
           else {
@@ -296,15 +298,15 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
   onRowSelected(event: any) {
     console.log(event.data);
     this.slNo = event.data.slNo;
-    this.previousReading=event.data.prevRdg;
+    this.previousReading = event.data.prevRdg;
     this.updateBillsForm.patchValue({
-      serviceType:event.data.serviceType,
+      serviceType: event.data.serviceType,
       expenseType: event.data.expenseType,
-      prevReading:event.data.prevRdg.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-      reading:event.data.currRdg.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      prevReading: event.data.prevRdg.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      reading: event.data.currRdg.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       unit: event.data.unitCount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-      rate:event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      amount:event.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      rate: event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      amount: event.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     })
   }
   onCurrentReadingChanged() {
