@@ -12,6 +12,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { ExcRateClass } from '../gl.class';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-exchange-rate',
@@ -63,13 +64,16 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   },
   { field: "convStatus", headerName: "Status", flex: 1, resizable: true, sortable: true, filter: true, }
   ];
-  constructor(private fb: FormBuilder, public dialog: MatDialog, private userDataService: UserDataService,
+  constructor(private fb: FormBuilder, public dialog: MatDialog, private userDataService: UserDataService,private router:Router,
     private invService: InventoryService, private loader: NgxUiLoaderService, private glService: GeneralLedgerService,
   ) {
     this.exrtForm = this.formInit();
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
+  }
+  Close(){
+    this.router.navigateByUrl('/home');
   }
   onLnkClicked(event: any) {
     // console.log(event);
