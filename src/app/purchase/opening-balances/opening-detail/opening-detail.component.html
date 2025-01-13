@@ -11,7 +11,7 @@
       <div class="col-1">
         <mat-label>SlNo:&nbsp;<b class="data">{{slNum}}</b></mat-label>
       </div>
-      <div class="matfield" >
+      <div class="col-2" >
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Client Type</mat-label>
           <mat-select formControlName="clientType">
@@ -34,7 +34,7 @@
           </button>
         </mat-form-field>
       </div>
-      <div class="col-3">
+      <div class="col-2">
         <mat-form-field appearance="outline" style="width: 150px;">
           <mat-label class="mat-label-class">Currency</mat-label>
           <mat-select formControlName="currency">
@@ -49,11 +49,13 @@
           <input matInput placeholder="Balance Amount" formControlName="balAmount" type="text"
             class="right-align-input">
         </mat-form-field>
-
       </div>
       <div class="col-2">
         <input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls">
       </div>
+    </div>
+    <div class="row  justify-content-left myCustomClass">
+
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">

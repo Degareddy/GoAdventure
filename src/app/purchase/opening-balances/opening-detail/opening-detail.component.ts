@@ -297,7 +297,6 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
 
   }
   onfileSubmit() {
-    // Validate form inputs
     if (this.openinBalDetForm.invalid) {
       this.openinBalDetForm.markAllAsTouched();
       this.displayMessage("Enter all required fields", 'red');
@@ -343,7 +342,6 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.openinBalDetForm = this.formInit();
     this.slNum = 0;
     this.displayMessage("", "");
-    // this.monitorFields();
     this.openingDetCls.party = "";
   }
   onGridReady(params: any) {
@@ -353,7 +351,6 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.loadData();
-    // this.monitorFields();
   }
 
   formInit() {
@@ -362,75 +359,66 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       partyName: ['', Validators.required],
       balAmount: ['0.00', Validators.required],
       currency: ['', Validators.required],
-      clientType:['clientType']
+      clientType: ['']
       // CrAmount: ['0.00', Validators.required],
     })
 
   }
   searchParty() {
-    const body = {
-      ...this.commonParams(),
-      Type: this.openinBalDetForm.get('clientType')?.value,
-      item: this.openinBalDetForm.controls['partyName'].value || "",
-      ItemSecondLevel: ""
+    if (this.openinBalDetForm.controls.clientType.value === "" || this.openinBalDetForm.controls.clientType.value === null || this.openinBalDetForm.controls.clientType.value === undefined) {
+      this.displayMessage("Please Select Client Type", "red");
+      return;
     }
-    try {
-      this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-          if (res && res.data && res.data.nameCount === 1) {
-            this.openinBalDetForm.controls['partyName'].patchValue(res.data.selName);
-            this.partyCode = res.data.selCode;
-            this.openingDetCls.party = res.data.selCode;
+    else{
+      const body = {
+        ...this.commonParams(),
+        Type: this.openinBalDetForm.get('clientType')?.value,
+        item: this.openinBalDetForm.controls['partyName'].value || "",
+        ItemSecondLevel: ""
+      }
+      try {
+        this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+            if (res && res.data && res.data.nameCount === 1) {
+              this.openinBalDetForm.controls['partyName'].patchValue(res.data.selName);
+              this.partyCode = res.data.selCode;
+              this.openingDetCls.party = res.data.selCode;
+            }
+            else {
+              if (!this.dialogOpen) {
+                const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+                  width: '90%',
+                  disableClose: true,
+                  data: {
+                    'PartyName': this.openinBalDetForm.controls['partyName'].value,
+                    'PartyType': this.openinBalDetForm.get('clientType')?.value,
+                    'search': this.openinBalDetForm.get('clientType')?.value + " " + ' Search'
+                  }
+                });
+                this.dialogOpen = true;
+                dialogRef.afterClosed().subscribe(result => {
+                  if (result != true) {
+                    this.openinBalDetForm.controls['partyName'].patchValue(result.partyName);
+                    this.partyCode = result.code;
+                    this.openingDetCls.party = result.code;
+                  }
+
+                  this.dialogOpen = false;
+                });
+              }
+
+            }
           }
           else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  'PartyName': this.openinBalDetForm.controls['partyName'].value,
-                  'PartyType': this.openinBalDetForm.get('clientType')?.value,
-                  'search': this.openinBalDetForm.get('clientType')?.value +" " + ' Search'
-                }
-              });
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                if (result != true) {
-                  this.openinBalDetForm.controls['partyName'].patchValue(result.partyName);
-                  this.partyCode = result.code;
-                  this.openingDetCls.party = result.code;
-                }
-
-                this.dialogOpen = false;
-              });
-            }
-
+            this.displayMessage("Error: " + res.message, "red");
           }
-        }
-        else {
-          this.displayMessage("Error: " + res.message, "red");
-        }
-      });
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage("Exception: " + ex.message, "red");
+      }
     }
-    catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-    }
-  }
-  // monitorFields(): void {
-  //   this.openinBalDetForm.get('DrAmount')?.valueChanges.subscribe((drAmountValue: string) => {
-  //     if (drAmountValue) {
-  //       this.openinBalDetForm.get('CrAmount')?.disable({ emitEvent: false });
-  //     } else {
-  //       this.openinBalDetForm.get('CrAmount')?.enable({ emitEvent: false });
-  //     }
-  //   });
 
-  //   this.openinBalDetForm.get('CrAmount')?.valueChanges.subscribe((crAmountValue: string) => {
-  //     if (crAmountValue) {
-  //       this.openinBalDetForm.get('DrAmount')?.disable({ emitEvent: false });
-  //     } else {
-  //       this.openinBalDetForm.get('DrAmount')?.enable({ emitEvent: false });
-  //     }
-  //   });
-  // }
+  }
+
 }
