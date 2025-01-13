@@ -17,6 +17,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { SalesService } from 'src/app/Services/sales.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
 
 interface Item {
@@ -143,9 +144,14 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     };
     try {
       this.subSink.sink = this.masterService.getModesList(modeBody).subscribe((res: any) => {
-        this.modes = res['data'];
+        if(res.status.toUpperCase() === "SUCCESS"){
+          this.modes = res['data'];
+        }
+        else{
+          this.retMessage="Modes list not found";
+          this.textMessageClass="red";
+        }
       });
-      // this.masterParams.item = this.purReqHdrForm.controls['tranNo'].value;
     }
     catch (ex: any) {
       this.retMessage = ex.message;
@@ -301,18 +307,15 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       this.expCls.Supplier = this.clientCode;
       try {
         this.loader.start();
-        this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: any) => {
+        this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
             this.newTranMsg = res.message;
             this.masterParams.tranNo = res.tranNoNew;
-
             if (this.expensesForm.controls['mode'].value == "Add") {
-              // this.selMode = 'Add';
               this.modeChange("Modify");
             }
             this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
-
             this.retMessage = res.message;
             this.textMessageClass = "green";
           }
@@ -345,7 +348,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       this.expensesForm.get('tranNo')!.clearValidators();
       this.expensesForm.get('tranNo')!.updateValueAndValidity();
       this.expensesForm.controls['tranDate'].patchValue(new Date);
-
     }
     else {
       this.expensesForm.controls['mode'].patchValue(event, { emitEvent: false });
@@ -381,7 +383,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
       }
       else {
-        this.retMessage = '';
+        // this.retMessage = '';
         if (!this.detdialogOpen) {
           const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
             width: '90%',
