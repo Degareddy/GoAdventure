@@ -28,7 +28,7 @@ interface Item {
   templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.css']
 })
-export class ExpensesComponent implements OnInit,OnDestroy {
+export class ExpensesComponent implements OnInit, OnDestroy {
   expensesForm!: FormGroup;
   @Input() max: any;
   tomorrow = new Date();
@@ -41,16 +41,16 @@ export class ExpensesComponent implements OnInit,OnDestroy {
   modeIndex!: number;
   selMode!: string;
   detdialogOpen = false;
-  balanceAmount:number=0;
+  balanceAmount: number = 0;
   // userData: any;
   masterParams!: MasterParams;
   modes!: any[];
   tranStatus!: string;
   tranAmount!: number;
-  clientCode!:string;
+  clientCode!: string;
   private subSink!: SubSink;
   clientTypeList: Item[] = [
-    {itemCode:'',itemName:'Select'},
+    // {itemCode:'',itemName:'Select'},
     { itemCode: 'TENANT', itemName: 'Tenant' },
     { itemCode: 'STAFF', itemName: 'Staff' },
     { itemCode: 'LANDLORD', itemName: 'Landlord' },
@@ -63,7 +63,7 @@ export class ExpensesComponent implements OnInit,OnDestroy {
 
   // @ViewChild('frmClear') public expenfrm !: NgForm;
 
-  constructor(protected route: ActivatedRoute, private saleService: SalesService,private utlService: UtilitiesService,
+  constructor(protected route: ActivatedRoute, private saleService: SalesService, private utlService: UtilitiesService,
     protected router: Router, private userDataService: UserDataService,
     private loader: NgxUiLoaderService,
     protected glService: GeneralLedgerService,
@@ -108,7 +108,7 @@ export class ExpensesComponent implements OnInit,OnDestroy {
     };
 
     try {
-      this.subSink.sink =await this.saleService.GetUserCashBalance(balBody).subscribe((res: any) => {
+      this.subSink.sink = await this.saleService.GetUserCashBalance(balBody).subscribe((res: any) => {
         if (res.status.toUpperCase() === 'SUCCESS') {
           this.balanceAmount = res.data.totalAmount;
           // this.pendingAmount = res.data.pendingAmount;
@@ -159,8 +159,8 @@ export class ExpensesComponent implements OnInit,OnDestroy {
       tranNo: [''],
       tranDate: [new Date(), Validators.required],
       notes: [''],
-      clientType:[''],
-      client:['',Validators.required]
+      clientType: [''],
+      client: ['', Validators.required]
     })
   }
 
@@ -172,54 +172,64 @@ export class ExpensesComponent implements OnInit,OnDestroy {
       refNo: this.userDataService.userData.sessionID,
     };
   }
- async onClientSearch() {
-  this.clientCode='';
-     const body = {
-       ...this.commonParams(),
-       Type: "CLIENT",
-       item: this.expensesForm.controls['client'].value || "",
-       ItemSecondLevel: ""
-     }
-     try {
-       this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-         if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-           if (res && res.data && res.data.nameCount === 1) {
-             this.expensesForm.controls['client'].patchValue(res.data.selName);
-             this.clientCode = res.data.selCode;
-           }
-           else {
-             if (!this.dialogOpen) {
-               const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
-                 width: '90%',
-                 disableClose: true,
-                 data: {
-                   'PartyName': this.expensesForm.controls['client'].value,
-                   'PartyType': this.expensesForm.controls['clientType'].value,
-                   'search': 'Client Search'
-                 }
-               });
-               this.dialogOpen = true;
-               dialogRef.afterClosed().subscribe(result => {
-                 if (result != true) {
-                   this.expensesForm.controls['client'].patchValue(result.partyName);
-                   this.clientCode = result.code;
-                 }
-
-                 this.dialogOpen = false;
-               });
-             }
-
-           }
-         }
-         else {
-          this.retMessage=res.message;
-         }
-       });
-     }
-     catch (ex: any) {
-      this.retMessage=ex.message;
+  async onClientSearch() {
+    this.clientCode = '';
+    if (this.expensesForm.controls.clientType.value === "" || this.expensesForm.controls.clientType.value === null || this.expensesForm.controls.clientType.value === undefined) {
+      this.retMessage = "Please Select Client Type";
+      this.textMessageClass="red";
+      return;
     }
-   }
+    else{
+      const body = {
+        ...this.commonParams(),
+        Type: "CLIENT",
+        item: this.expensesForm.controls['client'].value || "",
+        ItemSecondLevel: ""
+      }
+      try {
+        this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+            if (res && res.data && res.data.nameCount === 1) {
+              this.expensesForm.controls['client'].patchValue(res.data.selName);
+              this.clientCode = res.data.selCode;
+            }
+            else {
+              if (!this.dialogOpen) {
+                const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+                  width: '90%',
+                  disableClose: true,
+                  data: {
+                    'PartyName': this.expensesForm.controls['client'].value,
+                    'PartyType': this.expensesForm.controls['clientType'].value,
+                    'search': 'Client Search'
+                  }
+                });
+                this.dialogOpen = true;
+                dialogRef.afterClosed().subscribe(result => {
+                  if (result != true) {
+                    this.expensesForm.controls['client'].patchValue(result.partyName);
+                    this.clientCode = result.code;
+                  }
+
+                  this.dialogOpen = false;
+                });
+              }
+
+            }
+          }
+          else {
+            this.retMessage = res.message;
+            this.textMessageClass="red";
+          }
+        });
+      }
+      catch (ex: any) {
+        this.retMessage = ex.message;
+        this.textMessageClass="red";
+      }
+    }
+
+  }
   onSubmit() {
     if (this.expensesForm.invalid) {
       return;
@@ -287,7 +297,7 @@ export class ExpensesComponent implements OnInit,OnDestroy {
       this.expCls.tranStatus = this.tranStatus;
       this.expCls.tranDate = this.expensesForm.controls['tranDate'].value;
       this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
-      this.expCls.Supplier=this.clientCode;
+      this.expCls.Supplier = this.clientCode;
       try {
         this.loader.start();
         this.subSink.sink = this.glService.UpdateExpensesHdr(this.expCls).subscribe((res: any) => {
@@ -438,7 +448,7 @@ export class ExpensesComponent implements OnInit,OnDestroy {
           this.expensesForm.controls['tranDate'].patchValue(res['data'].tranDate);
           this.expensesForm.controls['notes'].patchValue(res['data'].notes);
           this.expensesForm.controls['client'].patchValue(res['data'].supplierName);
-          this.clientCode=res['data'].supplier;
+          this.clientCode = res['data'].supplier;
           this.textMessageClass = 'green';
           if (mode != 'View') {
             this.retMessage = this.newTranMsg;
@@ -482,9 +492,6 @@ export class ExpensesComponent implements OnInit,OnDestroy {
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-
     });
   }
 
