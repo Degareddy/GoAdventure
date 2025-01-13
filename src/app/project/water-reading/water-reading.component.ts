@@ -607,14 +607,23 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  formatDate(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
   onTranSearch() {
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
+    const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
       tranType: 'EXTDBILL',
-      Item: this.waterReadingForm.controls['tranNo'].value || '',
+      TranNo: this.waterReadingForm.controls['tranNo'].value || '',
       ItemFirstLevel: "",
-      ItemSecondLevel: ""
+      ItemSecondLevel: "",
+      FromDate:formattedFirstDayOfMonth,
+      ToDate: formattedCurrentDate
+
     }
     try {
       this.subSink.sink = this.masterService.GetTranCount(body).subscribe((res: any) => {
@@ -675,12 +684,9 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       }
     });
 
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     console.log('Dialog result:', result);
-    //     // Handle the result from the form here
-    //   }
-    // });
+    dialogRef.afterClosed().subscribe(result => {
+      this.onTranSearch();
+    });
 
   }
   Close() {

@@ -3,10 +3,16 @@
   <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
 </button>
 
-<div class="flex items-center text-white rounded-sm bg-blue-400 ">
-  <mat-icon class="mr-1">info</mat-icon>
-  Extended Bill Details:<b class="data ml-2">{{data.tranNo}}</b>
+<div class="flex items-center text-white rounded-sm bg-blue-400 space-x-4">
+  <div class="flex items-center">
+    <mat-icon class="mr-1">info</mat-icon>
+    Extended Bill Details:<b class="data ml-2">{{data.tranNo}}</b>
+  </div>
+  <div class="flex items-center">
+    Unit:<b class="data ml-2">{{data.unit}}</b>
+  </div>
 </div>
+
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="updateBillsForm" (ngSubmit)="onSubmit()">
     <div class="row justify-content-center">
@@ -16,7 +22,7 @@
       <div class="col-2">
         <mat-form-field appearance="outline" style="width: 150px;">
           <mat-label class="mat-label-class">Expense Type</mat-label>
-          <mat-select formControlName="serviceType">
+          <mat-select formControlName="serviceType"  (selectionChange)="expenseChange($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let type of expenseTypes" [value]="type.itemCode">
               {{ type.itemName }}
