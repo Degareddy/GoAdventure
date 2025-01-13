@@ -173,6 +173,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     };
   }
   async onClientSearch() {
+    this.retMessage="";
+    this.textMessageClass="";
     this.clientCode = '';
     if (this.expensesForm.controls.clientType.value === "" || this.expensesForm.controls.clientType.value === null || this.expensesForm.controls.clientType.value === undefined) {
       this.retMessage = "Please Select Client Type";
