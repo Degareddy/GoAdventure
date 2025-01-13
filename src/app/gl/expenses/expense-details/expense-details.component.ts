@@ -344,6 +344,12 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
     const gridApi = params.api;
     gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
+  newExepnse(){
+    this.slno = 0;
+    this.expDetForm = this.formInit();
+    this.retMessage = "";
+    this.textMessageClass="";
+  }
 
   onAmountChanged() {
     let numAmount: number;
