@@ -35,6 +35,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   loader!: NgxUiLoaderService;
   pageSizes = [25, 50, 100, 250, 500];
   pageSize = 100;
+  totalAmount:number=0;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
   { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true,width: 90 ,hide:true},
   { field: "unitName", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
@@ -182,6 +183,8 @@ async  search() {
           }
           else {
             this.rowData = res['data'];
+            console.log(this.rowData);
+            this.calculateTotal(this.rowData);
             this.textMessageClass = 'green';
             this.retMessage = res.message;
           }
@@ -194,7 +197,12 @@ async  search() {
 
     }
   }
-
+  
+  calculateTotal(data:any){
+    this.totalAmount = data.reduce((sum: number, item: any) => {
+      return sum + (item?.totalAmount || 0); // Safely access totalAmount
+    }, 0);
+  }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
@@ -208,5 +216,9 @@ async  search() {
     this.tranSearchForm = this.formInit();
     this.textMessageClass = "";
     this.retMessage = "";
+  }
+  onFilterData(event: any) {
+    // console.log(event);
+    this.calculateTotal(event);
   }
 }

@@ -83,7 +83,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
     private loader: NgxUiLoaderService, private userDataService: UserDataService,
     private masterService: MastersService,
     protected glService: GeneralLedgerService, public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string }) {
+    @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string, name:string }) {
     this.expDetForm = this.formInit();
     this.subSink = new SubSink();
     this.masterParams = new MasterParams();

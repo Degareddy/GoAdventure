@@ -72,7 +72,13 @@
 <div >
   <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
     [globalSearch]="true" (gridReady)="onGridReady($event)"   (cellClicked)="onRowSelected($event)"
-    [gridHeight]="'250px'" [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'"
+    [gridHeight]="'250px'" [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'" (filterChanges)="onFilterData($event)"
     [showRecordCount]="true" >
   </app-access-grid>
+</div>
+
+<div class="balance-container" >
+
+  <span class="balance-label" >Credit:</span>
+  <span class="balance-amount" >{{ totalAmount | number: '1.2-2' }}</span>&nbsp;&nbsp;&nbsp;
 </div>

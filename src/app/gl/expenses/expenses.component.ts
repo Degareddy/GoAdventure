@@ -87,6 +87,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         'tranNo': this.expensesForm.get('tranNo')!.value,
         'mode': this.expensesForm.controls['mode'].value,
         'status': this.tranStatus,
+        'name':this.expensesForm.get('client')?.value,
       }
     });
     dialogRef.afterClosed().subscribe(result => {

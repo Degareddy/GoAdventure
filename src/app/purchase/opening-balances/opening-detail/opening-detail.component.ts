@@ -54,8 +54,10 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   private openingDetCls: OpeningBalDetailCls;
   columnDefs: any = [
     { field: "slNo", headerName: "S.No", width: 70 },
-    { field: "tranNo", headerName: "Tran No", resizable: true, flex: 1 },
+    // { field: "tranNo", headerName: "Tran No", resizable: true, flex: 1 },
     { field: "partyName", headerName: "Party Name", sortable: true, filter: true, resizable: true, width: 180, },
+    { field: "propertyName", headerName: "Propert", sortable: true, filter: true, resizable: true, width: 180, },
+    { field: "unitName", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 180, },
     { field: "party", headerName: "Party", sortable: true, filter: true, resizable: true, width: 180, hide: true },
     {
       field: "balAmount", headerName: "Balance Amount", resizable: true, flex: 1, type: 'rightAligned',
@@ -202,7 +204,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    //console.log(event.data);
+    console.log(event.data);
     this.onRowClick(event.data);
   }
   generateColumns(data: any[]) {
@@ -261,7 +263,10 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.openinBalDetForm.patchValue({
       partyName: row.partyName,
       balAmount: row.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      currency: row.currency
+      currency: row.currency,
+      property: row.propCode,
+      block: row.blockCode,
+      flat:row.unitName
     });
     this.partyCode = row.party;
     this.slNum = row.slNo;
