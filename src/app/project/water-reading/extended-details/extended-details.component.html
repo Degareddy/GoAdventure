@@ -1,5 +1,5 @@
 <!-- <h3 mat-dialog-title>Update Bill Details</h3> -->
-<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+<button mat-icon-button class="close-button" [mat-dialog-close]="{ isAltered: isAltered}">
   <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
 </button>
 
@@ -47,7 +47,7 @@
           <mat-label class="mat-label-class">Prev Reading</mat-label>
           <input matInput formControlName="prevReading" type="text" placeholder="Reading" class="right-align-input"
             [disabled]="true">
-          
+
         </mat-form-field>
       </div>
       <!-- <div class="col-2">
@@ -109,7 +109,7 @@
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
         <mat-icon>clear_all</mat-icon>Clear
       </button>
-      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{ isAltered: isAltered}">
         <mat-icon>cancel</mat-icon>Close
       </button>
     </div>

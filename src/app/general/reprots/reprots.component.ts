@@ -50,7 +50,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     { itemCode: 'STAFF', itemName: 'Staff' }
 
   ];
-  reportTypeTemp:Item[]=[];
+  reportTypeTemp: Item[] = [];
 
   // branchList: any = [];
   chargeList: Item[] = [];
@@ -58,8 +58,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   rprtName: string = "";
   today = new Date();
   totals: string = "";
-  fromDate!:Date;
-  toDate!:Date;
+  fromDate!: Date;
+  toDate!: Date;
   retMessage: string = "";
   textMessageClass: string = "";
   private subsink!: SubSink;
@@ -81,17 +81,17 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   balanceTmp: boolean = false;
   amountTmp: boolean = false;
   totalAmount: number = 0;
-  totalDepositAmt:number=0;
-  custName:string="";
-  totalDepositPaid:number=0;
-  totalDepositBal:number=0;
-  totalProperty:number=0;
-  totalLandLord:number=0;
-  selectDate:string='TO Date';
-  loanBalAmount:number=0;
-  totLoanAmt:number=0
-  totLoanPaid:number=0;
-  totLoanBal:number=0;
+  totalDepositAmt: number = 0;
+  custName: string = "";
+  totalDepositPaid: number = 0;
+  totalDepositBal: number = 0;
+  totalProperty: number = 0;
+  totalLandLord: number = 0;
+  selectDate: string = 'TO Date';
+  loanBalAmount: number = 0;
+  totLoanAmt: number = 0
+  totLoanPaid: number = 0;
+  totLoanBal: number = 0;
   private subscriptions: Subscription = new Subscription();
   constructor(private fb: FormBuilder, protected router: Router, private userDataService: UserDataService, protected projService: ProjectsService,
     private masterService: MastersService, private datepipe: DatePipe, private saleService: SalesService, private store: Store, private navigationService: NavigationService,
@@ -106,7 +106,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     this.subsink.unsubscribe();
     this.subscriptions.unsubscribe();
   }
-  setDepositCols(){
+  setDepositCols() {
     {
       this.columnDefs = [
         { headerName: 'Property', field: 'propertyName', sortable: false, filter: true, resizable: true, flex: 1 },
@@ -117,7 +117,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           headerName: 'Deposit', field: 'unitDepositAmount', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },
           valueFormatter: (params: { data: { unitDepositAmount: any }; }) => {
             const unitDepositAmount = parseFloat(params.data.unitDepositAmount.toString());
-            if (unitDepositAmount !== undefined ) {
+            if (unitDepositAmount !== undefined) {
               return `${unitDepositAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
             return '';
@@ -127,7 +127,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           headerName: 'Paid', field: 'tenantAmount', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },
           valueFormatter: (params: { data: { tenantAmount: any }; }) => {
             const tenantAmount = parseFloat(params.data.tenantAmount.toString());
-            if (tenantAmount !== undefined ) {
+            if (tenantAmount !== undefined) {
               return `${tenantAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
             return '';
@@ -137,7 +137,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           headerName: 'Balance', field: 'balDepAmount', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },
           valueFormatter: (params: { data: { balDepAmount: any }; }) => {
             const balDepAmount = parseFloat(params.data.balDepAmount.toString());
-            if (balDepAmount !== undefined ) {
+            if (balDepAmount !== undefined) {
               return `${balDepAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
             return '';
@@ -146,7 +146,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       ]
 
 
-      if(this.reportForm.controls['PropertyHoldings'].value && !this.reportForm.controls['LandLordHoldings'].value ){
+      if (this.reportForm.controls['PropertyHoldings'].value && !this.reportForm.controls['LandLordHoldings'].value) {
         this.columnDefs.push({
           headerName: 'Property Holdings',
           field: 'propertyAmount',
@@ -157,7 +157,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           cellStyle: { justifyContent: "flex-end" },
           valueFormatter: (params: { data: { propertyAmount: any }; }) => {
             const propertyAmount = parseFloat(params.data.propertyAmount.toString());
-            if (propertyAmount !== undefined ) {
+            if (propertyAmount !== undefined) {
               return `${propertyAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
             return '';
@@ -165,69 +165,69 @@ export class ReprotsComponent implements OnInit, OnDestroy {
         });
         this.gridApi.setColumnDefs(this.columnDefs);
       }
-      if(this.reportForm.controls['LandLordHoldings'].value && !this.reportForm.controls['PropertyHoldings'].value){
+      if (this.reportForm.controls['LandLordHoldings'].value && !this.reportForm.controls['PropertyHoldings'].value) {
         this.columnDefs.push(
-          { headerName: 'LandLord', field: 'landlordName', sortable: false, filter: false,autoHeight: true, resizable: true, flex: 1 },
+          { headerName: 'LandLord', field: 'landlordName', sortable: false, filter: false, autoHeight: true, resizable: true, flex: 1 },
           {
-          headerName: 'Landlord Holdings',
-          field: 'landlordAmount',
-          filter: 'agNumberColumnFilter',
-          resizable: true,
-          flex: 1,
-          type: 'rightAligned',
-          cellStyle: { justifyContent: "flex-end" },
-          valueFormatter: (params: { data: { landlordAmount: any }; }) => {
-            const landlordAmount = parseFloat(params.data.landlordAmount.toString());
-            if (landlordAmount !== undefined ) {
-              return `${landlordAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            headerName: 'Landlord Holdings',
+            field: 'landlordAmount',
+            filter: 'agNumberColumnFilter',
+            resizable: true,
+            flex: 1,
+            type: 'rightAligned',
+            cellStyle: { justifyContent: "flex-end" },
+            valueFormatter: (params: { data: { landlordAmount: any }; }) => {
+              const landlordAmount = parseFloat(params.data.landlordAmount.toString());
+              if (landlordAmount !== undefined) {
+                return `${landlordAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              }
+              return '';
             }
-            return '';
-          }
-        });
+          });
         this.gridApi.setColumnDefs(this.columnDefs);
       }
-      else if(this.reportForm.controls['LandLordHoldings'].value && this.reportForm.controls['PropertyHoldings'].value){
+      else if (this.reportForm.controls['LandLordHoldings'].value && this.reportForm.controls['PropertyHoldings'].value) {
         this.columnDefs.push(
-          { headerName: 'LandLord', field: 'landlordName', sortable: false, filter: false,autoHeight: true, resizable: true, flex: 1 },
+          { headerName: 'LandLord', field: 'landlordName', sortable: false, filter: false, autoHeight: true, resizable: true, flex: 1 },
           {
-          headerName: 'Landlord Holdings',
-          field: 'landlordAmount',
-          filter: 'agNumberColumnFilter',
-          resizable: true,
-          flex: 1,
-          type: 'rightAligned',
-          cellStyle: { justifyContent: "flex-end" },
-          valueFormatter: (params: { data: { landlordAmount: any }; }) => {
-            const landlordAmount = parseFloat(params.data.landlordAmount.toString());
-            if (landlordAmount !== undefined ) {
-              return `${landlordAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            headerName: 'Landlord Holdings',
+            field: 'landlordAmount',
+            filter: 'agNumberColumnFilter',
+            resizable: true,
+            flex: 1,
+            type: 'rightAligned',
+            cellStyle: { justifyContent: "flex-end" },
+            valueFormatter: (params: { data: { landlordAmount: any }; }) => {
+              const landlordAmount = parseFloat(params.data.landlordAmount.toString());
+              if (landlordAmount !== undefined) {
+                return `${landlordAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              }
+              return '';
             }
-            return '';
-          }
-        },
-        {
-          headerName: 'Preperty Holdings',
-          field: 'propertyAmount',
-          filter: 'agNumberColumnFilter',
-          resizable: true,
-          flex: 1,
-          type: 'rightAligned',
-          cellStyle: { justifyContent: "flex-end" },
-          valueFormatter: (params: { data: { propertyAmount: any }; }) => {
-            const propertyAmount = parseFloat(params.data.propertyAmount.toString());
-            if (propertyAmount !== undefined ) {
-              return `${propertyAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          },
+          {
+            headerName: 'Preperty Holdings',
+            field: 'propertyAmount',
+            filter: 'agNumberColumnFilter',
+            resizable: true,
+            flex: 1,
+            type: 'rightAligned',
+            cellStyle: { justifyContent: "flex-end" },
+            valueFormatter: (params: { data: { propertyAmount: any }; }) => {
+              const propertyAmount = parseFloat(params.data.propertyAmount.toString());
+              if (propertyAmount !== undefined) {
+                return `${propertyAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              }
+              return '';
             }
-            return '';
           }
-        }
-      );
+        );
         this.gridApi.setColumnDefs(this.columnDefs);
 
       }
     }
   }
-  setLoanCols(){
+  setLoanCols() {
     this.columnDefs = [
       { headerName: 'S.No', field: 'slNo', sortable: false, filter: false, resizable: true, flex: 1 },
       { headerName: 'Tran Date', field: 'tranDate', sortable: false, filter: false, resizable: true, flex: 1 },
@@ -282,10 +282,10 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     ]
   }
   setColumnDefs() {
-    if(this.reportForm.controls['reportType'].value.toUpperCase() === "DEPOSIT"){
+    if (this.reportForm.controls['reportType'].value.toUpperCase() === "DEPOSIT") {
       this.setDepositCols();
     }
-    else if(this.reportForm.controls['reportType'].value.toUpperCase()==="LOANSTATEMENT"){
+    else if (this.reportForm.controls['reportType'].value.toUpperCase() === "LOANSTATEMENT") {
       this.setLoanCols();
     }
     else if (this.reportForm.controls['reportType'].value === "Statement") {
@@ -358,17 +358,19 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               };
             },
           },
-          { field: "detail", headerName: "Details", flex: 1, resizable: true, cellRenderer: 'agDtlRenderer', cellStyle: function (params: any) {
-            const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-            const isNegative = params.value < 0;
-            return {
-              color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-              fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-              fontSize: isLastRow ? '12px' : 'inherit',
-              backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-            };
-          }, },
-          
+          {
+            field: "detail", headerName: "Details", flex: 1, resizable: true, cellRenderer: 'agDtlRenderer', cellStyle: function (params: any) {
+              const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
+              const isNegative = params.value < 0;
+              return {
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                fontSize: isLastRow ? '12px' : 'inherit',
+                backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
+              };
+            },
+          },
+
           {
             field: "tranType", headerName: "Tran Type", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
@@ -381,26 +383,30 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               };
             },
           },
-          { field: "unitName", headerName: "Unit", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-            const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-            const isNegative = params.value < 0;
-            return {
-              color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-              fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-              fontSize: isLastRow ? '12px' : 'inherit',
-              backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-            };
-          }, },
-          { field: "txnClientName", headerName: "Client", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-            const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-            const isNegative = params.value < 0;
-            return {
-              color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-              fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-              fontSize: isLastRow ? '12px' : 'inherit',
-              backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-            };
-          }, },
+          {
+            field: "unitName", headerName: "Unit", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+              const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
+              const isNegative = params.value < 0;
+              return {
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                fontSize: isLastRow ? '12px' : 'inherit',
+                backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
+              };
+            },
+          },
+          {
+            field: "txnClientName", headerName: "Client", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+              const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
+              const isNegative = params.value < 0;
+              return {
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                fontSize: isLastRow ? '12px' : 'inherit',
+                backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
+              };
+            },
+          },
           {
             field: "branchName", headerName: "Branch", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
@@ -496,7 +502,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               return null;
             }
           },
-                
+
           {
             headerName: 'Balance', field: 'balance', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned',
             cellStyle: function (params: any) {
@@ -822,7 +828,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       ];
     }
   }
-async  ngOnInit() {
+  async ngOnInit() {
     // this.getTotalRow();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
@@ -835,7 +841,7 @@ async  ngOnInit() {
     };
 
     const charges$ = this.masterService.GetMasterItemsList(chargeBody);
-    this.subsink.sink =await forkJoin([charges$]).subscribe(
+    this.subsink.sink = await forkJoin([charges$]).subscribe(
       ([chargesRes]: any) => {
         this.loader.stop();
         this.chargeList = chargesRes.data;
@@ -871,11 +877,11 @@ async  ngOnInit() {
           this.debitAmount = state.debitAmount;
           this.balAmount = state.balAmount;
           this.landlordCode = state.landlordCode;
-          this.totalDepositAmt=0;
-          this.totalDepositBal=0;
-          this.totalDepositPaid=0;
-          this.totalLandLord=0;
-          this.totalProperty=0;
+          this.totalDepositAmt = 0;
+          this.totalDepositBal = 0;
+          this.totalDepositPaid = 0;
+          this.totalLandLord = 0;
+          this.totalProperty = 0;
           // Restore pagination and other states if needed
         }
       })
@@ -910,33 +916,33 @@ async  ngOnInit() {
       if (type.toUpperCase() === "REVENUE") {
         this.reportForm.controls['client'].disable();
         this.reportForm.controls['clieType'].enable();
-        this.selectDate="To Date";
+        this.selectDate = "To Date";
 
       }
       else if (type.toUpperCase() === "CASHTRF") {
         // this.reportForm.controls['clientType'].patchValue('STAFF', { disable: true });
         this.reportForm.controls['clientType'].patchValue('STAFF');
         this.reportForm.controls['clientType'].disable();
-        this.selectDate="To Date";
+        this.selectDate = "To Date";
 
       }
-      else if(type.toUpperCase()==="DEPOSIT"){
+      else if (type.toUpperCase() === "DEPOSIT") {
         this.reportForm.controls['clientType'].patchValue('TENANT');
         this.reportForm.controls['clientType'].disable();
-        this.selectDate="As On Date";
+        this.selectDate = "As On Date";
 
       }
-      else if(type.toUpperCase()==="STATEMENT"){
+      else if (type.toUpperCase() === "STATEMENT") {
         this.reportForm.controls['client'].enable();
         this.reportForm.controls['clientType'].enable();
       }
-      else if(type.toUpperCase()==="LOANSTATEMENT"){
+      else if (type.toUpperCase() === "LOANSTATEMENT") {
         this.reportForm.controls['clientType'].enable();
       }
       else {
         this.reportForm.controls['client'].enable();
         this.reportForm.controls['chargeType'].disable();
-        this.selectDate="To Date";
+        this.selectDate = "To Date";
 
       }
       this.rowData = [];
@@ -992,14 +998,14 @@ async  ngOnInit() {
       this.totals = "";
     }
   }
-  isFormValid():boolean {
-    if(this.userDataService.userData.userProfile.toUpperCase()==="TENANT"  ){
+  isFormValid(): boolean {
+    if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT") {
       return true;
     }
-    if( this.userDataService.userData.userProfile.toUpperCase()==="LANDLORD"){
+    if (this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
       return true;
     }
-    if(this.reportForm.get('reportType')!.value.toUpperCase()==='DEPOSIT'){
+    if (this.reportForm.get('reportType')!.value.toUpperCase() === 'DEPOSIT') {
       return true;
     }
     // else if(this.reportForm.get('reportType')!.value.toUpperCase()==='LOANSTATEMENT'){
@@ -1010,11 +1016,11 @@ async  ngOnInit() {
     //     return false
     //   }
     // }
-    else{
-      if(this.reportForm.valid){
+    else {
+      if (this.reportForm.valid) {
         return true;
       }
-      else{
+      else {
         return false;
       }
     }
@@ -1051,41 +1057,41 @@ async  ngOnInit() {
       this.totals = "";
     }
   }
-  customerType(){
-    if(this.userDataService.userData.userProfile.toUpperCase()==="TENANT" ){
-        this.reportTypeTemp = [];
-        this.reportTypeTemp = this.reportType.filter(item => item.itemCode === "Statement");
-        this.reportForm.get('reportType')?.patchValue('Statement');
-        this.reportForm.controls['reportType'].disable();
-    }
-    else if( this.userDataService.userData.userProfile.toUpperCase()==="LANDLORD" ){
+  customerType() {
+    if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT") {
       this.reportTypeTemp = [];
-        this.reportTypeTemp = this.reportType.filter(item => item.itemCode === "Statement" || item.itemCode === 'LOANSTATEMENT');
+      this.reportTypeTemp = this.reportType.filter(item => item.itemCode === "Statement");
+      this.reportForm.get('reportType')?.patchValue('Statement');
+      this.reportForm.controls['reportType'].disable();
     }
-    else{
-      this.reportTypeTemp=this.reportType;
+    else if (this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
+      this.reportTypeTemp = [];
+      this.reportTypeTemp = this.reportType.filter(item => item.itemCode === "Statement" || item.itemCode === 'LOANSTATEMENT');
+    }
+    else {
+      this.reportTypeTemp = this.reportType;
     }
   }
-  isClientEnable():boolean{
-    if(this.userDataService.userData.userProfile.toUpperCase()==="TENANT" || this.userDataService.userData.userProfile.toUpperCase()==="LANDLORD" ){
+  isClientEnable(): boolean {
+    if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT" || this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
       // this.reportForm.get('client')?.patchValue(this.userDataService.userData.userProfile.userID);
       return false;
     }
-    else{
-      if(this.reportForm.get('reportType')!.value =='Revenue'){
+    else {
+      if (this.reportForm.get('reportType')!.value == 'Revenue') {
         return false
       }
-      else if( this.reportForm.get('clientType')!.value =='PROPERTY'){
+      else if (this.reportForm.get('clientType')!.value == 'PROPERTY') {
         return false;
       }
-      else if( this.reportForm.get('reportType')!.value.toUpperCase() =='DEPOSIT'){
+      else if (this.reportForm.get('reportType')!.value.toUpperCase() == 'DEPOSIT') {
         return false;
       }
     }
     return true;
   }
-  isClientTypeEnable():boolean{
-    if(this.userDataService.userData.userProfile.toUpperCase()==="TENANT" || this.userDataService.userData.userProfile.toUpperCase()==="LANDLORD" ){
+  isClientTypeEnable(): boolean {
+    if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT" || this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
       this.reportForm.get('clientType')!.patchValue(this.userDataService.userData.userProfile);
       return false;
     }
@@ -1314,6 +1320,10 @@ async  ngOnInit() {
     this.store.dispatch(saveReportState({ state: currentState }));
   }
   onLnkClicked(event: any) {
+    if (event.data.property != this.userDataService.userData.location  && event.data.tranType != "PAYMENT") {
+      this.displayMessage("Error: This transcation in " + event.data.propertyName + " Change loaction to see details!", "red");
+      return;
+    }
     if (this.reportForm.controls['reportType'].value === "Statement") {
       this.currentState();
       if (event.data.tranNo.toUpperCase() != "CLOSING" && event.data.tranNo.toUpperCase() != "OPENING") {
@@ -1356,7 +1366,12 @@ async  ngOnInit() {
     this.router.navigate(['property/receipts-payments'], { state: { data, type } });
   }
   onDtlClicked(event: any) {
-    console.log(event);
+    console.log(event.data);
+    // console.log(this.userDataService.userData.location);
+    if (event.data.property != this.userDataService.userData.location) {
+      this.displayMessage("Error: This transcation in " + event.data.propertyName + " Change loaction to see details!", "red");
+      return;
+    }
     if (!this.reportForm.controls.summary.value) {
       this.displayMessage("", "");
       this.masterParams.tranNo = event.data.tranNo;
@@ -1383,9 +1398,9 @@ async  ngOnInit() {
   async getInvoiceData(masterParams: MasterParams) {
     try {
       this.loader.start();
-      this.subsink.sink =await this.saleService.getTenantInvoiceHeaderData(masterParams).subscribe((res: any) => {
+      this.subsink.sink = await this.saleService.getTenantInvoiceHeaderData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        
+
         if (res.status.toUpperCase() === "SUCCESS") {
           console.log(res.data);
           this.dialog.open(ReceiptDetailsDataComponent, {
@@ -1404,15 +1419,15 @@ async  ngOnInit() {
       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
- async getReceiptDetails(masterParams: MasterParams) {
+  async getReceiptDetails(masterParams: MasterParams) {
     try {
       this.loader.start();
-      this.subsink.sink =await this.saleService.GetReceiptDetails(masterParams).subscribe((res: any) => {
+      this.subsink.sink = await this.saleService.GetReceiptDetails(masterParams).subscribe((res: any) => {
         this.loader.stop()
         if (res.status.toUpperCase() === "SUCCESS") {
           this.dialog.open(ReceiptDetailsDataComponent, {
             width: '75%',
-            data: { data: res.data, name: "Receipt Details", type: this.masterParams.tranType,tranNo:res.data['receiptNo'] },
+            data: { data: res.data, name: "Receipt Details", type: this.masterParams.tranType, tranNo: res.data['receiptNo'] },
             disableClose: true
           });
         }
@@ -1435,87 +1450,86 @@ async  ngOnInit() {
 
   async onSubmit() {
     this.displayMessage("", "");
-    this.custName=this.reportForm.get('client')?.value;
-    this.fromDate=this.reportForm.get('fromDate')?.value;
-    this.toDate=this.reportForm.get('toDate')?.value;
-    this.rowData='';
-    if(this.userDataService.userData.userProfile.toUpperCase()==="TENANT" || this.userDataService.userData.userProfile.toUpperCase()==="LANDLORD" ){
+    this.custName = this.reportForm.get('client')?.value;
+    this.fromDate = this.reportForm.get('fromDate')?.value;
+    this.toDate = this.reportForm.get('toDate')?.value;
+    this.rowData = '';
+    if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT" || this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
       const fromDate = this.datepipe.transform(this.reportForm.get('fromDate')?.value, "yyyy-MM-dd") || "";
-        const toDate = this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "";
+      const toDate = this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "";
 
-        if (fromDate && toDate && fromDate > toDate) {
-          this.displayMessage("Error: From date should be lessthan todate!", "red");
-          return;
-        }
-        const body = {
-          ...this.commonParams(),
-          ReportType: this.reportForm.get('reportType')?.value || "",
-          Branch: this.userDataService.userData.location,
-          FromDate: this.datepipe.transform(this.reportForm.get('fromDate')?.value, "yyyy-MM-dd") || "",
-          ToDate: this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "",
-          ClientType: this.userDataService.userData.userProfile || "",
-          Client: this.userDataService.userData.userID || "",
-          summary: this.reportForm.get('summary')?.value || false,
-          item: this.reportForm.get('chargeType')?.value || "",
-        }
-        this.loader.start()
-        if (this.reportForm.get('reportType')?.value != "CASHTRF") {
-          this.subsink.sink =await this.utlService.GetReportStatement(body).subscribe((res: any) => {
-            this.loader.stop();
-            if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+      if (fromDate && toDate && fromDate > toDate) {
+        this.displayMessage("Error: From date should be lessthan todate!", "red");
+        return;
+      }
+      const body = {
+        ...this.commonParams(),
+        ReportType: this.reportForm.get('reportType')?.value || "",
+        Branch: this.userDataService.userData.location,
+        FromDate: this.datepipe.transform(this.reportForm.get('fromDate')?.value, "yyyy-MM-dd") || "",
+        ToDate: this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "",
+        ClientType: this.userDataService.userData.userProfile || "",
+        Client: this.userDataService.userData.userID || "",
+        summary: this.reportForm.get('summary')?.value || false,
+        item: this.reportForm.get('chargeType')?.value || "",
+      }
+      this.loader.start()
+      if (this.reportForm.get('reportType')?.value != "CASHTRF") {
+        this.subsink.sink = await this.utlService.GetReportStatement(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
 
-              this.rowData = this.processRowPostCreate(res['data']);
-              for (const row of this.rowData) {
-                const clientType = this.reportForm.get('clientType')?.value;
+            this.rowData = this.processRowPostCreate(res['data']);
+            for (const row of this.rowData) {
+              const clientType = this.reportForm.get('clientType')?.value;
 
-                if (clientType === "LANDLORD") {
-                  row.payment = "Payment";
-                } else if (clientType === "TENANT") {
-                  row.payment = "Receipt";
-                }
+              if (clientType === "LANDLORD") {
+                row.payment = "Payment";
+              } else if (clientType === "TENANT") {
+                row.payment = "Receipt";
               }
-              this.loanBalAmount = this.rowData[0].loanBalAmount;
-
-              const lastRow = this.rowData[this.rowData.length - 1];
-              if (lastRow.tranNo === "Closing") {
-                lastRow.credit = this.creditAmount;
-                lastRow.debit = this.debitAmount;
-                lastRow.balance = this.balAmount;
-              }
-
-
-              this.displayMessage("Success: Statement retrived successfully", "green");
             }
-            else {
-              this.displayMessage("Error: " + res.message, "red");
-              this.rowData = [];
+            this.loanBalAmount = this.rowData[0].loanBalAmount;
+
+            const lastRow = this.rowData[this.rowData.length - 1];
+            if (lastRow.tranNo === "Closing") {
+              lastRow.credit = this.creditAmount;
+              lastRow.debit = this.debitAmount;
+              lastRow.balance = this.balAmount;
             }
-          })
-        }
+
+
+            this.displayMessage("Success: Statement retrived successfully", "green");
+          }
+          else {
+            this.displayMessage("Error: " + res.message, "red");
+            this.rowData = [];
+          }
+        })
+      }
     }
-    else
-    {
-      if(this.reportForm.controls['reportType'].value.toUpperCase()==="DEPOSIT"){
-        const depositBody={
+    else {
+      if (this.reportForm.controls['reportType'].value.toUpperCase() === "DEPOSIT") {
+        const depositBody = {
           ...this.commonParams(),
           DateAsOn: this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "",
-          IsSummary:this.reportForm.get('summary')?.value || false,
-          ClientType:'TENANT'
+          IsSummary: this.reportForm.get('summary')?.value || false,
+          ClientType: 'TENANT'
         }
-        try{
+        try {
           this.loader.start();
-          this.subsink.sink =await this.utlService.GetReportDeposit(depositBody).subscribe((res: any) => {
+          this.subsink.sink = await this.utlService.GetReportDeposit(depositBody).subscribe((res: any) => {
             this.loader.stop();
             this.loader.stop();
             if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
 
               this.rowData = this.processRowPostCreate(res['data']);
               for (const row of this.rowData) {
-                row.balDepAmount=row.unitDepositAmount-row.tenantAmount;
-              //   const clientType = this.reportForm.get('clientType')?.value;
-              //   if (clientType === "TENANT") {
-              //     row.payment = "Receipt";
-              //   }
+                row.balDepAmount = row.unitDepositAmount - row.tenantAmount;
+                //   const clientType = this.reportForm.get('clientType')?.value;
+                //   if (clientType === "TENANT") {
+                //     row.payment = "Receipt";
+                //   }
               }
 
               // const lastRow = this.rowData[this.rowData.length - 1];
@@ -1534,32 +1548,32 @@ async  ngOnInit() {
             }
           })
         }
-        catch(ex:any){
+        catch (ex: any) {
           this.displayMessage("Exception: " + ex.message, "red");
         }
       }
-      else if(this.reportForm.controls['reportType'].value.toUpperCase()==="LOANSTATEMENT"){
+      else if (this.reportForm.controls['reportType'].value.toUpperCase() === "LOANSTATEMENT") {
         const loanbody = {
           ...this.commonParams(),
           Client: this.landlordCode,
         }
         try {
           this.loader.start();
-          this.subsink.sink =await this.saleService.GetLoanBalances(loanbody).subscribe((res: any) => {
+          this.subsink.sink = await this.saleService.GetLoanBalances(loanbody).subscribe((res: any) => {
             this.loader.stop();
             if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
 
               this.rowData = res.data;
-              let loanAmtExisting=0;
-              let currentpaid:number=0;
-              let currentBal:number=0;
+              let loanAmtExisting = 0;
+              let currentpaid: number = 0;
+              let currentBal: number = 0;
               for (const row of this.rowData) {
-                if(row.loanAmount>0){
-                  currentBal+=row.loanAmount;
+                if (row.loanAmount > 0) {
+                  currentBal += row.loanAmount;
                 }
-                currentpaid=row.paidAmount;
-                row.balLoanAmt=currentBal-currentpaid;
-                currentBal=currentBal-currentpaid;
+                currentpaid = row.paidAmount;
+                row.balLoanAmt = currentBal - currentpaid;
+                currentBal = currentBal - currentpaid;
               }
               this.rowData = this.processRowPostCreate(res['data']);
 
@@ -1604,7 +1618,7 @@ async  ngOnInit() {
         }
         this.loader.start()
         if (this.reportForm.get('reportType')?.value != "CASHTRF") {
-          this.subsink.sink =await this.utlService.GetReportStatement(body).subscribe((res: any) => {
+          this.subsink.sink = await this.utlService.GetReportStatement(body).subscribe((res: any) => {
             this.loader.stop();
             if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
               this.rowData = this.processRowPostCreate(res['data']);
@@ -1679,7 +1693,7 @@ async  ngOnInit() {
           summary: this.reportForm.get('summary')?.value || false,
           item: this.reportForm.get('chargeType')?.value || "",
         }
-        this.subsink.sink =await this.utlService.GetReportCashflowStatement(body).subscribe((res: any) => {
+        this.subsink.sink = await this.utlService.GetReportCashflowStatement(body).subscribe((res: any) => {
           this.loader.stop();
           if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
             this.rowData = this.processRowPostCreate(res['data']);
@@ -1759,22 +1773,22 @@ async  ngOnInit() {
 
   }
   processRowPostCreate(rowData: any[]) {
-    if(this.reportForm.controls['reportType']!.value.toUpperCase() === 'DEPOSIT'){
-      let totDep=0;
-      let paidDep=0;
-      let balDep=0;
-      let landdep=0;
-      let propdep=0;
+    if (this.reportForm.controls['reportType']!.value.toUpperCase() === 'DEPOSIT') {
+      let totDep = 0;
+      let paidDep = 0;
+      let balDep = 0;
+      let landdep = 0;
+      let propdep = 0;
       const processedData = rowData.map(row => {
-        if(this.reportForm.get('PropertyHoldings')!.value){
-          propdep+=row.propertyAmount;
+        if (this.reportForm.get('PropertyHoldings')!.value) {
+          propdep += row.propertyAmount;
         }
-        if(this.reportForm.get('LandLordHoldings')!.value){
-          landdep+=row.landlordAmount;
+        if (this.reportForm.get('LandLordHoldings')!.value) {
+          landdep += row.landlordAmount;
         }
-        totDep+=row.unitDepositAmount;
-        paidDep+=row.tenantAmount;
-        return{
+        totDep += row.unitDepositAmount;
+        paidDep += row.tenantAmount;
+        return {
           ...row,
           totDep,
           paidDep,
@@ -1784,33 +1798,33 @@ async  ngOnInit() {
         }
 
       });
-      balDep=totDep-paidDep;
-      this.totalDepositAmt=totDep;
-      this.totalDepositBal=balDep;
-      this.totalDepositPaid=paidDep;
-      this.totalProperty=propdep;
-      this.totalLandLord=landdep;
+      balDep = totDep - paidDep;
+      this.totalDepositAmt = totDep;
+      this.totalDepositBal = balDep;
+      this.totalDepositPaid = paidDep;
+      this.totalProperty = propdep;
+      this.totalLandLord = landdep;
       processedData.push({
         tenantName: 'Total',  // Displaying 'Total' in the date column
         unitDepositAmount: totDep,
         tenantAmount: paidDep,
         balAmountField: balDep,
-        landlordAmount:landdep,
-        propertyAmount:propdep,
+        landlordAmount: landdep,
+        propertyAmount: propdep,
 
         // detail: 'Summary'
       });
 
       return processedData;
     }
-    else if(this.reportForm.controls['reportType']!.value.toUpperCase() === 'LOANSTATEMENT'){
-      let totPaid=0;
-      let totLoan=0;
-      let totBal=0;
+    else if (this.reportForm.controls['reportType']!.value.toUpperCase() === 'LOANSTATEMENT') {
+      let totPaid = 0;
+      let totLoan = 0;
+      let totBal = 0;
       const processedData = rowData.map(row => {
-        totPaid+=row.paidAmount;
-        totLoan+=row.loanAmount;
-        totBal=row.balLoanAmt;
+        totPaid += row.paidAmount;
+        totLoan += row.loanAmount;
+        totBal = row.balLoanAmt;
         return {
           ...row,
           totPaid,
@@ -1819,14 +1833,14 @@ async  ngOnInit() {
         };
       });
       processedData.push({
-        slNo :"Total",
-        paidAmount:totPaid,
-        loanAmount:totLoan,
-        balLoanAmt:totBal,
+        slNo: "Total",
+        paidAmount: totPaid,
+        loanAmount: totLoan,
+        balLoanAmt: totBal,
       });
-      this.totLoanAmt=totLoan
-      this.totLoanBal=totBal
-      this.totLoanPaid=totPaid
+      this.totLoanAmt = totLoan
+      this.totLoanBal = totBal
+      this.totLoanPaid = totPaid
       return processedData;
     }
     else if (this.reportForm.get('reportType')!.value === 'Statement' && !this.reportForm.get('summary')!.value) {
@@ -1916,34 +1930,34 @@ async  ngOnInit() {
 
   }
   // Inside your component class
-shouldShowSummaryCheckbox(): boolean {
-  const reportType = this.reportForm.get('reportType')!.value;
-  const clientType = this.reportForm.get('clientType')!.value;
+  shouldShowSummaryCheckbox(): boolean {
+    const reportType = this.reportForm.get('reportType')!.value;
+    const clientType = this.reportForm.get('clientType')!.value;
 
-  return reportType !== 'Revenue' && reportType !== 'CASHTRF' && reportType !== '' && reportType !== 'PROPERTY' && reportType === 'Statement';
-}
+    return reportType !== 'Revenue' && reportType !== 'CASHTRF' && reportType !== '' && reportType !== 'PROPERTY' && reportType === 'Statement';
+  }
 
-shouldShowLandLordHoldingsCheckbox(): boolean {
-  const reportType = this.reportForm.get('reportType')!.value;
-  return reportType === 'DEPOSIT' ;
-}
+  shouldShowLandLordHoldingsCheckbox(): boolean {
+    const reportType = this.reportForm.get('reportType')!.value;
+    return reportType === 'DEPOSIT';
+  }
 
-isLandLordHoldingsDisabled(): boolean {
-  const reportType = this.reportForm.get('reportType')!.value;
-  return reportType !== 'DEPOSIT';
-}
+  isLandLordHoldingsDisabled(): boolean {
+    const reportType = this.reportForm.get('reportType')!.value;
+    return reportType !== 'DEPOSIT';
+  }
 
-shouldShowPropertyHoldingsCheckbox(): boolean {
-  const reportType = this.reportForm.get('reportType')!.value;
-  const clientType = this.reportForm.get('clientType')!.value;
+  shouldShowPropertyHoldingsCheckbox(): boolean {
+    const reportType = this.reportForm.get('reportType')!.value;
+    const clientType = this.reportForm.get('clientType')!.value;
 
-  return reportType === 'DEPOSIT' ;
-}
+    return reportType === 'DEPOSIT';
+  }
 
-isPropertyHoldingsDisabled(): boolean {
-  const clientType = this.reportForm.get('clientType')!.value;
-  return clientType === 'DEPOSIT';
-}
+  isPropertyHoldingsDisabled(): boolean {
+    const clientType = this.reportForm.get('clientType')!.value;
+    return clientType === 'DEPOSIT';
+  }
 
   formInit() {
     const form = this.fb.group({
@@ -1954,8 +1968,8 @@ isPropertyHoldingsDisabled(): boolean {
       chargeType: [{ value: "", disabled: true }],
       summary: [false],
       clientType: [''],
-      LandLordHoldings:[false],
-      PropertyHoldings:[false],
+      LandLordHoldings: [false],
+      PropertyHoldings: [false],
     });
     this.setupConditionalValidators(form);
 
@@ -1988,20 +2002,20 @@ isPropertyHoldingsDisabled(): boolean {
     this.totalAmount = 0;
     this.creditAmount = 0;
     this.balAmount = 0;
-    this.totalDepositAmt=0;
-    this.totalDepositBal=0;
-    this.totalDepositPaid=0;
-    this.totalLandLord=0;
-    this.totalProperty=0;
-    this.totLoanAmt=0;
-    this.totLoanBal=0;
-    this.totLoanPaid=0;
-    this.custName="";
+    this.totalDepositAmt = 0;
+    this.totalDepositBal = 0;
+    this.totalDepositPaid = 0;
+    this.totalLandLord = 0;
+    this.totalProperty = 0;
+    this.totLoanAmt = 0;
+    this.totLoanBal = 0;
+    this.totLoanPaid = 0;
+    this.custName = "";
   }
   Close() {
     this.router.navigateByUrl('/home');
   }
- async onClientSearch() {
+  async onClientSearch() {
     const body = {
       ...this.commonParams(),
       Type: "CLIENT",
@@ -2009,7 +2023,7 @@ isPropertyHoldingsDisabled(): boolean {
       ItemSecondLevel: ""
     }
     try {
-      this.subsink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
+      this.subsink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
         if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
           if (res && res.data && res.data.nameCount === 1) {
             this.reportForm.controls['client'].patchValue(res.data.selName);
