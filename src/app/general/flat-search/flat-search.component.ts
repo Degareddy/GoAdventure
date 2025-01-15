@@ -142,6 +142,7 @@ export class FlatSearchComponent implements OnInit, OnDestroy {
   }
 
   onRowClick(row: any) {
+  
     this.dialogRef.close(row);
   }
 

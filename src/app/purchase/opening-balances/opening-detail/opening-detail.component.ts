@@ -9,11 +9,19 @@ import { SubSink } from 'subsink';
 import { OpeningBalDetailCls } from '../../purchase.class';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
-import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { getPayload, getResponse, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import * as XLSX from 'xlsx';
-import { concatMap, from } from 'rxjs';
+import { concatMap, forkJoin, from } from 'rxjs';
 import { Item } from 'src/app/general/Interface/interface';
 import { SalesService } from 'src/app/Services/sales.service';
+import { MastersService } from 'src/app/Services/masters.service';
+// import { MasterParams } from 'src/app/modals/masters.modal';
+import { ProjectsService } from 'src/app/Services/projects.service';
+import { FlatSearchComponent } from 'src/app/general/flat-search/flat-search.component';
+import { flatApiResponse } from 'src/app/project/flats/flats.component';
+import { MasterParams } from 'src/app/Masters/Modules/masters.module';
+import { MultiLandLordComponent } from './multi-land-lord/multi-land-lord.component';
+// import { MasterParams } from 'src/app/sales/sales.class';
 
 @Component({
   selector: 'app-opening-detail',
@@ -24,10 +32,16 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   private subSink: SubSink = new SubSink();
   dataFlag: boolean = false;
   excelData!: any[];
+  public flatCode!: string;
   openinBalDetForm!: FormGroup;
   dialogOpen: boolean = false;
   slNum: number = 0;
   rowData: any = [];
+  tenantName!:string;
+  tenantCode!:string;
+  landlordName!:string;
+  landlodCode!:string;
+  landlordCount:number=0;
   retMessage: string = "";
   textMessageClass: string = "";
   public rowSelection: 'single' | 'multiple' = 'multiple';
@@ -57,22 +71,29 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       },
     },
   ];
+  blocks: Item[] = [];
+
+  props: Item[] = [];
+  masterParams!: MasterParams;
+  
+
   clientTypeList: Item[] = [
     { itemCode: 'TENANT', itemName: 'Tenant' },
-    { itemCode: 'STAFF', itemName: 'Staff' },
+    // { itemCode: 'STAFF', itemName: 'Staff' },
     { itemCode: 'LANDLORD', itemName: 'Landlord' },
-    { itemCode: 'VENDOR', itemName: 'Vendor' },
-    { itemCode: 'CUSTOMER', itemName: 'Customer' },
-    { itemCode: 'SUPPLIER', itemName: 'Supplier' },
-    { itemCode: 'EMPLOYEE', itemName: 'Employee' },
+    // { itemCode: 'VENDOR', itemName: 'Vendor' },
+    // { itemCode: 'CUSTOMER', itemName: 'Customer' },
+    // { itemCode: 'SUPPLIER', itemName: 'Supplier' },
+    // { itemCode: 'EMPLOYEE', itemName: 'Employee' },
 
   ];
   currency: Item[] = [];
-  constructor(private fb: FormBuilder, protected purchorddetervice: PurchaseService, private saleService: SalesService,
+  constructor(private fb: FormBuilder, protected purchorddetervice: PurchaseService, private projService: ProjectsService, private saleService: SalesService,private masterService: MastersService,
     public dialog: MatDialog, private userDataService: UserDataService, private utlService: UtilitiesService,
     private loader: NgxUiLoaderService, protected purchaseService: PurchaseService,
     @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string, balType: string }) {
     this.openinBalDetForm = this.formInit();
+    this.masterParams = new MasterParams();
     this.openingDetCls = new OpeningBalDetailCls();
   }
   ngOnDestroy(): void {
@@ -87,6 +108,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     }
   }
   loadData() {
+    this.getProperty();
     const body = {
       ...this.commonParams(),
       langId: this.userDataService.userData.langId,
@@ -122,6 +144,52 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     catch (ex: any) {
       this.displayMessage("Exception: " + ex.message, "red");
     }
+    
+  }
+  onClientTypeChnaged(){
+    this.openinBalDetForm.get('partyName')?.patchValue('');
+    this.openinBalDetForm.get('partyName')?.enable();
+    if(this.openinBalDetForm.get('clientType')?.value === 'TENANT'){
+      this.partyCode=this.tenantCode;
+      this.openinBalDetForm.get('partyName')?.patchValue(this.tenantName);
+      this.openinBalDetForm.get('partyName')?.disable();
+    }
+    else if(this.openinBalDetForm.get('clientType')?.value === 'LANDLORD'){
+      if(this.landlordCount === 1){
+        this.partyCode=this.landlodCode;
+      this.openinBalDetForm.get('partyName')?.patchValue(this.landlordName);
+      this.openinBalDetForm.get('partyName')?.disable();
+      }
+      }
+  }
+  getProperty(){
+    const propertyBody ={...this.createRequestData('PROPERTY'),mode:this.data.mode};
+      try {
+        
+        const property$ = this.masterService.GetMasterItemsList(propertyBody);
+  
+        this.subSink.sink = forkJoin([property$]).subscribe(
+          ([ propertyRes]: any) => {
+           
+            if (propertyRes.status.toUpperCase() === "SUCCESS") {
+              this.props = propertyRes.data;
+              if (this.props.length === 1) {
+                this.openinBalDetForm.controls['property'].patchValue(this.props[0].itemCode);
+                this.onSelectedPropertyChanged();
+              }
+            }
+            else {
+              this.retMessage = "Properties list empty!";
+              this.textMessageClass = "red";
+            }
+          },
+          error => {
+            this.displayMessage("Exception: " + error.message, "red");
+          }
+        );
+      } catch (ex: any) {
+        this.displayMessage("Exception: " + ex, "red");
+      }
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
@@ -162,7 +230,16 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     )
     return columnDefinitions;
   }
-
+  private createRequestData(item: string): getPayload {
+      return {
+        company: this.userDataService.userData.company,
+        location: this.userDataService.userData.location,
+        user: this.userDataService.userData.userID,
+        refNo: this.userDataService.userData.sessionID,
+        item: item
+      };
+    }
+  
   onFileChange(event: any) {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -240,6 +317,115 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.openingDetCls.langId = this.userDataService.userData.langId;
     return this.openingDetCls
   }
+  onSelectedPropertyChanged(): void {
+      this.blocks = [];
+      if (this.openinBalDetForm.controls.property.value != "") {
+        this.masterParams.type = 'BLOCK';
+        this.masterParams.item = this.openinBalDetForm.controls.property.value;
+        try {
+          this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: getResponse) => {
+            if (result.status.toUpperCase() === 'SUCCESS') {
+              this.blocks = result.data;
+              if (this.blocks.length === 1) {
+                this.openinBalDetForm.controls['block'].patchValue(this.blocks[0].itemCode);
+              }
+            } else {
+              this.displayMessage(result.message,'red');
+            }
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(ex,'red');
+        }
+  
+      }
+  
+    }
+    async onSelectedFlatChanged(unitId: string, mode: string) {
+    
+       
+        this.masterParams.type = 'UNIT';
+        this.masterParams.item = unitId;
+        this.subSink.sink = this.projService.getFlatDetails(this.masterParams).subscribe((result: flatApiResponse) => {
+
+          if (result.status.toUpperCase() === 'SUCCESS') {
+            // this.populateFlatData(result);
+            // this.msgHandling(result, mode);
+            // this.newTranMsg = "";
+            this.tenantCode=result.data.currentTenant;
+            this.tenantName=result.data.tenantName;
+            this.landlordCount=result.data.llCount;
+            if(result.data.llCount == 1){
+              this.landlodCode=result.data.landLord;
+            this.landlordName=result.data.landLordName;
+            }
+          } else {
+            this.displayMessage(result.message, 'red');
+          }
+        }, (error: any) => {
+          this.displayMessage(error.message, 'red');
+        });
+    
+      }
+    onFlatSearch() {
+        const body = {
+          ...this.commonParams(),
+          Type: 'FLAT',
+          Item: this.openinBalDetForm.controls['flat'].value || '',
+          ItemFirstLevel: "",
+          ItemSecondLevel: ""
+        }
+        try {
+          this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+            if (res.retVal === 0) {
+              if (res && res.data && res.data.nameCount === 1) {
+                this.openinBalDetForm.controls['flat'].patchValue(res.data.selName);
+                this.masterParams.item = res.data.selCode;
+                this.flatCode = res.data.selCode;
+                // this.onFlatChanged();
+              }
+              else {
+                if (!this.dialogOpen) {
+                  const dialogRef: MatDialogRef<FlatSearchComponent> = this.dialog.open(FlatSearchComponent, {
+                    width: '90%',
+                    disableClose: true,
+                    data: {
+                      'flat': this.openinBalDetForm.controls['flat'].value, 'type': 'FLAT',
+                      'search': 'Flat Search', property: this.openinBalDetForm.controls['property'].value, block: this.openinBalDetForm.controls['block'].value,
+                    }
+                  });
+                  this.dialogOpen = true;
+                  dialogRef.afterClosed().subscribe(result => {
+                    this.dialogOpen = false;
+                    if (result != true) {
+                      this.openinBalDetForm.controls['flat'].patchValue(result.unitName);
+                      this.masterParams.item = result.unitId;
+                      this.flatCode = result.unitId;
+                      console.log(result.unitId)
+                      try {
+                        console.log(result.unitId)
+                        this.onSelectedFlatChanged(result.unitId, this.data.mode);
+                        // this.onFlatChanged();
+                      }
+                      catch (ex: any) {
+                        this.retMessage = ex;
+                        this.textMessageClass = 'red';
+                      }
+                    }
+                  });
+                }
+              }
+            }
+            else {
+              this.displayMessage(res.message,'red');
+            }
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(ex.message,'red');
+        }
+      }
+      
   prepareOneCls() {
     this.openingDetCls.company = this.userDataService.userData.company;
     this.openingDetCls.location = this.userDataService.userData.location;
@@ -250,6 +436,9 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.openingDetCls.partyName = this.openinBalDetForm.controls['partyName'].value;
     this.openingDetCls.party = this.partyCode;
     this.openingDetCls.mode = this.data.mode;
+    this.openingDetCls.propcode=this.openinBalDetForm.get('property')?.value;
+    this.openingDetCls.blockcode=this.openinBalDetForm.get('block')?.value;
+    this.openingDetCls.unitcode=this.openinBalDetForm.get('flat')?.value;
     const balAmountValue = this.openinBalDetForm.get('balAmount')?.value;
     // Check if the value contains commas
     if (balAmountValue && typeof balAmountValue === 'string') {
@@ -350,74 +539,111 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
   ngOnInit(): void {
+    this.masterParams.user = this.userDataService.userData.userID;
+    this.masterParams.refNo = this.userDataService.userData.sessionID;
+    this.masterParams.company = this.userDataService.userData.company;
+    this.masterParams.location = this.userDataService.userData.location;
     this.loadData();
   }
 
   formInit() {
     return this.fb.group({
       // partyType: ['', Validators.required],
+      property: ['', Validators.required],
+      block: ['', Validators.required],
+      flat: ['', Validators.required],
       partyName: ['', Validators.required],
       balAmount: ['0.00', Validators.required],
       currency: ['', Validators.required],
-      clientType: ['']
+      clientType: [''],
       // CrAmount: ['0.00', Validators.required],
     })
 
   }
   searchParty() {
-    if (this.openinBalDetForm.controls.clientType.value === "" || this.openinBalDetForm.controls.clientType.value === null || this.openinBalDetForm.controls.clientType.value === undefined) {
-      this.displayMessage("Please Select Client Type", "red");
-      return;
-    }
-    else{
-      const body = {
-        ...this.commonParams(),
-        Type: this.openinBalDetForm.get('clientType')?.value,
-        item: this.openinBalDetForm.controls['partyName'].value || "",
-        ItemSecondLevel: ""
-      }
-      try {
-        this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-          if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-            if (res && res.data && res.data.nameCount === 1) {
-              this.openinBalDetForm.controls['partyName'].patchValue(res.data.selName);
-              this.partyCode = res.data.selCode;
-              this.openingDetCls.party = res.data.selCode;
-            }
-            else {
-              if (!this.dialogOpen) {
-                const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
-                  width: '90%',
-                  disableClose: true,
-                  data: {
-                    'PartyName': this.openinBalDetForm.controls['partyName'].value,
-                    'PartyType': this.openinBalDetForm.get('clientType')?.value,
-                    'search': this.openinBalDetForm.get('clientType')?.value + " " + ' Search'
-                  }
-                });
-                this.dialogOpen = true;
-                dialogRef.afterClosed().subscribe(result => {
-                  if (result != true) {
-                    this.openinBalDetForm.controls['partyName'].patchValue(result.partyName);
-                    this.partyCode = result.code;
-                    this.openingDetCls.party = result.code;
-                  }
-
-                  this.dialogOpen = false;
-                });
-              }
-
-            }
-          }
-          else {
-            this.displayMessage("Error: " + res.message, "red");
+    console.log(this.openinBalDetForm.get('clientType')?.value.toUpperCase());
+    console.log(this.landlordCount)
+    if(this.openinBalDetForm.get('clientType')?.value.toUpperCase() === 'LANDLORD' && this.landlordCount > 1){
+      if (!this.dialogOpen) {
+        const dialogRef: MatDialogRef<MultiLandLordComponent> = this.dialog.open(MultiLandLordComponent, {
+          width: '90%',
+          disableClose: true,
+          data: {
+            'property': this.openinBalDetForm.controls['property'].value,
+            'block': this.openinBalDetForm.get('block')?.value,
+            'flat': this.flatCode
           }
         });
+        this.dialogOpen = true;
+        dialogRef.afterClosed().subscribe(result => {
+          if (result != true) {
+            this.openinBalDetForm.controls['partyName'].patchValue(result.landlordName);
+            this.partyCode = result.landlord;
+            this.landlodCode=result.landlord;
+            this.openingDetCls.party = result.landlord;
+          }
+
+          this.dialogOpen = false;
+        });
       }
-      catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
+
+    }
+    else{
+      if (this.openinBalDetForm.controls.clientType.value === "" || this.openinBalDetForm.controls.clientType.value === null || this.openinBalDetForm.controls.clientType.value === undefined) {
+        this.displayMessage("Please Select Client Type", "red");
+        return;
+      }
+      else{
+        const body = {
+          ...this.commonParams(),
+          Type: this.openinBalDetForm.get('clientType')?.value,
+          item: this.openinBalDetForm.controls['partyName'].value || "",
+          ItemSecondLevel: ""
+        }
+        try {
+          this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
+            if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+              if (res && res.data && res.data.nameCount === 1) {
+                this.openinBalDetForm.controls['partyName'].patchValue(res.data.selName);
+                this.partyCode = res.data.selCode;
+                this.openingDetCls.party = res.data.selCode;
+              }
+              else {
+                if (!this.dialogOpen) {
+                  const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+                    width: '90%',
+                    disableClose: true,
+                    data: {
+                      'PartyName': this.openinBalDetForm.controls['partyName'].value,
+                      'PartyType': this.openinBalDetForm.get('clientType')?.value,
+                      'search': this.openinBalDetForm.get('clientType')?.value + " " + ' Search'
+                    }
+                  });
+                  this.dialogOpen = true;
+                  dialogRef.afterClosed().subscribe(result => {
+                    if (result != true) {
+                      this.openinBalDetForm.controls['partyName'].patchValue(result.partyName);
+                      this.partyCode = result.code;
+                      this.openingDetCls.party = result.code;
+                    }
+  
+                    this.dialogOpen = false;
+                  });
+                }
+  
+              }
+            }
+            else {
+              this.displayMessage("Error: " + res.message, "red");
+            }
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage("Exception: " + ex.message, "red");
+        }
       }
     }
+    
 
   }
 

@@ -8,6 +8,7 @@ import { PropertyDetailsResponse } from '../project/property.interface';
 import { getResponse, SaveApiResponse } from '../general/Interface/admin/admin';
 import { flatApiResponse } from '../project/flats/flats.component';
 import { preBooking } from '../project/flats/pre-booking/pre-booking.component';
+// import { MasterParams } from '../sales/sales.class';
 
 @Injectable({
   providedIn: 'root'

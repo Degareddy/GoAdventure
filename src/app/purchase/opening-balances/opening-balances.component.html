@@ -44,7 +44,7 @@
             aria-label="Clear" (click)="openingBalForm.get('tranNo')!.setValue('')">
             <mat-icon>cancel</mat-icon>
           </button>
-          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchCilcked()"
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onSearchCilcked()" 
             [disabled]="openingBalForm.get('mode')!.value === 'Add'">
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button>

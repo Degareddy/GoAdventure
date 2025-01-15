@@ -27,6 +27,7 @@ import { APP_DATE_FORMATS, AppDateAdapter } from '../general/date-format';
 import { OpeningBalancesComponent } from './opening-balances/opening-balances.component';
 import { OpeningDetailComponent } from './opening-balances/opening-detail/opening-detail.component';
 import { GoodsReturnComponent } from './goods-return/goods-return.component';
+import { MultiLandLordComponent } from './opening-balances/opening-detail/multi-land-lord/multi-land-lord.component';
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { GoodsReturnComponent } from './goods-return/goods-return.component';
     CommonChargesComponent,
     OpeningBalancesComponent,
     OpeningDetailComponent,
-    GoodsReturnComponent
+    GoodsReturnComponent,
+    MultiLandLordComponent
 
   ],
   imports: [

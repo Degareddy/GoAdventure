@@ -98,8 +98,8 @@ export class SalesReportsComponent implements OnInit, OnDestroy {
   ];
 
   public rowSelection: 'single' | 'multiple' = 'multiple';
-  pageSizes = [25, 50, 100, 250, 500];
-  pageSize = 25;
+  pageSizes = [100, 250, 500];
+  pageSize = 100;
   reoprttList: Item[] = [
     { itemCode: 'Unit Status', itemName: 'Unit Status' },
     { itemCode: 'Technician History', itemName: 'Technician History' }

@@ -89,7 +89,7 @@
     <app-access-grid [columnDefs]="columnDefs" [rowData]="gridData" [exportPDF]="true" [exportExcel]="true"
       (filterChanges)="onFilterData($event)" [totals]="totals" [globalSearch]="true" (gridReady)="onGridReady($event)"
       (linkClicked)="onLnkClicked($event)" [gridHeight]="'290px'" [reportName]="'Client Balances'"
-      [paginationPageSize]="25" [showToolPanel]="true" [showRecordCount]="true" (detailClicked)="onDtlClicked($event)"
+      [paginationPageSize]="100" [showToolPanel]="true" [showRecordCount]="true" (detailClicked)="onDtlClicked($event)"
       (columnVisibilityChanged)="onColumnVisibilityChanged($event)"></app-access-grid>
   </div>
   <div class="balance-container" *ngIf="!balanceTmp && gridData.length > 0">

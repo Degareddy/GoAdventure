@@ -389,7 +389,10 @@ export class OpeningBalDetailCls{
   currency!: string;
   balAmount!: number;
   user!: string;
-  refNo!: string
-  party!:string
-
+  refNo!: string;
+  party!: string;
+  propcode!:string;
+  blockcode!:string;
+  unitcode!:string;
+  
 }
