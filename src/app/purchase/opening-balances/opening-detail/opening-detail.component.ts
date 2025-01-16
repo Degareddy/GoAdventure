@@ -149,15 +149,20 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
 
   }
   onClientTypeChnaged(){
+    if(this.landlordCount >1 && this.openinBalDetForm.get('clientType')?.value === 'LANDLORD' ){
+     this.displayMessage("Please select a landlord, as there is more than one landlord.",'green')
+    }
     this.openinBalDetForm.get('partyName')?.patchValue('');
     this.openinBalDetForm.get('partyName')?.enable();
     if(this.openinBalDetForm.get('clientType')?.value === 'TENANT'){
+      this.displayMessage("",'');
       this.partyCode=this.tenantCode;
       this.openinBalDetForm.get('partyName')?.patchValue(this.tenantName);
       this.openinBalDetForm.get('partyName')?.disable();
     }
     else if(this.openinBalDetForm.get('clientType')?.value === 'LANDLORD'){
       if(this.landlordCount === 1){
+        this.displayMessage("",'');
         this.partyCode=this.landlodCode;
       this.openinBalDetForm.get('partyName')?.patchValue(this.landlordName);
       this.openinBalDetForm.get('partyName')?.disable();

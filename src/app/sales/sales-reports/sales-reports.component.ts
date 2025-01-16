@@ -633,24 +633,25 @@ export class SalesReportsComponent implements OnInit, OnDestroy {
     this.masterParams.type = 'REPPROPUNITS';
     this.masterParams.item = this.saleReportForm.controls['PropCode'].value;
     this.masterParams.itemFirstLevel = this.saleReportForm.controls['BlockCode'].value;
-    if (this.masterParams.item != 'All') {
-      try {
-        this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-          if (result.status.toUpperCase() === "SUCCESS") {
-            this.flatsList = result['data'];
-          }
-          else {
-            this.displayMessage("Error: " + result.message, "red");
-          }
-        });
-      }
-      catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
-      }
-    }
-    else {
-      this.saleReportForm.controls['UnitID'].patchValue("All");
-    }
+    this.saleReportForm.controls['UnitID'].patchValue("All");
+    // if (this.masterParams.item != 'All') {
+    //   try {
+    //     this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
+    //       if (result.status.toUpperCase() === "SUCCESS") {
+    //         this.flatsList = result['data'];
+    //       }
+    //       else {
+    //         this.displayMessage("Error: " + result.message, "red");
+    //       }
+    //     });
+    //   }
+    //   catch (ex: any) {
+    //     this.displayMessage("Exception: " + ex.message, "red");
+    //   }
+    // }
+    // else {
+    //   this.saleReportForm.controls['UnitID'].patchValue("All");
+    // }
   }
 
   // clearMsgs() {
