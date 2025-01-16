@@ -11,13 +11,13 @@ import { SubSink } from 'subsink';
 })
 export class ReceiptDetailsDataComponent implements OnInit {
   searchName: string = "";
-  tableData: any;
+  tableData: any = [];
   private subSink!: SubSink;
   private gridApi!: GridApi;
   private columnApi!: ColumnApi;
   retMessage: string = "";
   textMessageClass: string = "";
-  columnDefs: any=[
+  columnDefs: any = [
     {
       field: "tranNo", headerName: "Inv No", flex: 1, cellRenderer: 'agLnkRenderer', resizable: true, cellStyle: function (params: any) {
         const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
@@ -78,13 +78,13 @@ export class ReceiptDetailsDataComponent implements OnInit {
         };
       },
     },
-    
+
   ];
-  rowData:any;
+  rowData: any = [];
   type: string = "";
-  constructor(@Inject(MAT_DIALOG_DATA) public popdata: { data: any, name: string, type: string,tranNo:string },private userDataService: UserDataService
-,    private saleService: SalesService,
-) {
+  constructor(@Inject(MAT_DIALOG_DATA) public popdata: { data: any, name: string, type: string, tranNo: string }, private userDataService: UserDataService
+    , private saleService: SalesService,
+  ) {
 
   }
 
@@ -116,7 +116,7 @@ export class ReceiptDetailsDataComponent implements OnInit {
             const parsedValue = parseFloat(value?.toString().replace(/,/g, '') || '0');
             return isNaN(parsedValue) ? 0 : parsedValue;
           };
-          
+
         }
         else {
           this.displayMessage("This transactions is not allocated at the moment.", "red");
@@ -124,7 +124,7 @@ export class ReceiptDetailsDataComponent implements OnInit {
       })
     }
     catch (ex: any) {
-      // this.displayMessage("Exception: " + ex.message, "red");
+       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
   private displayMessage(message: string, cssClass: string) {

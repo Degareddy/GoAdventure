@@ -2,9 +2,17 @@
   <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
 </button>
 
-<div class="container-fluid mat-card">
-  <div class="left" *ngIf="type">
-    {{ searchName | titlecase }} : <b class="data">{{ type === 'RECEIPT' || type === 'PAYMENT' ? tableData.receiptNo : tableData.tranNo }}</b>
+<!-- <div class="container-fluid mat-card">
+
+</div> -->
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <div class="left" *ngIf="type">
+        {{ searchName | titlecase }} : <b class="data">{{ type === 'RECEIPT' || type === 'PAYMENT' ? tableData.receiptNo
+          : tableData.tranNo }}</b>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -104,15 +112,12 @@
       <td>Cost To Tenant :&nbsp;<b class="data">{{this.tableData.costToTenant | number:'1.2-2'}}</b></td>
     </tr>
   </table>
-  
-</div>
-<div *ngIf="type ==='PAYMENT' || 'RECEIPT'">
-  <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
-  [gridHeight]="'320px'" 
-  [globalSearch]="true" [paginationPageSize]="25"
-  [showToolPanel]="true" 
-  (gridReady)="onGridReady($event)"
- [showRecordCount]="true">
-</app-access-grid>
 
+</div>
+<app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+<div *ngIf="(type ==='PAYMENT' || 'RECEIPT')  && rowData.length > 0">
+  <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+    [gridHeight]="'250px'" [globalSearch]="true" [paginationPageSize]="25" [showToolPanel]="true"
+    (gridReady)="onGridReady($event)" [showRecordCount]="true">
+  </app-access-grid>
 </div>

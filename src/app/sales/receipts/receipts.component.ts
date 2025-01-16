@@ -1010,6 +1010,7 @@ isPayment: boolean=false;
     this.responseData = [];
     this.allocStatus = '';
     this.filteredItemsClientType = [];
+    this.isPayment=false;
   }
 
   formatDate(date: Date): string {

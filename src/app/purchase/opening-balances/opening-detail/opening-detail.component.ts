@@ -56,7 +56,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     { field: "slNo", headerName: "S.No", width: 70 },
     // { field: "tranNo", headerName: "Tran No", resizable: true, flex: 1 },
     { field: "partyName", headerName: "Party Name", sortable: true, filter: true, resizable: true, width: 180, },
-    { field: "propertyName", headerName: "Propert", sortable: true, filter: true, resizable: true, width: 180, },
+    { field: "propertyName", headerName: "Property", sortable: true, filter: true, resizable: true, width: 180, },
     { field: "unitName", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 180, },
     { field: "party", headerName: "Party", sortable: true, filter: true, resizable: true, width: 180, hide: true },
     {
@@ -77,7 +77,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
 
   props: Item[] = [];
   masterParams!: MasterParams;
-  
+
 
   clientTypeList: Item[] = [
     { itemCode: 'TENANT', itemName: 'Tenant' },
@@ -146,7 +146,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     catch (ex: any) {
       this.displayMessage("Exception: " + ex.message, "red");
     }
-    
+
   }
   onClientTypeChnaged(){
     this.openinBalDetForm.get('partyName')?.patchValue('');
@@ -167,12 +167,12 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   getProperty(){
     const propertyBody ={...this.createRequestData('PROPERTY'),mode:this.data.mode};
       try {
-        
+
         const property$ = this.masterService.GetMasterItemsList(propertyBody);
-  
+
         this.subSink.sink = forkJoin([property$]).subscribe(
           ([ propertyRes]: any) => {
-           
+
             if (propertyRes.status.toUpperCase() === "SUCCESS") {
               this.props = propertyRes.data;
               if (this.props.length === 1) {
@@ -241,7 +241,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
         item: item
       };
     }
-  
+
   onFileChange(event: any) {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -342,13 +342,13 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
         catch (ex: any) {
           this.displayMessage(ex,'red');
         }
-  
+
       }
-  
+
     }
     async onSelectedFlatChanged(unitId: string, mode: string) {
-    
-       
+
+
         this.masterParams.type = 'UNIT';
         this.masterParams.item = unitId;
         this.subSink.sink = this.projService.getFlatDetails(this.masterParams).subscribe((result: flatApiResponse) => {
@@ -370,7 +370,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
         }, (error: any) => {
           this.displayMessage(error.message, 'red');
         });
-    
+
       }
     onFlatSearch() {
         const body = {
@@ -430,7 +430,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
           this.displayMessage(ex.message,'red');
         }
       }
-      
+
   prepareOneCls() {
     this.openingDetCls.company = this.userDataService.userData.company;
     this.openingDetCls.location = this.userDataService.userData.location;
@@ -631,11 +631,11 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
                       this.partyCode = result.code;
                       this.openingDetCls.party = result.code;
                     }
-  
+
                     this.dialogOpen = false;
                   });
                 }
-  
+
               }
             }
             else {
@@ -648,7 +648,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
         }
       }
     }
-    
+
 
   }
 
