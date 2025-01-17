@@ -111,14 +111,22 @@ export class BlocksComponent implements OnInit, OnDestroy {
       mode: this.blkHdrForm.get('mode')!.value
     };
     const property$ = this.masterService.GetMasterItemsList(propertybody);
-    this.subSink.sink = await forkJoin([modes$, property$]).subscribe(
-      ([modesRes, propRes]: any) => {
-        this.handleDataLoadSuccess(modesRes, propRes);
-      },
-      error => {
-        this.handleDataLoadError(error);
-      }
-    );
+
+    try{
+      this.subSink.sink = await forkJoin([modes$, property$]).subscribe(
+        ([modesRes, propRes]: any) => {
+          this.handleDataLoadSuccess(modesRes, propRes);
+        },
+        error => {
+          this.handleDataLoadError(error);
+        }
+      );
+    }
+    catch(ex:any){
+      this.retMessage="Exception: "+ex.message;
+      this.textMessageClass = 'red';
+    }
+
   }
 
   private buildRequestParams(item: string): getPayload {
@@ -404,10 +412,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
       if (!isNaN(date.getTime())) {
         control?.patchValue(date);
       } else {
-        console.error('Invalid date:', inputValue);
+        // console.error('Invalid date:', inputValue);
       }
     } else {
-      console.error('Invalid date format:', inputValue);
+      // console.error('Invalid date format:', inputValue);
     }
   }
 
@@ -416,7 +424,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
     if (blockID) {
       this.onSelectedBlockChanged(blockID);
     } else {
-      console.error('Block ID is not defined.');
+      // console.error('Block ID is not defined.');
     }
   }
 
@@ -456,9 +464,9 @@ export class BlocksComponent implements OnInit, OnDestroy {
       'TranType': "Blocks",  // Pass any data you want to send to CustomerDetailsComponent
       'search' :"Blocks Notes"}
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
   logDetails(tranNo:string) {

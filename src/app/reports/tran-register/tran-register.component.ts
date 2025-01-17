@@ -257,22 +257,31 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
     this.grParams.toDate = formattedCurrentDate;
     this.grParams.tranNo = tranNo;
     this.grParams.tranType = "GRIEVANCE";
-    this.loader.start();
-    this.subSink.sink = this.utilityService.GetTenantSpecificGrievanceDetails(this.grParams).subscribe((res: any) => {
-      this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.dialog.open(ReceiptDetailsDataComponent, {
-          width: '85%',
-          data: { data: res.data, name: "Grievance Details", type: "GRIEVANCE" },
-          disableClose: true
-        });
+    try {
+      this.loader.start();
+      this.subSink.sink = this.utilityService.GetTenantSpecificGrievanceDetails(this.grParams).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === "SUCCESS") {
+          this.dialog.open(ReceiptDetailsDataComponent, {
+            width: '85%',
+            data: { data: res.data, name: "Grievance Details", type: "GRIEVANCE" },
+            disableClose: true
+          });
 
-      }
-      else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
-      }
-    });
+        }
+        else {
+          this.loader.stop();
+          this.retMessage = res.message;
+          this.textMessageClass = "red";
+        }
+      });
+    }
+    catch (ex: any) {
+      this.loader.stop();
+      this.retMessage = "Exception: " + ex.message;
+      this.textMessageClass = "red";
+    }
+
   }
   onLinkClicked(event: any) {
     // console.log(event);
@@ -341,20 +350,28 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
     };
     const service1 = this.adminService.GetMasterItemsList(branchbody);
     const service2 = this.adminService.GetMasterItemsList(reportbody);
-    this.loader.start();
-    this.subSink.sink = forkJoin([service1, service2]).subscribe(
-      (results: any[]) => {
-        this.loader.stop();
-        const res1 = results[0];
-        const res2 = results[1];
-        this.branchList = res1.data;
-        this.reportList = res2.data;
-      },
-      error => {
-        this.loader.stop();
-        this.hanldeError(error);
-      }
-    );
+    try {
+      this.loader.start();
+      this.subSink.sink = forkJoin([service1, service2]).subscribe(
+        (results: any[]) => {
+          this.loader.stop();
+          const res1 = results[0];
+          const res2 = results[1];
+          this.branchList = res1.data;
+          this.reportList = res2.data;
+        },
+        error => {
+          this.loader.stop();
+          this.hanldeError(error);
+        }
+      );
+
+    }
+    catch (ex: any) {
+      this.loader.stop();
+      this.textMessageClass = "red";
+      this.retMessage = "Exception: " + ex.message;
+    }
 
   }
   hanldeError(res: any) {
@@ -461,7 +478,6 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
             });
             this.dialogOpen = true;
             dialogRef.afterClosed().subscribe(result => {
-              console.log(result);
               this.TransactionreciptForm.controls['item'].setValue(result.partyName);
               this.itemCode = result.code;
               this.dialogOpen = false;
