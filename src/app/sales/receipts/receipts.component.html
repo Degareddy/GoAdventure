@@ -22,6 +22,7 @@
         [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid">
         <mat-icon>picture_as_pdf</mat-icon> PDF
       </button>
+      
       <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(receiptsForm.get('receiptNo')!.value)"
         [disabled]="receiptsForm.get('receiptNo')!.value === '' || receiptsForm.get('receiptNo')!.value === null">
         <mat-icon>note_add</mat-icon> Notes
@@ -204,8 +205,12 @@
 
           <div class="matfield">
             <mat-checkbox [labelPosition]="labelPosition" formControlName="sms" class="small-label">Send
-              SMS</mat-checkbox>
+              SMS</mat-checkbox> &nbsp;&nbsp;
+              <button mat-raised-button color="primary" class="btnUp" type="button" (click)="sendSms(mobileNo)" [disabled]="mobileNo === '' || mobileNo === null || receiptsForm.get('sms')?.value">
+                <mat-icon>sms</mat-icon> Send Sms
+              </button>
           </div>
+          
 
           <div class="matfield">
             <b class="myCustomClass">Cash Balance:</b>
@@ -226,7 +231,10 @@
               <mat-label>Notes</mat-label>
               <input matInput placeholder="Notes" formControlName="remarks" type="text" />
             </mat-form-field>
+           
           </div>
+         
+         
         </div>
         <div class="bg-white p-2 border rounded-lg shadow-md" *ngIf="isPayment">
           <div class="text-center text-gray-800 font-semibold">{{ fromName }}</div>
@@ -504,8 +512,12 @@
 
           <div class="matfield">
             <mat-checkbox [labelPosition]="labelPosition" formControlName="sms" class="small-label">Send
-              SMS</mat-checkbox>
+              SMS</mat-checkbox>&nbsp;&nbsp;
+              <button mat-raised-button color="primary" class="btnUp" type="button" (click)="sendSms(mobileNo)" [disabled]="mobileNo === '' || mobileNo === null || receiptsForm.get('sms')?.value">
+                <mat-icon>sms</mat-icon> Send Sms
+              </button>
           </div>
+          
 
           <div class="matfield">
             <b class="myCustomClass">Cash Balance:</b>
@@ -526,7 +538,9 @@
               <mat-label>Notes</mat-label>
               <input matInput placeholder="Notes" formControlName="remarks" type="text" />
             </mat-form-field>
+            
           </div>
+         
         </div>
       <!-- </div> -->
     </div>

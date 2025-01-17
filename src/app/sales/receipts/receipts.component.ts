@@ -57,6 +57,7 @@ interface ReceiptFormData {
 
   customerBank: string;
   custAccount: string;
+  
   instrumentNo: string;
   instrumentDate: Date;
   instrumentStatus: string;
@@ -91,6 +92,7 @@ isPayment: boolean=false;
   receiptNoValid: boolean = true;
   modes: Item[] = [];
   Report!: string;
+  mobileNo:string='';
   receiptmodes: Item[] = [
     { itemCode: 'receiveRent', itemName: 'Rent receipt' },
     { itemCode: 'payRent', itemName: 'Rent payment' },
@@ -782,16 +784,49 @@ isPayment: boolean=false;
       const dateObject = new Date(this.responseData.data.receiptDate);
       const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
       const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
-      const messages =
-        'Dear ' +
-        this.responseData.data.customerName +
-        ', We confirm the receipt of rent with RefNo. ' +
-        this.responseData.data.receiptNo +
-        ' for the month of ' +
-        receiptMonth +
-        ' ' +
-        receiptYear +
-        ' with thanks.\nNagaad Properties';
+      let tranFor='';
+      let tranType='';
+      let company='';
+      let messages='';
+      console.log( this.responseData.data)
+      
+      if(this.responseData.data.company === 'NPML'){
+        company='NAGAAD PROPERTIES';
+      }
+      else if(this.responseData.data.company === 'SADASA'){
+        company='SADASA';
+      }
+      if(this.responseData.data.rctType === "RECEIPT"){
+        tranType='Receipt';
+      }
+      else if(this.responseData.data.rctType === "PAYMENT"){
+        tranType='Payment';
+      }
+      switch (this.responseData.data.txnFor) {
+        case "RENTPMT":
+          tranFor = 'Rent';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}. Thank you. \n${company}`;
+          break;
+
+        case "UTILITY":
+          tranFor = 'Utility';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}. Thank you. \n${company}`;
+          break;
+        case "CASHTRF":
+        tranFor = 'Cash Transfer';
+        messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} from ${this.responseData.data.rctAccountName}. Please confirm the transaction or decline it as soon as possible. Thank you. \n${company}`
+        break;
+          
+
+        default:
+          tranFor = 'Unknown Transaction';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the transaction with Ref. No. ${this.responseData.data.receiptNo}. Thank you. \n${company}`;
+          break;
+      }
+
+
+      
+
       const body = {
         ...this.commonParams(),
         serviceType: 'SMS',
@@ -909,7 +944,7 @@ isPayment: boolean=false;
           this.receiptsForm.controls.rctType.value === 'PAYMENT' &&
           this.receiptsForm.controls.rctMode.value === 'CASH'
         ) {
-          if (rctAmountValue > this.balanceAmount) {
+          if (rctAmountValue > this.balanceAmount && this.receiptsForm.get('mode')?.value !== "Reverse") {
             this.displayMessage(
               'Error: Transaction amount exceeds balance amount!',
               'red'
@@ -1149,6 +1184,8 @@ isPayment: boolean=false;
         this.loader.stop();
         if (res.status.toUpperCase() === 'SUCCESS') {
           this.responseData = res;
+          this.mobileNo=this.responseData.data.mobileNo
+          console.log( this.responseData.data)
           this.bindDataToForm(this.responseData);
           this.onSelectionChangeClientType();
           if (mode != 'View') {

@@ -464,6 +464,58 @@ export class SalesReportsComponent implements OnInit, OnDestroy {
           cellRenderer: 'agDtlRenderer',  // Uses the custom renderer
           cellStyle: { justifyContent: "flex-end" }  // Right-align the cell content
         },
+        {
+          headerName: "Loan Balance",
+          field: "loanBalAmount",
+          sortable: true,
+          resizable: true,
+          flex: 1,
+          filter: 'agNumberColumnFilter',
+          type: 'rightAligned',
+          cellStyle: (params: { value: number }) => {
+            if (params.value < 0) {
+              return { justifyContent: "flex-end", color: "red" };
+            }
+            return { justifyContent: "flex-end", color: "green" };
+          },
+          valueFormatter: (params: { data: { loanBalAmount: any; loanCurrency: any; }; }) => {
+            const loanBalance = params.data.loanBalAmount;
+            const currency = params.data.loanCurrency;
+            if (loanBalance !== undefined && currency) {
+              // Check if loan balance is negative
+              const formattedBalance = loanBalance < 0
+                ? `(${Math.abs(loanBalance).toLocaleString()})`
+                : loanBalance.toLocaleString();
+
+              // Format loan balance with commas and append the currency
+              if (currency.toUpperCase() === "USD") {
+                return `$ ${formattedBalance}`;
+              } else if (currency.toUpperCase() === "KES") {
+                return `Ksh ${formattedBalance}`;
+              }
+            }
+            return '';
+          },
+          valueGetter: (params: { data: { loanBalAmount: any; loanCurrency: any; }; }) => {
+            const loanBalance = params.data.loanBalAmount;
+            const currency = params.data.loanCurrency;
+
+            // Ensure loanBalance is a valid number
+            if (loanBalance !== undefined && !isNaN(loanBalance) && currency) {
+              const formattedBalance = loanBalance < 0
+                ? `(${Math.abs(loanBalance).toLocaleString()})`
+                : loanBalance.toLocaleString();
+
+              // Format loan balance with currency
+              if (currency.toUpperCase() === "USD") {
+                return `$ ${formattedBalance}`;
+              } else if (currency.toUpperCase() === "KES") {
+                return `Ksh ${formattedBalance}`;
+              }
+            }
+            return ''; // Return empty string if data is missing or invalid
+          }
+        },
         { field: "receipt", headerName: "Receipt / Payment", sortable: true, filter: true, resizable: true, flex: 1, cellRenderer: 'agLnkRenderer' },
       ];
 

@@ -436,12 +436,12 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                   else if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('IncludeUtility')?.value ) {
                     message = `Dear ${item.tenantName},
             
-            Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
+            Utility invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
             The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
             Thank you,
             Nagaad Properties`;
                   }
-                  else if (this.userDataService.userData.company === "TAJOW" && this.autoGenForm.get('IncludeUtility')?.value) {
+                  else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('IncludeUtility')?.value) {
                     message = `Mudane/Marwo [${item.tenantName}],
 
                     Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
