@@ -486,11 +486,11 @@
               style="margin-left: 10px;background-color: burlywood;border: 1px solid; padding: 4px;">No
               Rent</mat-checkbox>
           </div>
-         
+
           <div class="col-md-3">
             <mat-form-field appearance="outline" class="w-full" >
               <mat-label>Similar</mat-label>
-              <input matInput placeholder="Similar financial units"  formControlName="UnitsList"  
+              <input matInput placeholder="Similar financial units"  formControlName="UnitsList"
                 type="text "
                 [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">
             </mat-form-field>
@@ -516,7 +516,7 @@
               <mat-form-field appearance="outline" class="w-full">
                 <mat-label>Unit Rate</mat-label>
                 <input matInput placeholder="Unit Rate" min="0" formControlName="unitRate" separator appNumberFormat
-                  type="text "
+                  type="text " class="right-align-input"
                   [matTooltip]="loggedInUserProfile === 'cmpuser' ? 'Only admin can modify' : ''">
               </mat-form-field>
             </div>
