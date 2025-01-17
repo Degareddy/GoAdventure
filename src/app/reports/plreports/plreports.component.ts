@@ -193,7 +193,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     }
     return data;
   }
-  
+
   formatAmount(amount: any): string {
     const numAmount = parseFloat(amount);
     return isNaN(numAmount) ? '' : numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -428,9 +428,84 @@ export class PlreportsComponent implements OnInit, OnDestroy {
             }
           }
         },
-        { headerName: 'Property', field: 'propName', sortable: false, filter: true, resizable: true, flex: 1 },
-        { headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1 },
-        { headerName: 'Unit', field: 'unitName', sortable: false, filter: true, resizable: true, flex: 1 },
+        { headerName: 'Property', field: 'propName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+          if (params.data.mainHeader === "INCOME TOTAL") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'green',
+            };
+          }
+          if (params.data.mainHeader === "EXPENSES TOTAL") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'red',
+            };
+          }
+          if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'black',
+            };
+          }
+          else {
+            return;
+          }
+        } },
+        { headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1 , cellStyle: function (params: any) {
+          if (params.data.mainHeader === "INCOME TOTAL") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'green',
+            };
+          }
+          if (params.data.mainHeader === "EXPENSES TOTAL") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'red',
+            };
+          }
+          if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'black',
+            };
+          }
+          else {
+            return;
+          }
+        }},
+        { headerName: 'Unit', field: 'unitName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+          if (params.data.mainHeader === "INCOME TOTAL") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'green',
+            };
+          }
+          if (params.data.mainHeader === "EXPENSES TOTAL") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'red',
+            };
+          }
+          if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            return {
+              backgroundColor: 'lightyellow',
+              fontSize: '12px',
+              color: 'black',
+            };
+          }
+          else {
+            return;
+          }
+        } },
         {
           headerName: 'Charge', field: 'subHeaderDesc', filter: true, flex: 1, resizable: true, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {

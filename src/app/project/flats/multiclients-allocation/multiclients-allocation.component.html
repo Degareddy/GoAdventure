@@ -54,12 +54,12 @@
     <div class="btnAlignment">
       <button mat-raised-button color="primary" class="btnUp" (click)="onSubmit('Modify')"
         [disabled]="data.mode ==='View' || mulitClientsForm.invalid"><mat-icon>done</mat-icon>Apply</button>
-        
+
       <button mat-raised-button color="accent" type="button" (click)="newItem()"
         class=btnUp><mat-icon>add</mat-icon><b>New</b>
       </button>
       <button mat-raised-button color="primary" class="btnUp" (click)="onSubmit('Delete')"
-        [disabled]="data.mode ==='View' || mulitClientsForm.invalid"><mat-icon>delete</mat-icon></button>
+        [disabled]="data.mode ==='View' || mulitClientsForm.invalid"><mat-icon>delete</mat-icon>Delete</button>
       <button mat-raised-button color="warn" class="btnUp" type="button" (click)="_isHundredPercent()">
         <mat-icon>cancel</mat-icon><b>Close</b>
       </button>
