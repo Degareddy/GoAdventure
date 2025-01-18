@@ -18,6 +18,7 @@ import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GeneratedInvoicesComponent } from './generated-invoices/generated-invoices.component';
+import { select } from '@ngrx/store';
 
 @Component({
   selector: 'app-generate-invoices',
@@ -709,30 +710,30 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
   async onSelectedBlockChanged() {
 
-    this.resetMessages();
+    // this.resetMessages();
 
-    if (this.autoGenForm.controls['property'].value != "") {
-      // const propertyValue = this.autoGenForm.controls['property'].value;
+    // if (this.autoGenForm.controls['property'].value != "") {
+    //   // const propertyValue = this.autoGenForm.controls['property'].value;
 
-      this.masterParams.type = this.autoGenForm.controls['property'].value;
-      this.masterParams.item = this.autoGenForm.controls['block'].value;
+    //   this.masterParams.type = this.autoGenForm.controls['property'].value;
+    //   this.masterParams.item = this.autoGenForm.controls['block'].value;
 
-      try {
-        this.subsink.sink = await this.projService.GetLastGeneratedInvoiceInfo(this.masterParams).subscribe(
-          (result: any) => {
-            this.handleBlockChangedResponse(result);
-          },
-          (error: any) => {
-            this.handleDataLoadError(error);
-          }
-        );
-      } catch (ex: any) {
-        this.handleDataLoadError(ex);
-      }
-    }
-    else {
-      this.blockList = [];
-    }
+    //   try {
+    //     this.subsink.sink = await this.projService.GetLastGeneratedInvoiceInfo(this.masterParams).subscribe(
+    //       (result: any) => {
+    //         this.handleBlockChangedResponse(result);
+    //       },
+    //       (error: any) => {
+    //         this.handleDataLoadError(error);
+    //       }
+    //     );
+    //   } catch (ex: any) {
+    //     this.handleDataLoadError(ex);
+    //   }
+    // }
+    // else {
+    //   this.blockList = [];
+    // }
   }
 
   onHelpCilcked() {
@@ -750,7 +751,9 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onCheckboxChange(selectedCheckbox: string) {
-    //   if (selectedCheckbox === 'rentInvoice') {
+    this.retMessage='';
+    this.textMessageClass='';
+      //   if (selectedCheckbox === 'rentInvoice') {
     //     this.autoGenForm.patchValue({
     //       includeExpenses: false,
     //     });
@@ -764,6 +767,44 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     //       IncludeUtility: false,
     //     });
     //   }
+    let type:string='';
+    if(selectedCheckbox === 'rentInvoice'){
+      type='RENTAL'
+       
+    }
+    else if(selectedCheckbox === 'includeExpenses'){
+      type='EXPENSE'
+    }
+    else if(selectedCheckbox === 'IncludeUtility'){
+      type='UTILITY'
+    }
+     
+    if (true ) {
+      // const propertyValue = this.autoGenForm.controls['property'].value;
+
+      const body = {
+        ...this.commonParams(),
+        Type: type,
+        ItemFirstLevel: this.autoGenForm.controls['property'].value,
+        ItemSecondLevel: this.autoGenForm.controls['block'].value,
+      }
+
+      try {
+        this.subsink.sink = this.projService.GetLastGeneratedInvoiceInfo(body).subscribe(
+          (result: any) => {
+            this.handleBlockChangedResponse(result);
+          },
+          (error: any) => {
+            this.handleDataLoadError(error);
+          }
+        );
+      } catch (ex: any) {
+        this.handleDataLoadError(ex);
+      }
+    }
+    else {
+      // this.blockList = [];
+    }
     if(!this.autoGenForm.get('authorize')?.value){
       this.autoGenForm.get('email')?.setValue(false);
       this.autoGenForm.get('sms')?.setValue(false);
