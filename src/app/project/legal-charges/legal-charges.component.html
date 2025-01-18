@@ -1,115 +1,108 @@
 <div class="container mx-auto p-1 bg-blue-400 shadow rounded">
-    <div class="flex justify-between items-center h-8">
-      <div class="flex items-center text-white">
-        <mat-icon class="mr-1">attach_money</mat-icon>
-        <b>Legal Charges</b>
-      </div>
-      <div class="flex items-center space-x-2">
-        <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(legaChargeForm.get('legalChargetype')!.value )">
-          <mat-icon>note_add</mat-icon>Notes
-        </button>
-        <button mat-raised-button class="btnUp" type="button" (click)="logDetails(this.legaChargeForm.get('legalChargetype')?.value)">
-          <mat-icon>comment</mat-icon>Log
-        </button>
-        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpClicked()">
-          <mat-icon>help</mat-icon>Help
-        </button>
-      </div>
+  <div class="flex justify-between items-center h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">attach_money</mat-icon>
+      <b>Legal Charges</b>
+    </div>
+    <div class="flex items-center space-x-2">
+      <button mat-raised-button class="btnUp" type="button"
+        (click)="NotesDetails(legaChargeForm.get('legalChargetype')!.value )">
+        <mat-icon>note_add</mat-icon>Notes
+      </button>
+      <button mat-raised-button class="btnUp" type="button"
+        (click)="logDetails(this.legaChargeForm.get('legalChargetype')?.value)">
+        <mat-icon>comment</mat-icon>Log
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpClicked()">
+        <mat-icon>help</mat-icon>Help
+      </button>
     </div>
   </div>
-  
-  <div class="container mx-auto bg-zinc-100 rounded-sm p-4 mt-1 overflow-hidden">
-    <form [formGroup]="legaChargeForm" (ngSubmit)="onUpdate()">
-      <!-- Form Fields Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Modes</mat-label>
-            <mat-select formControlName="mode" (selectionChange)="modeChange(legaChargeForm.controls['mode'].value)">
-              <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-  
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Legal Charge</mat-label>
-            <mat-select formControlName="legalChargetype">
-              <mat-option value="">--Select--</mat-option>
-              <mat-option *ngFor="let x of legaCharges" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-  
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Charge Type</mat-label>
-            <mat-select formControlName="chargeType">
-              <mat-option value="">--Select--</mat-option>
-              <mat-option value="PERCENTAGE">Percentage</mat-option>
-              <mat-option value="FLAT">Flat</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-  
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Currency</mat-label>
-            <mat-select formControlName="currency">
-              <mat-option value="">--Select--</mat-option>
-              <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-  
-        <div>
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Rate</mat-label>
-              <input
-                matInput
-                placeholder="Amount"
-                formControlName="amount"
-                seperator
-                
-                type="text"
-                min="0"
-                max="100"
-              />
-            </mat-form-field>
-            <mat-error *ngIf="amountMessage.length > 0">
-              {{amountMessage}}
-            </mat-error>
-          </div>
-          
-  
-        <div>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Notes</mat-label>
-            <input matInput placeholder="Notes" formControlName="notes" />
-          </mat-form-field>
-        </div>
+</div>
+
+<div class="container mx-auto bg-zinc-100 rounded-sm p-4 mt-1 overflow-hidden">
+  <form [formGroup]="legaChargeForm" (ngSubmit)="onUpdate()">
+    <!-- Form Fields Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" (selectionChange)="modeChange(legaChargeForm.controls['mode'].value)">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
-  
-      <!-- Message Box and Buttons -->
-      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
-      <div class="flex flex-wrap justify-center gap-1 mt-1">
-        <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]=" amountMessage.length > 0 || legaChargeForm.invalid || legaChargeForm.get('mode')!.value==='View'">
-          <mat-icon>done</mat-icon>Apply
-        </button>
-        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
-          <mat-icon>clear_all</mat-icon>Clear
-        </button>
-        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
-          <mat-icon>cancel</mat-icon>Close
-        </button>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Legal Charge</mat-label>
+          <mat-select formControlName="legalChargetype">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of legaCharges" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
-    </form>
-  
-    <!-- Data Grid -->
-    <div class="mt-2">
-      <app-access-grid style="width: 100%; height:100%;" #agGrid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
-                       [globalSearch]="true" [gridHeight]="'240px'" [paginationPageSize]="25" [showToolPanel]="true" (cellClicked)="onRowSelected($event)"
-                       [showRecordCount]="true"></app-access-grid>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Charge Type</mat-label>
+          <mat-select formControlName="chargeType">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="PERCENTAGE">Percentage</mat-option>
+            <mat-option value="FLAT">Flat</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Currency</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of currency" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Rate</mat-label>
+          <input matInput placeholder="Amount"  class="right-align-input" formControlName="amount" seperator type="text" min="0" max="100" />
+        </mat-form-field>
+        <mat-error *ngIf="amountMessage.length > 0">
+          {{amountMessage}}
+        </mat-error>
+      </div>
+
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Notes</mat-label>
+          <input matInput placeholder="Notes" formControlName="notes" />
+        </mat-form-field>
+      </div>
     </div>
+
+    <!-- Message Box and Buttons -->
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="flex flex-wrap justify-center gap-1 mt-1">
+      <button mat-raised-button color="primary" type="submit" class="btnUp"
+        [disabled]=" amountMessage.length > 0 || legaChargeForm.invalid || legaChargeForm.get('mode')!.value==='View'">
+        <mat-icon>done</mat-icon>Apply
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+    </div>
+  </form>
+
+  <!-- Data Grid -->
+  <div class="mt-2">
+    <app-access-grid style="width: 100%; height:100%;" #agGrid [columnDefs]="columnDefs" [rowData]="rowData"
+      [exportPDF]="true" [exportExcel]="true" [globalSearch]="true" [gridHeight]="'240px'" [paginationPageSize]="25"
+      [showToolPanel]="true" (cellClicked)="onRowSelected($event)" [showRecordCount]="true"></app-access-grid>
   </div>
-  
+</div>

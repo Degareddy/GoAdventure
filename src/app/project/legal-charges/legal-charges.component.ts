@@ -17,7 +17,6 @@ import { MasterParams } from 'src/app/modals/masters.modal';
 import { DecimalPipe } from '@angular/common';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
-import { runInThisContext } from 'vm';
 
 @Component({
   selector: 'app-legal-charges',
@@ -146,7 +145,7 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
       currency: ['', [Validators.required]],
       chargeType: ['', [Validators.required]],
       legalChargetype: ['', [Validators.required]],
-      amount: ['', [Validators.required]],
+      amount: ['0.00', [Validators.required]],
       notes: [''],
     });
   }
@@ -283,14 +282,21 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
     const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATRATE',mode:this.legaChargeForm.get('mode')?.value });
     const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY',mode:this.legaChargeForm.get('mode')?.value });
     const legalfee$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE' ,mode:this.legaChargeForm.get('mode')?.value});
-    this.subSink.sink = await forkJoin([vbody$, property$, legalfee$, currency$, mode$]).subscribe(
-      ([vatRes, propertyRes, chargeRes, currencyRes, mode]: any) => {
-        this.handleloadRes(vatRes, propertyRes, chargeRes, currencyRes, mode)
-      },
-      error => {
-        this.handelError(error, 'red');
-      }
-    );
+    try{
+      this.subSink.sink = await forkJoin([vbody$, property$, legalfee$, currency$, mode$]).subscribe(
+        ([vatRes, propertyRes, chargeRes, currencyRes, mode]: any) => {
+          this.handleloadRes(vatRes, propertyRes, chargeRes, currencyRes, mode)
+        },
+        error => {
+          this.handelError(error, 'red');
+        });
+    }
+    catch(ex:any){
+      this.retMessage=ex.message;
+      this.textMessageClass="red";
+      this.loader.stop();
+    }
+
 
   }
 

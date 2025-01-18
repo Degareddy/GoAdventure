@@ -53,12 +53,12 @@ export class PlreportsComponent implements OnInit, OnDestroy {
   branchList: Item[] = [];
   today = new Date();
   private subscriptions: Subscription = new Subscription();
-  profitLossData= [
+  profitLossData = [
     // Paste your provided JSON data here
   ];
   incomeChartData: any;
   expenseChartData: any;
-  combinedChartData:any;
+  combinedChartData: any;
   constructor(private fb: FormBuilder, protected router: Router, private store: Store, private navigationService: NavigationService,
     private datepipe: DatePipe, private userDataService: UserDataService,
     private reportService: ReportsService, private adminService: AdminService, private loader: NgxUiLoaderService) {
@@ -428,84 +428,90 @@ export class PlreportsComponent implements OnInit, OnDestroy {
             }
           }
         },
-        { headerName: 'Property', field: 'propName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-          if (params.data.mainHeader === "INCOME TOTAL") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'green',
-            };
+        {
+          headerName: 'Property', field: 'propName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+            if (params.data.mainHeader === "INCOME TOTAL") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'green',
+              };
+            }
+            if (params.data.mainHeader === "EXPENSES TOTAL") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'red',
+              };
+            }
+            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'black',
+              };
+            }
+            else {
+              return;
+            }
           }
-          if (params.data.mainHeader === "EXPENSES TOTAL") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'red',
-            };
+        },
+        {
+          headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+            if (params.data.mainHeader === "INCOME TOTAL") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'green',
+              };
+            }
+            if (params.data.mainHeader === "EXPENSES TOTAL") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'red',
+              };
+            }
+            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'black',
+              };
+            }
+            else {
+              return;
+            }
           }
-          if (params.data.mainHeader === "NET PROFIT/LOSS") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'black',
-            };
+        },
+        {
+          headerName: 'Unit', field: 'unitName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+            if (params.data.mainHeader === "INCOME TOTAL") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'green',
+              };
+            }
+            if (params.data.mainHeader === "EXPENSES TOTAL") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'red',
+              };
+            }
+            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+              return {
+                backgroundColor: 'lightyellow',
+                fontSize: '12px',
+                color: 'black',
+              };
+            }
+            else {
+              return;
+            }
           }
-          else {
-            return;
-          }
-        } },
-        { headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1 , cellStyle: function (params: any) {
-          if (params.data.mainHeader === "INCOME TOTAL") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'green',
-            };
-          }
-          if (params.data.mainHeader === "EXPENSES TOTAL") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'red',
-            };
-          }
-          if (params.data.mainHeader === "NET PROFIT/LOSS") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'black',
-            };
-          }
-          else {
-            return;
-          }
-        }},
-        { headerName: 'Unit', field: 'unitName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-          if (params.data.mainHeader === "INCOME TOTAL") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'green',
-            };
-          }
-          if (params.data.mainHeader === "EXPENSES TOTAL") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'red',
-            };
-          }
-          if (params.data.mainHeader === "NET PROFIT/LOSS") {
-            return {
-              backgroundColor: 'lightyellow',
-              fontSize: '12px',
-              color: 'black',
-            };
-          }
-          else {
-            return;
-          }
-        } },
+        },
         {
           headerName: 'Charge', field: 'subHeaderDesc', filter: true, flex: 1, resizable: true, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
@@ -750,77 +756,85 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         ToDate: this.datepipe.transform(this.PandLForm.controls['toDate'].value, "yyyy-MM-dd"),
         location: this.PandLForm.controls['branch'].value
       }
-      this.loader.start();
-      this.subsink.sink = this.reportService.GetReportProfitAndLoss(body).subscribe((res: any) => {
-        this.loader.stop();
-        if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
-          this.profitLossData = res.data;
-          if(this.profitLossData){
-            this.processData();
-            this.prepareChartData();
-          }
-          let modifiedData = [...res.data];
-          const incomeRows = modifiedData.filter(item => item.mainHeader === 'INCOME');
-          const incomeTotal = incomeRows.reduce((total, item) => total + item.tranAmount, 0);
+      try {
+        this.loader.start();
+        this.subsink.sink = this.reportService.GetReportProfitAndLoss(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+            this.profitLossData = res.data;
+            if (this.profitLossData) {
+              this.processData();
+              this.prepareChartData();
+            }
+            let modifiedData = [...res.data];
+            const incomeRows = modifiedData.filter(item => item.mainHeader === 'INCOME');
+            const incomeTotal = incomeRows.reduce((total, item) => total + item.tranAmount, 0);
 
-          const expensesRows = modifiedData.filter(item => item.mainHeader === 'EXPENSES');
-          const expenseTotal = expensesRows.reduce((total, item) => total + item.tranAmount, 0);
+            const expensesRows = modifiedData.filter(item => item.mainHeader === 'EXPENSES');
+            const expenseTotal = expensesRows.reduce((total, item) => total + item.tranAmount, 0);
 
-          const netTotal = incomeTotal + expenseTotal;
+            const netTotal = incomeTotal + expenseTotal;
 
-          const lastIncomeIndex = modifiedData.map((item, index) => item.mainHeader === 'INCOME' ? index : -1)
-            .filter(index => index !== -1)
-            .pop() || 0;
-          modifiedData.splice(lastIncomeIndex + 1, 0, {
-            mainHeader: 'INCOME TOTAL',
-            tranAmount: incomeTotal,
-          });
-
-          if (expensesRows.length > 0) {
-            const lastExpensesIndex = modifiedData.map((item, index) => item.mainHeader === 'EXPENSES' ? index : -1)
+            const lastIncomeIndex = modifiedData.map((item, index) => item.mainHeader === 'INCOME' ? index : -1)
               .filter(index => index !== -1)
               .pop() || 0;
-
-            modifiedData.splice(lastExpensesIndex + 1, 0, {
-              mainHeader: 'EXPENSES TOTAL',
-              tranAmount: expenseTotal,
+            modifiedData.splice(lastIncomeIndex + 1, 0, {
+              mainHeader: 'INCOME TOTAL',
+              tranAmount: incomeTotal,
             });
 
-            const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'EXPENSES TOTAL');
-            modifiedData.splice(expensesTotalIndex + 1, 0, {
-              mainHeader: 'NET PROFIT/LOSS',
-              tranAmount: netTotal,
-            });
-          } else {
-            const incomeTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'INCOME TOTAL');
-            modifiedData.splice(incomeTotalIndex + 1, 0, {
-              mainHeader: 'EXPENSES TOTAL',
-              tranAmount: expenseTotal,
-            });
+            if (expensesRows.length > 0) {
+              const lastExpensesIndex = modifiedData.map((item, index) => item.mainHeader === 'EXPENSES' ? index : -1)
+                .filter(index => index !== -1)
+                .pop() || 0;
 
-            const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'EXPENSES TOTAL');
-            modifiedData.splice(expensesTotalIndex + 1, 0, {
-              mainHeader: 'NET PROFIT/LOSS',
-              tranAmount: netTotal,
-            });
-          }
-          this.rowData = modifiedData;
-          if (this.rowData.length >= 1) {
-            for (let i = 0; i < this.rowData.length; i++) {
-              if (this.rowData[i].tranType != "" && this.rowData[i].tranType != undefined && this.rowData[i].tranType != null && this.rowData[i].tranType.toUpperCase() === "SALE") {
-                this.rowData[i].tranType = "INVOICE";
+              modifiedData.splice(lastExpensesIndex + 1, 0, {
+                mainHeader: 'EXPENSES TOTAL',
+                tranAmount: expenseTotal,
+              });
+
+              const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'EXPENSES TOTAL');
+              modifiedData.splice(expensesTotalIndex + 1, 0, {
+                mainHeader: 'NET PROFIT/LOSS',
+                tranAmount: netTotal,
+              });
+            } else {
+              const incomeTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'INCOME TOTAL');
+              modifiedData.splice(incomeTotalIndex + 1, 0, {
+                mainHeader: 'EXPENSES TOTAL',
+                tranAmount: expenseTotal,
+              });
+
+              const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'EXPENSES TOTAL');
+              modifiedData.splice(expensesTotalIndex + 1, 0, {
+                mainHeader: 'NET PROFIT/LOSS',
+                tranAmount: netTotal,
+              });
+            }
+            this.rowData = modifiedData;
+            if (this.rowData.length >= 1) {
+              for (let i = 0; i < this.rowData.length; i++) {
+                if (this.rowData[i].tranType != "" && this.rowData[i].tranType != undefined && this.rowData[i].tranType != null && this.rowData[i].tranType.toUpperCase() === "SALE") {
+                  this.rowData[i].tranType = "INVOICE";
+                }
               }
             }
+            this.displayMessage("Profit and loss report retrieved successfully.", "green");
+
           }
-          this.displayMessage("Profit and loss report retrieved successfully.", "green");
 
-        }
+          else {
+            this.displayMessage(res.message, "red");
+            this.rowData = [];
+            this.loader.stop();
+          }
+        });
+      }
+      catch (ex: any) {
+        this.loader.stop();
+        this.displayMessage("Exception " + ex.message, "red");
+      }
 
-        else {
-          this.displayMessage(res.message, "red");
-          this.rowData = [];
-        }
-      });
 
     }
   }
@@ -845,8 +859,8 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     }
   }
   processData() {
-    this.incomeData = this.profitLossData.filter((item:any) => item.mainHeader === 'INCOME');
-    this.expenseData = this.profitLossData.filter((item:any) => item.mainHeader === 'EXPENSES');
+    this.incomeData = this.profitLossData.filter((item: any) => item.mainHeader === 'INCOME');
+    this.expenseData = this.profitLossData.filter((item: any) => item.mainHeader === 'EXPENSES');
 
     this.totalIncome = this.incomeData.reduce((acc, item) => acc + item.tranAmount, 0);
     this.totalExpenses = Math.abs(this.expenseData.reduce((acc, item) => acc + item.tranAmount, 0)); // Expenses are negative
@@ -859,24 +873,31 @@ export class PlreportsComponent implements OnInit, OnDestroy {
       item: 'BRANCHES'
     };
     const service2 = this.adminService.GetMasterItemsList(branchbody);
-    this.loader.start();
-    this.subsink.sink = forkJoin([service2]).subscribe(
-      (results: any[]) => {
-        this.loader.stop();
-        const res2 = results[0];
-        if (res2 && res2.data) {
-          this.branchList = res2.data;
-        }
-        else {
-          this.displayMessage("Error: Branch list not found.", "red");
-        }
-      },
-      error => {
-        this.loader.stop();
-        this.displayMessage("Error: " + error.message, "red");
+    try{
+      this.loader.start();
+      this.subsink.sink = forkJoin([service2]).subscribe(
+        (results: any[]) => {
+          this.loader.stop();
+          const res2 = results[0];
+          if (res2 && res2.data) {
+            this.branchList = res2.data;
+          }
+          else {
+            this.displayMessage("Error: Branch list not found.", "red");
+          }
+        },
+        error => {
+          this.loader.stop();
+          this.displayMessage("Error: " + error.message, "red");
 
-      }
-    );
+        }
+      );
+    }
+    catch(ex:any){
+      this.loader.stop();
+      this.displayMessage("Exception: " + ex.message, "red");
+    }
+
 
   }
   private displayMessage(message: string, cssClass: string) {

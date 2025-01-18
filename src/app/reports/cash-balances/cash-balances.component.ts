@@ -81,7 +81,7 @@ export class CashBalancesComponent implements OnInit, OnDestroy {
 
   ]
 
-  constructor(private userDataService: UserDataService,private router:Router, private msService: MastersService,
+  constructor(private userDataService: UserDataService, private router: Router, private msService: MastersService,
     private loader: NgxUiLoaderService, private reportService: ReportsService, private dialog: MatDialog,) {
     this.subsink = new SubSink();
   }
@@ -89,12 +89,12 @@ export class CashBalancesComponent implements OnInit, OnDestroy {
     this.subsink.unsubscribe();
   }
 
-  close(){
-      this.router.navigate(['/home']);
+  close() {
+    this.router.navigate(['/home']);
   }
   getTransactions() {
-    this.rowData=[];
-    this.displayMessage("","");
+    this.rowData = [];
+    this.displayMessage("", "");
     const body = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
@@ -119,6 +119,7 @@ export class CashBalancesComponent implements OnInit, OnDestroy {
       })
     }
     catch (ex: any) {
+      this.loader.stop();
       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
@@ -152,21 +153,27 @@ export class CashBalancesComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID,
       // langId: this.userDataService.userData.langId
     };
-    this.subsink.sink = this.msService.GetMyCashTransfers(body).subscribe((res: any) => {
-      if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
-        const dialogRef: MatDialogRef<CashTransfersComponent> = this.dialog.open(CashTransfersComponent, {
-          width: '70%',
-          disableClose: true,
-          data: res.data
-        });
-        // dialogRef.afterClosed().subscribe(result => {
+    try {
+      this.subsink.sink = this.msService.GetMyCashTransfers(body).subscribe((res: any) => {
+        if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+          const dialogRef: MatDialogRef<CashTransfersComponent> = this.dialog.open(CashTransfersComponent, {
+            width: '70%',
+            disableClose: true,
+            data: res.data
+          });
+          // dialogRef.afterClosed().subscribe(result => {
 
-        // })
-      }
-      else {
-        this.displayMessage("No pending transactions found to confirm.", "red");
-      }
-    })
+          // })
+        }
+        else {
+          this.displayMessage("No pending transactions found to confirm.", "red");
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage("Exception: " + ex.message, "red");
+    }
+
   }
 
 }
