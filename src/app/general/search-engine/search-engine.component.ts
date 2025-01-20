@@ -33,7 +33,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   public gridOptions!: GridOptions;
   private subSink!: SubSink;
   loader!: NgxUiLoaderService;
-  pageSizes = [25, 50, 100, 250, 500];
+  pageSizes = [100, 250, 500];
   pageSize = 100;
   totalAmount:number=0;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },

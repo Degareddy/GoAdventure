@@ -47,6 +47,7 @@ checkAllocatedAmount(_t152: any) {
   private subSink!: SubSink;
   isCheck:boolean=false;
   remBal:number=0;
+  paidAmt:number=0;
   pageSizes = [50, 50, 100, 250, 500];
   pageSize = 50;
   altered: boolean = false;
@@ -203,7 +204,8 @@ checkAllocatedAmount(_t152: any) {
 
 
   }
-
+  
+ 
 
   initForm() {
     return this.fb.group({
@@ -223,20 +225,11 @@ checkAllocatedAmount(_t152: any) {
     this.textMessageClass = cssClass;
   }
   ngOnInit(): void {
+   
     // console.log(this.data);
     if (this.data.tranNo) {
       this.getAllocationData(this.data.tranNo, this.data.mode, false,this.data.tranFor);
     }
-    for(let j=0;j<this.dataSource.length;j++){
-      if(this.dataSource[j].allocatedAmount >0){
-        this.dataSource[j].checked=true;
-        this.dataSource[j]
-      }
-      else{
-        this.dataSource[j].checked=false;
-      }
-    }
-    
 
   }
     isDis(element:any):boolean{
@@ -287,6 +280,11 @@ checkAllocatedAmount(_t152: any) {
           if (mode === "View") {
             this.displayMessage("Success: " + res.message, "green");
           }
+          let paidAmt=0;
+          for(let j =0; j<res.data.length ;j++ ){
+            paidAmt +=  parseFloat(res.data[j].allocatedAmount.toString().replace(/,/g, '') || '0')
+          }
+          this.remBal = parseFloat(this.data.tranAmount.toString().replace(/,/g, '') || '0') - paidAmt;
         }
         else {
           this.displayMessage("No transactions available at the moment.", "red");
@@ -331,17 +329,26 @@ checkAllocatedAmount(_t152: any) {
         element.allocatedAmount=(element.dueAmount);
         this.remBal=this.remBal- (element.allocatedAmount);
         element.balAmount=0;
+        // this.paidAmt = this.paidAmt + element.allocatedAmount;
       }
       else if(element.checked && this.remBal < parseFloat(element.dueAmount)){
         element.allocatedAmount = this.remBal;
         this.remBal=0;
         element.balAmount=element.dueAmount-element.allocatedAmount;
+        this.paidAmt = this.paidAmt + element.allocatedAmount
+        // this.remBal = parseFloat(this.data.tranAmount.toString().replace(/,/g, '') || '0') - this.paidAmt
       }
       else if(!element.checked){
         element.allocatedAmount=0;
         element.balAmount=element.dueAmount;
+        if(this.paidAmt > 0){
+          this.paidAmt = this.paidAmt - element.allocatedAmount;
+          // this.remBal = parseFloat(this.data.tranAmount.toString().replace(/,/g, '') || '0') - this.paidAmt
+        }
       }
+      
     }
+    // this.remBal = parseFloat(this.data.tranAmount.toString().replace(/,/g, '') || '0') - this.paidAmt
     // if(this.remBal >0){
     //   for(let j=0;j<element.length();j++){
     //     if(element[j].checked || element[j].allocatedAmount>0){

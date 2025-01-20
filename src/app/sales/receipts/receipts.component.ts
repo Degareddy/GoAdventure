@@ -94,9 +94,11 @@ isPayment: boolean=false;
   Report!: string;
   mobileNo:string='';
   receiptmodes: Item[] = [
-    { itemCode: 'receiveRent', itemName: 'Rent receipt' },
-    { itemCode: 'payRent', itemName: 'Rent payment' },
+    { itemCode: 'receiveRent', itemName: 'Receive Rent' },
+    { itemCode: 'payRent', itemName: 'Pay Rent' },
     { itemCode: 'utilityReceipt', itemName: 'Utility Receipt' },
+    { itemCode: 'payexpense', itemName: 'Pay Expense' },
+    { itemCode: 'internalTransfer', itemName: 'Internal Transfer' },
     { itemCode: 'other', itemName: '...Other' },
   ];
   labelPosition: 'before' | 'after' = 'after';
@@ -253,6 +255,15 @@ isPayment: boolean=false;
             this.filteredpayMode = "";
             this.filteredpayMode = this.payMode;
           }
+          else if (tranFor === "payexpense" ) {
+            this.filteredItemsClientType = [];
+            this.filteredItemsClientType = this.clientTypeList;
+            this.receiptsForm.controls['clientType'].patchValue("");
+            this.receiptsForm.controls['clientType'].enable();
+            // this.receiptsForm.controls['clientType'].disable();
+            this.filteredpayMode = "";
+            this.filteredpayMode = this.payMode;
+          }
           else {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList;
@@ -335,6 +346,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
     }
+    
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
       // this.clear();
       this.filteredpayMode = "";
@@ -344,6 +356,39 @@ isPayment: boolean=false;
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.Report = 'UTILBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+    }
+    
+    else if (event === 'internalTransfer') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" );
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
+      this.receiptsForm.controls['tranFor'].patchValue('CASHTRF');
+      this.receiptsForm.controls['clientType'].patchValue("STAFF");
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+    }
+    else if (event.toUpperCase() === 'PAYEXPENSE') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
+      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
+      this.receiptsForm.controls['clientType'].patchValue("");
+      this.receiptsForm.controls['clientType'].enable();
+      // this.filteredItemsClientType=this.clientTypeList;
+      this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
       });
@@ -422,7 +467,7 @@ isPayment: boolean=false;
   }
   formInit() {
     return this.fb.group({
-      receiptmode: [this.receiptmodes[3].itemCode],
+      receiptmode: [this.receiptmodes[5].itemCode],
       mode: ['View'],
       receiptNo: [''],
       receiptDate: [new Date(), Validators.required],
@@ -816,7 +861,7 @@ isPayment: boolean=false;
         tranFor = 'Cash Transfer';
         messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} from ${this.responseData.data.rctAccountName}. Please confirm the transaction or decline it as soon as possible. Thank you. \n${company}`
         break;
-          
+        
 
         default:
           tranFor = 'Unknown Transaction';

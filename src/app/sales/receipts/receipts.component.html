@@ -52,7 +52,7 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline" class="w-full mt-2"
-          *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
+          *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other' ">
           <mat-label>Tran Type</mat-label>
           <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
             <mat-option value="">--Select--</mat-option>
@@ -92,7 +92,7 @@
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
-          <div class="matfield" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
+          <div class="matfield" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other' || this.receiptsForm.get('receiptmode')!.value === 'payexpense'">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">Client Type</mat-label>
               <mat-select formControlName="clientType">

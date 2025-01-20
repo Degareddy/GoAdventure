@@ -392,6 +392,8 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
                 this.openinBalDetForm.controls['flat'].patchValue(res.data.selName);
                 this.masterParams.item = res.data.selCode;
                 this.flatCode = res.data.selCode;
+                this.onSelectedFlatChanged(res.data.selCode, this.data.mode);
+                this.displayMessage(res.message,'green');
                 // this.onFlatChanged();
               }
               else {
@@ -411,10 +413,10 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
                       this.openinBalDetForm.controls['flat'].patchValue(result.unitName);
                       this.masterParams.item = result.unitId;
                       this.flatCode = result.unitId;
-                      console.log(result.unitId)
+                     
                       try {
-                        console.log(result.unitId)
                         this.onSelectedFlatChanged(result.unitId, this.data.mode);
+                        this.displayMessage(res.message,'green');
                         // this.onFlatChanged();
                       }
                       catch (ex: any) {

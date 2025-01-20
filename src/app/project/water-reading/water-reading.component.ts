@@ -549,6 +549,8 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
             this.masterParams.item = res.data.selCode;
             this.flatCode = res.data.selCode;
             this.onFlatChanged();
+            this.retMessage=res.message;
+            this.textMessageClass='green';
           }
           else {
             if (!this.dialogOpen) {
@@ -569,6 +571,8 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
                   this.flatCode = result.unitId;
                   try {
                     this.onFlatChanged();
+                    this.retMessage=res.message;
+                    this.textMessageClass='green';
                   }
                   catch (ex: any) {
                     this.retMessage = ex;
