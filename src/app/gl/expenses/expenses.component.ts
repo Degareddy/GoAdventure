@@ -75,6 +75,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.expensesForm = this.formInit();
     this.expCls = new ExpenseHdr();
     this.subSink = new SubSink();
+    this.tomorrow = new Date();
+    this.tomorrow.setDate(this.tomorrow.getDate() + 1);
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -303,7 +305,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       this.expCls.mode = this.expensesForm.controls['mode'].value;
       this.expCls.notes = this.expensesForm.controls['notes'].value;
       this.expCls.tranStatus = this.tranStatus;
-      this.expCls.tranDate = this.expensesForm.controls['tranDate'].value;
+      this.expCls.tranDate = this.formatDate(this.expensesForm.controls['tranDate'].value);
+     
       this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
       this.expCls.Supplier = this.clientCode;
       try {
@@ -332,6 +335,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }
 
   }
+  
 
   Close() {
     this.router.navigateByUrl('/home');

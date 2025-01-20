@@ -63,7 +63,7 @@ export class ExpenseHdr {
   public location!: string
   public langId!: number
   public tranNo!: string
-  public tranDate!: Date
+  public tranDate!: string
   public tranStatus!: string
   public notes!: string
   public mode!: string
