@@ -115,6 +115,10 @@ export class PurchaseService {
     return this.http.post(environment.Url + 'payinvoice/UpdatePayInvoice', supp)
   }
 
+  GetClietBalanceSummary(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'SupplierInvoice/GetClietBalanceSummary', body)
+  }
+
   GetPayInvoiceDetails(supp: MasterParams): Observable<any> {
     return this.http.post(environment.Url + 'payinvoice/GetPayInvoiceDetails', supp)
   }

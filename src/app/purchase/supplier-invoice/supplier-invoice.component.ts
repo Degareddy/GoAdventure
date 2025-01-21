@@ -340,7 +340,8 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     this.suppInvCls.invoiceAmt = parseFloat(value.invoiceAmt ? value.invoiceAmt.replace(/,/g, '') : '0');
     this.suppInvCls.paidAmt = parseFloat(value.paidAmt ? value.paidAmt.replace(/,/g, '') : '0');
     this.suppInvCls.payableAmt = parseFloat(value.payableAmt ? value.payableAmt.replace(/,/g, '') : '0');
-    this.suppInvCls.supplierAmt = parseFloat(value.supplierAmt ? value.supplierAmt.replace(/,/g, '') : '0');
+    this.suppInvCls.supplierAmt = parseFloat(this.supinvForm.get('supplierAmt')?.value ? this.supinvForm.get('supplierAmt')?.value.replace(/,/g, '') : '5');
+    console.log(this.suppInvCls.supplierAmt)
 
     if (value.tranNo) {
       this.suppInvCls.tranNo = value.tranNo;
@@ -373,6 +374,50 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       }
     });
   }
+  GetClietBalanceSummary(supplierCode:string){
+    let currency:string='';
+    if(this.supinvForm.get('currency')?.value === ''){
+      currency = 'KES';
+    }else{
+      currency = this.supinvForm.get('currency')?.value
+    }
+    const body = {
+      Company:this.userDataService.userData.company,
+      Location:this.userDataService.userData.location,
+      Client:supplierCode,
+      TranType : 'SUPGRN',
+      Currency:currency,
+      AsOnDate: this.formatDate(new Date()) ,
+      User:this.userDataService.userData.userID,
+      RefNo:this.userDataService.userData.sessionID
+    }
+    try{
+      this.subSink.sink = this.purchreqservice.GetClietBalanceSummary(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === "SUCCESS" && supplierCode === res.data.client) {
+          this.textMessageClass = "green";
+          this.newMessage = res.message;
+          this.supinvForm.get('supplierAmt')?.patchValue('');
+          this.supinvForm.get('invoiceAmt')?.patchValue('');
+          this.supinvForm.get('supplierAmt')?.patchValue(res.data.tranAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+          this.supinvForm.get('invoiceAmt')?.patchValue(res.data.tranAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+          this.supinvForm.get('supplierAmt')?.disable();
+          this.supinvForm.get('currency')?.patchValue((res.data.currency));
+
+        }
+        else {
+          this.retMessage = res.message;
+          this.textMessageClass = "red";
+        }
+      });
+      
+    }
+    
+    catch (ex: any) {
+      this.retMessage = "Exception: " + ex.message;
+      this.textMessageClass = 'red';
+    }
+  }
   onSubmit() {
     this.clearMsg();
     if (this.supinvForm.invalid) {
@@ -401,6 +446,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   onSupplierSearch() {
     const body = {
       ...this.commonParams(),
@@ -415,6 +461,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
           if (res && res.data && res.data.nameCount === 1) {
             this.supinvForm.controls['supplier'].patchValue(res.data.selName);
             this.suppInvCls.supplier = res.data.selCode;
+            this.GetClietBalanceSummary(res.data.selCode);
           }
           else {
             if (!this.dialogOpen) {
@@ -431,6 +478,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
                 if (result != true) {
                   this.supinvForm.controls['supplier'].patchValue(result.partyName);
                   this.suppInvCls.supplier = result.code;
+                  this.GetClietBalanceSummary(result.code);
                 }
                 this.dialogOpen = false;
               });

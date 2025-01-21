@@ -429,7 +429,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Property', field: 'propName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+          headerName: 'Property', field: 'propName', sortable: true, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
               return {
                 backgroundColor: 'lightyellow',
@@ -457,7 +457,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+          headerName: 'Block', field: 'blockName', sortable: true, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
               return {
                 backgroundColor: 'lightyellow',
@@ -485,7 +485,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Unit', field: 'unitName', sortable: false, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
+          headerName: 'Unit', field: 'unitName', sortable: true, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
               return {
                 backgroundColor: 'lightyellow',
@@ -513,7 +513,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Charge', field: 'subHeaderDesc', filter: true, flex: 1, resizable: true, cellStyle: function (params: any) {
+          headerName: 'Charge', field: 'subHeaderDesc', filter: true, sortable:true, flex: 1, resizable: true, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
               return {
                 backgroundColor: 'lightyellow',
@@ -541,7 +541,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran Type', field: 'tranType', resizable: true, flex: 1, cellStyle: function (params: any) {
+          headerName: 'Tran Type', field: 'tranType', resizable: true, sortable:true,flex: 1, cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
               return {
                 backgroundColor: 'lightyellow',
@@ -569,7 +569,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran No', field: 'tranNo', flex: 1, resizable: true, cellRenderer: 'agLnkRenderer', cellStyle: function (params: any) {
+          headerName: 'Tran No', field: 'tranNo', flex: 1, sortable:true, resizable: true, cellRenderer: 'agLnkRenderer', cellStyle: function (params: any) {
             if (params.data.mainHeader === "INCOME TOTAL") {
               return {
                 backgroundColor: 'lightyellow',
@@ -598,7 +598,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran Date', field: 'tranDate', flex: 1, resizable: true, valueFormatter: function (params: any) {
+          headerName: 'Tran Date', field: 'tranDate', flex: 1,sortable:true, resizable: true, valueFormatter: function (params: any) {
             if (params.value) {
               const date = new Date(params.value);
               const day = date.getDate().toString().padStart(2, '0');
