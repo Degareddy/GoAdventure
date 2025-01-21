@@ -1024,6 +1024,9 @@ isPayment: boolean=false;
                 this.receiptsForm.get('mode')?.value
               );
             }
+            else {
+              this.onSearchCilcked();
+            }
             this.getCashBalace();
           } else {
             this.displayMessage('Error: ' + res.message, 'red');
