@@ -255,10 +255,10 @@ isPayment: boolean=false;
             this.filteredpayMode = "";
             this.filteredpayMode = this.payMode;
           }
-          else if (tranFor === "payexpense" ) {
+          else if (tranFor === "EXPENSE" ) {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList;
-            this.receiptsForm.controls['clientType'].patchValue("");
+            // this.receiptsForm.controls['clientType'].patchValue("");
             this.receiptsForm.controls['clientType'].enable();
             // this.receiptsForm.controls['clientType'].disable();
             this.filteredpayMode = "";
@@ -267,7 +267,7 @@ isPayment: boolean=false;
           else {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList;
-            this.receiptsForm.controls['clientType'].patchValue("");
+            // this.receiptsForm.controls['clientType'].patchValue("");
             this.receiptsForm.controls['clientType'].enable();
             this.filteredpayMode = "";
             this.filteredpayMode = this.payMode;
@@ -386,6 +386,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
       this.receiptsForm.controls['clientType'].patchValue("");
+      this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['clientType'].enable();
       // this.filteredItemsClientType=this.clientTypeList;
       this.Report = 'CLIENTBAL';
