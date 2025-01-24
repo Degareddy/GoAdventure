@@ -24,7 +24,10 @@ export enum Items {
   USER="USER",
   CMPUSERBRANCH="CMPUSERBRANCH",
   PROFILE="PROFILE",
-  GROUPCOMP="GROUPCOMP"
+  GROUPCOMP="GROUPCOMP",
+  PROPERTY="PROPERTY",
+  VENTURE="VENTURE",
+  EMPLOYEE="EMPLOYEE",
 
 }
 export enum Mode {
@@ -42,7 +45,10 @@ export enum TextClr {
 
 export enum TranType {
   PURCHASE_REQUEST = 'PURREQ',
-  PRODUCT="PRODUCT"
+  PRODUCT="PRODUCT",
+  BLOCKS="BLOCKS",
+  BOUNDARY="BOUNDARY",
+  PREBOOK="PREBOOK"
 }
 
 export enum TranStatus {
@@ -55,12 +61,17 @@ export enum TranStatus {
 export enum searchType {
   PURCHASE_REQUEST = "Purchase Request Search",
   PRODUCT="Product Search",
-  USER="User Search"
+  USER="User Search",
+  PROPERTY="Property Search",
+  BLOCK="Block Search",
+  VENTURE="Venture Search"
 }
 export enum Type{
   PRODUCT="PRODUCT",
   COMPANY="COMPANY",
-  USER="USER"
+  USER="USER",
+  BLOCK="BLOCK",
+  FLAT="FLAT"
 }
 
 export enum ScreenId {
@@ -175,19 +186,25 @@ export enum ScreenId {
 export enum searchDocs {
   PURCHASE_REQUEST_DOC = "Purchase Request Docs",
   COMPANY_DOC = "Company Docs",
-  USER_DOC = "User Docs"
+  USER_DOC = "User Docs",
+  BLOCKS_DOC = "Blocks Docs",
+  PROPERTY_DOC = "Property Docs"
 }
 
 export enum searchNotes {
   PURCHASE_REQUEST_NOTE = "Purchase Request Notes",
   COMPANY_NOTE = "Company Notes",
-  USER_NOTE = "User Notes"
+  USER_NOTE = "User Notes",
+  BLOCK_NOTE = "Blocks Notes",
+  PROPERTY_NOTE = "Property Notes"
 }
 
 export enum Log {
   PURCHASE_REQUEST_LOG = "Purchase Request Log",
   COMPANY_LOG = "Company Log",
-  USER_LOG = "User Log"
+  USER_LOG = "User Log",
+  BLOCK_LOG = "Blocks Log",
+  PROPERTY_LOG = "Property Log"
 }
 
 

@@ -17,6 +17,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { Items, Log, Mode, ScreenId, searchDocs, searchNotes, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-blocks',
@@ -104,10 +106,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.loadData();
   }
  async loadData() {
-    const modebody = this.buildRequestParams('SM804');
+    const modebody = this.buildRequestParams(ScreenId.BLOCKS_SCRID);
     const modes$ = this.masterService.getModesList(modebody);
     const propertybody = {
-      ...this.buildRequestParams('PROPERTY'),
+      ...this.buildRequestParams(Items.PROPERTY),
       mode: this.blkHdrForm.get('mode')!.value
     };
     const property$ = this.masterService.GetMasterItemsList(propertybody);
@@ -140,7 +142,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
   }
 
   private handleDataLoadSuccess(modesRes: getResponse, propRes: getResponse): void {
-    if (modesRes.status.toUpperCase() === "SUCCESS") {
+    if (modesRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.modes = modesRes['data'];
       if (this.modes.length === 1) {
         this.blkHdrForm.get('mode')!.patchValue(this.modes[0].itemCode);
@@ -151,7 +153,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
       this.textMessageClass = 'red';
       return;
     }
-    if (propRes.status.toUpperCase() === "SUCCESS") {
+    if (propRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.propertyList = propRes['data'];
       if (this.propertyList.length === 1) {
         this.blkHdrForm.get('property')!.patchValue(this.propertyList[0].itemCode);
@@ -172,7 +174,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
 
   modeChange(event: string): void {
     this.resetMessages();
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.resetForm();
       this.blkHdrForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.blkHdrForm.controls['block'].disable({ emitEvent: false });
@@ -198,10 +200,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
   }
 
  async onSelectedPropertyChanged() {
-    if(this.blkHdrForm.get('mode')?.value !="Add"){
+    if(this.blkHdrForm.get('mode')?.value.toUpperCase() != Mode.view){
       this.resetMessages();
       const propertyValue = this.blkHdrForm.controls['property'].value;
-      this.masterParams.type = 'BLOCK';
+      this.masterParams.type = Type.BLOCK;
       this.masterParams.item = propertyValue;
       this.blockCode = propertyValue;
 
@@ -222,7 +224,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
   }
 
   private handlePropertyChangedResponse(result: getResponse) {
-    if (result.message.toUpperCase() === 'SUCCESS') {
+    if (result.message.toUpperCase() === AccessSettings.SUCCESS) {
       this.blockList = result.data;
       if (this.blockList.length === 1) {
         this.blkHdrForm.get('block')!.patchValue(this.blockList[0].itemCode);
@@ -239,7 +241,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
   }
  async onSelectedBlockChanged(event: string) {
     this.resetMessages();
-    this.masterParams.type = 'BLOCK';
+    this.masterParams.type = Type.BLOCK;
     this.masterParams.item = event;
     try {
       this.subSink.sink =await this.projectService.getBlockDetails(this.masterParams).subscribe(
@@ -262,7 +264,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
   }
 
   private handleBlockDetailsResponse(result: getResponse): void {
-    if (result.status.toUpperCase() === 'SUCCESS') {
+    if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.populateBlockDetails(result.data);
       this.retMessage = this.selMode === 'Add' ? this.newTranMsg : `Retrieving data ${result.message} has completed`;
       this.textMessageClass = 'green';
@@ -348,7 +350,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
 
   private handleSuccessfulUpdate(res: SaveApiResponse) {
     this.newTranMsg = res.message;
-    if (this.blkHdrForm.controls['mode'].value === 'Add') {
+    if (this.blkHdrForm.controls['mode'].value.toUpperCase() === Mode.Add) {
       this.handleSuccessfulAddMode();
 
     } else {
@@ -387,7 +389,8 @@ export class BlocksComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<DirectionsComponent> = this.dialog.open(DirectionsComponent, {
       width: '90%',
       disableClose: true,
-      data: { type: 'BLOCK', Trantype: "BOUNDARY", TranNo: this.blkHdrForm.controls['blockID'].value, mode: this.blkHdrForm.controls['mode'].value }
+      data: { type: Type.BLOCK, Trantype: TranType.BOUNDARY, TranNo: this.blkHdrForm.controls['blockID'].value,
+         mode: this.blkHdrForm.controls['mode'].value }
     });
 
   }
@@ -424,15 +427,15 @@ export class BlocksComponent implements OnInit, OnDestroy {
     if (blockID) {
       this.onSelectedBlockChanged(blockID);
     } else {
-      // console.error('Block ID is not defined.');
     }
   }
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.blkHdrForm.controls['mode'].value, tranNo: this.blkHdrForm.controls['blockID'].value, search: 'Block Docs', tranType: "BLOCK" }
+      data: { mode: this.blkHdrForm.controls['mode'].value,
+        tranNo: this.blkHdrForm.controls['blockID'].value, search: searchDocs.BLOCKS_DOC, tranType: Type.BLOCK }
     });
   }
 
@@ -443,7 +446,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM804",
+        ScrId: ScreenId.BLOCKS_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext:false,
@@ -461,12 +464,11 @@ export class BlocksComponent implements OnInit, OnDestroy {
       data: { 'tranNo': tranNo,
       'mode': this.blkHdrForm.controls['mode'].value,
       'note':this.blkHdrForm.controls['notes'].value ,
-      'TranType': "Blocks",  // Pass any data you want to send to CustomerDetailsComponent
-      'search' :"Blocks Notes"}
+      'TranType': TranType.BLOCKS,
+      'search' :searchNotes.BLOCK_NOTE
+    }
     });
-    // dialogRef.afterClosed().subscribe(result => {
 
-    // });
   }
 
   logDetails(tranNo:string) {
@@ -474,9 +476,9 @@ export class BlocksComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "Blocks",
+        'tranType': TranType.BLOCKS,
         'tranNo': tranNo,
-        'search': 'Block Log Details'
+        'search': Log.BLOCK_LOG
       }
     });
   }
