@@ -433,7 +433,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       TranType: 'POAUTHORIZED',
       TranNo: this.grnForm.controls['tranNo'].value,
       Party: this.grnCls.suppCode || "",
-      FromDate: formattedFirstDayOfMonth,
+      FromDate: "2024-12-01",
       ToDate: formattedCurrentDate,
       TranStatus: "ANY"
     }
@@ -469,8 +469,26 @@ export class GrnComponent implements OnInit, OnDestroy {
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = 'red';
+        if (!this.dialogOpen) {
+          const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+            width: '90%',
+            disableClose: true,
+            data: {
+              tranNum: this.grnForm.controls['pONo'].value, party: this.grnForm.controls['supplier'].value,
+              search: 'Authorized PO Search', TranType: "POAUTHORIZED"
+            }
+          });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result != true && result != undefined) {
+              this.grnForm.controls['pONo'].patchValue(result);
+              this.masterParams.tranNo = result;
+              this.getPurchaseOrderData(this.masterParams);
+              // this.getGRNData(this.masterParams);
+            }
+            this.dialogOpen = false;
+          });
+        }
+
       }
     });
   }

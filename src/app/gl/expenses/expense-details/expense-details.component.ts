@@ -15,6 +15,7 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { LinkUnitComponent } from '../link-unit/link-unit.component';
 import { Item } from 'src/app/general/Interface/interface';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
 @Component({
   selector: 'app-expense-details',
@@ -191,7 +192,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
       // console.log(this.expDetCls);
       try {
         this.loader.start();
-        this.subSink.sink = this.glService.UpdateExpensesDet(this.expDetCls).subscribe((res: any) => {
+        this.subSink.sink = this.glService.UpdateExpensesDet(this.expDetCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.status.toUpperCase() === "SUCCESS") {
             this.retMessage = res.message;
