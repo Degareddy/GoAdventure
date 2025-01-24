@@ -49,6 +49,7 @@ export class FlatSearchComponent implements OnInit, OnDestroy {
     { field: "currentTenant", headerName: "Code", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
     { field: "tenant", headerName: "Tenant", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "plexType", headerName: "Plex Type", sortable: true, filter: true, resizable: true, width: 130 },
+    { field: "unitStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 130 },
     //
   ];
   rowData: any = [];

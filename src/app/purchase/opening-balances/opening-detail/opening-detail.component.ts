@@ -446,6 +446,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.openingDetCls.tranNo = this.data.tranNo;
     this.openingDetCls.slNo = this.slNum;
     this.openingDetCls.partyName = this.openinBalDetForm.controls['partyName'].value;
+    this.openingDetCls.partyType = this.openinBalDetForm.controls['clientType'].value;
     this.openingDetCls.party = this.partyCode;
     this.openingDetCls.mode = this.data.mode;
     this.openingDetCls.propcode=this.openinBalDetForm.get('property')?.value;

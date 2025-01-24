@@ -862,7 +862,10 @@ isPayment: boolean=false;
         tranFor = 'Cash Transfer';
         messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} from ${this.responseData.data.rctAccountName}. Please confirm the transaction or decline it as soon as possible. Thank you. \n${company}`
         break;
-        
+        case "EXPENSE":
+          tranFor = 'Expense';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo}. Thank you. \n${company}`;
+          break;
 
         default:
           tranFor = 'Unknown Transaction';
@@ -1279,9 +1282,9 @@ isPayment: boolean=false;
     }
     const body = {
       ...this.commonParams(),
-      property: '',
-      block: '',
-      unit: '',
+      property: 'All',
+      block: 'All',
+      unit: 'All',
       Client: this.receiptsForm.controls['customer'].value || '',
       ClientType: clientTypeTemp,
       txnFor: this.receiptsForm.controls['tranFor'].value || '',
@@ -1738,7 +1741,7 @@ isPayment: boolean=false;
         pdf.setFont('Helvetica', 'bold');
         const receiverText = form.controls.rctType.value.toUpperCase() === "RECEIPT" ? 'Reciever' : 'Paid by';
         const takowText = form.controls.rctType.value.toUpperCase() === "RECEIPT" ? `for ${userData.defaultCompanyName}` : `from ${userData.defaultCompanyName}`;
-        const user = '(User ' + userData.userID.toUpperCase() + ' )';
+        const user = '(User ' + res.userName.toUpperCase() + ' )';
         const textWidth = pdf.getStringUnitWidth(receiverText) * 10;
         const startX = pdf.internal.pageSize.width - textWidth - 40; // Adjust for margin
         pdf.text(receiverText, startX, finalY + 18);
@@ -1750,8 +1753,25 @@ isPayment: boolean=false;
         pdf.setFont('Helvetica', 'normal');
         pdf.text(user, startX, finalY + 30);
       }
+      
       pdf.save(`${clientName} ${form.controls.rctType.value.toUpperCase()}.pdf`);
     };
+  }
+  previewOrPrintPDF(pdfBlob: Blob, filename: string) {
+    const url = URL.createObjectURL(pdfBlob);
+
+    const preview = confirm("Do you want to preview the PDF?");
+    if (preview) {
+      const newTab = window.open(url, '_blank');
+      if (newTab) {
+        newTab.onload = () => {
+          URL.revokeObjectURL(url);
+        };
+      } else {
+        alert('Pop-up blocked! Please allow pop-ups to preview the PDF.');
+      }
+      return;
+    }
   }
 
   //   generatePDF(res: any) {
