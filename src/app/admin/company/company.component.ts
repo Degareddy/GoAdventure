@@ -5,7 +5,6 @@ import { AdminService } from 'src/app/Services/admin.service';
 import { CompanyClass } from '../admin.class';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { MastersService } from 'src/app/Services/masters.service';
-import { NotificationService } from 'src/app/Services/notification.service';
 import { SubSink } from 'subsink';
 import { BranchesComponent } from './branches/branches.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -18,6 +17,8 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.component';
+import { displayMsg, Log, Mode, ScreenId, searchDocs, searchNotes, TextClr, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-company',
   templateUrl: './company.component.html',
@@ -32,7 +33,6 @@ export class CompanyComponent implements OnInit, OnDestroy {
   modes: Item[] = [];
   companyList: Item[] = [];
   companyName: string = "";
-  selectedObjects!: any[];
   private subSink: SubSink;
   status!: string;
   isDisabled: boolean = false;
@@ -44,19 +44,21 @@ export class CompanyComponent implements OnInit, OnDestroy {
   constructor(protected route: ActivatedRoute, private adminService: AdminService,
     private masterService: MastersService, public dialog: MatDialog, private snackBar: MatSnackBar,
     protected router: Router, private loader: NgxUiLoaderService, private userDataService: UserDataService,
-    private fb: FormBuilder, private notifyService: NotificationService,
+    private fb: FormBuilder
   ) {
     this.companyForm = this.formInit();
     this.subSink = new SubSink();
     this.companyCls = new CompanyClass();
-    this.selectedObjects = [{ itemCode: 'View', itemName: 'View' }];
   }
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.companyForm.controls['mode'].value, tranNo: this.companyForm.controls['companyID'].value, search: 'Comapny Docs', tranType: "COMPANY" }
+      data: {
+        mode: this.companyForm.controls['mode'].value, tranNo: this.companyForm.controls['companyID'].value,
+        search: searchDocs.COMPANY_DOC, tranType: Type.COMPANY
+      }
     });
   }
   ngOnDestroy(): void {
@@ -68,7 +70,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
     });
   }
   modeChange(event: string) {
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.status = '';
       this.companyForm = this.formInit();
       this.companyForm.controls['mode'].patchValue(event, { emitEvent: false, onlySelf: false });
@@ -105,23 +107,22 @@ export class CompanyComponent implements OnInit, OnDestroy {
     this.companyCls.refNo = this.userDataService.userData.sessionID;
     this.companyCls.user = this.userDataService.userData.userID;
     this.companyCls.item = this.userDataService.userData.company;
-    const modebody = this.createRequestData("SA1");
-    const companybody = {...this.createRequestData("COMPANY"),mode:this.companyForm.get('mode')?.value};
+    const modebody = this.createRequestData(ScreenId.COMPANY_SCRID);
+    const companybody = { ...this.createRequestData(Type.COMPANY), mode: this.companyForm.get('mode')?.value };
     try {
       const modes$ = this.masterService.getModesList(modebody);
       const company$ = this.adminService.GetMasterItemsList(companybody);
       this.subSink.sink = await forkJoin([modes$, company$]).subscribe(([modesRes, companyRes]: any) => {
-        if (modesRes.status.toUpperCase() === "SUCCESS") {
+        if (modesRes.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.modes = modesRes['data'];
           if (this.modes.length === 1) {
             this.companyForm.get('mode')!.patchValue(this.modes[0].itemCode);
           }
         }
         else {
-          this.retMessage = "Modes list empty!"
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
         }
-        if (companyRes.status.toUpperCase() === "SUCCESS") {
+        if (companyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.companyList = companyRes['data'];
           if (this.companyList.length === 1) {
             this.companyForm.get('companyList')!.patchValue(this.companyList[0].itemCode);
@@ -129,17 +130,17 @@ export class CompanyComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.displayMessage("Error: Company list empty!", "red");
+          this.displayMessage(displayMsg.ERROR + "Company list empty!", TextClr.red);
         }
 
       },
         error => {
-          this.displayMessage("Error: " + error.message, "red");
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -151,23 +152,22 @@ export class CompanyComponent implements OnInit, OnDestroy {
     this.loader.start();
     this.subSink.sink = await this.adminService.getCompanyData(body).subscribe((res: CompanyResponse) => {
       this.loader.stop();
-      if (res.status.toUpperCase() === 'SUCCESS') {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.status = res.data.status,
           this.companyCls.ID = res.data.ID;
         this.populateData(res);
         this.companyForm.controls['companyID'].disable({ onlySelf: true });
-        this.textMessageClass = 'green';
-        if (mode != 'View') {
-
-          this.displayMessage(this.newTranMsg, "green");
+        this.textMessageClass = TextClr.green;
+        if (mode.toUpperCase() != Mode.view) {
+          this.displayMessage(this.newTranMsg, TextClr.green);
         }
         else {
-          this.displayMessage('Retriving data for company ' + res.data.name + ' has completed', 'green');
+          this.displayMessage('Retriving data for company ' + res.data.name + ' has completed', TextClr.green);
 
         }
       }
       else {
-        this.displayMessage("Error: " + res.message, "red");
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     });
   }
@@ -193,16 +193,15 @@ export class CompanyComponent implements OnInit, OnDestroy {
       pINNo: res.data.pinNo,
       logoLocn: res.data.logoLocn,
       notes: res.data.notes,
-      facebook:res.data.facebook,
-      twitter:res.data.twitter,
-      instagram:res.data.instagram,
-      youtube:res.data.youtube,
+      facebook: res.data.facebook,
+      twitter: res.data.twitter,
+      instagram: res.data.instagram,
+      youtube: res.data.youtube,
       pinterest: res.data.pinterest
-    });
+    }, { emitEvent: false });
   }
   companyChange(event: string) {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     if (event != "" && event != undefined && event != null) {
       let companyName = this.companyList.find((o: any) => o.itemCode === event);
       this.companyName = companyName?.itemName || "";
@@ -238,7 +237,6 @@ export class CompanyComponent implements OnInit, OnDestroy {
       notes: ['', [Validators.maxLength(512)]],
       mode: ['View'],
       companyList: [''],
-
       facebook: [''],
       twitter: [''],
       instagram: [''],
@@ -256,35 +254,42 @@ export class CompanyComponent implements OnInit, OnDestroy {
     this.getCompanyData(this.companyCls, this.companyForm.get('mode')?.value);
   }
   prepareComapnyCls() {
-    this.companyCls.mode = this.companyForm.value.mode;
-    this.companyCls.company = this.userDataService.userData.userID;
-    this.companyCls.location = this.userDataService.userData.location;
-    this.companyCls.ID = this.companyForm.controls['companyID'].value;
-    this.companyCls.name = this.companyForm.value.name;
-    this.companyCls.cmpDate = this.companyForm.value.cmpDate;
-    this.companyCls.address1 = this.companyForm.value.address1;
-    this.companyCls.address2 = this.companyForm.value.address2;
-    this.companyCls.address3 = this.companyForm.value.address3;
-    this.companyCls.pO_PIN_ZIP = this.companyForm.value.pO_PIN_ZIP;
-    this.companyCls.city = this.companyForm.value.city;
-    this.companyCls.state = this.companyForm.value.state;
-    this.companyCls.country = this.companyForm.value.country;
-    this.companyCls.phone1 = this.companyForm.value.phone1;
-    this.companyCls.phone2 = this.companyForm.value.phone2;
-    this.companyCls.phone3 = this.companyForm.value.phone3;
-    this.companyCls.fax = this.companyForm.value.fax;
-    this.companyCls.email = this.companyForm.value.email;
-    this.companyCls.url = this.companyForm.value.uRL;
-    this.companyCls.vatNo = this.companyForm.value.vATNo;
-    this.companyCls.pinNo = this.companyForm.value.pINNo;
-    this.companyCls.logoLocn = "NA";
-    this.companyCls.notes = this.companyForm.value.notes;
 
-    this.companyCls.youtube = this.companyForm.value.youtube;
-    this.companyCls.twitter = this.companyForm.value.twitter;
-    this.companyCls.instagram = this.companyForm.value.instagram;
-    this.companyCls.facebook = this.companyForm.value.facebook;
-    this.companyCls.pinterest = this.companyForm.value.pinterest;
+    try{
+      this.companyCls.mode = this.companyForm.value.mode;
+      this.companyCls.company = this.userDataService.userData.userID;
+      this.companyCls.location = this.userDataService.userData.location;
+      this.companyCls.ID = this.companyForm.controls['companyID'].value;
+      this.companyCls.name = this.companyForm.value.name;
+      this.companyCls.cmpDate = this.companyForm.value.cmpDate;
+      this.companyCls.address1 = this.companyForm.value.address1;
+      this.companyCls.address2 = this.companyForm.value.address2;
+      this.companyCls.address3 = this.companyForm.value.address3;
+      this.companyCls.pO_PIN_ZIP = this.companyForm.value.pO_PIN_ZIP;
+      this.companyCls.city = this.companyForm.value.city;
+      this.companyCls.state = this.companyForm.value.state;
+      this.companyCls.country = this.companyForm.value.country;
+      this.companyCls.phone1 = this.companyForm.value.phone1;
+      this.companyCls.phone2 = this.companyForm.value.phone2;
+      this.companyCls.phone3 = this.companyForm.value.phone3;
+      this.companyCls.fax = this.companyForm.value.fax;
+      this.companyCls.email = this.companyForm.value.email;
+      this.companyCls.url = this.companyForm.value.uRL;
+      this.companyCls.vatNo = this.companyForm.value.vATNo;
+      this.companyCls.pinNo = this.companyForm.value.pINNo;
+      this.companyCls.logoLocn = "NA";
+      this.companyCls.notes = this.companyForm.value.notes;
+
+      this.companyCls.youtube = this.companyForm.value.youtube;
+      this.companyCls.twitter = this.companyForm.value.twitter;
+      this.companyCls.instagram = this.companyForm.value.instagram;
+      this.companyCls.facebook = this.companyForm.value.facebook;
+      this.companyCls.pinterest = this.companyForm.value.pinterest;
+    }
+    catch(ex:any){
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
   async onSubmit() {
     if (this.companyForm.valid) {
@@ -294,9 +299,9 @@ export class CompanyComponent implements OnInit, OnDestroy {
         this.subSink.sink = await this.adminService.saveCompanyData(this.companyCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
-            this.textMessageClass = 'green';
+            this.textMessageClass = TextClr.green;
             this.newTranMsg = res.message;
-            if (this.companyForm.controls['mode'].value == "Add") {
+            if (this.companyForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.companyList.push({ itemCode: this.companyForm.controls['companyID'].value, itemName: this.companyForm.controls['name'].value });
               this.modeChange("Modify");
               this.companyForm.controls['companyList'].patchValue(this.companyForm.controls['companyID'].value);
@@ -308,16 +313,14 @@ export class CompanyComponent implements OnInit, OnDestroy {
             this.getCompanyData(this.companyCls, this.companyForm.get('mode')?.value);
           }
           else {
-            // this.hanldeError(res);
-            this.displayMessage("Error: " + res.message, "red");
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        // this.hanldeError(ex);
-        this.displayMessage("Exception: " + ex.message, "red");
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     } else {
-      this.notifyService.showError('Form Invalid', 'Error');
+      this.displayMessage(displayMsg.ERROR + 'Form Invalid', TextClr.red);
     }
   }
 
@@ -326,7 +329,6 @@ export class CompanyComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<BranchesComponent> = this.dialog.open(BranchesComponent, {
       width: '90%',
       panelClass: 'custom-dialog-container',
-      // height: '90%',
       disableClose: true,
       data: { mode: this.companyForm.controls['mode'].value, company: companyID, title: this.companyName }
     });
@@ -352,7 +354,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SA1",
+        ScrId: ScreenId.COMPANY_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -371,8 +373,8 @@ export class CompanyComponent implements OnInit, OnDestroy {
         'tranNo': tranNo,
         'mode': this.companyForm.controls['mode'].value,
         'note': this.companyForm.controls['notes'].value,
-        'TranType': "COMPANY",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Company Notes"
+        'TranType': Type.COMPANY,
+        'search': searchNotes.COMPANY_NOTE
       }
     });
 
@@ -383,9 +385,9 @@ export class CompanyComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "COMPANY",
+        'tranType': Type.COMPANY,
         'tranNo': tranNo,
-        'search': 'Company Log'
+        'search': Log.COMPANY_LOG
       }
     });
   }

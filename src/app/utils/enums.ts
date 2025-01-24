@@ -17,7 +17,8 @@ export enum Role {
 export enum Items {
   PRODUCTS="PRODUCTS",
   SUPPLIER="SUPPLIER",
-  WAREHOUSE="WAREHOUSE"
+  WAREHOUSE="WAREHOUSE",
+  LOCATION="LOCATION"
 }
 export enum Mode {
   Add = 'ADD',
@@ -49,7 +50,8 @@ export enum searchType {
   PRODUCT="Product Search"
 }
 export enum Type{
-  PRODUCT="PRODUCT"
+  PRODUCT="PRODUCT",
+  COMPANY="COMPANY"
 }
 
 export enum ScreenId {
@@ -162,15 +164,18 @@ export enum ScreenId {
 }
 
 export enum searchDocs {
-  PURCHASE_REQUEST_DOC = "Purchase Request Docs"
+  PURCHASE_REQUEST_DOC = "Purchase Request Docs",
+  COMPANY_DOC = "Company Docs"
 }
 
 export enum searchNotes {
-  PURCHASE_REQUEST_NOTE = "Purchase Request Notes"
+  PURCHASE_REQUEST_NOTE = "Purchase Request Notes",
+  COMPANY_NOTE = "Company Notes"
 }
 
 export enum Log {
-  PURCHASE_REQUEST_LOG = "Purchase Request Log"
+  PURCHASE_REQUEST_LOG = "Purchase Request Log",
+  COMPANY_LOG = "Company Log"
 }
 
 

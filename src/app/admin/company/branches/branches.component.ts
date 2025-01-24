@@ -11,6 +11,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { BranchLocationsResponse, getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-branches',
@@ -112,29 +114,28 @@ export class BranchesComponent implements OnInit, OnDestroy {
     const lcnbody:getPayload = {
       ...this.commonParams(),
       company:this.data.company,
-      item: "LOCATION",
+      item: Items.LOCATION,
       mode:this.data.mode
     };
     try {
       this.subSink.sink = this.adminService.GetMasterItemsList(lcnbody).subscribe((res: getResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.locations = res.data;
           if (this.locations.length === 1) {
             this.bDetForm.controls['branchLocn'].patchValue(this.locations[0].itemCode, { emitEvent: false })
           }
         }
         else {
-          this.hanldeError(res);
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.hanldeError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   };
   hanldeError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = "red";
+    this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
   }
   get f() { return this.bDetForm.controls; }
   prepareBranchCls() {
@@ -169,6 +170,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
     this.clearMsgs();
     this.submitted = true;
     if (this.bDetForm.invalid) {
+      this.displayMessage(displayMsg.ERROR + 'Enter Required Fields', TextClr.red);
       return;
     }
     else {
@@ -177,16 +179,19 @@ export class BranchesComponent implements OnInit, OnDestroy {
       this.subSink.sink = await this.adminService.UpdateBranchDetails(this.branchCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.retVal > 100 && res.retVal < 200) {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.getBranchListData(this.data.company);
         }
         else {
-          this.hanldeError(res);
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -203,21 +208,20 @@ export class BranchesComponent implements OnInit, OnDestroy {
     };
     try {
       this.subSink.sink = await this.adminService.GetBranchList(body).subscribe((res: BranchLocationsResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.hanldeError(res);
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.hanldeError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+   this.displayMessage('', '');
   }
   Add() {
     this.bDetForm.clearValidators();
@@ -239,6 +243,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
     }
   }
   onRowClick(row: any) {
+    this.displayMessage('', '');
     this.bDetForm.patchValue(row);
     this.srNum = row.slNo;
   }
