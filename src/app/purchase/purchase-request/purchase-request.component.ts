@@ -13,12 +13,13 @@ import { SubSink } from 'subsink';
 import { PurchaseService } from 'src/app/Services/purchase.service';
 import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.component';
 import { GridApi } from 'ag-grid-community';
-import { ExcelReportsService } from 'src/app/FileGenerator/excel-reports.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
-import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Log, Mode, ScreenId, searchDocs, searchNotes, searchType, TextClr, TranStatus, TranType } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-purchase-request',
@@ -47,14 +48,14 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
   approvedOn!: string;
   approvedBy!: string;
   private subSink!: SubSink;
-  totalAmount:number=0;
-  itemCount:number=0;
+  totalAmount: number = 0;
+  itemCount: number = 0;
   data: any;
   purDetailData: any;
   purHeaderData: any;
+  newTranMsg: string = "";
   constructor(protected route: ActivatedRoute,
     protected router: Router,
-    private excelService: ExcelReportsService,
     private loader: NgxUiLoaderService,
     protected purchreqservice: PurchaseService,
     private masterService: MastersService, private userDataService: UserDataService,
@@ -91,22 +92,20 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const modeBody = {
       ...this.commonParams(),
-      item: 'ST111'
+      item: ScreenId.PURCHASE_REQUEST_SCRID
     };
     try {
-      this.subSink.sink = this.masterService.getModesList(modeBody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+      this.subSink.sink = this.masterService.getModesList(modeBody).subscribe((res: getResponse) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.modes = res['data'];
         }
-        else{
-          this.retMessage=res.message;
-          this.textMessageClass='red';
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -114,21 +113,32 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     this.subSink.unsubscribe();
   }
   purchaseCls() {
-    this.prhClass.company = this.userDataService.userData.company;
-    this.prhClass.location = this.userDataService.userData.location;
-    this.prhClass.langID = this.userDataService.userData.langId;
-    this.prhClass.user = this.userDataService.userData.userID;
-    this.prhClass.refNo = this.userDataService.userData.sessionID;
-    this.prhClass.authorizePOs = false;
-    this.prhClass.mode = this.purReqHdrForm.controls['mode'].value;
-    this.prhClass.purpose = this.purReqHdrForm.controls['purpose'].value;
-    this.prhClass.tranStatus = this.tranStatus;
-    this.prhClass.tranDate = this.purReqHdrForm.controls['tranDate'].value;
-    this.prhClass.tranNo = this.purReqHdrForm.controls['tranNo'].value;
+    try {
+      this.prhClass.company = this.userDataService.userData.company;
+      this.prhClass.location = this.userDataService.userData.location;
+      this.prhClass.langID = this.userDataService.userData.langId;
+      this.prhClass.user = this.userDataService.userData.userID;
+      this.prhClass.refNo = this.userDataService.userData.sessionID;
+      this.prhClass.authorizePOs = false;
+      this.prhClass.mode = this.purReqHdrForm.controls['mode'].value;
+      this.prhClass.purpose = this.purReqHdrForm.controls['purpose'].value;
+      this.prhClass.tranStatus = this.tranStatus;
+      this.prhClass.tranDate = this.purReqHdrForm.controls['tranDate'].value;
+      this.prhClass.tranNo = this.purReqHdrForm.controls['tranNo'].value;
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    // this.retMessage = "";
+    // this.textMessageClass = "";
+    this.displayMessage("", "");
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   onSubmit() {
     this.clearMsg();
@@ -142,22 +152,22 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
         this.subSink.sink = this.purchreqservice.InsertPurchaseRequestHdr(this.prhClass).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
-            this.retMessage = res.message;
+            this.masterParams.tranNo = res.tranNoNew;
+            this.newTranMsg = res.message;
             this.textMessageClass = "green";
-            this.modeChange("Modify");
-            this.purReqHdrForm.controls['tranNo'].patchValue(res.tranNoNew);
-            if (res.tranNoNew) {
-              this.searchData();
+            if (this.purReqHdrForm.controls['mode'].value.toUpperCase() === Mode.Add) {
+              this.modeChange("Modify");
             }
+            this.purchaseData(this.masterParams, this.purReqHdrForm.controls['mode'].value);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.loader.stop();
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = "red";
+        this.loader.stop();
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -170,7 +180,7 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.isAltered === true) {
-        this.purchaseData(this.masterParams);
+        this.purchaseData(this.masterParams, this.purReqHdrForm.controls['mode'].value);
       }
     });
 
@@ -184,16 +194,15 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
 
   modeChange(event: string) {
     this.purReqHdrForm.controls['mode'].patchValue(event, { emitEvent: false });
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.purReqHdrForm.get('tranNo')!.patchValue('');
       this.purReqHdrForm.get('tranNo')!.disable();
       this.purReqHdrForm.get('tranNo')!.clearValidators();
       this.purReqHdrForm.get('tranNo')!.updateValueAndValidity();
-      this.itemCount=0;
-      this.totalAmount=0;
+      this.itemCount = 0;
+      this.totalAmount = 0;
       this.purReqHdrForm.get('tranDate')?.patchValue(new Date());
       this.purReqHdrForm.get('purpose')?.patchValue('');
-
       this.clearValues();
     }
     else {
@@ -205,27 +214,22 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
 
-  getpurchaseDetails(tarnNum: any) {
+  getpurchaseDetails(tarnNum: string) {
     this.masterParams.tranNo = tarnNum;
     try {
       this.loader.start();
       this.subSink.sink = this.purchreqservice.GetPurRequestDetails(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != 'FAIL') {
+        if (res.status.toUpperCase() != AccessSettings.ERROR && res.status.toUpperCase() != AccessSettings.FAIL) {
           this.purDetailData = res['data']
-          // if (this.purDetailData) {
-          //   this.excelService.generateExcel(this.purDetailData, this.purHeaderData, "Purchase-Request", new Date());
-          // }
         } else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -243,18 +247,18 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
       const formattedCurrentDate = this.formatDate(currentDate);
       const body = {
         ...this.commonParams(),
-        TranType: 'PURREQ',
+        TranType: TranType.PURCHASE_REQUEST,
         TranNo: this.purReqHdrForm.controls['tranNo'].value,
         Party: "",
         FromDate: formattedFirstDayOfMonth,
         ToDate: formattedCurrentDate,
-        TranStatus: "ANY"
+        TranStatus: TranStatus.ANY
       }
       this.subSink.sink = this.purchreqservice.GetTranCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
-            this.purchaseData(this.masterParams);
+            this.purchaseData(this.masterParams, this.purReqHdrForm.controls['mode'].value);
           }
           else {
             this.clearValues();
@@ -265,8 +269,8 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.purReqHdrForm.controls['tranNo'].value, 'TranType': "PURREQ",
-                  'search': 'Purchase Search'
+                  'tranNum': this.purReqHdrForm.controls['tranNo'].value, 'TranType': TranType.PURCHASE_REQUEST,
+                  'search': searchType.PURCHASE_REQUEST
                 }
               });
               this.dialogOpen = true;
@@ -274,7 +278,7 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
                 this.dialogOpen = false;
                 if (result != true && result != undefined) {
                   this.masterParams.tranNo = result;
-                  this.purchaseData(this.masterParams);
+                  this.purchaseData(this.masterParams, this.purReqHdrForm.controls['mode'].value);
                 }
               });
             }
@@ -285,15 +289,15 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
           this.clearValues();
           this.purReqHdrForm.controls['tranDate'].patchValue(new Date());
           this.purReqHdrForm.controls['purpose'].patchValue('');
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.loader.stop();
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
 
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.loader.stop();
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -301,7 +305,7 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST111",
+        ScrId: ScreenId.PURCHASE_REQUEST_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -314,8 +318,8 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
   }
 
   clearValues() {
-    this.itemCount=0;
-    this.totalAmount=0;
+    this.itemCount = 0;
+    this.totalAmount = 0;
     this.purReqHdrForm.get('tranDate')?.patchValue(new Date());
     this.purReqHdrForm.get('purpose')?.patchValue('');
     this.tranStatus = '';
@@ -326,16 +330,14 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     this.issuedBy = "";
     this.approvedOn = "";
     this.approvedBy = "";
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
-  purchaseData(masterParams: MasterParams) {
-    this.loader.start();
+  purchaseData(masterParams: MasterParams, mode: string) {
     try {
+      this.loader.start();
       this.subSink.sink = this.purchreqservice.getPurchaseReqData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() == "SUCCESS") {
-          this.purHeaderData = res['data'];
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
           this.tranStatus = res['data'].tranStatus;
           this.purReqHdrForm.controls['tranNo'].patchValue(res['data'].tranNo);
           this.purReqHdrForm.controls['tranDate'].patchValue(res['data'].tranDate);
@@ -346,40 +348,41 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
           this.issuedOn = res['data'].issuedOn.startsWith('0001-01-01') ? '' : res['data'].issuedOn;
           this.receivedOn = res['data'].receivedOn.startsWith('0001-01-01') ? '' : res['data'].receivedOn;
           this.approvedBy = res['data'].approvedBy;
-          this.itemCount= res['data'].itemCount;
-          this.totalAmount= res['data'].totalAmt;
-          this.textMessageClass = 'green';
-          this.retMessage =
-            'Retriving data ' + res.message + ' has completed';
-
+          this.itemCount = res['data'].itemCount;
+          this.totalAmount = res['data'].totalAmt;
+          if (mode.toUpperCase() != Mode.view) {
+            this.retMessage = this.newTranMsg;
+          } else {
+            this.textMessageClass = TextClr.green;
+            this.retMessage =
+              'Retriving data ' + res.message + ' has completed';
+          }
         }
         else {
-          this.textMessageClass = 'red';
-          this.retMessage = res.message;
-
-          // this.reset();
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          this.loader.stop();
         }
       });
     }
     catch (ex: any) {
-      this.textMessageClass = 'red';
-      this.retMessage = ex.message;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      this.loader.stop();
     }
   }
 
   clear() {
     this.purReqHdrForm = this.formInit();
     this.tranStatus = '';
-    this.retMessage = '';
     this.receivedOn = "";
     this.receivedBy = "";
     this.issuedOn = "";
     this.issuedBy = "";
     this.approvedOn = "";
     this.approvedBy = "";
-    this.itemCount=0;
-    this.totalAmount=0;
+    this.itemCount = 0;
+    this.totalAmount = 0;
     this.dialogOpen = false;
+    this.displayMessage("", "");
   }
 
   close() {
@@ -390,12 +393,14 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.purReqHdrForm.controls['mode'].value, tranNo: this.purReqHdrForm.controls['tranNo'].value, search: 'Purchase Request Docs', tranType: "PURREQ" }
+      data: {
+        mode: this.purReqHdrForm.controls['mode'].value,
+        tranNo: this.purReqHdrForm.controls['tranNo'].value,
+        search: searchDocs.PURCHASE_REQUEST_DOC, tranType: TranType.PURCHASE_REQUEST
+      }
     });
 
   }
-
-
   NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
@@ -403,13 +408,9 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
       data: {
         'tranNo': tranNo,
         'mode': this.purReqHdrForm.controls['mode'].value,
-        // 'note':this.purReqHdrForm.controls['notes'].value ,
-        'TranType': "PURREQ",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Purchase Request Notes"
+        'TranType': TranType.PURCHASE_REQUEST,
+        'search': searchNotes.PURCHASE_REQUEST_NOTE
       }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-
     });
   }
 
@@ -418,9 +419,9 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "PURREQ",
+        'tranType': TranType.PURCHASE_REQUEST,
         'tranNo': tranNo,
-        'search': 'Purchase Request Log'
+        'search': Log.PURCHASE_REQUEST_LOG
       }
     });
   }

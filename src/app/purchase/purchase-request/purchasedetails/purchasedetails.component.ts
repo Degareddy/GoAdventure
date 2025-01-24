@@ -16,6 +16,9 @@ import { PdfReportsService } from 'src/app/FileGenerator/pdf-reports.service';
 import { DecimalPipe } from '@angular/common';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { displayMsg, Items, Mode, searchType, TextClr, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
 interface params {
   itemCode: string
@@ -146,7 +149,7 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     private excelService: ExcelReportsService,
     private pdfService: PdfReportsService,
     private loader: NgxUiLoaderService,
-    @Inject(MAT_DIALOG_DATA) public data: {tranNo:string,mode:string,status:string},
+    @Inject(MAT_DIALOG_DATA) public data: { tranNo: string, mode: string, status: string },
     public dialog: MatDialog,
     private utlService: UtilitiesService) {
     this.masterParams = new MasterParams();
@@ -202,7 +205,6 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -236,23 +238,24 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.purchreqservice.GetPurRequestDetails(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != 'FAIL' && res.status.toUpperCase() != 'ERROR') {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           this.exportTmp = false;
           this.rowData = res['data'];
         } else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
@@ -276,20 +279,20 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
   loadData() {
     const body = {
       ...this.commonParams(),
-      Item: "PRODUCTS",
-      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
+      Item: Items.PRODUCTS,
+      ...(this.data.mode.toUpperCase() === Mode.Add ? { mode: this.data.mode } : {})
     };
 
     const supbody = {
       ...this.commonParams(),
-      Item: "SUPPLIER",
-      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
+      Item: Items.SUPPLIER,
+      ...(this.data.mode.toUpperCase() === Mode.Add ? { mode: this.data.mode } : {})
     };
 
     const wrbody = {
       ...this.commonParams(),
-      Item: "WAREHOUSE",
-      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
+      Item: Items.WAREHOUSE,
+      ...(this.data.mode.toUpperCase() === Mode.Add ? { mode: this.data.mode } : {})
     };
 
     const service1 = this.invService.GetMasterItemsList(body);
@@ -301,26 +304,26 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        if (res1.status.toUpperCase() === "SUCCESS") {
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.productList = res1.data;
         }
-        else{
-          this.retMessage="Product list empty!";
-          this.textMessageClass="red";
+        else {
+          this.retMessage = "Product list empty!";
+          this.textMessageClass = "red";
         }
-        if (res2.status.toUpperCase() === "SUCCESS") {
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.supplierlist = res2.data;
         }
-        else{
-          this.retMessage="Supplier list empty!";
-          this.textMessageClass="red";
+        else {
+          this.retMessage = "Supplier list empty!";
+          this.textMessageClass = "red";
         }
-        if (res3.status.toUpperCase() === "SUCCESS") {
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.wareHouseList = res3.data;
         }
-        else{
-          this.retMessage="WareHouse list empty!";
-          this.textMessageClass="red";
+        else {
+          this.retMessage = "WareHouse list empty!";
+          this.textMessageClass = "red";
         }
       },
       (error: any) => {
@@ -364,15 +367,13 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     this.purDetCls();
     this.loader.start();
     try {
-      this.subSink.sink = this.purchreqservice.insertPurchaseDetails(this.purchaseDetCls).subscribe((res: any) => {
+      this.subSink.sink = this.purchreqservice.insertPurchaseDetails(this.purchaseDetCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.retVal < 100) {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
         if (res.retVal >= 100 && res.retVal <= 200) {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.slValue = true;
           this.isAltered = true;
           this.getpurchaseDetails(this.masterParams.tranNo);
@@ -380,8 +381,7 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
 
       });
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -392,7 +392,7 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
 
 
   onRowClick(row: any) {
-    try{
+    try {
       this.slNum = row.data.slNo;
       this.prodCode = row.data.prodCode;
       this.purchaseDetCls.product = row.data.prodCode;
@@ -408,9 +408,8 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
       this.purReqDetForm.controls['unitRate'].patchValue(row.data.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       this.purReqDetForm.controls['amount'].patchValue(row.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
-    catch(ex:any){
-      this.retMessage= ex.message;
-      this.textMessageClass="red";
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -426,12 +425,12 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
   searchProduct() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.purReqDetForm.controls['product'].value
     }
     this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() != "FAIL") {
-        if (res.data.nameCount === 1) {
+      if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
+        if (res && res.data && res.data.nameCount === 1) {
           this.purReqDetForm.controls['product'].patchValue(res.data.selName);
           this.purReqDetForm.controls['unitRate'].patchValue(0);
           this.purchaseDetCls.product = res.data.selName;
@@ -442,22 +441,22 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
             width: '90%',
             disableClose: true,
             data: {
-              'tranNum': this.purReqDetForm.controls['product'].value, 'TranType': "PRODUCT",
-              'search': 'Product Search'
-            }
+              'tranNum': this.purReqDetForm.controls['product'].value, 'TranType': TranType.PRODUCT,
+              'search': searchType.PRODUCT            }
           });
           dialogRef.afterClosed().subscribe(result => {
-            this.purReqDetForm.controls['product'].patchValue(result.prodName);
-            this.purReqDetForm.controls['uom'].patchValue(result.uom);
-            this.purReqDetForm.controls['unitRate'].patchValue(result.stdPurRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-            this.purchaseDetCls.product = result.prodCode;
-            this.purchaseDetCls.prodCode = result.prodCode;
+            if(result != true && result != undefined){
+              this.purReqDetForm.controls['product'].patchValue(result.prodName);
+              this.purReqDetForm.controls['uom'].patchValue(result.uom);
+              this.purReqDetForm.controls['unitRate'].patchValue(result.stdPurRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+              this.purchaseDetCls.product = result.prodCode;
+              this.purchaseDetCls.prodCode = result.prodCode;
+            }
           });
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
       }
     });
   }
@@ -467,7 +466,6 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
     let numRate: number;
     let uRate = this.purReqDetForm.controls['unitRate'].value.toString();
     let strQty = this.purReqDetForm.controls['quantity'].value.toString();
-
     if (uRate == "") {
       return;
     }
@@ -484,7 +482,6 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     };
-
     this.purReqDetForm.controls['unitRate'].patchValue(numRate.toLocaleString(undefined, options));
     this.purReqDetForm.controls['amount'].patchValue(amount.toLocaleString(undefined, options));
 
@@ -568,8 +565,6 @@ export class PurchasedetailsComponent implements OnInit, OnDestroy {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     };
-
-    // this.purReqDetForm.controls['quantity'].patchValue(numQty.toLocaleString(undefined, options));
     this.purReqDetForm.controls['amount'].patchValue(amount.toLocaleString(undefined, options));
   }
 }

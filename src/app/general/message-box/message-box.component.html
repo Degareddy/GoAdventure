@@ -1,4 +1,12 @@
-<div class="message-box" [class.message-success]="classtype === 'green'" *ngIf="msg?.trim() && classtype?.trim()"
+<!-- <div class="message-box" [class.message-success]="classtype === 'green'" *ngIf="msg?.trim() && classtype?.trim()"
   [class.message-error]="classtype === 'red'">
+  <b>{{ msg }}</b>
+</div> -->
+<div
+  class="message-box"
+  [class.message-success]="(classtype || '').trim().toLowerCase() === 'green'"
+  *ngIf="msg?.trim() && classtype?.trim()"
+  [class.message-error]="(classtype || '').trim().toLowerCase() === 'red'"
+>
   <b>{{ msg }}</b>
 </div>
