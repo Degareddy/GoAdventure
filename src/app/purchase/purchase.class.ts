@@ -394,5 +394,42 @@ export class OpeningBalDetailCls{
   propcode!:string;
   blockcode!:string;
   unitcode!:string;
-  
+
+}
+
+
+export interface ITransactionDetails {
+  mode: string;
+  company: string;
+  location: string;
+  tranType: string;
+  tranNo: string;
+  tranDate: Date;
+  client: string;
+  currency: string;
+  exchRate: number;
+  refTranNo: string;
+  remarks: string;
+  user: string;
+  refNo: string;
+}
+
+export class TransactionDetails implements ITransactionDetails {
+  mode: string = '';
+  company: string = '';
+  location: string = '';
+  tranType: string = '';
+  tranNo: string = '';
+  tranDate: Date = new Date();
+  client: string = '';
+  currency: string = '';
+  exchRate: number = 0;
+  refTranNo: string = '';
+  remarks: string = '';
+  user: string = '';
+  refNo: string = '';
+
+  constructor(init?: Partial<ITransactionDetails>) {
+    Object.assign(this, init);
+  }
 }

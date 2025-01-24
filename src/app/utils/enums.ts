@@ -28,6 +28,7 @@ export enum Items {
   PROPERTY="PROPERTY",
   VENTURE="VENTURE",
   EMPLOYEE="EMPLOYEE",
+  CURRENCY="CURRENCY",
 
 }
 export enum Mode {
@@ -64,14 +65,16 @@ export enum searchType {
   USER="User Search",
   PROPERTY="Property Search",
   BLOCK="Block Search",
-  VENTURE="Venture Search"
+  VENTURE="Venture Search",
+  TENANT="Tenant Search"
 }
 export enum Type{
   PRODUCT="PRODUCT",
   COMPANY="COMPANY",
   USER="USER",
   BLOCK="BLOCK",
-  FLAT="FLAT"
+  FLAT="FLAT",
+  TENANT="TENANT"
 }
 
 export enum ScreenId {

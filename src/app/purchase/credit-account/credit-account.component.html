@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center mb-0.1 h-8">
     <div class="flex items-center text-white">
       <mat-icon class="mr-1">receipt</mat-icon>
-      <b>Credit Note</b>
+      <b>Credit Note / Debit Note</b>
     </div>
     <div class="flex items-end space-x-1 mb-2.5">
       <!-- <button mat-raised-button color="accent" type="button" class="btnUp"
@@ -28,9 +28,116 @@
   </div>
 </div>
 <div class="p-4 bg-zinc-100 container rounded-sm">
-  <div class="flex flex-col lg:flex-row gap-4">
-    <div class="lg:w-3/4">
+  <!-- <div class="flex flex-col lg:flex-row gap-4">
+    <div class="lg:w-3/4"> -->
+      <form [formGroup]="creditNoteForm" (ngSubmit)="onSubmit()" >
+        <div class="row  justify-content-center">
+          <div class="col-md-3 offset-md-1">
+            <mat-form-field class="w-half" appearance="outline">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange($event.value)">
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3 ">
 
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Tran No</mat-label>
+              <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+              <button mat-button *ngIf="creditNoteForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="creditNoteForm.get('tranNo')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
+                [disabled]="creditNoteForm.get('mode')!.value === 'Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-half">
+              <mat-label>Tran Date</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row  justify-content-center">
+          <div class="col-md-3 offset-md-1">
+            <mat-form-field class="w-half" appearance="outline">
+              <mat-label>Tran Type</mat-label>
+              <mat-select formControlName="tranType">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of tranTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Client</mat-label>
+              <input matInput type="text" placeholder="Tenant" formControlName="client" />
+              <button matSuffix mat-icon-button aria-label="Clear" *ngIf="creditNoteForm.get('client')!.value"
+                (click)="creditNoteForm.get('client')!.setValue('')" type="button">
+                <mat-icon class="mat-clear-icon" style="font-size: 14px;">clear</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" (click)="onClientSearch()" type="button"
+                [disabled]="creditNoteForm.get('mode')!.value === 'View'">
+                <mat-icon class="mat-search-icon" style="font-size: 14px;">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Currency</mat-label>
+              <mat-select matInput placeholder="Currency" formControlName="currency">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of currencyList" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row  justify-content-center">
+          <div class="col-md-3 offset-md-1">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Exchange Rate</mat-label>
+              <input matInput placeholder="ExchRate" formControlName="exchRate" class="right-align-input" type="text"
+                appExchange>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Referance TranNo</mat-label>
+              <input matInput placeholder="Referance TranNo" formControlName="refTranNo" type="text">
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <mat-form-field appearance="outline">
+              <mat-label class="mat-label-class">Remarks</mat-label>
+              <textarea matInput placeholder="Referance TranNo" formControlName="remarks" type="text"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+        <div class="btnAlignment">
+          <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="creditNoteForm.invalid">
+            <mat-icon>done</mat-icon>Apply
+          </button>
+          <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Clear()">
+            <mat-icon>clear_all</mat-icon>Clear
+          </button>
+          <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+            <mat-icon>cancel</mat-icon>Close
+          </button>
+          <!-- <button mat-raised-button color="primary" class="btnUp" type="button" (click)="Delete()"
+            [disabled]="creditNoteForm.invalid">
+            <mat-icon>delete</mat-icon>Delete
+          </button> -->
+        </div>
+      </form>
     </div>
-  </div>
-</div>
+  <!-- </div>
+</div> -->

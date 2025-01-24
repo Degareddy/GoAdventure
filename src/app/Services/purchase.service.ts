@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { paymentHdr, paymentDetails, PurchaseOrder, PurchaseOrderDetails, purchaseRequestDetailsClass, supplierQuotation, supplierQuotationItems, purchaseRequestHeader, supplier, supplierInvoice, grn, grnDetails, itemCharges, commonCharges, supInvoiceDet, OpeningBalancesClass, OpeningBalDetailCls } from '../purchase/purchase.class';
+import { paymentHdr, paymentDetails, PurchaseOrder, PurchaseOrderDetails, purchaseRequestDetailsClass, supplierQuotation, supplierQuotationItems, purchaseRequestHeader, supplier, supplierInvoice, grn, grnDetails, itemCharges, commonCharges, supInvoiceDet, OpeningBalancesClass, OpeningBalDetailCls, TransactionDetails } from '../purchase/purchase.class';
 import { MasterParams } from '../Masters/Modules/masters.module';
 import { Observable } from 'rxjs';
 import { SaveApiResponse } from '../general/Interface/admin/admin';
@@ -216,5 +216,12 @@ export class PurchaseService {
     return this.http.post(environment.Url + 'property/GetPartyOpeningBalanceDetails', body)
   }
 
+
+  UpdateCreditDebitNote(crCls: TransactionDetails): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'ledger/UpdateCreditDebitNote', crCls)
+  }
+  GetCreditDebitNote(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'ledger/GetCreditDebitNote', body)
+  }
 }
-// MasterItems/GetTranItemsList
+
