@@ -11,6 +11,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { SubSink } from 'subsink';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
 @Component({
   selector: 'app-group-company',
@@ -49,7 +52,7 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
     const body = {
       Company: this.userdataService.userData.company,
       Location: this.userdataService.userData.location,
-      Item: "GROUPCOMP",
+      Item: Items.GROUPCOMP,
       refNo: this.userdataService.userData.sessionID,
       user: this.userdataService.userData.userID
     };
@@ -57,17 +60,16 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res: any) => {
         this.loader.stop();
-        console.log(res);
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.groupcompany = res.data;
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -95,7 +97,7 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
         this.subSink.sink = this.adService.GetGCMappings(body).subscribe((res: any) => {
           this.loader.stop();
           console.log(res);
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.dataSource = res.data;
             for (let i = 0; i < this.dataSource.length; i++) {
               this.dataSource[i].slNo = i + 1
@@ -105,13 +107,13 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.matsort;
           } else {
-            this.displayMessage("Error: " + res.message, "red");
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
         this.loader.stop();
-        this.displayMessage("Exception: " + ex.message, "red");
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
     else {
@@ -130,17 +132,17 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
     delete row.mapStatus;
     try {
       this.loader.start();
-      this.subSink.sink = this.adService.UpdateGCMappings(row).subscribe((res: any) => {
+      this.subSink.sink = this.adService.UpdateGCMappings(row).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
         if (res.retVal < 100 || res.retVal > 200) {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         } else {
-          this.displayMessage("Success: " + res.message, "green");
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
       });
     } catch (ex: any) {
       this.loader.stop();
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }

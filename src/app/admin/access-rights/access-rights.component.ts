@@ -8,6 +8,8 @@ import { forkJoin } from 'rxjs';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 interface IAcess {
   item_id: string;
   item_text: string;
@@ -53,7 +55,11 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
 
 
   }
- async pageChange() {
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
+  async pageChange() {
     if (this.accRightsForm.invalid) {
       return;
     }
@@ -70,19 +76,18 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = await this.adminService.GetAccessModesMapping(body).subscribe((res: any) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             const data = res.data;
             this.mappedList = data.filter((item: any) => item.modeStatus.toUpperCase() === "MAPPED").map((item: any) => item.modeId);
             this.unMappedList = data.filter((item: any) => item.modeStatus.toUpperCase() !== "MAPPED").map((item: any) => item.modeId);
           } else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+
       }
     }
 
@@ -120,19 +125,19 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
   close() {
     this.router.navigateByUrl('/home');
   }
- async loadData() {
+  async loadData() {
     const companybody: getPayload = {
       ...this.commonParams(),
-      item: "COMPANY"
+      item: Items.COMPANY
 
     };
     const pagesListbody: getPayload = {
       ...this.commonParams(),
-      item: 'PAGES'
+      item: Items.PAGES
     };
     const userListbody: getPayload = {
       ...this.commonParams(),
-      item: 'USER'
+      item: Items.USER
     };
     const service1 = this.adminService.GetMasterItemsList(companybody);
     const service2 = this.adminService.GetMasterItemsList(userListbody);
@@ -143,32 +148,44 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        if (res1.status.toUpperCase() === "SUCCESS") {
-          this.companyList = res1.data;
-          if (this.companyList.length === 1) {
-            this.accRightsForm.controls['company'].patchValue(this.companyList[0].itemCode, { emitEvent: false });
-            this.companyChanged();
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.companyList = res1.data;
+            if (this.companyList.length === 1) {
+              this.accRightsForm.controls['company'].patchValue(this.companyList[0].itemCode, { emitEvent: false });
+              this.companyChanged();
+            }
           }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Company List " + res1.message, TextClr.red);
+          }
+
         }
-        if (res2.status.toUpperCase() === "SUCCESS") {
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.usersListData = res2.data;
         }
-        if (res3.status.toUpperCase() === "SUCCESS") {
+        else {
+          this.displayMessage(displayMsg.ERROR + "Users List " + res2.message, TextClr.red);
+        }
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.pagesData = res3.data;
 
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Pages List " + res3.message, TextClr.red);
         }
 
       },
       (error: any) => {
         this.loader.stop();
+        this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
       }
     );
 
 
   }
   clearMsg() {
-    this.textMessageClass = "";
-    this.retMessage = "";
+   this.displayMessage("","");
   }
   companyChanged() {
     this.locationList = [];
@@ -177,23 +194,23 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
     const locationbody = {
       ...this.commonParams(),
       company: this.accRightsForm.controls.company.value,
-      item: "CMPUSERBRANCH"
+      item: Items.CMPUSERBRANCH
     };
     try {
       this.subSink.sink = this.adminService.GetMasterItemsList(locationbody).subscribe((res: getResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.locationList = res['data'];
           if (this.locationList.length === 1) {
             this.accRightsForm.controls['location'].patchValue(this.locationList[0].itemCode, { emitEvent: false });
           }
         }
         else {
+          this.displayMessage(displayMsg.ERROR + "Location List " + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -260,13 +277,11 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
     this.loader.start();
     this.subSink.sink = this.adminService.ManageAccessModesMapping(body).subscribe((res: SaveApiResponse) => {
       this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.retMessage = res.message;
-        this.textMessageClass = "green";
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+        this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
       }
     });
   }

@@ -14,6 +14,8 @@ import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/adm
 import { forkJoin } from 'rxjs';
 import { PropertiesComponent } from '../properties/properties.component';
 import { DatePipe } from '@angular/common';
+import { Items, TextClr,displayMsg } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-companies',
@@ -21,10 +23,7 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./companies.component.css']
 })
 export class CompaniesComponent implements OnInit, OnDestroy {
-
   public companyForm!: FormGroup;
-
-
   @Input() max: any;
   private compCls: userCompanyClass;
   today = new Date();
@@ -57,22 +56,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
         }
         return null;
       },
-    },
-    // {
-    //   field: "dateMapped", headerName: "Mapped On", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-    //     // Format date as dd-MM-yyyy
-    //     // Format date as dd-MM-yyyy
-    //     if (params.value) {  isDefault
-    //       const date = new Date(params.value);
-    //       const day = date.getDate().toString().padStart(2, '0');
-    //       const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    //       const year = date.getFullYear();
-    //       return `${day}-${month}-${year}`;
-    //     }
-    //     return null;
-    //   },
-    // },
-    // { field: "branch", headerName: "Branch", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
+    }
   ];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   constructor(private fb: FormBuilder, private loader: NgxUiLoaderService, private adminService: AdminService, public dialog: MatDialog,
@@ -94,7 +78,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   loadData() {
     const companybody: getPayload = {
       ...this.commonParams(),
-      item: "COMPANY",
+      item: Items.COMPANY,
       mode:this.data.mode
 
     };
@@ -109,33 +93,33 @@ export class CompaniesComponent implements OnInit, OnDestroy {
         (results: any[]) => {
           this.loader.stop();
           const res1 = results[0];
-          if (res1.status.toUpperCase() === "SUCCESS") {
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.companyList = res1.data;
             if (this.companyList.length === 1) {
               this.companyForm.patchValue({ company: this.companyList[0].itemCode });
             }
           }
           else {
-            this.displayMessage("Error: Company list empty!", "red");
+            this.displayMessage("Error: Company list empty!", TextClr.red);
           }
           const res2 = results[1];
-          if (res2.status.toUpperCase() === "SUCCESS") {
+          if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
             // console.log(res2);
             this.rowData = res2.data;
           }
           else {
-            this.displayMessage("Error: " + res2.message, "red");
+            this.displayMessage(displayMsg.ERROR+ res2.message, TextClr.red);
           }
 
         },
         (error: any) => {
           this.loader.stop();
-          this.displayMessage("Error: " + error.message, "red");
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -178,17 +162,15 @@ export class CompaniesComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subsink.sink = this.adminService.UpdateUserCompanies(body).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-          this.displayMessage(res.message, "green");
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.loadData();
         } else {
-          // this.handleError(res);
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     } catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -207,17 +189,15 @@ export class CompaniesComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subsink.sink = this.adminService.UpdateUserCompanies(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
-          this.displayMessage("Error: " + res.message, "green");
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.loadData();
         } else {
-          // this.handleError(res);
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     } catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onPageSizeChanged() {
@@ -227,23 +207,9 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    console.log(event);
     this.companyForm.get('company')?.patchValue(event.data.company);
     this.companyForm.get('Map')?.patchValue(event.data.isDefault);
     this.companyForm.get('date')?.patchValue(event.data.tranDate);
-    // debugger;
-    // this.branchCls.branch = event.data.branch;
-    // try {
-    //   this.companyForm.patchValue({
-    //     company: event.data.companyId,
-    //     // date: event.data.dateMapped,
-    //   })
-    // }
-    // catch (ex: any) {
-    //   this.displayMessage("Exception: " + ex.message, "red");
-    // }
-
-
   }
 
   onGridReady(params: any) {

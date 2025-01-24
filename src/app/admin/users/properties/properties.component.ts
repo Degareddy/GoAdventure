@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { BranchMappingResponse, getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-properties',
   templateUrl: './properties.component.html',
@@ -75,28 +77,37 @@ export class PropertiesComponent implements OnInit, OnDestroy {
       return;
     }
     else {
-      this.branchCls.company = this.userDataService.userData.company;
-      this.branchCls.location = this.userDataService.userData.location;
-      this.branchCls.mode = this.data.mode;
-      this.branchCls.refNo = this.userDataService.userData.sessionID;
-      this.branchCls.remarks = "";
-      this.branchCls.user = this.userDataService.userData.userID;
-      this.branchCls.userId = this.data.userId;
-      this.loader.start();
-      this.subsink.sink = this.adminService.UpdateUserBranches(this.branchCls).subscribe((res: SaveApiResponse) => {
+      try{
+        this.branchCls.company = this.userDataService.userData.company;
+        this.branchCls.location = this.userDataService.userData.location;
+        this.branchCls.mode = this.data.mode;
+        this.branchCls.refNo = this.userDataService.userData.sessionID;
+        this.branchCls.remarks = "";
+        this.branchCls.user = this.userDataService.userData.userID;
+        this.branchCls.userId = this.data.userId;
+        this.loader.start();
+        this.subsink.sink = this.adminService.UpdateUserBranches(this.branchCls).subscribe((res: SaveApiResponse) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            this.getUserBranchDetails(this.data.userId);
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+          }
+        })
+      }
+      catch(ex:any){
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
-          this.getUserBranchDetails(this.data.userId);
-        }
-        else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
-        }
-      })
+      }
+
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   close() {
     this.router.navigateByUrl('/home');
   }
@@ -128,23 +139,21 @@ export class PropertiesComponent implements OnInit, OnDestroy {
     this.getUserBranchDetails(this.data.userId);
     const branchBody: getPayload = {
       ...this.commonParams(),
-      item: 'CMPUSERBRANCH',
+      item: Items.CMPUSERBRANCH,
       mode:this.data.mode
     };
     try {
       this.subsink.sink = this.masterService.GetMasterItemsList(branchBody).subscribe((res: getResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.branchList = res['data'];
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       })
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   getUserBranchDetails(item: string) {
@@ -154,19 +163,17 @@ export class PropertiesComponent implements OnInit, OnDestroy {
     }
     try {
       this.subsink.sink = this.adminService.GetUserBranches(body).subscribe((res: BranchMappingResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
           this.rowData = [];
         }
       })
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }

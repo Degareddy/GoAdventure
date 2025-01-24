@@ -8,6 +8,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Mode, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-user-details',
@@ -50,6 +52,10 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getIpAdressData();
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   getIpAdressData() {
     const body: getPayload = {
       ...this.commonParams(),
@@ -57,18 +63,16 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     }
     try {
       this.subsink.sink = this.adminService.getUserIpsList(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() == "SUCCESS") {
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
           this.rowData = res.data;
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -82,8 +86,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     }
   }
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage('', '');
   }
   onUpdate() {
     this.clearMsg();
@@ -101,20 +104,18 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
           this.retMessage = res.message;
           this.textMessageClass = "green";
           this.getIpAdressData();
-          if (this.data.mode === "DELETE") {
+          if (this.data.mode.toUpperCase() === Mode.Delete) {
             this.data.mode = "Modify"
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
-          this.rowData=[];
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+          this.rowData = [];
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -148,7 +149,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(dialogResult => {
       if (dialogResult) {
-        this.data.mode = "DELETE";
+        this.data.mode = Mode.Delete;
         this.onUpdate();
         this.aipDetForm = this.formInit();
       }

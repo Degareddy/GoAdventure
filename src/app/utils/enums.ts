@@ -18,7 +18,14 @@ export enum Items {
   PRODUCTS="PRODUCTS",
   SUPPLIER="SUPPLIER",
   WAREHOUSE="WAREHOUSE",
-  LOCATION="LOCATION"
+  LOCATION="LOCATION",
+  COMPANY="COMPANY",
+  PAGES="PAGES",
+  USER="USER",
+  CMPUSERBRANCH="CMPUSERBRANCH",
+  PROFILE="PROFILE",
+  GROUPCOMP="GROUPCOMP"
+
 }
 export enum Mode {
   Add = 'ADD',
@@ -47,11 +54,13 @@ export enum TranStatus {
 
 export enum searchType {
   PURCHASE_REQUEST = "Purchase Request Search",
-  PRODUCT="Product Search"
+  PRODUCT="Product Search",
+  USER="User Search"
 }
 export enum Type{
   PRODUCT="PRODUCT",
-  COMPANY="COMPANY"
+  COMPANY="COMPANY",
+  USER="USER"
 }
 
 export enum ScreenId {
@@ -165,17 +174,20 @@ export enum ScreenId {
 
 export enum searchDocs {
   PURCHASE_REQUEST_DOC = "Purchase Request Docs",
-  COMPANY_DOC = "Company Docs"
+  COMPANY_DOC = "Company Docs",
+  USER_DOC = "User Docs"
 }
 
 export enum searchNotes {
   PURCHASE_REQUEST_NOTE = "Purchase Request Notes",
-  COMPANY_NOTE = "Company Notes"
+  COMPANY_NOTE = "Company Notes",
+  USER_NOTE = "User Notes"
 }
 
 export enum Log {
   PURCHASE_REQUEST_LOG = "Purchase Request Log",
-  COMPANY_LOG = "Company Log"
+  COMPANY_LOG = "Company Log",
+  USER_LOG = "User Log"
 }
 
 

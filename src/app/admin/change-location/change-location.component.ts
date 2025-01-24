@@ -11,6 +11,8 @@ import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
 import { updateLocation } from 'src/app/utils/location.actions';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
+import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-change-location',
   templateUrl: './change-location.component.html',
@@ -49,30 +51,36 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID,
     }
   }
- async loadData() {
+  async loadData() {
     this.userData.location = this.userDataService.userData.location;
     const companybody: getPayload = {
       ...this.commonParams(),
-      item: 'COMPANY'
+      item: Items.COMPANY
     };
     try {
       // this.loader.start();
       const company$ = this.adminService.GetMasterItemsList(companybody);
-      this.subSink.sink =await forkJoin([company$]).subscribe(
+      this.subSink.sink = await forkJoin([company$]).subscribe(
         ([companyRes]: any) => {
-          this.companyList = companyRes['data'];
-          if (this.companyList.length === 1) {
-            this.changeLocationForm.get('company')!.patchValue(this.companyList[0].itemCode);
-            this.companyChanged(this.companyList[0].itemCode)
+          if (companyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.companyList = companyRes['data'];
+            if (this.companyList.length === 1) {
+              this.changeLocationForm.get('company')!.patchValue(this.companyList[0].itemCode);
+              this.companyChanged(this.companyList[0].itemCode)
+            }
           }
+          else {
+            this.displayMessage(displayMsg.ERROR + companyRes.message, TextClr.red);
+          }
+
         },
         error => {
-          this.displayMessage("Error: " + error.message, "red");
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   formInit() {
@@ -108,28 +116,27 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
               `Location changed to <br><strong><span class="red-text">${foundLocation.itemName}</span></strong>`,
               "Success",
               {
-                enableHtml: true, // Ensure HTML is enabled
-                disableTimeOut: false // Optional: set to true to prevent auto-close
+                enableHtml: true,
+                disableTimeOut: false
               }
             );
-            // this.toaster.success("Location changed to " + foundLocation.itemName, "Success");
             this.userDataService.updateUserData(this.userData)
               .then(() => {
                 this.router.navigate(['/home']);
 
               })
               .catch(error => {
-                this.displayMessage("Error: " + error.message, "red");
+                this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
               });
           }
           else {
-            this.displayMessage("Error: Location not found.", "red");
+            this.displayMessage("Error: Location not found.",  TextClr.red);
             return;
           }
         }
 
-      } catch (error:any) {
-        this.displayMessage("Error: " + error.message, "red");
+      } catch (error: any) {
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     }
   }
@@ -152,23 +159,23 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
     const locationbody = {
       ...this.commonParams(),
       company: this.changeLocationForm.controls.company.value,
-      item: "CMPUSERBRANCH"
+      item: Items.CMPUSERBRANCH
     };
     try {
       this.subSink.sink = this.adminService.GetMasterItemsList(locationbody).subscribe((res: getResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.locationList = res['data'];
           if (this.locationList.length === 1) {
             this.changeLocationForm.controls['location'].patchValue(this.locationList[0].itemCode, { emitEvent: false });
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -176,7 +183,7 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
 
 
   clearMsg() {
-  this.displayMessage("","");
+    this.displayMessage("", "");
   }
   clear() {
     this.clearMsg();

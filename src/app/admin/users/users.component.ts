@@ -20,6 +20,8 @@ import { getPayload, getResponse, nameCountResponse, SaveApiResponse, userRespon
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { CompaniesComponent } from './companies/companies.component';
+import { displayMsg, Items, Log, Mode, ScreenId, searchDocs, searchNotes, searchType, TextClr, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -57,7 +59,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     { itemCode: "Landlord", itemName: "Landlord" },
   ]
   @ViewChild('frmClear') public sprFrm!: NgForm;
-  imageBlob: string="assets/img/user.jpg";
+  imageBlob: string = "assets/img/user.jpg";
   constructor(protected route: ActivatedRoute, protected router: Router, private fb: FormBuilder,
     private adminService: AdminService, private loader: NgxUiLoaderService, public dialog: MatDialog,
     private utlService: UtilitiesService, private masterService: MastersService, private dateService: FormatdateService,
@@ -79,13 +81,13 @@ export class UsersComponent implements OnInit, OnDestroy {
     });
 
   }
- async onSubmit() {
+
+  async onSubmit() {
     this.clearMsgs();
     this.userForm.controls['company'].patchValue(this.userDataService.userData.company);
     this.userForm.controls['location'].patchValue(this.userDataService.userData.location);
     if (this.userForm.invalid) {
-      this.retMessage = "Form ivalid enter all required fields!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Form ivalid enter all required fields!", TextClr.red);
       return;
     }
     else {
@@ -112,17 +114,18 @@ export class UsersComponent implements OnInit, OnDestroy {
             }
             this.getUserData(res.tranNoNew)
           } else {
-            this.displayMessage("Error: " + res.message, "red");
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         },
           (error: any) => {
             this.loader.stop();
-            this.displayMessage("Error: " + error.message, "red");
+            this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
           }
         );
       }
       catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
+        this.loader.stop();
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
 
@@ -171,11 +174,11 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   modeChange(event: string) {
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.userForm = this.formInit();
       this.userForm.controls['mode'].patchValue(event, { emitEvent: false });
-     this.displayMessage("","");
-     this.loadData();
+      this.displayMessage("", "");
+      this.loadData();
     }
     else {
       this.userForm.controls['user'].enable();
@@ -191,17 +194,26 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   }
 
-async  ngOnInit() {
+  async ngOnInit() {
     this.loadData();
-    const modeBody = this.createRequestData('SA6');
-    this.subSink.sink = await this.masterService.getModesList(modeBody).subscribe((modeRes: getResponse) => {
-      if (modeRes.status.toUpperCase() === "SUCCESS") {
-        this.modes = modeRes['data'];
-        if (this.modes.length === 1) {
-          this.userForm.controls['mode'].patchValue(this.modes[0].itemCode, { emitEvent: false })
+    const modeBody = this.createRequestData(ScreenId.USER_REGISTRATION_SCRID);
+    try{
+      this.subSink.sink = await this.masterService.getModesList(modeBody).subscribe((modeRes: getResponse) => {
+        if (modeRes.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.modes = modeRes['data'];
+          if (this.modes.length === 1) {
+            this.userForm.controls['mode'].patchValue(this.modes[0].itemCode, { emitEvent: false })
+          }
         }
-      }
-    });
+        else {
+          this.displayMessage(displayMsg.ERROR + "Modes list " + modeRes.message, TextClr.red);
+        }
+      });
+    }
+    catch(ex:any){
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
   private createRequestData(item: string): getPayload {
     return {
@@ -215,38 +227,46 @@ async  ngOnInit() {
   onClearClick() {
     this.userForm.get('user')!.patchValue('');
   }
- async loadData() {
-    const service1 = this.adminService.GetMasterItemsList({...this.createRequestData("PROFILE"),mode:this.userForm.get('mode')!.value});
-    const service2 = this.adminService.GetMasterItemsList({...this.createRequestData("COMPANY"),mode:this.userForm.get('mode')!.value});
-    const service3 = this.adminService.GetMasterItemsList({...this.createRequestData("LOCATION"),mode:this.userForm.get('mode')!.value});
+  async loadData() {
+    const service1 = this.adminService.GetMasterItemsList({ ...this.createRequestData(Items.PROFILE), mode: this.userForm.get('mode')!.value });
+    const service2 = this.adminService.GetMasterItemsList({ ...this.createRequestData(Items.COMPANY), mode: this.userForm.get('mode')!.value });
+    const service3 = this.adminService.GetMasterItemsList({ ...this.createRequestData(Items.LOCATION), mode: this.userForm.get('mode')!.value });
     this.subSink.sink = await forkJoin([service1, service2, service3]).subscribe(
       (results: any[]) => {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        if (res1.status.toUpperCase() === "SUCCESS") {
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.profileList = res1.data;
           if (this.profileList.length === 1) {
             this.userForm.controls['userProfile'].patchValue(this.profileList[0].itemCode, { emitEvent: false });
           }
         }
-        if (res2.status.toUpperCase() === "SUCCESS") {
+        else {
+          this.displayMessage(displayMsg.ERROR + "Profile list " + res1.message, TextClr.red);
+        }
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.companyList = res2.data;
           if (this.companyList.length === 1) {
             this.userForm.controls['userCompany'].patchValue(this.companyList[0].itemCode, { emitEvent: false });
             this.userForm.controls['defaultCompany'].patchValue(this.companyList[0].itemCode, { emitEvent: false })
           }
         }
-        if (res3.status.toUpperCase() === "SUCCESS") {
+        else {
+          this.displayMessage(displayMsg.ERROR + "Company list " + res2.message, TextClr.red);
+        }
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.locationList = res3.data;
           if (this.locationList.length === 1) {
             this.userForm.controls['defaultLocn'].patchValue(this.locationList[0].itemCode, { emitEvent: false });
           }
         }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Location list " + res3.message, TextClr.red);
+        }
       },
       (error: any) => {
-        // this.handleError(error);
-        this.displayMessage("Error: " + error.message, "red");
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     );
   }
@@ -260,27 +280,24 @@ async  ngOnInit() {
   }
 
   clearMsgs() {
-   this.displayMessage("","");
+    this.displayMessage("", "");
   }
 
-async  getUserData(user: string) {
+  async getUserData(user: string) {
     this.clearMsgs();
-    // this.imageBlob="";
     const body = this.createRequestData(user);
     try {
       this.loader.start();
       this.subSink.sink = await this.adminService.getUserDataByName(body).subscribe((res: userResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           this.populateUserData(res, this.userForm.get('mode')?.value);
         } else {
-          // this.handleError(res);
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     } catch (ex: any) {
-			this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   populateUserData(res: any, mode: string) {
@@ -311,23 +328,23 @@ async  getUserData(user: string) {
       mobile: res['data'].mobile
     });
 
-    if (mode != 'View') {
+    if (mode.toUpperCase() != Mode.view) {
       this.displayMessage("Success: " + this.newMessage, "green");
     }
     else {
       this.displayMessage("User details retrived successfully", "green");
     }
-    if(this.userForm.controls.remarks.value){
+    if (this.userForm.controls.remarks.value) {
       this.downloadSelectedFile(this.userForm.controls.remarks.value);
     }
-    else{
-      this.imageBlob="assets/img/user.jpg";
+    else {
+      this.imageBlob = "assets/img/user.jpg";
     }
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
     this.textMessageClass = cssClass;
-    }
+  }
   reset() {
     if (this.userCode != undefined && this.userCode != "" && this.userCode != null) {
       this.getUserData(this.userCode);
@@ -339,17 +356,17 @@ async  getUserData(user: string) {
     this.status = "";
     this.clearMsgs();
     this.userCode = "";
-    this.imageBlob="assets/img/user.jpg";
+    this.imageBlob = "assets/img/user.jpg";
   }
 
   close() {
     this.router.navigateByUrl('/home');
   }
- async onUserSearch() {
+  async onUserSearch() {
     const body = {
       Company: this.userDataService.userData.company,
       Location: this.userDataService.userData.location,
-      Type: "USER",
+      Type: Type.USER,
       item: this.userForm.get('user')!.value,
       ItemFirstLevel: "",
       ItemSecondLevel: "",
@@ -357,7 +374,7 @@ async  getUserData(user: string) {
       refNo: this.userDataService.userData.sessionID
     }
     try {
-      this.subSink.sink =await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+      this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.userForm.controls['user'].patchValue(res.data.selName);
@@ -371,8 +388,8 @@ async  getUserData(user: string) {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.userForm.controls['user'].value, 'PartyType': "USER",
-                  'search': 'User Search'
+                  'tranNum': this.userForm.controls['user'].value, 'PartyType': Type.USER,
+                  'search': searchType.USER
                 }
               });
               this.dialogOpen = true;
@@ -389,12 +406,12 @@ async  getUserData(user: string) {
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-     this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -409,18 +426,17 @@ async  getUserData(user: string) {
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.userForm.controls['mode'].value, tranNo: this.userForm.controls['userID'].value, search: 'User Docs', tranType: "USER" }
+      data: { mode: this.userForm.controls['mode'].value, tranNo: this.userForm.controls['userID'].value,
+        search: searchDocs.USER_DOC, tranType: Type.USER}
     });
   }
   onHelpCilcked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SA6",
-        // Page: "User Registration",
-        // SlNo: 6,
+        ScrId: ScreenId.USER_REGISTRATION_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -438,12 +454,9 @@ async  getUserData(user: string) {
         'tranNo': tranNo,
         'mode': this.userForm.controls['mode'].value,
         'note': this.userForm.controls['remarks'].value,
-        'TranType': "USER",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "User Registartion"
+        'TranType': Type.USER,
+        'search': searchNotes.USER_NOTE
       }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-
     });
   }
   logDetails(tranNo: string) {
@@ -451,9 +464,9 @@ async  getUserData(user: string) {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "USER",
+        'tranType': Type.USER,
         'tranNo': tranNo,
-        'search': 'USER Log'
+        'search': Log.USER_LOG
       }
     });
   }
@@ -475,8 +488,8 @@ async  getUserData(user: string) {
       reader.readAsDataURL(blob); // Convert the blob to base64
     });
   }
- async downloadSelectedFile(fileName: string) {
-    this.subSink.sink =await this.masterService.downloadFile(fileName).subscribe((res: Blob) => {
+  async downloadSelectedFile(fileName: string) {
+    this.subSink.sink = await this.masterService.downloadFile(fileName).subscribe((res: Blob) => {
       this.convertBlobToBase64(res).then((base64: string) => {
         if (this.isImageFile(fileName)) {
           this.imageBlob = base64;
