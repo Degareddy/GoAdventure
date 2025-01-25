@@ -130,6 +130,7 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
   pageSize = 25;
   revenueList: Item[] = [{ itemCode: "COMPANY", itemName: "Company" },
   { itemCode: "LANDLORD", itemName: "Landlord" },
+  { itemCode: "LIABILITY", itemName: "Liability" },
   { itemCode: "PROPERTY", itemName: "Property" }];
   constructor(private fb: FormBuilder, private masterService: MastersService, private datepipe: DatePipe,
     private loader: NgxUiLoaderService, protected router: Router, public dialog: MatDialog,

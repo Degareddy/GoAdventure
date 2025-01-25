@@ -154,6 +154,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   loader!: NgxUiLoaderService;
   revenueList: Item[] = [{ itemCode: "COMPANY", itemName: "Company" },
   { itemCode: "LANDLORD", itemName: "Landlord" },
+  { itemCode: "LIABILITY", itemName: "Liability" },
   { itemCode: "PROPERTY", itemName: "Property" }];
 
   constructor(private fb: FormBuilder, public dialog: MatDialog, protected router: Router, private userDataService: UserDataService,
