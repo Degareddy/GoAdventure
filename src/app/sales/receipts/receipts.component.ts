@@ -57,7 +57,7 @@ interface ReceiptFormData {
 
   customerBank: string;
   custAccount: string;
-  
+
   instrumentNo: string;
   instrumentDate: Date;
   instrumentStatus: string;
@@ -346,7 +346,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
     }
-    
+
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
       // this.clear();
       this.filteredpayMode = "";
@@ -362,7 +362,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
     }
-    
+
     else if (event === 'internalTransfer') {
       // this.clear();
       this.filteredpayMode = "";
@@ -835,7 +835,7 @@ isPayment: boolean=false;
       let company='';
       let messages='';
       console.log( this.responseData.data)
-      
+
       if(this.responseData.data.company === 'NPML'){
         company='NAGAAD PROPERTIES';
       }
@@ -874,7 +874,7 @@ isPayment: boolean=false;
       }
 
 
-      
+
 
       const body = {
         ...this.commonParams(),
@@ -1320,7 +1320,8 @@ isPayment: boolean=false;
                   PartyType: this.receiptsForm.controls['clientType'].value.toUpperCase(),
                   search: this.receiptsForm.controls['clientType'].value + ' Search',
                   serData: res.data,
-                  searchFor: this.receiptsForm.get('receiptmode')?.value
+                  searchFor:this.Report,
+                  txnFor: this.receiptsForm.controls['tranFor'].value || '',
                 },
               });
               this.dialogOpen = true;
@@ -1753,7 +1754,7 @@ isPayment: boolean=false;
         pdf.setFont('Helvetica', 'normal');
         pdf.text(user, startX, finalY + 30);
       }
-      
+
       pdf.save(`${clientName} ${form.controls.rctType.value.toUpperCase()}.pdf`);
     };
   }

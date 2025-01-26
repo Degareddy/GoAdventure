@@ -14,6 +14,7 @@
           <mat-label class="mat-label-class">Property</mat-label>
           <mat-select formControlName="property" (selectionChange)="onSelectedPropertyChanged()">
             <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
             <mat-option *ngFor="let x of props" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -23,6 +24,7 @@
           <mat-label class="mat-label-class">Block</mat-label>
           <mat-select formControlName="block" (selectionChange)="onSelectedBlockChanged()">
             <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
             <mat-option *ngFor="let x of blocks" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -32,6 +34,7 @@
           <mat-label class="mat-label-class">Flat</mat-label>
           <mat-select formControlName="flat">
             <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
             <mat-option *ngFor="let x of flats" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>

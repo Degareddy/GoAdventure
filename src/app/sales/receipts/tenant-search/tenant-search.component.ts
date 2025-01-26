@@ -86,7 +86,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     this.partyCls = new partySearchClass();
     this.SearchPartyForm = this.formInit();
     this.subSink = new SubSink();
-   
+
   }
 
   ngOnDestroy(): void {
@@ -151,9 +151,9 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   formInit() {
     return this.fb.group({
       name: [''],
-      property: [''],
-      block: [''],
-      flat: [''],
+      property: ['All'],
+      block: ['All'],
+      flat: ['All'],
       isSummary: [false]
     });
   }
@@ -164,7 +164,7 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     }
   }
   search() {
-   
+    // console.log(this.data);
     const body = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
@@ -176,7 +176,8 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       Client: this.SearchPartyForm.controls['name'].value,
       isSummary: this.SearchPartyForm.controls['isSummary'].value,
       ClientType: this.data.PartyType,
-      Report:this.data.searchFor
+      Report:this.data.searchFor,
+      txnFor:this.data.txnFor
     }
     try {
       this.loader.start();
