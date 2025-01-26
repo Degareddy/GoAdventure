@@ -89,7 +89,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         'tranNo': this.expensesForm.get('tranNo')!.value,
         'mode': this.expensesForm.controls['mode'].value,
         'status': this.tranStatus,
-        'name':this.expensesForm.get('client')?.value,
+        'name': this.expensesForm.get('client')?.value,
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -147,12 +147,12 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     };
     try {
       this.subSink.sink = this.masterService.getModesList(modeBody).subscribe((res: any) => {
-        if(res.status.toUpperCase() === "SUCCESS"){
+        if (res.status.toUpperCase() === "SUCCESS") {
           this.modes = res['data'];
         }
-        else{
-          this.retMessage="Modes list not found";
-          this.textMessageClass="red";
+        else {
+          this.retMessage = "Modes list not found";
+          this.textMessageClass = "red";
         }
       });
     }
@@ -181,15 +181,15 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     };
   }
   async onClientSearch() {
-    this.retMessage="";
-    this.textMessageClass="";
+    this.retMessage = "";
+    this.textMessageClass = "";
     this.clientCode = '';
     if (this.expensesForm.controls.clientType.value === "" || this.expensesForm.controls.clientType.value === null || this.expensesForm.controls.clientType.value === undefined) {
       this.retMessage = "Please Select Client Type";
-      this.textMessageClass="red";
+      this.textMessageClass = "red";
       return;
     }
-    else{
+    else {
       const body = {
         ...this.commonParams(),
         Type: "CLIENT",
@@ -229,13 +229,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
           }
           else {
             this.retMessage = res.message;
-            this.textMessageClass="red";
+            this.textMessageClass = "red";
           }
         });
       }
       catch (ex: any) {
         this.retMessage = ex.message;
-        this.textMessageClass="red";
+        this.textMessageClass = "red";
       }
     }
 
@@ -306,7 +306,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       this.expCls.notes = this.expensesForm.controls['notes'].value;
       this.expCls.tranStatus = this.tranStatus;
       this.expCls.tranDate = this.formatDate(this.expensesForm.controls['tranDate'].value);
-     
+
       this.expCls.tranNo = this.expensesForm.controls['tranNo'].value;
       this.expCls.Supplier = this.clientCode;
       try {
@@ -335,7 +335,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }
 
   }
-  
+
 
   Close() {
     this.router.navigateByUrl('/home');
@@ -365,6 +365,12 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   searchData() {
+    this.retMessage = "";
+    this.textMessageClass = "";
+    this.expensesForm = this.formInit();
+    this.tranAmount = 0;
+    this.balanceAmount=0;
+    this.tranStatus="";
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);

@@ -700,10 +700,22 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     this.PandLForm.valueChanges.subscribe(() => {
       if (this.PandLForm.controls.summary.dirty) {
         this.setColumnDefs();
+        this.PandLForm.controls.summary.markAsPristine();
       }
+      if (this.PandLForm.controls.reportType.dirty) {
+        if (this.PandLForm.controls.reportType.value.toUpperCase() === "COMPANY") {
+          this.branchList = [];
+          this.PandLForm.controls.branch.patchValue("All", { emitEvent: false });
+        } else {
+          this.loadData();
+        }
+        this.PandLForm.controls.reportType.markAsPristine();
+      }
+
       this.rowData = [];
       this.clearMsg();
     });
+
   }
 
   onLnkClicked(event: any) {
@@ -874,10 +886,8 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     };
     const service2 = this.adminService.GetMasterItemsList(branchbody);
     try{
-      this.loader.start();
       this.subsink.sink = forkJoin([service2]).subscribe(
         (results: any[]) => {
-          this.loader.stop();
           const res2 = results[0];
           if (res2 && res2.data) {
             this.branchList = res2.data;

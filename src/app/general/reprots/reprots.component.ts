@@ -2029,6 +2029,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           if (res && res.data && res.data.nameCount === 1) {
             this.reportForm.controls['client'].patchValue(res.data.selName);
             this.landlordCode = res.data.selCode;
+            this.custName = res.data.selName;
           }
           else {
             if (!this.dialogOpen) {
@@ -2046,6 +2047,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
                 if (result != true) {
                   this.reportForm.controls['client'].patchValue(result.partyName);
                   this.landlordCode = result.code;
+                  this.custName = result.partyName;
                 }
 
                 this.dialogOpen = false;
