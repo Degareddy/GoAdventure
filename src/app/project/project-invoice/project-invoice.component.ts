@@ -698,6 +698,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     }
   }
   bindFormData(res: any) {
+
     this.salesExecCode = res['data'].executive;
     this.saleForm.patchValue({
       tranNo: res['data'].tranNo,
@@ -725,7 +726,8 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       isFull: res['data'].isFull,
       transferAmount: res['data'].transferAmount,
       transferTo: res['data'].transferTo,
-      miscellaneous: res['data'].isMiscInvoice
+      miscellaneous: res['data'].isMiscInvoice,
+      isUtility: res['data'].isUtilityInvoice
     });
 
     this.invCls.tenant = res['data'].tenant;
@@ -1032,9 +1034,9 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
 
     if (controlName === 'applyVAT') {
       // No additional actions for "Apply VAT" checkbox since it can be independent
-    } else if (['miscellaneous', 'includeExpenses', 'isRentInvoice'].includes(controlName)) {
+    } else if (['isUtility','miscellaneous', 'includeExpenses', 'isRentInvoice'].includes(controlName)) {
       // Uncheck the others when one of these grouped checkboxes is checked
-      ['miscellaneous', 'includeExpenses', 'isRentInvoice'].forEach(name => {
+      ['isUtility','miscellaneous', 'includeExpenses', 'isRentInvoice'].forEach(name => {
         if (name !== controlName) {
           controls[name].setValue(false);
         }
