@@ -271,7 +271,8 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       currency: row.currency,
       property: row.propCode,
       block: row.blockCode,
-      flat:row.unitName
+      flat:row.unitName,
+      clientType:row.partyType
     });
     this.partyCode = row.party;
     this.slNum = row.slNo;

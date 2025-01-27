@@ -53,11 +53,16 @@
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Tran Date</mat-label>
-          <input matInput [matDatepicker]="picker" [max]="tomorrow" placeholder="TranDate" formControlName="tranDate"
-            type="Datepicker">
+          <input matInput 
+                 [matDatepicker]="picker" 
+                 [max]="tomorrow" 
+                 placeholder="TranDate" 
+                 formControlName="tranDate"
+                 (dateChange)="onDateChange($event)">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+        
       </div>
       <div class="col-3">
         <mat-form-field appearance="outline">

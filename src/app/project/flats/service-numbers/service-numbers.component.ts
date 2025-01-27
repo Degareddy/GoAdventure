@@ -197,6 +197,22 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
       this.handleError(ex.message);
     }
   }
+  onDeviceDateChange(event: any): void {
+    const selectedDate = new Date(event.value);
+    // Adjust for timezone offset (if necessary)
+    const adjustedDate = new Date(
+      selectedDate.getTime() + Math.abs(selectedDate.getTimezoneOffset() * 60000)
+    );
+    this.serviceForm.get('deviceDate')?.setValue(adjustedDate);
+  }
+  serviceTypeChnage(){
+    this.serviceForm.get('serviceNo')?.patchValue('');
+    this.serviceForm.get('deviceNo')?.patchValue('');
+    this.serviceForm.get('deviceDate')?.patchValue(new Date());
+    this.serviceForm.get('serviceStatus')?.patchValue('');
+    this.serviceForm.get('notes')?.patchValue('');
+  }
+  
   prepareServiceCls() {
     const formValues = this.serviceForm.value;
     this.serviceCls.blockCode = this.data.Block;
