@@ -262,11 +262,11 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.retVal === 0) {
-        if (res && res.data && res.data.tranCount === 1) {
-          this.getOpeningBalalceHdr(res.data.selTranNo, this.openingBalForm.controls['mode'].value);
+        // if (res && res.data && res.data.tranCount === 1) {
+        //   this.getOpeningBalalceHdr(res.data.selTranNo, this.openingBalForm.controls['mode'].value);
 
-        }
-        else {
+        // }
+        // else {
           this.retMessage = '';
           if (!this.detdialogOpen) {
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -283,7 +283,7 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
 
             });
           }
-        }
+        // }
       }
       else {
         this.displayMessage("Error: " + res.message, "red");
