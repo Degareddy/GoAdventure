@@ -170,13 +170,13 @@ export class QuotationComponent implements OnInit, OnDestroy {
     const curbody: getPayload = {
       ...this.commonParams(),
       item: "CURRENCY",
-      mode:this.quotationForm.get('mode')!.value
+      mode: this.quotationForm.get('mode')!.value
 
     };
     const payTerm: getPayload = {
       ...this.commonParams(),
       item: "PAYTERM",
-      mode:this.quotationForm.get('mode')!.value
+      mode: this.quotationForm.get('mode')!.value
     };
     const service1 = this.invService.getModesList(modebody);
     const service2 = this.invService.GetMasterItemsList(curbody);
@@ -243,46 +243,16 @@ export class QuotationComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() === "SUCCESS") {
           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
-
             this.quotationForm.get('tranNo')?.patchValue(res.data.selTranNo);
             this.quotationData(this.masterParams, this.quotationForm.get('mode')?.value);
           }
           else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  'tranNum': this.quotationForm.get('tranNo')!.value, 'TranType': "QUOTATION",
-                  'search': 'Quotation Search'
-                }
-              });
-              // this.tranStatus = "";
-              // this.quotationForm = this.formInit();
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                this.dialogOpen = false;
-                if (result != true && result != undefined) {
-                  this.masterParams.tranNo = result;
 
-                  this.quotationForm.get('tranNo')?.patchValue(result);
-                  try {
-                    this.quotationData(this.masterParams, this.quotationForm.get('mode')?.value);
-                  }
-                  catch (ex: any) {
-                    this.retMessage = "Exception " + ex.message;
-                    this.textMessageClass = 'red';
-                  }
-                }
-
-              });
-            }
-
+            this.openSearch();
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.openSearch();
         }
 
       });
@@ -292,6 +262,38 @@ export class QuotationComponent implements OnInit, OnDestroy {
       this.textMessageClass = 'red';
     }
 
+  }
+
+  openSearch() {
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          'tranNum': this.quotationForm.get('tranNo')!.value, 'TranType': "QUOTATION",
+          'search': 'Quotation Search'
+        }
+      });
+      // this.tranStatus = "";
+      // this.quotationForm = this.formInit();
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true && result != undefined) {
+          this.masterParams.tranNo = result;
+
+          this.quotationForm.get('tranNo')?.patchValue(result);
+          try {
+            this.quotationData(this.masterParams, this.quotationForm.get('mode')?.value);
+          }
+          catch (ex: any) {
+            this.retMessage = "Exception " + ex.message;
+            this.textMessageClass = 'red';
+          }
+        }
+
+      });
+    }
   }
   quotationData(supp: MasterParams, mode: string) {
     try {
@@ -365,7 +367,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if(result != true){
+                if (result != true) {
                   this.quotationForm.get('customer')!.patchValue(result.partyName);
                   this.custCode = result.code;
                 }
@@ -409,7 +411,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if(result != true){
+                if (result != true) {
                   this.quotationForm.controls['salesExec'].patchValue(result.partyName);
                   this.salesExecCode = result.code;
                 }
@@ -513,7 +515,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
           this.quotationData(this.masterParams, this.quotationForm.get('mode')?.value)
         }
         else {
-       this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage("Error: " + res.message, "red");
         }
 
 
