@@ -226,11 +226,11 @@ export class GrnComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR" && res.status.toUpperCase() != "FAILED") {
-        if (res && res.data && res.data.tranCount === 1) {
-          this.masterParams.tranNo = res.data.selTranNo;
-          this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
-        }
-        else {
+        // if (res && res.data && res.data.tranCount === 1) {
+        //   this.masterParams.tranNo = res.data.selTranNo;
+        //   this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
+        // }
+        // else {
           if (!this.dialogOpen) {
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
               width: '90%',
@@ -246,7 +246,7 @@ export class GrnComponent implements OnInit, OnDestroy {
             });
           }
 
-        }
+        // }
       } else {
         if (!this.dialogOpen) {
           const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -439,12 +439,8 @@ export class GrnComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.status.toUpperCase() != "FAIL") {
-        if (res && res.data && res.data.tranCount === 1) {
-          this.masterParams.tranNo = res.data.selTranNo;
-          this.grnForm.controls['pONo'].patchValue(res.data.selTranNo);
-          this.getPurchaseOrderData(this.masterParams);
-        }
-        else {
+        
+         
           this.retMessage = '';
           if (!this.dialogOpen) {
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -466,7 +462,6 @@ export class GrnComponent implements OnInit, OnDestroy {
             });
           }
 
-        }
       }
       else {
         if (!this.dialogOpen) {
