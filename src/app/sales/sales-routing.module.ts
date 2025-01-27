@@ -23,6 +23,7 @@ import { SaleGuard } from './_guard/sale.guard';
 import { ReprotsComponent } from '../general/reprots/reprots.component';
 import { DeliveryComponent } from './delivery/delivery.component';
 import { SaleOrderComponent } from './sale-order/sale-order.component';
+import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-credit-note.component';
 
 
 const routes: Routes = [
@@ -50,9 +51,10 @@ const routes: Routes = [
   { path: 'customer-contacts/:code/:slno', component: CustomerContactsComponent, canActivate: [SaleGuard] },
   { path: 'delivery', component: DeliveryComponent, canActivate: [SaleGuard] },
   { path: 'sale-order', component: SaleOrderComponent, canActivate: [SaleGuard] },
+  { path: 'debit-credit-note', component: DebitCreditNoteComponent, canActivate: [SaleGuard] },
 
 ]
-// }];
+// }];debit-credit-note
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

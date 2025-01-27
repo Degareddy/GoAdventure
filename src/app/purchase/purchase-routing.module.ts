@@ -17,6 +17,7 @@ import { PurchaseGuard } from './_guard/purchase.guard';
 import { OpeningBalancesComponent } from './opening-balances/opening-balances.component';
 import { GoodsReturnComponent } from './goods-return/goods-return.component';
 import { ReceiptsComponent } from '../sales/receipts/receipts.component';
+import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-credit-note.component';
 
 const routes: Routes = [
   // {
@@ -36,7 +37,8 @@ const routes: Routes = [
   { path: 'payments-analysis', component: PaymentsAnalysisComponent, canActivate: [PurchaseGuard] },
   { path: 'credit-account', component: CreditAccountComponent, canActivate: [PurchaseGuard] },
   { path: 'purchase-dashboard', component: PurchaseDashboardComponent, canActivate: [PurchaseGuard] },
-  { path: 'receipts-payments', component: ReceiptsComponent, canActivate: [PurchaseGuard] }
+  { path: 'receipts-payments', component: ReceiptsComponent, canActivate: [PurchaseGuard] },
+  { path: 'debit-credit-note', component: DebitCreditNoteComponent, canActivate: [PurchaseGuard] }
 ]
 // }];
 
