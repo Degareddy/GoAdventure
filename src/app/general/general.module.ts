@@ -29,6 +29,7 @@ import { BtnRendererComponent } from './access-grid/button-renderer.component';
 import { DetailRendererComponent } from './access-grid/detail-renderer.component';
 import { SideOverlayComponent } from './side-overlay/side-overlay.component';
 import { SearchCashTransferComponent } from './search-cash-transfer/search-cash-transfer.component';
+import { DebitCreditNoteComponent } from './debit-credit-note/debit-credit-note.component';
 // import { LoaderComponent } from './loader/loader.component';
 @NgModule({
   declarations: [AccessGridComponent,
@@ -55,6 +56,7 @@ import { SearchCashTransferComponent } from './search-cash-transfer/search-cash-
     DetailRendererComponent,
     SideOverlayComponent,
     SearchCashTransferComponent,
+    DebitCreditNoteComponent,
     // LoaderComponent,
   ],
   imports: [
@@ -64,7 +66,7 @@ import { SearchCashTransferComponent } from './search-cash-transfer/search-cash-
     MaterialModule,
     ReactiveFormsModule
   ],
-  exports: [AccessGridComponent, NumberFormatDirective, SearchPartyComponent, SeparatorDirective, ExchangeDirective,AlphanumericDirective,
+  exports: [AccessGridComponent, NumberFormatDirective, SearchPartyComponent, SeparatorDirective, ExchangeDirective, AlphanumericDirective,
     SearchProductComponent,
     SearchProjectComponent,
     DirectionsComponent,
@@ -73,9 +75,10 @@ import { SearchCashTransferComponent } from './search-cash-transfer/search-cash-
     ReprotsComponent,
     FlatSearchComponent,
     LinkRendererComponent,
+    DebitCreditNoteComponent,
     DetailRendererComponent,
-    SearchAssetComponent, SendsmsComponent,FormsModule,ReactiveFormsModule,AgGridModule,
-    MessageBoxComponent,MaterialModule,BtnRendererComponent,SideOverlayComponent,SearchCashTransferComponent],
+    SearchAssetComponent, SendsmsComponent, FormsModule, ReactiveFormsModule, AgGridModule,
+    MessageBoxComponent, MaterialModule, BtnRendererComponent, SideOverlayComponent, SearchCashTransferComponent],
   providers: [
     { provide: DateAdapter, useClass: AppDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS }
