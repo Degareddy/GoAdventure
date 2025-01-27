@@ -125,7 +125,14 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
       validators: this.atLeastOneCheckboxSelectedValidator('isCustomer', 'isVendor', 'isEmployee', 'isLandlord', 'isTenant','isCareTaker')
     });
   }
-
+  onDeviceDateChange(event: any): void {
+    const selectedDate = new Date(event.value);
+    // Adjust for timezone offset (if necessary)
+    const adjustedDate = new Date(
+      selectedDate.getTime() + Math.abs(selectedDate.getTimezoneOffset() * 60000)
+    );
+    this.custForm.get('effectiveDate')?.setValue(adjustedDate);
+  }
   alphanumericValidator() {
     return (control: any) => {
       const value = control.value;

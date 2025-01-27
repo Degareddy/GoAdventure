@@ -497,7 +497,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       property: ['', Validators.required],
       block: ['', Validators.required],
       flat: ['', Validators.required],
-      tranDate: [new Date(), Validators.required],
+      tranDate: ["2024-10-31", Validators.required],
       notes: [''],
       mode: ['View'],
       tranNo: ['']
@@ -605,6 +605,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
         this.tenantCode = res.data.tenant;
         this.previousReading = res.data.prevRdg;
         this.previousRdgDate = res.data.prevRdgDate;
+        
       }
       else {
         this.handleError(res);

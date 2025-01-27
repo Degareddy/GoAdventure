@@ -89,12 +89,14 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   totalLandLord: number = 0;
   selectDate: string = 'TO Date';
   loanBalAmount: number = 0;
-  totLoanAmt: number = 0
+  totLoanAmt: number = 0;
+  firstDayOfMonth:any = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  formattedFirstDayOfMonth : any = this.formatDated(this.firstDayOfMonth);
   totLoanPaid: number = 0;
   totLoanBal: number = 0;
   private subscriptions: Subscription = new Subscription();
   constructor(private fb: FormBuilder, protected router: Router, private userDataService: UserDataService, protected projService: ProjectsService,
-    private masterService: MastersService, private datepipe: DatePipe, private saleService: SalesService, private store: Store, private navigationService: NavigationService,
+    private datePipe: DatePipe,private masterService: MastersService, private datepipe: DatePipe, private saleService: SalesService, private store: Store, private navigationService: NavigationService,
     private utlService: UtilitiesService, private loader: NgxUiLoaderService, public dialog: MatDialog) {
     this.reportForm = this.formInit();
     this.subsink = new SubSink();
@@ -829,6 +831,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     }
   }
   async ngOnInit() {
+    
     // this.getTotalRow();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
@@ -897,6 +900,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       this.store.dispatch(clearReportState());
     }
     this.customerType();
+    console.log(this.formattedFirstDayOfMonth)
+    this.reportForm.get('fromDate')?.patchValue(this.formattedFirstDayOfMonth);
   }
   refreshData() {
     this.reportForm.controls['summary'].valueChanges.subscribe(() => {
@@ -1772,6 +1777,10 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     }
 
   }
+  formatDated(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+
   processRowPostCreate(rowData: any[]) {
     if (this.reportForm.controls['reportType']!.value.toUpperCase() === 'DEPOSIT') {
       let totDep = 0;

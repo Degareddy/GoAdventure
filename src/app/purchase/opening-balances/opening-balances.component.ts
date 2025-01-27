@@ -160,7 +160,14 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
     this.opBalCls.balType = this.openingBalForm.get('balType')?.value;
     this.opBalCls.notes = this.openingBalForm.get('notes')?.value;
   }
-
+  onDateChange(event: any): void {
+    const selectedDate = new Date(event.value);
+    const adjustedDate = new Date(
+      selectedDate.getTime() + Math.abs(selectedDate.getTimezoneOffset() * 60000)
+    );
+    this.openingBalForm.get('tranDate')?.setValue(adjustedDate);
+  }
+  
   onLnkClicked(event: any): void {
 
   }

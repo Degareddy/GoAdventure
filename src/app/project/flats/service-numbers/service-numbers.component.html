@@ -15,7 +15,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label class="mat-label-class">Service Type</mat-label>
-          <mat-select matInput formControlName="serviceType">
+          <mat-select matInput formControlName="serviceType" (selectionChange)="serviceTypeChnage()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of serData" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
@@ -51,12 +51,17 @@
       </div>
       <div class="col-md-3">
         <mat-form-field class="mat-date" appearance="outline">
-          <mat-label class="mat-label-class">Date</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="deviceDate" [max]="today"
-             />
+          <mat-label class="mat-label-class">Device Date</mat-label>
+          <input matInput 
+                 [matDatepicker]="picker" 
+                 formControlName="deviceDate" 
+                 [max]="today" 
+                 placeholder="Select a date" 
+                 (dateChange)="onDeviceDateChange($event)" />
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+        
       </div>
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
