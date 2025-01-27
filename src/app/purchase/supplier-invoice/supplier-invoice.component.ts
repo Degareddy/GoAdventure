@@ -175,11 +175,11 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchreqservice.GetTranCount(body).subscribe((res: any) => {
       if (res.retVal === 0) {
-        if (res && res.data && res.data.tranCount === 1) {
-          this.masterParams.tranNo = res.data.selTranNo;
-          this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
-        }
-        else {
+        // if (res && res.data && res.data.tranCount === 1) {
+        //   this.masterParams.tranNo = res.data.selTranNo;
+        //   this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
+        // }
+        // else {
           if (!this.dialogOpen) {
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
               width: '90%',
@@ -198,7 +198,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
               }
             });
           }
-        }
+        // }
       }
       else {
         this.tranStatus = '';
