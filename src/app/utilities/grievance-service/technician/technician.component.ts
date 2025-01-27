@@ -11,6 +11,9 @@ import { DatePipe } from '@angular/common';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Mode, searchType, TextClr, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-technician',
@@ -127,6 +130,10 @@ export class TechnicianComponent implements OnInit, OnDestroy {
     this.techCls.TranNo = this.data.tranNo;
     this.techCls.User = this.userDataService.userData.userID;
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   apply() {
     if (this.technicianForm.invalid) {
       return;
@@ -135,24 +142,21 @@ export class TechnicianComponent implements OnInit, OnDestroy {
       this.prepareGrvCls();
       this.loader.start();
       try {
-        this.subsink.sink = this.utilityService.UpdateGrievanceTechs(this.techCls).subscribe((res: any) => {
+        this.subsink.sink = this.utilityService.UpdateGrievanceTechs(this.techCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.returnMsg = res.message;
             this.loadData(res.tranNoNew, true);
             this.dataFlag = true;
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -169,30 +173,27 @@ export class TechnicianComponent implements OnInit, OnDestroy {
     }
     try {
       this.subsink.sink = this.utilityService.GetGrievanceTechs(techBody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
-          if (loadFlag && this.data.mode != "Delete" && this.slNum === 0) {
+          if (loadFlag && this.data.mode.toUpperCase() != Mode.Delete && this.slNum === 0) {
             const maxSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
               return Math.max(maxSlNo, currentItem.slNo);
             }, 0);
             console.log('Max slNo:', maxSlNo);
             this.slNum = maxSlNo;
           }
-          else if (loadFlag && this.data.mode === "Delete" && this.slNum != 0) {
+          else if (loadFlag && this.data.mode.toUpperCase() === Mode.Delete && this.slNum != 0) {
             this.addRecord();
-            this.retMessage = this.returnMsg;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + this.returnMsg, TextClr.green);
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -211,7 +212,6 @@ export class TechnicianComponent implements OnInit, OnDestroy {
 
   formInit() {
     return this.fb.group({
-      // mode: ['View'],
       party: ['', Validators.required],
       fromDate: [new Date(), Validators.required],
       givenDate: [new Date(), Validators.required],
@@ -225,7 +225,6 @@ export class TechnicianComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    // console.log(event.data);
     this.slNum = event.data.slNo;
     this.techCls.TechCode = event.data.techCode;
     this.techCls.Notes = event.data.notes;
@@ -241,9 +240,7 @@ export class TechnicianComponent implements OnInit, OnDestroy {
       notes: event.data.notes,
       taskStatus: event.data.taskStatus
     });
-    // this.getGrievanceDetails(event.data.tranNo);
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
   commonParams() {
@@ -257,14 +254,14 @@ export class TechnicianComponent implements OnInit, OnDestroy {
   onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "EMPLOYEE",
+      Type: Type.EMPLOYEE,
       item: this.technicianForm.controls['party'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
     }
     try {
       this.subsink.sink = this.utilityService.GetNameSearchCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.nameCount === 1) {
             this.technicianForm.controls['party'].patchValue(res.data.selName);
             this.techCls.TechCode = res.data.selCode
@@ -275,8 +272,8 @@ export class TechnicianComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.technicianForm.controls['party'].value, 'PartyType': "EMPLOYEE",
-                  'search': 'Employee Search'
+                  'tranNum': this.technicianForm.controls['party'].value, 'PartyType': Type.EMPLOYEE,
+                  'search': searchType.EMPLOYEE
                 }
               });
               this.dialogOpen = true;
@@ -291,14 +288,12 @@ export class TechnicianComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -325,7 +320,6 @@ export class TechnicianComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(dialogResult => {
-      console.log(dialogResult);
       if (dialogResult) {
         this.apply();
       }
@@ -336,7 +330,6 @@ export class TechnicianComponent implements OnInit, OnDestroy {
     this.technicianForm = this.formInit();
     this.slNum = 0;
     this.currentStatus = "";
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("", "");
   }
 }

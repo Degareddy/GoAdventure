@@ -18,6 +18,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
+import { displayMsg, ScreenId, searchNotes, TextClr, TranStatus, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-grievance-service',
@@ -196,31 +198,37 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
   Close() {
     this.router.navigateByUrl('/home');
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   loadData() {
     const modebody = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
-      item: 'ST912',
+      item: ScreenId.GRIEVANCES_SCRID,
       refNo: this.userDataService.userData.sessionID
     };
     try {
       const modes$ = this.masterService.getModesList(modebody);
       this.subSink.sink = forkJoin([modes$]).subscribe(
         ([modesRes]: any) => {
-          this.modes = modesRes['data'];
+          if(modesRes.status.toUpperCase()=== AccessSettings.SUCCESS){
+            this.modes = modesRes['data'];
+          }
+          else{
+            this.displayMessage(displayMsg.ERROR+ "Modes list empty!", TextClr.red);
+          }
         },
         error => {
-          this.retMessage = error.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
 
         }
       );
 
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -231,24 +239,22 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
     this.grParams.fromDate = this.formatDate(this.grievancesForm.controls['fromDate'].value);
     this.grParams.toDate = this.formatDate(this.grievancesForm.controls['toDate'].value);
     this.grParams.all = this.grievancesForm.controls['all'].value;
-    this.grParams.tranType = "GRIEVANCE";
+    this.grParams.tranType = TranType.GRIEVANCE;
     this.loader.start();
     try {
       this.subSink.sink = this.utilityService.GetSelectedGrievancesList(this.grParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
           this.rowData = [];
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       this.loader.stop();
     }
   }
@@ -280,8 +286,7 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
   }
 
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     this.tenant = "";
     this.tenantName = "";
 
@@ -323,15 +328,15 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
 
     this.grParams.langId = this.userDataService.userData.langId;
-    this.grParams.issueStatus = "ANY";
+    this.grParams.issueStatus = TranStatus.ANY;
     this.grParams.fromDate = formattedFirstDayOfMonth;
     this.grParams.toDate = formattedCurrentDate;
     this.grParams.tranNo = tranNo;
-    this.grParams.tranType = "GRIEVANCE";
+    this.grParams.tranType = TranType.GRIEVANCE;
     this.loader.start();
     this.subSink.sink = this.utilityService.GetTenantSpecificGrievanceDetails(this.grParams).subscribe((res: any) => {
       this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.tenant = res['data'].tenant;
         this.tenantName = res['data'].tenantName;
         this.grcls.propertyName = res['data'].propertyName
@@ -370,8 +375,7 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
         this.grievancesForm.controls['allocatedTime'].setValue(res['data'].allocatedTime);
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
       }
     });
   }
@@ -465,8 +469,7 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
     this.grcls.closedTime = formValues.closedTime;
   }
   update() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     if (this.grievancesForm.invalid) {
       return;
     }
@@ -476,21 +479,18 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.utilityService.UpdateGrievanceAllocation(this.grcls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.refernceNo = res.tranNoNew;
             this.getGrievanceDetails(this.refernceNo);
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
           else {
-            this.textMessageClass = "red";
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
           }
         })
       }
       catch (ex: any) {
-        this.textMessageClass = "red";
-        this.retMessage = ex.message;
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -498,7 +498,7 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST909",
+        ScrId: ScreenId.GRIEVANCES_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -517,13 +517,13 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
         'tranNo': this.refernceNo,
         'mode': this.grievancesForm.controls['mode'].value,
         'note': this.notes,
-        'TranType': "GRIEVANCE",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "GRIEVANCE Notes"
+        'TranType': TranType.GRIEVANCE,  // Pass any data you want to send to CustomerDetailsComponent
+        'search': searchNotes.GRIEVANCE_NOTE
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
 }

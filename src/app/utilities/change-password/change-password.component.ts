@@ -5,6 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 
 @Component({
@@ -75,11 +77,14 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     }
     return null;
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
  async onSubmit() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+   this.displayMessage("", "");
     if (this.chPassForm.invalid) {
+      this.displayMessage("Please enter valid details", TextClr.red);
       return;
     }
     else {
@@ -96,15 +101,13 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink =await this.utilityService.UpdatePassword(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.toaster.success("Password changed successfully,Login Again", "Success");
           this.router.navigateByUrl('/');
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
 

@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { AuthService } from 'src/app/Services/authentication/auth.service';
 import { MastersService } from 'src/app/Services/masters.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 
 @Component({
@@ -31,13 +33,15 @@ export class ForgotPasswordComponent implements OnInit,OnDestroy {
   ngOnDestroy(): void {
   this.subSink.unsubscribe();
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   ngOnInit() {
     this.authService.forgotLog();
   }
   async onSubmit() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+  this.displayMessage("", "");
     // if (this.forgotPasswordForm.valid) {
     //   this.loader.start();
     //   this.subSink.sink = await this.master.ResetPassword(this.forgotPasswordForm.value).subscribe((res) => {
@@ -62,17 +66,17 @@ export class ForgotPasswordComponent implements OnInit,OnDestroy {
 
         this.loader.stop();
 
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.retMessage = "Mail has been sent. Please check your email at " + this.forgotPasswordForm.controls.ToEmail.value + " for your temporary password.";
-          this.textMessageClass = "green";
+          this.textMessageClass =TextClr.green;
         } else {
           this.retMessage = "We encountered an issue while trying to send the email. Please try again or contact support if the problem persists.";
-          this.textMessageClass = "red";
+          this.textMessageClass = TextClr.red;;
         }
       } catch (error) {
         this.loader.stop();
         this.retMessage = "An error occurred. Please try again later.";
-        this.textMessageClass = "red";
+        this.textMessageClass = TextClr.red;;
       }
     }
 

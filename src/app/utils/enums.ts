@@ -29,7 +29,8 @@ export enum Items {
   VENTURE="VENTURE",
   EMPLOYEE="EMPLOYEE",
   CURRENCY="CURRENCY",
-
+  TRANS="TRANS",
+  GRIEVANCES="GRIEVANCES"
 }
 export enum Mode {
   Add = 'ADD',
@@ -49,7 +50,11 @@ export enum TranType {
   PRODUCT="PRODUCT",
   BLOCKS="BLOCKS",
   BOUNDARY="BOUNDARY",
-  PREBOOK="PREBOOK"
+  PREBOOK="PREBOOK",
+  MASTERITEM="MASTERITEM",
+  DOCUMNENTNUMBER="DOCUMNENTNUMBER",
+  GRIEVANCE="GRIEVANCE",
+  GRIEVANCES="GRIEVANCES"
 }
 
 export enum TranStatus {
@@ -66,7 +71,9 @@ export enum searchType {
   PROPERTY="Property Search",
   BLOCK="Block Search",
   VENTURE="Venture Search",
-  TENANT="Tenant Search"
+  TENANT="Tenant Search",
+  MASTERDATA="Master Data Search",
+  EMPLOYEE="Employee Search"
 }
 export enum Type{
   PRODUCT="PRODUCT",
@@ -74,7 +81,9 @@ export enum Type{
   USER="USER",
   BLOCK="BLOCK",
   FLAT="FLAT",
-  TENANT="TENANT"
+  TENANT="TENANT",
+  EMPLOYEE="EMPLOYEE",
+  SMS="SMS"
 }
 
 export enum ScreenId {
@@ -199,7 +208,9 @@ export enum searchNotes {
   COMPANY_NOTE = "Company Notes",
   USER_NOTE = "User Notes",
   BLOCK_NOTE = "Blocks Notes",
-  PROPERTY_NOTE = "Property Notes"
+  PROPERTY_NOTE = "Property Notes",
+  MASATER_NOTES="Master Notes",
+  GRIEVANCE_NOTE="Grievance Notes"
 }
 
 export enum Log {
@@ -207,7 +218,9 @@ export enum Log {
   COMPANY_LOG = "Company Log",
   USER_LOG = "User Log",
   BLOCK_LOG = "Blocks Log",
-  PROPERTY_LOG = "Property Log"
+  PROPERTY_LOG = "Property Log",
+  MASTER_LOG="Master Log",
+  DOCUMNENTNUMBER="Document Log"
 }
 
 

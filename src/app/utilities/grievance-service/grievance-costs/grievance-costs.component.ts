@@ -9,6 +9,9 @@ import { GrievanceCostClass } from '../../utilities.class';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Mode, searchType, TextClr, Type } from 'src/app/utils/enums';
+import { timeStamp } from 'console';
 
 @Component({
   selector: 'app-grievance-costs',
@@ -144,36 +147,39 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
   loadData(tarnNo: string, loadFlag: boolean) {
     const costBody = {
       ...this.commonParams(),
-      tranNo:tarnNo,
+      tranNo: tarnNo,
       issueStatus: this.data.status
     }
     try {
       this.subsink.sink = this.utilityService.GetGrievanceCosts(costBody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
-          if (loadFlag && this.data.mode != "Delete" && this.slNum === 0) {
+          if (loadFlag && this.data.mode.toUpperCase() != Mode.Delete && this.slNum === 0) {
             const maxSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
               return Math.max(maxSlNo, currentItem.slNo);
             }, 0);
             console.log('Max slNo:', maxSlNo);
             this.slNum = maxSlNo;
           }
-          else if (loadFlag && this.data.mode === "Delete" && this.slNum != 0) {
+          else if (loadFlag && this.data.mode.toUpperCase() === Mode.Delete && this.slNum != 0) {
             this.addRecord();
-            this.retMessage = this.returnMsg;
-            this.textMessageClass = "green";
+            // this.retMessage = this.returnMsg;
+            // this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + this.returnMsg, TextClr.green);
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
 
   formInit() {
@@ -189,13 +195,13 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
   searchProduct() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.costDetForm.controls['prodName'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
     }
     this.subsink.sink = this.utilityService.GetNameSearchCount(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() != "FAIL") {
+      if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
         if (res.data.nameCount === 1) {
           this.costDetForm.controls['prodName'].patchValue(res.data.selName);
           this.prodCode = res.data.selCode;
@@ -205,8 +211,8 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
             width: '90%',
             disableClose: true,
             data: {
-              'tranNum': this.costDetForm.controls['prodName'].value, 'TranType': "PRODUCT",
-              'search': 'Product Search'
+              'tranNum': this.costDetForm.controls['prodName'].value, 'TranType': Type.PRODUCT,
+              'search': searchType.PRODUCT
             }
           });
           dialogRef.afterClosed().subscribe(result => {
@@ -218,15 +224,13 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     });
   }
 
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
   prepareGrvCls() {
     const formValues = this.costDetForm.value;
@@ -254,21 +258,18 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
       try {
         this.prepareGrvCls();
         this.subsink.sink = this.utilityService.UpdateGrievanceCosts(this.grCostCls).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.dataFlag = true;
             this.loadData(res.tranNoNew, true);
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         })
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -282,15 +283,15 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
   onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "EMPLOYEE",
+      Type: Type.EMPLOYEE,
       item: this.costDetForm.controls['party'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
     }
     try {
       this.subsink.sink = this.utilityService.GetNameSearchCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() != "FAIL") {
-          if (res.data.nameCount === 1) {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
+          if (res && res.data && res.data.nameCount === 1) {
             this.costDetForm.controls['party'].patchValue(res.data.selName);
           }
           else {
@@ -299,8 +300,8 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.costDetForm.controls['party'].value, 'PartyType': "EMPLOYEE",
-                  'search': 'Employee Search'
+                  'tranNum': this.costDetForm.controls['party'].value, 'PartyType': Type.EMPLOYEE,
+                  'search': searchType.EMPLOYEE
                 }
               });
               this.dialogOpen = true;
@@ -315,14 +316,12 @@ export class GrievanceCostsComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 

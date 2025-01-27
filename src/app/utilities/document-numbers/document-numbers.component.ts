@@ -13,6 +13,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, Items, Log, ScreenId, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-document-numbers',
   templateUrl: './document-numbers.component.html',
@@ -80,36 +82,49 @@ export class DocumentNumbersComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   loadData() {
-    const service1 = this.invService.getModesList({ ...this.commonParams(), item: 'SO1' });
-    const service2 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: 'COMPANY' });
-    const service3 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: 'TRANS' });
+    const service1 = this.invService.getModesList({ ...this.commonParams(), item: ScreenId.DOCUMENT_NUMBER_SCRID });
+    const service2 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: Items.COMPANY });
+    const service3 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: Items.TRANS });
     this.subSink.sink = forkJoin([service1, service2, service3]).subscribe(
       (results: any[]) => {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        if (res1.status.toUpperCase() === "SUCCESS") {
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.modes = res1.data;
         }
-        if (res2.status.toUpperCase() === "SUCCESS") {
+        else{
+          this.displayMessage(displayMsg.ERROR+ "Modes list empty!", TextClr.red);
+        }
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.companyLists = res2.data;
           if (this.companyLists.length === 1) {
             this.DocForm.get('company')!.setValue(this.companyLists[0].itemCode);
             this.companyChange(this.companyLists[0].itemCode)
           }
         }
-        if (res3.status.toUpperCase() === "SUCCESS") {
+        else{
+          this.displayMessage(displayMsg.ERROR+ "Company list empty!", TextClr.red);
+        }
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.tranLists = res3.data;
           if (this.tranLists.length === 1) {
             this.DocForm.get('transaction')!.setValue(this.tranLists[0].itemCode);
           }
         }
+        else{
+          this.displayMessage(displayMsg.ERROR+ "Transaction list empty!", TextClr.red);
+        }
 
       },
       (error: any) => {
         this.loader.stop();
-        this.handleError(error);
+        this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
       }
     );
   }
@@ -122,11 +137,11 @@ export class DocumentNumbersComponent implements OnInit, OnDestroy {
     this.locationList = [];
     const lcnbody = {
       ...this.commonParams(),
-      Item: "CMPUSERBRANCH"
+      Item: Items.CMPUSERBRANCH
     };
     try {
       this.subSink.sink = this.invService.GetMasterItemsList(lcnbody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.locationList = res.data;
           if (this.locationList.length === 1) {
             this.DocForm.get('location')!.setValue(this.locationList[0].itemCode);
@@ -135,23 +150,20 @@ export class DocumentNumbersComponent implements OnInit, OnDestroy {
         }
         else {
           this.locationList = [];
-          this.retMessage = "Locations not found";
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR+ "Locations not found", TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
-  handleError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = "red";
-  }
-  handleSuccess(res: any) {
+  // handleError(res: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = "red";
+  // }
 
-  }
   Close() {
     this.router.navigateByUrl('/home');
   }
@@ -161,12 +173,12 @@ export class DocumentNumbersComponent implements OnInit, OnDestroy {
     this.clearMsgs();
   }
   clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+   this.displayMessage("", "");
   }
   Details() {
     this.clearMsgs();
-    this.data = { mode: this.DocForm.controls['mode'].value, company: this.DocForm.controls['company'].value, location: this.DocForm.controls['location'].value, transaction: this.DocForm.controls['transaction'].value }
+    this.data = { mode: this.DocForm.controls['mode'].value, company: this.DocForm.controls['company'].value,
+       location: this.DocForm.controls['location'].value, transaction: this.DocForm.controls['transaction'].value }
     this.childComponent?.onDeleteClicked(this.data);
     this.cdr.detectChanges();
 
@@ -176,7 +188,7 @@ export class DocumentNumbersComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "S01",
+        ScrId: ScreenId.DOCUMENT_NUMBER_SCRID,
         Page: "Document Number",
         SlNo: 63,
         User: this.userDataService.userData.userID,
@@ -185,14 +197,14 @@ export class DocumentNumbersComponent implements OnInit, OnDestroy {
     });
   }
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "DOCUMNENTNUMBER",
+        'tranType': TranType.DOCUMNENTNUMBER,
         'tranNo': tranNo,
-        'search': 'Document Number'
+        'search': Log.DOCUMNENTNUMBER
       }
     });
   }

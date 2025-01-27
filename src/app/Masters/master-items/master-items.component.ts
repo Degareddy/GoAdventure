@@ -15,6 +15,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+import { displayMsg, Log, Mode, ScreenId, searchNotes, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-master-items',
@@ -101,20 +103,21 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.langId = this.userDataService.userData.langId;
-    this.masterParams.item = 'SM001';
+    this.masterParams.item = ScreenId.MASTER_DATA_SCRID;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.subsink.sink = this.masterService.getModesList(this.masterParams).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.modes = res['data'];
       }
+      // 'SM001'
       else {
-        this.displayMessage("Modes list empty!", "red");
+        this.displayMessage("Modes list empty!", TextClr.red);
       }
     });
 
     this.subsink.sink = this.masterService.getMasterTypesList(this.masterParams).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.typeNamesList = res['data'];
         if (this.typeNamesList.length === 1) {
           this.mastForm.get('typeName')!.patchValue(this.typeNamesList[0].itemCode);
@@ -122,7 +125,7 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
         }
       }
       else {
-        this.displayMessage(res.message + " for types list!", "red");
+        this.displayMessage(res.message + " for types list!", TextClr.red);
       }
 
     });
@@ -150,18 +153,18 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
       this.masterParams.item = this.mastForm.controls['typeName'].value;
       try {
         this.subsink.sink = this.masterService.getSpecificMasterItems(this.masterParams).subscribe((reslt: any) => {
-          if (reslt && reslt.data && reslt.status.toUpperCase() === "SUCCESS") {
+          if (reslt && reslt.data && reslt.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.rowData = reslt.data;
           }
           else {
             this.rowData = [];
-            this.displayMessage(reslt.message, "red");
+            this.displayMessage(reslt.message, TextClr.red);
 
           }
         });
       }
       catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
+        this.displayMessage(displayMsg.EXCEPTION+ ex.message, TextClr.red);
       }
     }
   }
@@ -173,28 +176,28 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
       this.masterParams.item = selitem;
       try {
         this.subsink.sink = this.masterService.getSpecificMasterItemDetails(this.masterParams).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.mastForm.controls['itemCode'].patchValue(res['data'].itemCode);
             this.mastForm.controls['itemName'].patchValue(res['data'].itemName);
             this.mastForm.controls['effectiveDate'].patchValue(res['data'].effectiveDate);
             this.itemStatus = res['data'].itemStatus;
             this.mastForm.controls['imgPath'].patchValue(res['data'].imgPath);
             this.mastForm.controls['notes'].patchValue(res['data'].notes);
-            if (mode === "View") {
-              this.displayMessage("Success: " + res.message, "green");
+            if (mode.toUpperCase() ===Mode.view) {
+              this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             }
             else {
-              this.displayMessage("Success: " + this.newMsg, "green");
+              this.displayMessage(displayMsg.SUCCESS + this.newMsg, TextClr.green);
             }
 
           }
           else {
-            this.displayMessage("Error: " + res.message, "red");
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
+        this.displayMessage(displayMsg.EXCEPTION+ ex.message, TextClr.red);
       }
     }
   }
@@ -212,15 +215,15 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
         this.loader.stop();
         this.retNum = result.retVal;
         this.retMessage = result.message;
-        if (result.status.toUpperCase() === "SUCCESS") {
-          if (this.mastForm.get('mode')!.value === "Add") {
+        if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
+          if (this.mastForm.get('mode')!.value.toUpperCase() === Mode.Add) {
             this.modeChanged("Modify");
           }
           this.onSelectedTypeChanged();
-          this.displayMessage("Success: " + result.message, "green");
+          this.displayMessage(displayMsg.SUCCESS + result.message, TextClr.green);
         }
         else {
-          this.displayMessage("Error: " + result.message, "red");
+          this.displayMessage(displayMsg.ERROR + result.message,TextClr.red);
         }
 
       });
@@ -239,7 +242,7 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
   }
 
   modeChanged(event: string) {
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.mastForm = this.formInit();
       this.mastForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.mastForm.controls['effectiveDate'].patchValue(new Date());
@@ -258,8 +261,8 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
       data: {
         'tranNo': tranNo,
         'mode': this.mastForm.controls['mode'].value,
-        'TranType': "MASTERITEM",
-        'search': "Master Items Notes"
+        'TranType': TranType.MASTERITEM,
+        'search': searchNotes.MASATER_NOTES
       }
     });
 
@@ -269,7 +272,7 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM001",
+        ScrId:ScreenId.MASTER_DATA_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -283,9 +286,9 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "MASTERITEM",
+        'tranType':TranType.MASTERITEM,
         'tranNo': tranNo,
-        'search': 'Master Items'
+        'search': Log.MASTER_LOG
       }
     });
   }
