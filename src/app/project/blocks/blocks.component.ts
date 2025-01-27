@@ -30,15 +30,15 @@ export class BlocksComponent implements OnInit, OnDestroy {
   @Input() max: any;
   today = new Date();
   modes: Item[] = [];
-  retMessage: string="";
-  textMessageClass: string="";
+  retMessage: string = "";
+  textMessageClass: string = "";
   propertyList: Item[] = [];
   blockList: Item[] = [];
   private subSink: SubSink;
   masterParams!: MasterParams;
   blockcls!: BlockClass;
   blockCode!: string;
-  blockStatus: string="";
+  blockStatus: string = "";
   public disableDetail: boolean = true;
   dialogOpen = false;
   public fetchStatus: boolean = true;
@@ -105,7 +105,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.loadData();
   }
- async loadData() {
+  async loadData() {
     const modebody = this.buildRequestParams(ScreenId.BLOCKS_SCRID);
     const modes$ = this.masterService.getModesList(modebody);
     const propertybody = {
@@ -114,7 +114,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
     };
     const property$ = this.masterService.GetMasterItemsList(propertybody);
 
-    try{
+    try {
       this.subSink.sink = await forkJoin([modes$, property$]).subscribe(
         ([modesRes, propRes]: any) => {
           this.handleDataLoadSuccess(modesRes, propRes);
@@ -124,8 +124,8 @@ export class BlocksComponent implements OnInit, OnDestroy {
         }
       );
     }
-    catch(ex:any){
-      this.retMessage="Exception: "+ex.message;
+    catch (ex: any) {
+      this.retMessage = "Exception: " + ex.message;
       this.textMessageClass = 'red';
     }
 
@@ -148,7 +148,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
         this.blkHdrForm.get('mode')!.patchValue(this.modes[0].itemCode);
       }
     }
-    else{
+    else {
       this.retMessage = "Modes list empty!";
       this.textMessageClass = 'red';
       return;
@@ -160,7 +160,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
         this.onSelectedPropertyChanged();
       }
     }
-    else{
+    else {
       this.retMessage = "Properties list empty!";
       this.textMessageClass = 'red';
       return;
@@ -195,12 +195,12 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.blkHdrForm = this.formInit();
     this.unitCount = 0;
     this.blockStatus = '';
-    this.retMessage="";
-    this.textMessageClass="";
+    this.retMessage = "";
+    this.textMessageClass = "";
   }
 
- async onSelectedPropertyChanged() {
-    if(this.blkHdrForm.get('mode')?.value.toUpperCase() != Mode.view){
+  async onSelectedPropertyChanged() {
+    // if (this.blkHdrForm.get('mode')?.value.toUpperCase() != Mode.view) {
       this.resetMessages();
       const propertyValue = this.blkHdrForm.controls['property'].value;
       this.masterParams.type = Type.BLOCK;
@@ -208,7 +208,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
       this.blockCode = propertyValue;
 
       try {
-        this.subSink.sink =await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe(
+        this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe(
           (result: getResponse) => {
             this.handlePropertyChangedResponse(result);
           },
@@ -220,7 +220,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
         this.retMessage = ex.message;
         this.textMessageClass = 'red';
       }
-    }
+    // }
   }
 
   private handlePropertyChangedResponse(result: getResponse) {
@@ -239,12 +239,12 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.retMessage = error.message;
     this.textMessageClass = 'red';
   }
- async onSelectedBlockChanged(event: string) {
+  async onSelectedBlockChanged(event: string) {
     this.resetMessages();
     this.masterParams.type = Type.BLOCK;
     this.masterParams.item = event;
     try {
-      this.subSink.sink =await this.projectService.getBlockDetails(this.masterParams).subscribe(
+      this.subSink.sink = await this.projectService.getBlockDetails(this.masterParams).subscribe(
         (result: getResponse) => {
           this.handleBlockDetailsResponse(result);
         },
@@ -296,15 +296,15 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.textMessageClass = 'red';
   }
 
- async onUpdate() {
+  async onUpdate() {
     if (this.blkHdrForm.valid) {
       this.prepareBlockClass();
       try {
         this.loader.start();
-        this.subSink.sink =await this.projectService.UpdateBlockDetails(this.blockcls).subscribe((res: SaveApiResponse) => {
-            this.loader.stop();
-            this.handleUpdateResponse(res);
-          },
+        this.subSink.sink = await this.projectService.UpdateBlockDetails(this.blockcls).subscribe((res: SaveApiResponse) => {
+          this.loader.stop();
+          this.handleUpdateResponse(res);
+        },
           (error: any) => {
             this.loader.stop();
             this.handleUpdateError(error);
@@ -389,8 +389,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<DirectionsComponent> = this.dialog.open(DirectionsComponent, {
       width: '90%',
       disableClose: true,
-      data: { type: Type.BLOCK, Trantype: TranType.BOUNDARY, TranNo: this.blkHdrForm.controls['blockID'].value,
-         mode: this.blkHdrForm.controls['mode'].value }
+      data: {
+        type: Type.BLOCK, Trantype: TranType.BOUNDARY, TranNo: this.blkHdrForm.controls['blockID'].value,
+        mode: this.blkHdrForm.controls['mode'].value
+      }
     });
 
   }
@@ -434,8 +436,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.blkHdrForm.controls['mode'].value,
-        tranNo: this.blkHdrForm.controls['blockID'].value, search: searchDocs.BLOCKS_DOC, tranType: Type.BLOCK }
+      data: {
+        mode: this.blkHdrForm.controls['mode'].value,
+        tranNo: this.blkHdrForm.controls['blockID'].value, search: searchDocs.BLOCKS_DOC, tranType: Type.BLOCK
+      }
     });
   }
 
@@ -449,7 +453,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
         ScrId: ScreenId.BLOCKS_SCRID,
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
 
@@ -457,21 +461,22 @@ export class BlocksComponent implements OnInit, OnDestroy {
     });
   }
 
-  NotesDetails(tranNo:any){
+  NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
-      data: { 'tranNo': tranNo,
-      'mode': this.blkHdrForm.controls['mode'].value,
-      'note':this.blkHdrForm.controls['notes'].value ,
-      'TranType': TranType.BLOCKS,
-      'search' :searchNotes.BLOCK_NOTE
-    }
+      data: {
+        'tranNo': tranNo,
+        'mode': this.blkHdrForm.controls['mode'].value,
+        'note': this.blkHdrForm.controls['notes'].value,
+        'TranType': TranType.BLOCKS,
+        'search': searchNotes.BLOCK_NOTE
+      }
     });
 
   }
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
