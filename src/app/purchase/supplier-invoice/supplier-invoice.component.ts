@@ -376,10 +376,10 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
   }
   GetClietBalanceSummary(supplierCode:string){
     let currency:string='';
-    if(this.supinvForm.get('currency')?.value === ''){
-      currency = 'KES';
+    if(this.userDataService.userData.company === "DEGANIUM"){
+      currency = 'INR';
     }else{
-      currency = this.supinvForm.get('currency')?.value
+      currency = "KES"
     }
     const body = {
       Company:this.userDataService.userData.company,
