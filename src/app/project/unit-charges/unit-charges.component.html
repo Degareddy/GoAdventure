@@ -162,7 +162,7 @@
   <div style="margin-top: -30px;">
     <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
       [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
-      [gridHeight]="'240px'" [paginationPageSize]="25" [showToolPanel]="true"
+      [gridHeight]="'240px'" [paginationPageSize]="25" [showToolPanel]="true" [excelName] ="unitDetForm.controls['propCode'].value" [reportName] ="unitDetForm.controls['propCode'].value"
       [showRecordCount]="true"></app-access-grid>
   </div>
 </div>

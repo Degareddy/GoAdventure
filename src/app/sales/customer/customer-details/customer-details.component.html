@@ -208,7 +208,7 @@
           <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
           <div class="btnAlignment">
             <button mat-raised-button color="primary" class="btnUp" (click)="checkMobileNumber()"
-              [disabled]="custForm.get('mode')!.value === 'View' ||  custForm.invalid">
+              [disabled]="custForm.get('mode')!.value === 'View' ||  custForm.invalid || custForm.get('countryCode')!.value === '' ">
               <mat-icon>done</mat-icon><b>Apply</b>
             </button>
             <button mat-raised-button color="primary" type="button" class="btnUp"

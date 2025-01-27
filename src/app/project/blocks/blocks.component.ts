@@ -104,6 +104,13 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.loadData();
+    if(this.blkHdrForm.get('mode')!.value !== 'Add'){
+      this.blkHdrForm.get('blockID')?.disable();
+    }
+    else{
+      this.blkHdrForm.get('blockID')?.enable();
+    }
+    
   }
   async loadData() {
     const modebody = this.buildRequestParams(ScreenId.BLOCKS_SCRID);

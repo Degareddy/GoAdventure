@@ -301,7 +301,7 @@ isPayment: boolean=false;
           break;
         case "PAYMENT":
           this.filteredItemsTranFor = "";
-          this.filteredItemsTranFor = this.overHeadsLsit.filter(item => item.itemCode === "BORROWR" || item.itemCode === "LENDR" || item.itemCode === "RENTPMT" || item.itemCode === "CASHTRF" || item.itemCode === "RENTDPST" || item.itemCode === "REFUND" || item.itemCode === "EXPENSE"
+          this.filteredItemsTranFor = this.overHeadsLsit.filter(item => item.itemCode === "BORROWR" || item.itemCode === "LENDING" || item.itemCode === "RENTPMT" || item.itemCode === "CASHTRF" || item.itemCode === "RENTDPST" || item.itemCode === "REFUND" || item.itemCode === "EXPENSE"
           );
           break;
         default:

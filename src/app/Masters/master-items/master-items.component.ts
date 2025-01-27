@@ -147,6 +147,13 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
       });
     };
   }
+  onDateChange(event: any): void {
+    const selectedDate = new Date(event.value);
+    const adjustedDate = new Date(
+      selectedDate.getTime() + Math.abs(selectedDate.getTimezoneOffset() * 60000)
+    );
+    this.mastForm.get('effectiveDate')?.setValue(adjustedDate);
+  }
   onSelectedTypeChanged() {
     this.displayMessage("", "");
     if (this.mastForm.controls['typeName'].value !== "") {

@@ -41,6 +41,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
   @Input() autoSizeColumns!: boolean;
   @Input() totals: string = "";
   @Input() gridHeight: string = '';
+  @Input() excelName: string = 'Report';
   @Output() btnClicked = new EventEmitter();
   @Output() iconClicked = new EventEmitter();
   @Output() linkClicked = new EventEmitter();
@@ -618,7 +619,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
 
       workbook.xlsx.writeBuffer().then((buffer) => {
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        saveAs(blob, 'Report.xlsx'); // Use saveAs from file-saver
+        saveAs(blob, this.excelName + '.xlsx' ); // Use saveAs from file-saver
       });
     }
   }

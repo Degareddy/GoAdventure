@@ -62,7 +62,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Date</mat-label>
-          <input matInput [matDatepicker]="picker2" formControlName="effectiveDate" [max]="tomorrow" />
+          <input matInput [matDatepicker]="picker2" formControlName="effectiveDate" (dateChange)="onDateChange($event)" [max]="tomorrow" />
           <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
           <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>

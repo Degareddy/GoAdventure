@@ -109,7 +109,14 @@ export class BranchesComponent implements OnInit, OnDestroy {
       this.getBranchListData(this.data.company);
     }
   }
-
+  onPhone1Change(value:any){
+    const input = value.target.value.replace(/[^0-9]/g, '');
+    this.bDetForm.controls['phone1'].patchValue(input);
+  }
+  onPhone2Change(value:any){
+    const input = value.target.value.replace(/[^0-9]/g, '');
+    this.bDetForm.controls['phone2'].patchValue(input);
+  }
   loadData() {
     const lcnbody:getPayload = {
       ...this.commonParams(),

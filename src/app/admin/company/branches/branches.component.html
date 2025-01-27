@@ -78,7 +78,7 @@
         <div class="col-2">
           <mat-form-field appearance="outline" class="mat-mode">
             <mat-label class="mat-label-class">Phone1</mat-label>
-            <input matInput placeholder="Phone1" formControlName="phone1" type="text">
+            <input matInput placeholder="Phone1" formControlName="phone1" type="text" (focusout)="onPhone1Change($event)">
           </mat-form-field>
         </div>
 
@@ -90,7 +90,7 @@
         <div class="col-2">
           <mat-form-field appearance="outline" class="mat-mode">
             <mat-label>Phone2</mat-label>
-            <input matInput placeholder="Phone2" formControlName="phone2" type="text">
+            <input matInput placeholder="Phone2" formControlName="phone2" type="text" (focusout)="onPhone2Change($event)">
           </mat-form-field>
         </div>
         <div class="col-2">
