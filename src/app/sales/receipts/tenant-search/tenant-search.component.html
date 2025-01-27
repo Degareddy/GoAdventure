@@ -54,6 +54,8 @@
         (click)="search()"><mat-icon>search</mat-icon>Search</button>
       <button mat-raised-button color="accent" class=btnUp
         (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
+        <button mat-raised-button color="warn" class=btnUp
+        [mat-dialog-close]="true"><mat-icon>close</mat-icon>Close</button>
     </div>
   </form>
   <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
