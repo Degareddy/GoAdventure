@@ -12,7 +12,6 @@ import { SearchEngineComponent } from 'src/app/general/search-engine/search-engi
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { SalesService } from 'src/app/Services/sales.service';
-// import { DirectInvoiceDetailsComponent } from './direct-invoice-details/direct-invoice-details.component';
 import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -20,6 +19,8 @@ import { getPayload, nameCountResponse, SaveApiResponse } from 'src/app/general/
 import { QuotationHdrCls } from '../sales.class';
 import { DirectInvoiceDetailsComponent } from '../direct-invoice/direct-invoice-details/direct-invoice-details.component';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-cash-sale',
@@ -98,8 +99,9 @@ export class CashSaleComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranType': "CASINV", 'tranNo': this.saleForm.controls['tranNo'].value, 'search': "Cash Sale Details",
-        'mode': this.saleForm.controls['mode'].value, 'status': this.tranStatus
+        tranType: TranType.CASINV, tranNo: this.saleForm.controls['tranNo'].value,
+        search: "Cash Sale Details",
+        mode: this.saleForm.controls['mode'].value, 'status': this.tranStatus
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -115,7 +117,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
-    this.masterParams.tranType = "CASINV";
+    this.masterParams.tranType = TranType.CASINV;
     this.loadData();
   }
 
@@ -131,12 +133,12 @@ export class CashSaleComponent implements OnInit, OnDestroy {
   loadData() {
     const modebody: getPayload = {
       ...this.commonParams(),
-      item: 'ST206',
+      item: ScreenId.CASH_SALE_SCRID,
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY",
-      mode:this.saleForm.get('mode')?.value
+      item: Items.CURRENCY,
+      mode: this.saleForm.get('mode')?.value
     };
     try {
       this.loader.start();
@@ -152,23 +154,24 @@ export class CashSaleComponent implements OnInit, OnDestroy {
         },
         (error: any) => {
           this.loader.stop();
-          this.retMessage = error.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
 
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage('', '');
   }
   reset() {
     this.saleForm.reset()
@@ -187,13 +190,13 @@ export class CashSaleComponent implements OnInit, OnDestroy {
     this.invoiceHdrCls.ApplyVAT = formValues.applyVAT;
     this.invoiceHdrCls.Currency = formValues.currency;
     this.invoiceHdrCls.Customer = this.custCode;
-    this.invoiceHdrCls.InvType = "CASINV";
+    this.invoiceHdrCls.InvType =TranType.CASINV;
     this.invoiceHdrCls.ExchRate = formValues.exchangeRate;
     this.invoiceHdrCls.Remarks = formValues.notes;
     this.invoiceHdrCls.Mode = formValues.mode;
     this.invoiceHdrCls.LPONo = "NA";
     this.invoiceHdrCls.SalesRep = "NA";
-    this.invoiceHdrCls.ScrId = "ST206B";
+    this.invoiceHdrCls.ScrId = ScreenId.CASH_SALE_SCRID;
     this.invoiceHdrCls.DriverID = "NA";
     this.invoiceHdrCls.DriverName = "NA";
     this.invoiceHdrCls.TruckNo = "NA";
@@ -224,7 +227,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
       try {
         this.prepareHederData();
         this.subSink.sink = this.saleService.updateInvoiceHdr(this.invoiceHdrCls).subscribe((res: SaveApiResponse) => {
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.newTranMsg = res.message;
             this.modeChange('Modify');
             this.saleForm.get('tranNo')!.patchValue(res.tranNoNew);
@@ -232,14 +235,12 @@ export class CashSaleComponent implements OnInit, OnDestroy {
             this.saleData(this.masterParams, this.saleForm.get('mode')?.value);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = 'red';
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
           }
         })
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
@@ -252,16 +253,16 @@ export class CashSaleComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'CASINV',
+      TranType: TranType.CASINV,
       TranNo: this.saleForm.get('tranNo')!.value,
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     try {
       this.subSink.sink = this.masterService.GetTranCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
             this.saleForm.get("tranNo")!.patchValue(res.data.selTranNo);
@@ -273,13 +274,12 @@ export class CashSaleComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.saleForm.get('tranNo')!.value, 'TranType': "CASINV",
+                  tranNum: this.saleForm.get('tranNo')!.value, TranType:TranType.CASINV,
                   'search': 'Sale Search'
                 }
               });
 
               dialogRef.afterClosed().subscribe(result => {
-                console.log(result);
                 this.dialogOpen = false;
                 if (result != true) {
                   this.saleForm.get("tranNo")!.patchValue(result);
@@ -291,20 +291,18 @@ export class CashSaleComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.reset();
       this.saleForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.saleForm.get('tranNo')!.patchValue('');
@@ -323,7 +321,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.saleService.getInvoiceHeaderData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.saleForm.get('tranDate')!.patchValue(res['data'].tranDate);
           this.saleForm.get('customer')!.patchValue(res['data'].customer);
           this.custCode = res['data'].custCode;
@@ -338,28 +336,22 @@ export class CashSaleComponent implements OnInit, OnDestroy {
           this.vatAmount = res['data'].vatAmount || 0;
           this.totalAmount = res['data'].totalAmount || 0;
           this.totalWeight = res['data'].totalWeight || 0;
-
           if (mode != "View" && this.newTranMsg != "") {
-            this.textMessageClass = 'green';
-            this.retMessage = this.newTranMsg;
+            this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
 
           }
           else {
-            this.textMessageClass = 'green';
-            this.retMessage =
-              'Retriving data ' + res.message + ' has completed';
+              this.displayMessage(displayMsg.SUCCESS + 'Retriving data ' + res.message + ' has completed', TextClr.green);
           }
 
         }
         else {
-          this.textMessageClass = 'red';
-          this.retMessage = res.message;
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       })
     }
     catch (ex: any) {
-      this.textMessageClass = 'red';
-      this.retMessage = ex.message;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -370,13 +362,13 @@ export class CashSaleComponent implements OnInit, OnDestroy {
   onCustomerSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "CUSTOMER",
+      Type: Type.CUSTOMER,
       PartyName: this.saleForm.controls['customer'].value || ""
 
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.get('customer')!.patchValue(res.data.selName);
             this.custCode = res.data.selCode;
@@ -387,40 +379,40 @@ export class CashSaleComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleForm.controls['customer'].value || "", 'PartyType': "CUSTOMER",
+                  PartyName: this.saleForm.controls['customer'].value || "", PartyType: Type.CUSTOMER,
                   'search': 'Customer Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.saleForm.get('customer')!.patchValue(result.partyName);
-                this.custCode = result.code;
+                if(result != true && result != undefined){
+                  this.saleForm.get('customer')!.patchValue(result.partyName);
+                  this.custCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "EMPLOYEE",
+      Type: Type.EMPLOYEE,
       PartyName: this.saleForm.get('salesRep')!.value
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['salesRep'].patchValue(res.data.selName);
             this.salesExecCode = res.data.selCode;
@@ -431,14 +423,16 @@ export class CashSaleComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleForm.get('salesRep')!.value, 'PartyType': "Employee",
+                  PartyName: this.saleForm.get('salesRep')!.value, PartyType:Type.EMPLOYEE,
                   'search': 'Employee Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.saleForm.controls['salesRep'].patchValue(result.partyName);
-                this.salesExecCode = result.code;
+                if(result !=true && result != undefined){
+                  this.saleForm.controls['salesRep'].patchValue(result.partyName);
+                  this.salesExecCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
@@ -446,14 +440,12 @@ export class CashSaleComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -477,7 +469,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: {
         mode: this.saleForm.get('mode')!.value, tranNo: this.saleForm.get('tranNo')!.value,
-        search: 'Cash Sale Docs', tranType: "CASINV"
+        search: 'Cash Sale Docs', tranType:TranType.CASINV
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -488,7 +480,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST208",
+        ScrId: ScreenId.CASH_SALE_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,

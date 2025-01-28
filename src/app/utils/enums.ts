@@ -54,7 +54,8 @@ export enum TranType {
   MASTERITEM="MASTERITEM",
   DOCUMNENTNUMBER="DOCUMNENTNUMBER",
   GRIEVANCE="GRIEVANCE",
-  GRIEVANCES="GRIEVANCES"
+  GRIEVANCES="GRIEVANCES",
+  CASINV="CASINV"
 }
 
 export enum TranStatus {
@@ -83,7 +84,8 @@ export enum Type{
   FLAT="FLAT",
   TENANT="TENANT",
   EMPLOYEE="EMPLOYEE",
-  SMS="SMS"
+  SMS="SMS",
+  CUSTOMER="CUSTOMER"
 }
 
 export enum ScreenId {
