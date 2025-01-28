@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { partySearchClass } from '../layouts/partySearch';
 import { productSearchClass } from '../layouts/productSearch';
 import { directionsClass } from '../project/Project.class';
-import { GreivanceClass, GrievanceCostClass, GrievanceParams, technicianClass } from '../utilities/utilities.class';
+import { ActivityDiary, GreivanceClass, GrievanceCostClass, GrievanceParams, technicianClass } from '../utilities/utilities.class';
 import { nameCountResponse, SaveApiResponse } from '../general/Interface/admin/admin';
 
 @Injectable({
@@ -89,6 +89,11 @@ export class UtilitiesService {
     return this.http.post(environment.Url + 'sales/ReportGetClientDepositBalances', depositBody)
   }
 
-
+  UpdateDiaryDetails(act: ActivityDiary): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'payroll/UpdateDiaryDetails', act)
+  }
+  GetDiaryDetails(body:any):Observable<any>{
+    return this.http.post<any>(environment.Url + 'payroll/GetDiaryDetails', body)
+  }
 
 }

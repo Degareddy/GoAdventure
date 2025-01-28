@@ -12,6 +12,7 @@ import { GeneralModule } from '../general/general.module';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { APP_DATE_FORMATS, AppDateAdapter } from '../general/date-format';
 import { SiteFilesUploadComponent } from './site-files-upload/site-files-upload.component';
+import { DairyComponent } from './dairy/dairy.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { SiteFilesUploadComponent } from './site-files-upload/site-files-upload.
     GrievanceCostsComponent,
     TechnicianComponent,
     SiteFilesUploadComponent,
+    DairyComponent,
   ],
   imports: [
     CommonModule,

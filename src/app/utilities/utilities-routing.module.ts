@@ -8,6 +8,7 @@ import { GrievancesComponent } from './grievances/grievances.component';
 import { TenantEnquiryComponent } from './tenant-enquiry/tenant-enquiry.component';
 import { LandlordEnquiryComponent } from './landlord-enquiry/landlord-enquiry.component';
 import { SiteFilesUploadComponent } from './site-files-upload/site-files-upload.component';
+import { DairyComponent } from './dairy/dairy.component';
 
 const routes: Routes = [
   { path: 'master-items', component: MasterItemsComponent, canActivate: [DocGuard] },
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'tenant-enquiry', component: TenantEnquiryComponent, canActivate: [DocGuard] },
   { path: 'landlord-enquiry', component: LandlordEnquiryComponent, canActivate: [DocGuard] },
   { path: 'site-files', component: SiteFilesUploadComponent, canActivate: [DocGuard] },
+  { path: 'diary', component: DairyComponent, canActivate: [DocGuard] },
 
 ];
 

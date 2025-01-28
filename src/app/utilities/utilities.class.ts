@@ -107,3 +107,24 @@ export class FormDataModel {
   unitCode!: string;
   show!: boolean;
 }
+
+export class ActivityDiary {
+  company!: string;
+  location!: string;
+  empCode!: string;
+  diaryDate!: string;
+  slNo!: number;
+  fromTime!: string;
+  toTime!: string;
+  activityDescription!: string;
+  activityStatus!: string;
+  selfRating!: number;
+  evalRating!: number | null;
+  remarks!: string | null;
+  user!: string;
+  refNo!: string;
+
+  constructor(init?: Partial<ActivityDiary>) {
+    Object.assign(this, init);
+  }
+}
