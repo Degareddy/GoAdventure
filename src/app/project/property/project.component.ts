@@ -232,7 +232,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
       notes: data.notes,
       waterDiscount: data.waterDiscount,
       discType: data.discType,
-      discRate: data.discRate
+      discRate: data.discRate,
+      unitRate:data.waterUnitRate
     },{emitEvent:false});
   }
 
