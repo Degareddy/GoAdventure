@@ -127,7 +127,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
       notes: [''],
       waterDiscount: [false],
       discType: [{ value: '', disabled: true }],
-      discRate: [{ value: 0.00, disabled: true }, this.discRateValidator()]
+      discRate: [{ value: 0.00, disabled: true }, this.discRateValidator()],
+      unitRate:[0.00]
     })
   }
 

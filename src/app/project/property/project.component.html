@@ -187,10 +187,10 @@
       </div>
     </div>
     <div class="row justify-content-center myCustomClass">
-      <div class="col-3">
+      <div class="col-2">
         <mat-checkbox formControlName="waterDiscount">Water Discount</mat-checkbox>
       </div>
-      <div class="col-3">
+      <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label for="discType">Discount Type</mat-label>
           <mat-select formControlName="discType" id="discType">
@@ -199,10 +199,17 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-3">
+      <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label for="discRate">Disc Rate</mat-label>
           <input matInput placeholder="Rate" formControlName="discRate" separator id="discRate" class="right-align-input"
+            type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label for="discRate">Unit Rate</mat-label>
+          <input matInput placeholder="Rate" formControlName="unitRate" separator id="discRate" class="right-align-input"
             type="text">
         </mat-form-field>
       </div>
@@ -228,7 +235,7 @@
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
-      <button mat-raised-button color="primary" [disabled]="propForm.get('mode')!.value === 'View' || propForm.invalid"
+      <button mat-raised-button color="primary" [disabled]="propForm.get('mode')!.value === 'View' || propForm.invalid "
         class=btnUp><mat-icon>done</mat-icon>Apply</button>
       <button mat-raised-button color="accent" class="btnUp" type="button"
         (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
