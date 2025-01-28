@@ -13,6 +13,7 @@ import { PurchaseService } from 'src/app/Services/purchase.service';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-grn-details',
@@ -23,7 +24,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   grnDetailsForm!: FormGroup;
   dataFlag: boolean = false;
   masterParams!: MasterParams;
-  slNum: number=0;
+  slNum: number = 0;
   subSink: SubSink;
   unitRate!: number;
   vatRates!: number;
@@ -149,6 +150,24 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
+
+  Delete() {
+    const message = `Are you sure you want to do this?`;
+    const dialogData = new ConfirmDialogModel("Confirm Delete?", message);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: "400px",
+      height: '200px',
+      data: dialogData,
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(dialogResult => {
+      if (dialogResult) {
+        this.data.mode = "Delete";
+        this.onSubmit();
+      }
+    });
+  }
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -265,9 +284,10 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
           }
           else {
             this.dataFlag = true;
+            this.data.mode="Modify";
             this.getGRNDetails(this.data.tranNum);
-            this.grnDetailsForm= this.formInit();
-            this.slNum=0;
+            this.grnDetailsForm = this.formInit();
+            this.slNum = 0;
             this.retMessage = res.message;
             this.textMessageClass = "green";
           }
@@ -615,7 +635,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
 
-    if (vatRate != undefined && vatRate != 0 && vatRate != null&& this.data.vat) {
+    if (vatRate != undefined && vatRate != 0 && vatRate != null && this.data.vat) {
       numNetRate = numUnitRate * (1 - numDiscRate / 100.0) * (1 + Number(vatRate) / 100.0);
     }
     else {
@@ -677,7 +697,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
     numNetRate = Number(strNetRate.replace(/,/g, ''));
     numQty = Number(strQty.replace(/,/g, ''));
     vatRate = vat;
-    if (vatRate != undefined && vatRate != 0 && vatRate != null&& this.data.vat) {
+    if (vatRate != undefined && vatRate != 0 && vatRate != null && this.data.vat) {
       numDiscRate = (numUnitRate * (1 + Number(vatRate) / 100.0) - numNetRate) / (numUnitRate * (1 + Number(vatRate) / 100.0)) * 100.0;
     }
     else {
