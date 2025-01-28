@@ -23,7 +23,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   grnDetailsForm!: FormGroup;
   dataFlag: boolean = false;
   masterParams!: MasterParams;
-  slNum!: number;
+  slNum: number=0;
   subSink: SubSink;
   unitRate!: number;
   vatRates!: number;
@@ -266,6 +266,8 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
           else {
             this.dataFlag = true;
             this.getGRNDetails(this.data.tranNum);
+            this.grnDetailsForm= this.formInit();
+            this.slNum=0;
             this.retMessage = res.message;
             this.textMessageClass = "green";
           }
