@@ -497,7 +497,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       property: ['', Validators.required],
       block: ['', Validators.required],
       flat: ['', Validators.required],
-      tranDate: ["2024-10-31", Validators.required],
+      tranDate: ["2024-12-31", Validators.required],
       notes: [''],
       mode: ['View'],
       tranNo: ['']
@@ -807,6 +807,8 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       this.waterReadingForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.waterReadingForm.get('tranNo')!.disable();
       this.loadData();
+      this.formInit();
+      
     }
     else {
       this.waterReadingForm.get('tranNo')!.enable();
