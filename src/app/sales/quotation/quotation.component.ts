@@ -21,6 +21,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
 import { PdfReportsService } from 'src/app/FileGenerator/pdf-reports.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-quotation',
@@ -70,7 +72,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.view) {
       this.clear();
       this.quotationForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.quotationForm.get('tranNo')!.patchValue('');
@@ -84,12 +86,12 @@ export class QuotationComponent implements OnInit, OnDestroy {
   }
   onDetailsCilcked(quotationNo: any) {
     const dialogRef: MatDialogRef<QuatationDetailsComponent> = this.dialog.open(QuatationDetailsComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
       data: {
         mode: this.quotationForm.get('mode')!.value, tranNo: this.quotationForm.get('tranNo')!.value,
         'status': this.tranStatus,
-        search: 'Quotation Details', tranType: "QUOTATION"
+        search: 'Quotation Details', tranType:TranType.QUOTATION
       }
 
     });
@@ -123,32 +125,31 @@ export class QuotationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.quotationForm.controls['customer'].value, 'PartyType': itemType,
-                  'search': itemType + ' Search', 'PartyName': ""
+                  tranNum: this.quotationForm.controls['customer'].value, PartyType: itemType,
+                  search: itemType + ' Search', PartyName: ""
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-
-                this.quotationForm.get('addressNo')!.patchValue(result.partyName);
-                this.qtnCls.BillTo = result.code;
-                // this.invoiceHdrCls.billToDes = result.partyName;
+                if(result != true && result != undefined){
+                  this.quotationForm.get('addressNo')!.patchValue(result.partyName);
+                  this.qtnCls.BillTo = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -165,17 +166,17 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const modebody: getPayload = {
       ...this.commonParams(),
-      item: 'ST202'
+      item: ScreenId.QUOTATION_SCRID
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY",
+      item: Items.CURRENCY,
       mode: this.quotationForm.get('mode')!.value
 
     };
     const payTerm: getPayload = {
       ...this.commonParams(),
-      item: "PAYTERM",
+      item: Items.PAYTERM,
       mode: this.quotationForm.get('mode')!.value
     };
     const service1 = this.invService.getModesList(modebody);
@@ -187,21 +188,21 @@ export class QuotationComponent implements OnInit, OnDestroy {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        if (res1.status.toUpperCase() === "SUCCESS") {
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.modes = res1.data;
         }
         else {
           this.displayMessage("Error: Modes list empty!", "red");
           return;
         }
-        if (res2.status.toUpperCase() === "SUCCESS") {
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.currencyList = res2.data;
         }
         else {
           this.displayMessage("Error: Currency list empty!", "red");
           return;
         }
-        if (res3.status.toUpperCase() === "SUCCESS") {
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.payTermList = res3.data;
         }
         else {
@@ -211,7 +212,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
       },
       (error: any) => {
         this.loader.stop();
-        this.displayMessage("Error: " + error.message, "red");
+        this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
       }
     );
   }
@@ -231,16 +232,16 @@ export class QuotationComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'QUOTATION',
+      TranType: TranType.QUOTATION,
       TranNo: this.quotationForm.controls['tranNo'].value,
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     try {
       this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
             this.quotationForm.get('tranNo')?.patchValue(res.data.selTranNo);
@@ -258,8 +259,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -270,7 +270,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
         width: '90%',
         disableClose: true,
         data: {
-          'tranNum': this.quotationForm.get('tranNo')!.value, 'TranType': "QUOTATION",
+          tranNum: this.quotationForm.get('tranNo')!.value, TranType: TranType.QUOTATION,
           'search': 'Quotation Search'
         }
       });
@@ -287,8 +287,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
             this.quotationData(this.masterParams, this.quotationForm.get('mode')?.value);
           }
           catch (ex: any) {
-            this.retMessage = "Exception " + ex.message;
-            this.textMessageClass = 'red';
+            this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
           }
         }
 
@@ -300,7 +299,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.salesServices.getQtnHeaderData(supp).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.quotationForm.controls['revisionNo'].patchValue(res['data'].revisionNo);
           this.quotationForm.controls['quoteDate'].patchValue(res['data'].tranDate);
           this.quotationForm.controls['validForDays'].patchValue(res['data'].validDays);
@@ -321,20 +320,19 @@ export class QuotationComponent implements OnInit, OnDestroy {
           this.totalAmount = res['data'].totalAmount;
           this.itemCount = res['data'].itemCount;
           if (mode != "View" && this.newTranMsg != "") {
-            this.retMessage = this.newTranMsg;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS +  this.newTranMsg, TextClr.green);
           }
           else {
             this.displayMessage("Success: Retriving data " + res.message + " has completed", "green");
           }
 
         } else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -345,7 +343,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
   onCustomerSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "CUSTOMER",
+      Type: Type.CUSTOMER,
       PartyName: this.quotationForm.controls['customer'].value || ""
     }
     try {
@@ -361,8 +359,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.quotationForm.controls['customer'].value || "", 'PartyType': "CUSTOMER",
-                  'search': 'Customer Search'
+                  PartyName: this.quotationForm.controls['customer'].value || "", PartyType: Type.CUSTOMER,
+                  search: 'Customer Search'
                 }
               });
               this.dialogOpen = true;
@@ -377,19 +375,19 @@ export class QuotationComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "EMPLOYEE",
+      Type: Type.EMPLOYEE,
       PartyName: this.quotationForm.get('salesExec')!.value
     }
     try {
@@ -405,13 +403,13 @@ export class QuotationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.quotationForm.get('salesExec')!.value, 'PartyType': "Employee",
-                  'search': 'Employee Search'
+                  PartyName: this.quotationForm.get('salesExec')!.value, PartyType: Type.EMPLOYEE,
+                  search: 'Employee Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if (result != true) {
+                if (result != true && result != undefined) {
                   this.quotationForm.controls['salesExec'].patchValue(result.partyName);
                   this.salesExecCode = result.code;
                 }
@@ -422,17 +420,16 @@ export class QuotationComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   clearMsgs() {
-    this.textMessageClass = "";
-    this.retMessage = "";
+   this.displayMessage("", "");
   }
   formInit() {
     return this.fb.group({
@@ -458,7 +455,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this.qtnCls.User = this.userDataService.userData.userID;
     this.qtnCls.LangId = this.userDataService.userData.langId;
     this.qtnCls.RefNo = this.userDataService.userData.sessionID;
-    this.qtnCls.ScrId = "ST202";
+    this.qtnCls.ScrId = ScreenId.QUOTATION_SCRID;
     this.qtnCls.Mode = this.quotationForm.get('mode')?.value;
     this.qtnCls.TranNo = this.quotationForm.get('tranNo')?.value;
     this.qtnCls.SalesExec = this.salesExecCode;
@@ -466,9 +463,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
     if (transformedDate !== undefined && transformedDate !== null) {
       this.qtnCls.TranDate = transformedDate.toString();
     } else {
-      this.qtnCls.TranDate = ''; // or any default value you prefer
+      this.qtnCls.TranDate = '';
     }
-    // this.qtnCls.BillTo = this.quotationForm.get('addressNo')?.value;
     this.qtnCls.RevisionNo = this.quotationForm.get('revisionNo')?.value;
     this.qtnCls.ValidDays = this.quotationForm.get('validForDays')?.value;
     this.qtnCls.Customer = this.custCode;
@@ -479,7 +475,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this.qtnCls.ApplyVAT = this.quotationForm.get('applyVat')?.value;
     this.qtnCls.ExchRate = this.quotationForm.get('exchangeRate')?.value;
     this.qtnCls.Remarks = this.quotationForm.get('remarks')?.value;
-    this.qtnCls.TranStatus = "ANY";
+    this.qtnCls.TranStatus =TranStatus.ANY;
   }
   onSubmit() {
     this.clearMsgs();
@@ -503,8 +499,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.salesServices.UpdateQuotation(this.qtnCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          if (this.quotationForm.get('mode')?.value === "Add") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          if (this.quotationForm.get('mode')?.value.toUpperCase() === Mode.Add) {
             this.modeChange('Modify');
 
           }
@@ -515,7 +511,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
           this.quotationData(this.masterParams, this.quotationForm.get('mode')?.value)
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
 
 
@@ -529,14 +525,20 @@ export class QuotationComponent implements OnInit, OnDestroy {
       langId: this.userDataService.userData.langId,
       tranNo: this.quotationForm.get('tranNo')!.value
     }
-    this.subSink.sink = this.salesServices.GetQuotationReport(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.pdfService.generateQuotationPDF(res['data'], "Quotation", new Date(), "PDF");
-      }
-      else {
-        this.displayMessage("Error: " + res.message, "red");
-      }
-    });
+    try{
+      this.subSink.sink = this.salesServices.GetQuotationReport(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.pdfService.generateQuotationPDF(res['data'], "Quotation", new Date(), "PDF");
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+        }
+      });
+    }
+    catch(ex:any){
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
   Close() {
     this.router.navigateByUrl('/home');
@@ -567,7 +569,9 @@ export class QuotationComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%', // Set the width of the dialog
       disableClose: true,
-      data: { mode: this.quotationForm.controls['mode'].value, tranNo: this.quotationForm.controls['tranNo'].value, search: 'Quotation Docs', tranType: "QUOTATION" }
+      data: { mode: this.quotationForm.controls['mode'].value,
+        tranNo: this.quotationForm.controls['tranNo'].value,
+         search: 'Quotation Docs', tranType: TranType.QUOTATION }
     });
 
   }
@@ -576,9 +580,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST202",
-        // Page: "User Registration",
-        // SlNo: 6,
+        ScrId: ScreenId.QUOTATION_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
