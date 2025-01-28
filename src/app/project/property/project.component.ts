@@ -127,7 +127,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
       notes: [''],
       waterDiscount: [false],
       discType: [{ value: '', disabled: true }],
-      discRate: [{ value: 0.00, disabled: true }, this.discRateValidator()]
+      discRate: [{ value: 0.00, disabled: true }, this.discRateValidator()],
+      unitRate:[0.00]
     })
   }
 
@@ -231,7 +232,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
       notes: data.notes,
       waterDiscount: data.waterDiscount,
       discType: data.discType,
-      discRate: data.discRate
+      discRate: data.discRate,
+      unitRate:data.waterUnitRate
     },{emitEvent:false});
   }
 
@@ -297,6 +299,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.propCls.refNo = this.userDataService.userData.sessionID;
     this.propCls.langId = this.userDataService.userData.langId;;
     this.propCls.propertyID = this.propertyId;
+    this.propCls.WaterUnitRate=this.propForm.get('unitRate')?.value
     this.propCls = { ...this.propCls, ...this.propForm.value };
     this.propCls.venture = this.venture;
     this.propCls.landlord = this.landlordCode;

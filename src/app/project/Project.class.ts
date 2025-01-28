@@ -231,7 +231,7 @@ export class PropertyCls {
   public latitude!: number
   public longitude!: number
   public altitude!: number
-
+  public  WaterUnitRate!:number;
   public yearBuilt!: number
   public landlord!: string
   public landlordName!: string

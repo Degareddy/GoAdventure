@@ -162,6 +162,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() === "SUCCESS") {
           this.previousReading = res.data.prevRdg;
           this.updateBillsForm.get('prevReading')?.patchValue(res.data.prevRdg);
+          this.updateBillsForm.get('rate')?.patchValue(res.data.unitRate);
           this.tenantName = res.data.tenant;
           this.lastReading = res.data.prevRdgDate
           this.updateBillsForm.get('expenseType')?.disable();

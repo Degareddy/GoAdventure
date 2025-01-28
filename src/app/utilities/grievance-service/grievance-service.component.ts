@@ -420,7 +420,8 @@ export class GrievanceServiceComponent implements OnInit, OnDestroy {
         'tenant': this.tenant,
         'priority': this.grievancesForm.controls['priority'].value,
         'complaintTypeName': "",
-        'property': this.property
+        'property': this.property,
+        'fromDate':this.formatDate(this.raisedDate)
       }
     });
     dialogRef.afterClosed().subscribe(result => {

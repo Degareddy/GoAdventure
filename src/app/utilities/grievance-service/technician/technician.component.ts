@@ -28,6 +28,7 @@ export class TechnicianComponent implements OnInit, OnDestroy {
   textMessageClass: string = "";
   dialogOpen = false;
   currentStatus: string = "";
+  riasedDate:string='';
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
@@ -63,7 +64,7 @@ export class TechnicianComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: {
       mode: string, tranNo: string, status: string,
       complaintType: string, unit: string, block: string, complaint: string,
-      tenant: string, priority: string, complaintTypeName: string, property: string
+      tenant: string, priority: string, complaintTypeName: string, property: string,fromDate:string
     }) {
     this.technicianForm = this.formInit();
     this.subsink = new SubSink();
@@ -163,7 +164,10 @@ export class TechnicianComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadData(this.data.tranNo, false);
+    console.log(this.data.fromDate);
+    this.riasedDate=this.data.fromDate;
   }
+
 
   loadData(tarnNo: string, loadFlag: boolean) {
     const techBody = {
