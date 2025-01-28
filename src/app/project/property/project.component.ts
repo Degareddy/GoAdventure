@@ -298,6 +298,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.propCls.refNo = this.userDataService.userData.sessionID;
     this.propCls.langId = this.userDataService.userData.langId;;
     this.propCls.propertyID = this.propertyId;
+    this.propCls.WaterUnitRate=this.propForm.get('unitRate')?.value
     this.propCls = { ...this.propCls, ...this.propForm.value };
     this.propCls.venture = this.venture;
     this.propCls.landlord = this.landlordCode;
