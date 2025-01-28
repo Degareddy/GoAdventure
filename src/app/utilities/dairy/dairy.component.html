@@ -28,7 +28,7 @@
             <mat-icon>cancel</mat-icon>
           </button>
           <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onEmployeeSearch()"
-            [disabled]="dairyForm.get('mode')!.value === 'Add'">
+            >
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button>
         </mat-form-field>
@@ -95,7 +95,7 @@
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="flex justify-center gap-1 btnAlignment">
       <button mat-raised-button color="primary" class="btnUp"
-        [disabled]="dairyForm.get('mode')!.value === 'View' || dairyForm.invalid">
+        [disabled]="dairyForm.invalid">
         <mat-icon>done</mat-icon> Apply
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">

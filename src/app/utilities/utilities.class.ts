@@ -114,8 +114,8 @@ export class ActivityDiary {
   empCode!: string;
   diaryDate!: string;
   slNo!: number;
-  fromTime!: string;
-  toTime!: string;
+  fromTime!: Date;
+  toTime!: Date;
   activityDescription!: string;
   activityStatus!: string;
   selfRating!: number;

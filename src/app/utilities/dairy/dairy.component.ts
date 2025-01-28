@@ -123,6 +123,11 @@ export class DairyComponent implements OnInit, OnDestroy {
     }
   }
   prepareCls() {
+
+    let asDate:any;
+    const formControls = this.dairyForm.controls;
+    asDate = this.formatDate(formControls.date.value);
+
     this.actCls.company = this.userDataService.userData.company;
     this.actCls.location = this.userDataService.userData.location;
     this.actCls.user = this.userDataService.userData.userID;
@@ -131,7 +136,7 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.actCls.activityDescription = this.dairyForm.controls.activity.value;
 
     this.actCls.activityStatus = this.dairyForm.controls.status.value;
-    this.actCls.diaryDate = this.dairyForm.controls.date.value;
+    this.actCls.diaryDate = asDate;
     this.actCls.evalRating = this.dairyForm.controls.rating.value;
     this.actCls.fromTime = this.dairyForm.controls.fromTime.value;
     this.actCls.toTime = this.dairyForm.controls.toTime.value;
@@ -139,6 +144,8 @@ export class DairyComponent implements OnInit, OnDestroy {
 
     this.actCls.empCode = this.empCode;
     this.actCls.slNo = this.slNum;
+
+    console.log(this.actCls);
 
   }
   formatDate(unitDateValue: string): string {
@@ -237,7 +244,6 @@ export class DairyComponent implements OnInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      mode: ['View'],
       name: ['', [Validators.required]],
       date: [new Date(), [Validators.required]],
       fromTime: ['', Validators.required],
