@@ -109,14 +109,14 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       mode: this.saleOrderForm.get('mode')?.value
     };
     try {
-      this.loader.start();
+      // this.loader.start();
       const service1 = this.masterService.getModesList(modebody);
       const service2 = this.masterService.GetMasterItemsList(curbody);
       const service3 = this.masterService.GetMasterItemsList(payTerm);
       const service4 = this.masterService.GetMasterItemsList(pricing);
       this.subSink.sink = forkJoin([service1, service2, service3, service4]).subscribe(
         (results: any[]) => {
-          this.loader.stop();
+          // this.loader.stop();
           const res1 = results[0];
           const res2 = results[1];
           const res3 = results[2];
@@ -310,45 +310,49 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  tranNum: tranNo, TranType: tranType,
-                  'search': tranType + ' Search'
-                }
-              });
-              // this.tranStatus = "";
-              // this.saleOrderForm = this.formInit();
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                this.dialogOpen = false;
-                if (result != true) {
-                  if (tranType === TranType.QUOTATION) {
-                    this.saleOrderForm.get('quotationNo')?.patchValue(result);
-                    this.masterParams.tranNo = result;
-                    this.quotationData(this.masterParams, this.saleOrderForm.get('mode')?.value);
-
-                  } else {
-                    this.saleOrderForm.get('saleNo')?.patchValue(result);
-                    this.getSaleOrderHeader(result, this.saleOrderForm.get('mode')?.value);
-                  }
-                }
-
-              });
-            }
+           this.searchPopup(tranType, tranNo);
 
           }
         }
         else {
-          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          this.searchPopup(tranType, tranNo);
+
+          // this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+  }
+
+  searchPopup(tranType: string, tranNo: string) {
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: tranNo, TranType: tranType,
+          search: tranType + ' Search'
+        }
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true) {
+          if (tranType === TranType.QUOTATION) {
+            this.saleOrderForm.get('quotationNo')?.patchValue(result);
+            this.masterParams.tranNo = result;
+            this.quotationData(this.masterParams, this.saleOrderForm.get('mode')?.value);
+
+          } else {
+            this.saleOrderForm.get('saleNo')?.patchValue(result);
+            this.getSaleOrderHeader(result, this.saleOrderForm.get('mode')?.value);
+          }
+        }
+
+      });
     }
   }
   getSaleOrderHeader(tranNo: string, mode: string) {
