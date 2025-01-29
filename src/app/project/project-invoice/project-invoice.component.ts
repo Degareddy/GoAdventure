@@ -26,6 +26,7 @@ import { getPayload, nameCountResponse, SaveApiResponse } from 'src/app/general/
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
+import { SendsmsComponent } from 'src/app/general/sendsms/sendsms.component';
 
 @Component({
   selector: 'app-project-invoice',
@@ -60,6 +61,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   private subSink: SubSink;
   private invCls: invoiceClass;
   public rentalCharges: number = 0;
+  message:string='';
   public othrCharges: number = 0;
   public discAmount: number = 0;
   public totalCharges: number = 0;
@@ -698,7 +700,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     }
   }
   bindFormData(res: any) {
-
+    
     this.salesExecCode = res['data'].executive;
     this.saleForm.patchValue({
       tranNo: res['data'].tranNo,
@@ -740,6 +742,25 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.discAmount = res['data'].discAmount;
     this.vatAmount = res['data'].vatAmount;
     this.totalAmount = res['data'].totalCharges;
+
+    if(this.userDataService.userData.company.toUpperCase() === 'NPML' || this.userDataService.userData.company.toUpperCase() === 'TAKOW' ){
+      this.message= `Dear ${res.tenantName},
+            
+            Rental invoice ${res['data'].tenant} is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${res['data'].rentMonth.toString()} ${res['data'].rentYear}.
+            The total amount due is KES ${res['data'].totalCharges}. We request you to pay before the due date ${res['data'].dueDate}.
+            Thank you,
+            Nagaad Properties`;;
+    }
+    else if(this,this.userDataService.userData.company.toUpperCase() === 'SADASA'){
+    this.message=  `Mudane/Marwo [${res['data'].tenant}],
+
+                    Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
+                    Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+                    
+                    Mahadsanid,  
+                    Omar Mumin Mohammed  
+                    Sadasa Construction and Property`;
+    }
   }
   async getInvoiceData(masterParams: MasterParams, mode: string) {
     try {
@@ -1020,7 +1041,23 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       }
     })
   }
-
+  sendSMS() {
+    const dialogRef: MatDialogRef<SendsmsComponent> = this.dialog.open(SendsmsComponent, {
+      disableClose: true,
+      data: {
+        type: 'FLAT',
+        Trantype: "PREBOOK",
+        Property: this.saleForm.get('property')!.value,
+        Block: this.saleForm.get('block')!.value,
+        Flat: this.flatCode,
+        mode: this.saleForm.get('mode')!.value,
+        from: "UNIT",
+        message:this.message
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
+  }
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%', // Set the width of the dialog

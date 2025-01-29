@@ -996,7 +996,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
         mode: this.unitDetForm.get('mode')!.value,
-        from: "UNIT"
+        from: "UNIT",
+        message:''
       }
     });
     dialogRef.afterClosed().subscribe(result => {

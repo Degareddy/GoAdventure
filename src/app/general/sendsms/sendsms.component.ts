@@ -26,9 +26,11 @@ export class SendsmsComponent implements OnInit, OnDestroy {
   private smsUrl: string = "";
   private bulkSmsUrl: string = "";
   constructor(private fb: FormBuilder,private snackBar: MatSnackBar, private smsService: SmsService, private toaster: ToastrService,private userDataService: UserDataService,
-    @Inject(MAT_DIALOG_DATA) public data: { from: string, mode: string, Trantype: string, Property: string, Block: string, Flat: string, type: string, status: string }) {
+    @Inject(MAT_DIALOG_DATA) public data: { from: string, mode: string, Trantype: string, Property: string, Block: string, Flat: string, type: string, status: string,message:string }) {
     this.smsForm = this.formInit();
     this.subSink = new SubSink();
+    this.smsForm.get('Message')?.patchValue(this.data.message);
+    console.log(this.data.message);
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -37,6 +39,8 @@ export class SendsmsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadData();
     this.refreshData();
+    console.log(this.data.message);
+
   }
   refreshData() {
     if (this.data.from.toUpperCase() === "UNIT") {

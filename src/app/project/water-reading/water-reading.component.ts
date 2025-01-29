@@ -633,11 +633,11 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     try {
       this.subSink.sink = this.masterService.GetTranCount(body).subscribe((res: any) => {
         if (res.retVal === 0) {
-          if (res && res.data && res.data.tranCount === 1) {
-            this.waterReadingForm.controls['tranNo'].patchValue(res.data.selTranNo);
-            this.GetExtendedBillsHdr(res.data.selTranNo);
-          }
-          else {
+          // if (res && res.data && res.data.tranCount === 1) {
+          //   this.waterReadingForm.controls['tranNo'].patchValue(res.data.selTranNo);
+          //   this.GetExtendedBillsHdr(res.data.selTranNo);
+          // }
+          // else {
             if (!this.dialogOpen) {
               const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
                 width: '90%',
@@ -663,7 +663,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
               });
             }
           }
-        }
+        // }
         else {
           this.retMessage = res.message;
           this.textMessageClass = 'red';

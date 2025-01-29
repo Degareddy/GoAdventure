@@ -32,7 +32,14 @@
             <span class="menu-label data">PDF</span>
           </a>
         </ng-container>
-      </mat-menu>
+      
+      <ng-container>
+        <a mat-menu-item (click)="sendSMS()" [disabled]="saleForm.invalid">
+          <mat-icon style="font-size: 16px;">textsms</mat-icon>
+          <span class="menu-label data">SMS</span>
+        </a>
+      </ng-container>
+    </mat-menu>
       <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(saleForm.get('tranNo')!.value )"
         [disabled]="saleForm.get('tranNo')!.value === '' || saleForm.get('tranNo')!.value === null">
         <mat-icon>note_add</mat-icon>
@@ -302,6 +309,8 @@
           <div class="col-3 myCustomClass ">
             <mat-label>Status: </mat-label><b class="data">{{tranStatus | uppercase}}</b>
           </div>
+          
+          
         </div>
 
         <div class="row justify-content-left myCustomClass" *ngIf="1 != 1">
@@ -368,6 +377,7 @@
       <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
         <mat-icon>cancel</mat-icon>Close
       </button>
+      
     </div>
   </form>
 </div>
