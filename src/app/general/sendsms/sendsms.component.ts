@@ -29,8 +29,8 @@ export class SendsmsComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: { from: string, mode: string, Trantype: string, Property: string, Block: string, Flat: string, type: string, status: string,message:string }) {
     this.smsForm = this.formInit();
     this.subSink = new SubSink();
-    this.smsForm.get('Message')?.patchValue(this.data.message);
-    console.log(this.data.message);
+    // this.smsForm.get('message')?.patchValue(this.data.message);
+    // console.log(this.data.message);
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -39,7 +39,7 @@ export class SendsmsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadData();
     this.refreshData();
-    console.log(this.data.message);
+    this.smsForm.get('message')?.patchValue(this.data.message);
 
   }
   refreshData() {

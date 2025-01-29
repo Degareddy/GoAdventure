@@ -452,7 +452,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     this.openingDetCls.mode = this.data.mode;
     this.openingDetCls.propcode=this.openinBalDetForm.get('property')?.value;
     this.openingDetCls.blockcode=this.openinBalDetForm.get('block')?.value;
-    this.openingDetCls.unitcode=this.openinBalDetForm.get('flat')?.value;
+    this.openingDetCls.unitcode=this.flatCode;
     const balAmountValue = this.openinBalDetForm.get('balAmount')?.value;
     // Check if the value contains commas
     if (balAmountValue && typeof balAmountValue === 'string') {

@@ -617,7 +617,11 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
   }
   onTranSearch() {
     const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    // const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1);
+    let firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    if (currentDate.getMonth() === 0) {  // If current month is January (0)
+      firstDayOfMonth = new Date(currentDate.getFullYear() - 1, 11, 1); // Set to Dec 1 of the previous year
+    }
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {

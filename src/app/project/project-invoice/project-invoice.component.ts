@@ -744,9 +744,9 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.totalAmount = res['data'].totalCharges;
 
     if(this.userDataService.userData.company.toUpperCase() === 'NPML' || this.userDataService.userData.company.toUpperCase() === 'TAKOW' ){
-      this.message= `Dear ${res.tenantName},
+      this.message= `Dear ${res['data'].tenantName},
             
-            Rental invoice ${res['data'].tenant} is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${res['data'].rentMonth.toString()} ${res['data'].rentYear}.
+            Rental invoice ${res['data'].tranNo} is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${this.saleForm.controls['invMonth']?.value.toUpperCase()} ${res['data'].rentYear}.
             The total amount due is KES ${res['data'].totalCharges}. We request you to pay before the due date ${res['data'].dueDate}.
             Thank you,
             Nagaad Properties`;;
