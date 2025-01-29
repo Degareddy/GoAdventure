@@ -11,6 +11,8 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { SalesService } from 'src/app/Services/sales.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Mode, TextClr, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-sale-order-details',
@@ -99,7 +101,6 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
       return null;
     },
   },
-  // { field: "quantity", headerName: "Quantity", sortable: true, filter: true, resizable: true, width: 120 },
   {
     field: "amount", headerName: "Amount", sortable: true, filter: true, resizable: true, width: 120, type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },
     valueFormatter: function (params: any) {
@@ -115,7 +116,6 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
     //
   ];
   rowData: any = [];
-  // warehouseList:Item[]=[]
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
     mode: string, tranNo: string,
     search: string, tranType: string, status: string
@@ -138,9 +138,8 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(dialogResult => {
       if (dialogResult) {
-        this.data.mode = "Delete";
+        this.data.mode = Mode.Delete;
         this.onUpdate();
-        // this.Clear();
       }
     });
   }
@@ -164,16 +163,20 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
       tranNo: tranNo
     }
     this.subSink.sink = this.saleService.GetSaleOrderDetails(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.rowData = res.data;
       }
       else {
         this.rowData = [];
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
       }
     });
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
+
   prepareSOdetails() {
     this.soDetCls.company = this.userDataService.userData.company;
     this.soDetCls.location = this.userDataService.userData.location;
@@ -182,7 +185,6 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
     this.soDetCls.user = this.userDataService.userData.userID;
 
     this.soDetCls.amount = parseFloat(this.saleDetForm.get('amount')?.value.replace(/,/g, ''));
-    // this.soDetCls.delivered = this.saleDetForm.get('quantity')?.value
     this.soDetCls.discRate = parseFloat(this.saleDetForm.get('discRate')?.value.replace(/,/g, ''));
     this.soDetCls.mode = this.data.mode;
     this.soDetCls.netRate = parseFloat(this.saleDetForm.get('netRate')?.value.replace(/,/g, ''));
@@ -205,11 +207,9 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
     this.prodCode="";
   }
   clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+   this.displayMessage('', '');
   }
   onRowClick(row: any) {
-    // this.saleDetForm.patchValue(row.data);
     this.slNum = row.data.slNo;
     this.prodCode = row.data.product;
     this.saleDetForm.patchValue({
@@ -221,7 +221,7 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
       netRate: row.data.netRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       quantity: row.data.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       amount: row.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    });
+    },{emitEvent:false});
 
   }
   onUpdate() {
@@ -237,23 +237,20 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
         this.prepareSOdetails();
         this.loader.start();
         this.subSink.sink = this.saleService.UpdateSaleOrderItemDetails(this.soDetCls).subscribe((res: SaveApiResponse) => {
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.dailogchange=true;
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             this.getOrderDetails(res.tranNoNew);
           }
           else {
             this.dailogchange=false;
 
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
@@ -461,7 +458,7 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
   onProductSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.saleDetForm.controls['prodName'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
@@ -479,8 +476,8 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
             width: '90%',
             disableClose: true,
             data: {
-              'tranNum': this.saleDetForm.get('prodName')!.value, 'TranType': "PRODUCT",
-              'search': 'Product Search'
+              tranNum: this.saleDetForm.get('prodName')!.value, TranType: Type.PRODUCT,
+              search: 'Product Search'
             }
           });
           dialogRef.afterClosed().subscribe(result => {
@@ -506,8 +503,7 @@ export class SaleOrderDetailsComponent implements OnInit, OnDestroy {
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
       }
     });
   }

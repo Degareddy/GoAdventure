@@ -19,6 +19,8 @@ import { InventoryService } from 'src/app/Services/inventory.service';
 import { SaleOrderHeader } from '../sales.class';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-sale-order',
@@ -28,7 +30,7 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 export class SaleOrderComponent implements OnInit, OnDestroy {
   title: string = "Sale Order";
   saleOrderForm!: FormGroup;
-  private masterParams:MasterParams = new MasterParams();
+  private masterParams: MasterParams = new MasterParams();
   @Input() max: any;
   @Input() min: any;
   mindate = new Date('2024-01-10');
@@ -89,22 +91,22 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   loadData() {
     const modebody: getPayload = {
       ...this.commonParams(),
-      item: 'ST203',
+      item: ScreenId.SALE_ORDER_SCRID,
     };
     const curbody: getPayload = {
       ...this.commonParams(),
-      item: "CURRENCY",
-      mode:this.saleOrderForm.get('mode')?.value
+      item: Items.CURRENCY,
+      mode: this.saleOrderForm.get('mode')?.value
     };
     const payTerm: getPayload = {
       ...this.commonParams(),
-      item: "PAYTERM",
-      mode:this.saleOrderForm.get('mode')?.value
+      item: Items.PAYTERM,
+      mode: this.saleOrderForm.get('mode')?.value
     };
     const pricing: getPayload = {
       ...this.commonParams(),
-      item: "PRICING",
-      mode:this.saleOrderForm.get('mode')?.value
+      item: Items.PRICING,
+      mode: this.saleOrderForm.get('mode')?.value
     };
     try {
       this.loader.start();
@@ -119,22 +121,47 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
           const res2 = results[1];
           const res3 = results[2];
           const res4 = results[3];
-          this.modes = res1.data;
-          this.currencyList = res2.data;
-          this.payTermList = res3.data;
-          this.pricingList = res4.data;
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.modes = res1.data;
+
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Modes List " + res1.message, TextClr.red);
+          }
+          if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.currencyList = res2.data;
+
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Currency List " + res2.message, TextClr.red);
+          }
+          if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.payTermList = res3.data;
+
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Pay Term List " + res3.message, TextClr.red);
+          }
+          if (res4.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.pricingList = res4.data;
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Pricing List " + res4.message, TextClr.red);
+          }
         },
         (error: any) => {
           this.loader.stop();
-          this.retMessage = error.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   onDocsCilcked() {
 
@@ -144,8 +171,9 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranType': "SALEORDER", 'tranNo': this.saleOrderForm.get('saleNo')!.value, 'search': "Sale Order Details",
-        'mode': this.saleOrderForm.get('mode')!.value, 'status': this.tranStatus
+        tranType: TranType.SALEORDER,
+        tranNo: this.saleOrderForm.get('saleNo')!.value, search: "Sale Order Details",
+        mode: this.saleOrderForm.get('mode')!.value, status: this.tranStatus
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -175,19 +203,15 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
 
     this.saleOrderCls.salesExec = this.salesExecCode;
     this.saleOrderCls.scheduleType = this.saleOrderForm.get('schedule')?.value;
-
-    // this.saleOrderCls.shipTo = this.saleOrderForm.get('remarks')?.value;
-    // this.saleOrderCls.billTo = this.userDataService.userData.company;
     const transformedDate = this.datePipe.transform(this.saleOrderForm.controls['tranDate'].value, 'yyyy-MM-dd');
-		if (transformedDate !== undefined && transformedDate !== null) {
-		  this.saleOrderCls.tranDate = transformedDate.toString();
-		} else {
-		  this.saleOrderCls.tranDate = ''; // or any default value you prefer
-		}
+    if (transformedDate !== undefined && transformedDate !== null) {
+      this.saleOrderCls.tranDate = transformedDate.toString();
+    } else {
+      this.saleOrderCls.tranDate = '';
+    }
 
-    // this.saleOrderCls.tranDate = this.saleOrderForm.get('tranDate')?.value;
     this.saleOrderCls.tranNo = this.saleOrderForm.get('saleNo')?.value;
-    this.saleOrderCls.tranStatus = "Any";
+    this.saleOrderCls.tranStatus = TranStatus.ANY;
 
   }
   quotationData(supp: MasterParams, mode: string): void {
@@ -195,9 +219,8 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.saleService.getQtnHeaderData(supp).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.saleOrderForm.patchValue({
-            // quotationNo: res.data.quotationNo,
             tranDate: res.data.tranDate,
             customer: res.data.customerName,
             notes: res.data.remarks,
@@ -205,58 +228,23 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
             schedule: res.data.scheduleType,
             payTerm: res.data.payTerm,
             salesRep: res.data.salesExecName,
-            // lopNo: res.data,
             billTo: res.data.billToDesc,
-            // shipTo: res.data.shipToDesc,
             currency: res.data.currency,
             exchangeRate: res.data.exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
             applyVAT: res.data.applyVAT,
-          });
+          }, { emitEvent: false });
           this.salesExecCode = res.data.salesExec;
           this.custCode = res.data.customer;
-
           this.tranStatus = res.data.tranStatus;
           this.amountExclVat = res.data.tranAmount;
           this.vatAmount = res.data.vatAmount;
           this.totalAmount = res.data.totalAmount;
           this.itemCount = res.data.itemCount;
-        //   this.saleOrderForm.controls['revisionNo'].patchValue(res['data'].revisionNo);
-        //   this.saleOrderForm.controls['quoteDate'].patchValue(res['data'].tranDate);
-        //   this.saleOrderForm.controls['validForDays'].patchValue(res['data'].validDays);
-        //   this.saleOrderForm.controls['customer'].patchValue(res['data'].customerName);
-        //   this.saleOrderForm.controls['currency'].patchValue(res['data'].currency);
-        //   this.saleOrderForm.controls['payTerm'].patchValue(res['data'].payTerm);
-        //   this.saleOrderForm.controls['salesExec'].patchValue(res['data'].salesExecName);
-        //   this.salesExecCode = res['data'].salesExec;
-        //   this.custCode = res['data'].customer;
-        //   this.tranStatus = res['data'].tranStatus;
-        //   // this.qtnCls.BillTo = res['data'].billTo;
-        //   this.saleOrderForm.controls['custRef'].patchValue(res['data'].custRef);
-        //   this.saleOrderForm.controls['applyVat'].patchValue(res['data'].applyVAT);
-        //   this.saleOrderForm.controls['remarks'].patchValue(res['data'].remarks);
-        //   this.saleOrderForm.controls['addressNo'].patchValue(res['data'].billToDesc);
-        //   this.amountExclVat = res['data'].tranAmount;
-        //   this.vatAmount = res['data'].vatAmount;
-        //   this.totalAmount = res['data'].totalAmount;
-        //   this.itemCount = res['data'].itemCount;
-        //   if (mode != "View" && this.newTranMsg != "") {
-        //     this.retMessage = this.newTranMsg;
-        //     this.textMessageClass = "green";
-        //   }
-        //   else {
-        //     this.retMessage = 'Retriving data ' + res.message + ' has completed';
-        //     this.textMessageClass = "green";
-        //   }
-
-        // } else {
-        //   this.retMessage = res.message;
-        //   this.textMessageClass = "red";
-         }
+        }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -273,8 +261,8 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.saleService.InsertSaleOrderHdr(this.saleOrderCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            if (this.saleOrderForm.get('mode')?.value === "Add") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            if (this.saleOrderForm.get('mode')?.value.toUpperCase() === Mode.Add) {
               this.modeChange('Modify');
             }
             this.saleOrderForm.get('saleNo')?.patchValue(res.tranNoNew)
@@ -282,14 +270,12 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
             this.getSaleOrderHeader(res.tranNoNew, this.saleOrderForm.get('mode')?.value)
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         })
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
@@ -307,16 +293,16 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     try {
       this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS" || res.status.toUpperCase() === "FAIL") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.tranCount === 1) {
-            if (tranType === "QUOTATION") {
+            if (tranType === TranType.QUOTATION) {
               this.saleOrderForm.get('quotationNo')?.patchValue(res.data.selTranNo);
               this.masterParams.tranNo = res.data.selTranNo;
-              this.quotationData(this.masterParams,this.saleOrderForm.get('mode')?.value);
+              this.quotationData(this.masterParams, this.saleOrderForm.get('mode')?.value);
 
             } else {
               this.saleOrderForm.get('saleNo')?.patchValue(res.data.selTranNo);
@@ -329,7 +315,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': tranNo, 'TranType': tranType,
+                  tranNum: tranNo, TranType: tranType,
                   'search': tranType + ' Search'
                 }
               });
@@ -339,10 +325,10 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
               dialogRef.afterClosed().subscribe(result => {
                 this.dialogOpen = false;
                 if (result != true) {
-                  if (tranType === "QUOTATION") {
+                  if (tranType === TranType.QUOTATION) {
                     this.saleOrderForm.get('quotationNo')?.patchValue(result);
                     this.masterParams.tranNo = result;
-                    this.quotationData(this.masterParams,this.saleOrderForm.get('mode')?.value);
+                    this.quotationData(this.masterParams, this.saleOrderForm.get('mode')?.value);
 
                   } else {
                     this.saleOrderForm.get('saleNo')?.patchValue(result);
@@ -356,15 +342,13 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   getSaleOrderHeader(tranNo: string, mode: string) {
@@ -374,7 +358,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       tranNo: tranNo
     }
     this.subSink.sink = this.saleService.GetSaleOrderHdr(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.saleOrderForm.patchValue({
           quotationNo: res.data.quotationNo,
           tranDate: res.data.tranDate,
@@ -384,13 +368,12 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
           schedule: res.data.scheduleType,
           payTerm: res.data.payTerm,
           salesRep: res.data.salesExecName,
-          // lopNo: res.data,
           billTo: res.data.billToDesc,
           shipTo: res.data.shipToDesc,
           currency: res.data.currency,
           exchangeRate: res.data.exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
           applyVAT: res.data.applyVAT,
-        });
+        }, { emitEvent: false });
         this.salesExecCode = res.data.salesExec;
         this.custCode = res.data.customer;
 
@@ -399,18 +382,15 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
         this.vatAmount = res.data.vatAmount;
         this.totalAmount = res.data.totalAmount;
         this.itemCount = res.data.itemCount;
-        if (mode != 'View' && this.newTranMsg != "") {
-          this.retMessage = this.newTranMsg;
-          this.textMessageClass = "green";
+        if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
+          this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     })
   }
@@ -418,7 +398,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
   quotationSearch() {
-    this.searchData('QUOTATION', this.saleOrderForm.get('quotationNo')?.value)
+    this.searchData(TranType.QUOTATION, this.saleOrderForm.get('quotationNo')?.value)
   }
   saleNoSearch() {
     this.searchData('SALE ORDER', this.saleOrderForm.get('saleNo')?.value)
@@ -427,13 +407,13 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   onCustomerSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "CUSTOMER",
+      Type: Type.CUSTOMER,
       PartyName: this.saleOrderForm.controls['customer'].value || ""
 
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleOrderForm.get('customer')!.patchValue(res.data.selName);
             this.custCode = res.data.selCode;
@@ -444,40 +424,40 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleOrderForm.controls['customer'].value || "", 'PartyType': "CUSTOMER",
-                  'search': 'Customer Search'
+                  PartyName: this.saleOrderForm.controls['customer'].value || "", PartyType: Type.CUSTOMER,
+                  search: 'Customer Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.saleOrderForm.get('customer')!.patchValue(result.partyName);
-                this.custCode = result.code;
+                if (result != true && result != undefined) {
+                  this.saleOrderForm.get('customer')!.patchValue(result.partyName);
+                  this.custCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "EMPLOYEE",
+      Type: Type.EMPLOYEE,
       PartyName: this.saleOrderForm.get('salesRep')!.value
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleOrderForm.controls['salesRep'].patchValue(res.data.selName);
             this.salesExecCode = res.data.selCode;
@@ -488,14 +468,16 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleOrderForm.get('salesRep')!.value, 'PartyType': "Employee",
-                  'search': 'Employee Search'
+                  PartyName: this.saleOrderForm.get('salesRep')!.value, PartyType: Type.EMPLOYEE,
+                  search: 'Employee Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.saleOrderForm.controls['salesRep'].patchValue(result.partyName);
-                this.salesExecCode = result.code;
+                if (result != true && result != undefined) {
+                  this.saleOrderForm.controls['salesRep'].patchValue(result.partyName);
+                  this.salesExecCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
@@ -503,19 +485,16 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
   clear() {
@@ -540,18 +519,18 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       notes: [''],
       pricing: ['', [Validators.required]],
       schedule: ['', [Validators.required]],
-      payTerm: ['',Validators.required],
+      payTerm: ['', Validators.required],
       salesRep: ['', [Validators.required, Validators.maxLength(50)]],
       lopNo: ['0', [Validators.required, Validators.maxLength(18)]],
       billTo: [''],
       shipTo: [''],
-      currency: ['',Validators.required],
-      exchangeRate: ['1.0000',Validators.required],
+      currency: ['', Validators.required],
+      exchangeRate: ['1.0000', Validators.required],
       applyVAT: [false],
     });
   }
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.saleOrderForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.saleOrderForm.get('saleNo')!.patchValue('');
       this.saleOrderForm.get('saleNo')!.disable();
@@ -565,7 +544,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   }
   billToSearch(itemType: string) {
     let controlValue: string;
-    if (itemType == 'SHIPTO') {
+    if (itemType == Items.SHIPTO) {
       controlValue = this.saleOrderForm.get('shipTo')!.value
     }
     else {
@@ -582,7 +561,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
-            if (itemType == 'SHIPTO') {
+            if (itemType == Items.SHIPTO) {
               this.saleOrderForm.get('shipTo')!.patchValue(res.data.selName);
               this.saleOrderCls.shipTo = res.data.selCode;
               this.saleOrderCls.shipToDesc = res.data.selName;
@@ -599,21 +578,23 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.saleOrderForm.controls['customer'].value, 'PartyType': itemType,
-                  'search': itemType + ' Search', 'PartyName': ""
+                  tranNum: this.saleOrderForm.controls['customer'].value, PartyType: itemType,
+                  search: itemType + ' Search', PartyName: ""
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if (itemType == 'SHIPTO') {
-                  this.saleOrderForm.get('shipTo')!.patchValue(result.partyName);
-                  this.saleOrderCls.shipTo = result.code;
-                  this.saleOrderCls.shipToDesc = result.partyName;
-                }
-                else {
-                  this.saleOrderForm.get('billTo')!.patchValue(result.partyName);
-                  this.saleOrderCls.billTo = result.code;
-                  this.saleOrderCls.billToDes = result.partyName;
+                if(result != undefined && result != true){
+                  if (itemType == Items.SHIPTO) {
+                    this.saleOrderForm.get('shipTo')!.patchValue(result.partyName);
+                    this.saleOrderCls.shipTo = result.code;
+                    this.saleOrderCls.shipToDesc = result.partyName;
+                  }
+                  else {
+                    this.saleOrderForm.get('billTo')!.patchValue(result.partyName);
+                    this.saleOrderCls.billTo = result.code;
+                    this.saleOrderCls.billToDes = result.partyName;
+                  }
                 }
                 this.dialogOpen = false;
               });
@@ -621,14 +602,12 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -636,10 +615,10 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST203",
+        ScrId: ScreenId.SALE_ORDER_SCRID,
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
