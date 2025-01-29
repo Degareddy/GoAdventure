@@ -255,16 +255,16 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
         TranStatus: TranStatus.ANY
       }
       this.subSink.sink = this.purchreqservice.GetTranCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-          if (res && res.data && res.data.tranCount === 1) {
-            this.masterParams.tranNo = res.data.selTranNo;
-            this.purchaseData(this.masterParams, this.purReqHdrForm.controls['mode'].value);
-          }
-          else {
+        // if true) {
+          // if (res && res.data && res.data.tranCount === 1) {
+          //   this.masterParams.tranNo = res.data.selTranNo;
+          //   this.purchaseData(this.masterParams, this.purReqHdrForm.controls['mode'].value);
+          // }
+          // else {
             this.clearValues();
             this.purReqHdrForm.controls['tranDate'].patchValue(new Date());
             this.purReqHdrForm.controls['purpose'].patchValue('');
-            if (!this.dialogOpen) {
+            if (!false) {
               const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
                 width: '90%',
                 disableClose: true,
@@ -283,15 +283,15 @@ export class PurchaseRequestComponent implements OnInit, OnDestroy {
               });
             }
 
-          }
-        }
-        else {
-          this.clearValues();
-          this.purReqHdrForm.controls['tranDate'].patchValue(new Date());
-          this.purReqHdrForm.controls['purpose'].patchValue('');
-          this.loader.stop();
-          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
-        }
+          // }
+        // }
+        // else {
+        //   this.clearValues();
+        //   this.purReqHdrForm.controls['tranDate'].patchValue(new Date());
+        //   this.purReqHdrForm.controls['purpose'].patchValue('');
+        //   this.loader.stop();
+        //   this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        // }
       });
 
     }
