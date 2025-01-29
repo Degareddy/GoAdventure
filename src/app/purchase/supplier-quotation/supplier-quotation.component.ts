@@ -21,6 +21,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-supplier-quotation',
   templateUrl: './supplier-quotation.component.html',
@@ -30,7 +32,7 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
   sqhForm!: FormGroup;
   retMessage!: string;
   @Input() max: any;
-  supplierCode:any;
+  supplierCode: any;
   tomorrow = new Date();
   retNum!: number;
   textMessageClass!: string;
@@ -91,7 +93,7 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     this.suppQuation.revisionNo = this.sqhForm.controls['revisionNo'].value;
     this.suppQuation.remarks = this.sqhForm.controls['remarks'].value;
     this.suppQuation.salesExec = this.sqhForm.controls['salesExec'].value;
-    this.suppQuation.tranStatus = "Open";
+    this.suppQuation.tranStatus = TranStatus.OPEN;
     this.suppQuation.payTerm = this.sqhForm.controls['payTerm'].value;
     this.suppQuation.exchRate = this.sqhForm.controls['exchRate'].value;
     this.suppQuation.currency = this.sqhForm.controls['currency'].value;
@@ -100,19 +102,16 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     this.suppQuation.mode = this.sqhForm.controls['mode'].value;
     this.suppQuation.refNo = this.userDataService.userData.sessionID;
     this.suppQuation.tranNo = this.sqhForm.controls['tranNo'].value;
-    this.suppQuation.supplier=this.supplierCode;
+    this.suppQuation.supplier = this.supplierCode;
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   onSubmit() {
 
-    this.retMessage="";
-    this.textMessageClass="";
-    // if(this.suppQuation.supplier === "" || this.suppQuation.supplier === undefined){
-
-    //   this.retMessage = "Please select Supplier";
-    //   this.textMessageClass = "red";
-    //   return;
-    // }
-    if(this.supplierCode === "" || this.supplierCode === undefined){
+    this.displayMessage("", "");
+    if (this.supplierCode === "" || this.supplierCode === undefined) {
 
       this.retMessage = "Please select Supplier";
       this.textMessageClass = "red";
@@ -128,18 +127,17 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
         this.subSink.sink = this.purchreqservice.updateSupplierQuotation(this.suppQuation).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal < 100) {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
           else if (res.retVal >= 100 && res.retVal <= 200) {
             this.newTranMsg = res.message;
             this.masterParams.tranNo = this.sqhForm.controls['tranNo'].value;
-            if (this.sqhForm.controls['mode'].value == "Add") {
+            if (this.sqhForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.modeChange("Modify");
-              this.supplierQuotationData(this.masterParams,this.sqhForm.get('mode')?.value);
+              this.supplierQuotationData(this.masterParams, this.sqhForm.get('mode')?.value);
             }
             else {
-              this.supplierQuotationData(this.masterParams,this.sqhForm.get('mode')?.value);
+              this.supplierQuotationData(this.masterParams, this.sqhForm.get('mode')?.value);
               this.retMessage = res.message;
             }
             this.textMessageClass = "green";
@@ -147,8 +145,7 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
         });
       }
       catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
 
@@ -176,18 +173,18 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
   onDetailsCilcked(tranNo: any) {
     let applyVat = this.sqhForm.controls['applyVat'].value;
     const dialogRef: MatDialogRef<SupplierQuotaionDetailsComponent> = this.dialog.open(SupplierQuotaionDetailsComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
       data: {
         mode: this.sqhForm.controls['mode'].value,
         tranNo: this.sqhForm.controls['tranNo'].value,
-        'applyVat': applyVat,
+        applyVat: applyVat,
         status: this.status
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.isAltered === true) {
-        this.supplierQuotationData(this.masterParams,this.sqhForm.get('mode')?.value);
+        this.supplierQuotationData(this.masterParams, this.sqhForm.get('mode')?.value);
       }
     });
   }
@@ -214,18 +211,18 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
   loadData() {
     const modebody = {
       ...this.commonParams(),
-      item: 'ST110'
+      item: ScreenId.SUPPLIER_QUOTATION_SCRID
     };
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY",
-      mode:this.sqhForm.get('mode')?.value
+      Item: Items.CURRENCY,
+      mode: this.sqhForm.get('mode')?.value
     };
 
     const payTerm = {
       ...this.commonParams(),
-      Item: "PAYTERM",
-      mode:this.sqhForm.get('mode')?.value
+      Item: Items.PAYTERM,
+      mode: this.sqhForm.get('mode')?.value
     };
 
     const service1 = this.invService.getModesList(modebody);
@@ -237,12 +234,30 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
-        this.modes = res1.data;
-        this.currencyList = res2.data;
-        this.payTermList = res3.data;
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.modes = res1.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Modes list" + res1.message, TextClr.red);
+        }
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.currencyList = res2.data;
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Currency list" + res1.message, TextClr.red);
+        }
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.payTermList = res3.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Payterm list" + res1.message, TextClr.red);
+        }
       },
       (error: any) => {
         this.loader.stop();
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     );
   }
@@ -269,14 +284,14 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     this.totalAmount = res['data'].totalAmount;
     this.itemCount = res['data'].itemCount;
   }
-  supplierQuotationData(supp: MasterParams,mode:string): void {
+  supplierQuotationData(supp: MasterParams, mode: string): void {
     try {
       this.loader.start();
       this.purchreqservice.getsupplierQuotationData(supp).subscribe((res: any) => {
         this.bindData(res);
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          if (mode != 'View') {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          if (mode.toUpperCase() != Mode.view) {
             this.retMessage = this.newTranMsg;
           }
           else {
@@ -284,20 +299,18 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
           }
           this.textMessageClass = "green";
         } else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.reset();
       this.status = "";
       this.sqhForm.controls['mode'].setValue(event, { emitEvent: false });
@@ -323,24 +336,25 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
   getBillToList(body: any) {
     try {
       this.subSink.sink = this.purchreqservice.GetBillToList(body).subscribe((res: any) => {
-        if(res.status.toUpperCase()==="SUCCESS"){
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.billList = res['data'];
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Bill list " + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
   onSupplierSearch(itemType: string) {
-
-    this.retMessage="";
-    this.textMessageClass="";
-    this.suppQuation.supplier ="";
+    this.displayMessage("", "");
+    this.suppQuation.supplier = "";
     const body = {
-    ...this.commonParams(),
+      ...this.commonParams(),
       Type: itemType,
       Item: this.sqhForm.controls['supplier'].value,
       ItemFirstLevel: this.sqhForm.controls['billToName'].value,
@@ -349,12 +363,11 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
 
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+        if (res.status.toUpperCase() != AccessSettings.ERROR && res.status.toUpperCase() != AccessSettings.FAIL) {
 
-          if (res.data.nameCount === 1) {
-            if (itemType == 'SUPPLIER') {
+          if (res && res.data && res.data.nameCount === 1) {
+            if (itemType == Items.SUPPLIER) {
               this.sqhForm.controls['supplier'].patchValue(res.data.selName);
-              // this.suppQuation.supplier = res.data.selCode;
               this.supplierCode = res.data.selCode;
               console.log(this.supplierCode);
             }
@@ -371,15 +384,15 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.sqhForm.controls['supplier'].value, 'PartyType': itemType,
-                  'search': 'Supplier Search', 'PartyName': this.supplierCode
+                  tranNum: this.sqhForm.controls['supplier'].value, PartyType: itemType,
+                  search: 'Supplier Search', PartyName: this.supplierCode
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if (itemType == 'SUPPLIER') {
+                if (itemType == Items.SUPPLIER) {
                   this.sqhForm.controls['supplier'].setValue(result.partyName);
-                  this.supplierCode= result.code;
+                  this.supplierCode = result.code;
                 }
                 else {
                   this.sqhForm.controls['billToName'].setValue(result.partyName);
@@ -392,19 +405,17 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   private updateTranNoDisabledState() {
-    const isModeAdd = this.sqhForm.get('mode')?.value === 'Add';
+    const isModeAdd = this.sqhForm.get('mode')?.value.toUpperCase() === Mode.Add;
     if (isModeAdd) {
       this.sqhForm.get('supplier')?.disable();
     } else {
@@ -419,19 +430,19 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'SUPQUOTATION',
+      TranType: TranType.SUPQUOTATION,
       TranNo: this.sqhForm.controls['tranNo'].value,
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     try {
       this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
-            this.supplierQuotationData(this.masterParams,this.sqhForm.controls['mode'].value);
+            this.supplierQuotationData(this.masterParams, this.sqhForm.controls['mode'].value);
           }
           else {
             if (!this.dialogOpen) {
@@ -439,8 +450,8 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.sqhForm.controls['tranNo'].value, 'TranType': "SUPQUOTATION",
-                  'search': 'Supplier Quotation Search'
+                  tranNum: this.sqhForm.controls['tranNo'].value, TranType: TranType.SUPQUOTATION,
+                  search: 'Supplier Quotation Search'
                 }
               });
               this.status = "";
@@ -452,12 +463,11 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
                 if (result != true && result != undefined) {
                   this.masterParams.tranNo = result;
                   try {
-                    this.supplierQuotationData(this.masterParams,this.sqhForm.controls['mode'].value);
+                    this.supplierQuotationData(this.masterParams, this.sqhForm.controls['mode'].value);
                     this.sqhForm.controls['mode'].setValue(this.selMode);
                   }
                   catch (ex: any) {
-                    this.retMessage = "Exception " + ex.message;
-                    this.textMessageClass = 'red';
+                    this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
                   }
                 }
 
@@ -467,15 +477,13 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -486,8 +494,7 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
 
   clear() {
     this.sqhForm = this.forminit();
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     this.status = "";
     this.tranAmount = 0;
     this.vatAmount = 0;
@@ -497,19 +504,23 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.sqhForm.controls['mode'].value, tranNo: this.sqhForm.controls['tranNo'].value, search: 'Quotation Docs', tranType: "SUPQUOTATION" }
+      data: {
+        mode: this.sqhForm.controls['mode'].value,
+        tranNo: this.sqhForm.controls['tranNo'].value, search: 'Quotation Docs',
+        tranType: TranType.SUPQUOTATION
+      }
     });
   }
   onHelpCilcked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST105",
+        ScrId: ScreenId.SUPPLIER_QUOTATION_SCRID,
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
@@ -517,30 +528,28 @@ export class SupplierQuotationComponent implements OnInit, OnDestroy {
 
   }
 
-  NotesDetails(tranNo:any){
+  NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
-      data: { 'tranNo': tranNo,
-      'mode': this.sqhForm.controls['mode'].value,
-     // 'note':this.purReqHdrForm.controls['notes'].value ,
-      'TranType': "SUPQUOTATION",  // Pass any data you want to send to CustomerDetailsComponent
-      'search' :"Supplier Quotaion Notes"}
-    });
-    dialogRef.afterClosed().subscribe(result => {
-
+      data: {
+        tranNo: tranNo,
+        mode: this.sqhForm.controls['mode'].value,
+        TranType: TranType.SUPQUOTATION,
+        search: "Supplier Quotaion Notes"
+      }
     });
   }
 
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "SUPQUOTATION",
-        'tranNo': tranNo,
-        'search': 'Supplier Quotation Log Details'
+        tranType: TranType.SUPQUOTATION,
+        tranNo: tranNo,
+        search: 'Supplier Quotation Log Details'
       }
     });
   }
