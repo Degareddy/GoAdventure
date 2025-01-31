@@ -18,6 +18,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-plot',
@@ -43,8 +45,8 @@ export class PlotComponent implements OnInit, OnDestroy {
   plotsDt!: string;
   @Input() max: any;
   today = new Date();
-  private readonly SQ_M_TO_SQ_YD = 1.1959896; // Sq Meters to Sq Yards
-  private readonly SQ_YD_TO_SQ_M = 0.836127;  // Sq Yards to Sq Meters
+  private readonly SQ_M_TO_SQ_YD = 1.1959896;
+  private readonly SQ_YD_TO_SQ_M = 0.836127;
   constructor(private fb: FormBuilder,
     private masterService: MastersService,
     private loader: NgxUiLoaderService, public dialog: MatDialog,
@@ -57,7 +59,6 @@ export class PlotComponent implements OnInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      // venture: ['', [Validators.required, Validators.maxLength(10)]],
       plotNo: ['', [Validators.required, Validators.maxLength(10)]],
       plotName: ['', [Validators.required, Validators.maxLength(50)]],
       latitude: [0],
@@ -66,7 +67,6 @@ export class PlotComponent implements OnInit, OnDestroy {
       client: ['', [Validators.maxLength(50)]],
       availableFrom: [new Date(), [Validators.required]],
       extent_Y2: ['0.00', [Validators.required]],
-      // regnDate: [''],
       plotStatus: ['', [Validators.maxLength(20)]],
       remarks: ['', [Validators.maxLength(255)]],
       mode: ['View'],
@@ -116,12 +116,12 @@ export class PlotComponent implements OnInit, OnDestroy {
   loadData() {
     const body: getPayload = {
       ...this.commonParams(),
-      item: 'SM802',
+      item: ScreenId.PLOTS_SCRID,
       mode: this.pltDetForm.get('mode')?.value
     };
     const venturebody: getPayload = {
       ...this.commonParams(),
-      item: "VENTURE",
+      item: Items.VENTURE,
       mode: this.pltDetForm.get('mode')?.value
     };
     try {
@@ -129,30 +129,40 @@ export class PlotComponent implements OnInit, OnDestroy {
       const ventbody$ = this.masterService.GetMasterItemsList(venturebody);
       this.subSink.sink = forkJoin([modes$, ventbody$]).subscribe(
         ([modesRes, ventRes]: any) => {
-          if (modesRes.status.toUpperCase() === "SUCCESS") {
+          if (modesRes.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.modes = modesRes['data'];
           }
-          if (ventRes.status.toUpperCase() === "SUCCESS") {
+          else {
+            this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
+          }
+          if (ventRes.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.ventureList = ventRes['data'];
             if (this.ventureList.length === 1) {
               this.pltDetForm.controls['venture'].patchValue(this.ventureList[0].itemCode);
               this.onSelectedVentureChanged();
             }
           }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Venture list empty!", TextClr.red);
+          }
+
         },
         error => {
-          console.error(error);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   modeChange(event: string) {
-    if (event == "Add") {
+    if (event.toUpperCase() == Mode.Add) {
       this.reset();
       this.pltDetForm.get('plot')!.disable();
       this.pltDetForm.get('plot')!.clearValidators();
@@ -168,19 +178,18 @@ export class PlotComponent implements OnInit, OnDestroy {
   }
   clear() {
     this.pltDetForm = this.formInit();
-    this.retMessage = '';
     this.plotStatus = '';
     this.plotsList = [];
     this.subscribeToChanges();
+    this.displayMessage("","");
   }
 
   onSelectedVentureChanged() {
-    if (this.pltDetForm.get('mode')?.value != 'Add') {
-      this.masterParams.type = 'PLOT';
+    if (this.pltDetForm.get('mode')?.value.toUpperCase() != Mode.Add) {
+      this.masterParams.type = Type.PLOT;
       this.masterParams.item = this.pltDetForm.controls['venture'].value;
-      // this.pltDetForm.controls['ventureCode'].patchValue(this.pltDetForm.controls['venture'].value);
       this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((reslt: any) => {
-        if (reslt.status.toUpperCase() === "SUCCESS") {
+        if (reslt.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.plotsList = reslt['data'];
           if (this.plotsList.length === 1) {
             this.pltDetForm.controls['plot'].patchValue(this.plotsList[0].itemCode);
@@ -188,8 +197,7 @@ export class PlotComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = reslt.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + reslt.message, TextClr.red);
         }
       });
     }
@@ -197,39 +205,21 @@ export class PlotComponent implements OnInit, OnDestroy {
   }
 
   private resetMessages(): void {
-    this.retMessage = '';
-    this.textMessageClass = '';
+    this.displayMessage("", "");
   }
   onSelectedPlotChanged(event: string): void {
     this.resetMessages();
-    // this.masterParams.type = 'BLOCK';
     this.masterParams.item = event;
     this.plotsData();
-
-    // try {
-    //   this.subSink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: any) => {
-    //     if (res.status.toUpperCase() === "SUCCESS") {
-    //     }
-    //     else{
-    //       this.retMessage = res.message;
-    //       this.textMessageClass = 'red';
-    //     }
-    //   });
-
-    // }
-    // catch (ex: any) {
-    //   this.retMessage = ex.message;
-    //   this.textMessageClass = 'red';
-    // }
   }
 
   plotsData() {
-    this.masterParams.type = 'PLOT';
+    this.masterParams.type = Type.PLOT;
     this.masterParams.item = this.pltDetForm.controls['plot'].value;
     this.loader.start();
     this.subSink.sink = this.projectService.GetPlotDetails(this.masterParams).subscribe((res: any) => {
       this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.pltDetForm.controls['plotNo'].patchValue(res['data'].plotNo);
         this.pltDetForm.controls['plotName'].patchValue(res['data'].plotName);
         this.pltDetForm.controls['latitude'].patchValue(res['data'].latitude);
@@ -249,7 +239,7 @@ export class PlotComponent implements OnInit, OnDestroy {
         if (this.saleDate.includes("0001-01-01")) {
           this.saleDate = "";
         }
-        if (this.selMode === 'Add') {
+        if (this.selMode.toUpperCase() === Mode.Add) {
           this.retMessage = this.newTranMsg;
         }
         else {
@@ -259,8 +249,7 @@ export class PlotComponent implements OnInit, OnDestroy {
       }
       else {
         this.pltDetForm = this.formInit();
-        this.textMessageClass = 'red';
-        this.retMessage = res.message;
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     });
   }
@@ -272,7 +261,11 @@ export class PlotComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<DirectionsComponent> = this.dialog.open(DirectionsComponent, {
       width: '90%',
       disableClose: true,
-      data: { type: 'Plot', Trantype: "BOUNDARY", TranNo: this.pltDetForm.controls['plotNo'].value, mode: this.pltDetForm.controls['mode'].value }  // Pass any data you want to send to CustomerDetailsComponent
+      data: {
+        type: Type.PLOT,
+        Trantype: TranType.BOUNDARY, TranNo: this.pltDetForm.controls['plotNo'].value,
+        mode: this.pltDetForm.controls['mode'].value
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
     });
@@ -297,9 +290,6 @@ export class PlotComponent implements OnInit, OnDestroy {
         this.plotCls.longitude = this.pltDetForm.get('longitude')!.value;
         this.plotCls.extent_M2 = parseFloat(this.pltDetForm.get('extent_M2')!.value.replace(/,/g, ''));
         this.plotCls.extent_Y2 = parseFloat(this.pltDetForm.get('extent_Y2')!.value.replace(/,/g, ''));
-
-        // this.plotCls.extent_M2 = this.pltDetForm.get('extent_M2')!.value;
-        // this.plotCls.extent_M2 = this.pltDetForm.get('extent_Y2')!.value;
         var avblFromDate = this.datePipe.transform(new Date(this.pltDetForm.get('availableFrom')!.value), 'yyyy-MM-dd');
         this.plotCls.availableFrom = avblFromDate;
         this.plotCls.remarks = this.pltDetForm.get('remarks')!.value;
@@ -308,39 +298,33 @@ export class PlotComponent implements OnInit, OnDestroy {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
             this.newTranMsg = res.message;
-            if (this.pltDetForm.controls['mode'].value == "Add") {
+            if (this.pltDetForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.selMode = 'Add';
               this.modeChange("Modify");
               this.plotsList.push({ itemCode: this.pltDetForm.get('plotNo')?.value, itemName: this.pltDetForm.get('plotName')?.value });
               this.pltDetForm.get('plot')?.patchValue(this.pltDetForm.get('plotNo')?.value);
               this.masterParams.tranNo = res.tranNoNew;
             }
-            this.retMessage = res.message;
-            this.textMessageClass = 'green';
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           } else {
-            this.retMessage = res.message;
-            this.textMessageClass = 'red';
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         },
           (error: any) => {
             this.loader.stop();
-            console.error(error);
+            this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
           }
         );
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
   reset() {
-
-    // this.plotsData();
     this.pltDetForm = this.formInit();
-    this.textMessageClass = '';
     this.plotStatus = "";
-    this.retMessage = '';
+    this.displayMessage("", "");
   }
 
 
@@ -348,9 +332,11 @@ export class PlotComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.pltDetForm.controls['mode'].value, tranNo: this.pltDetForm.controls['plotNo'].value, search: 'Plot Docs', tranType: "PLOT" }
-    });
-    dialogRef.afterClosed().subscribe(result => {
+      data: {
+        mode: this.pltDetForm.controls['mode'].value,
+        tranNo: this.pltDetForm.controls['plotNo'].value, search: 'Plot Docs',
+        tranType: Type.PLOT
+      }
     });
   }
 
@@ -358,7 +344,7 @@ export class PlotComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM802",
+        ScrId: ScreenId.PLOTS_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -366,9 +352,7 @@ export class PlotComponent implements OnInit, OnDestroy {
         RefNo: this.userDataService.userData.sessionID
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
 
-    });
   }
 
 
@@ -377,16 +361,14 @@ export class PlotComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.pltDetForm.controls['mode'].value,
-        'note': this.pltDetForm.controls['remarks'].value,
-        'TranType': "PLOT",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Plot Notes"
+        tranNo: tranNo,
+        mode: this.pltDetForm.controls['mode'].value,
+        note: this.pltDetForm.controls['remarks'].value,
+        TranType: Type.PLOT,
+        search: "Plot Notes"
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
 
-    });
   }
 
   logDetails(tranNo: string) {
@@ -394,9 +376,9 @@ export class PlotComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "PLOT",
-        'tranNo': tranNo,
-        'search': 'Plot Log Details'
+        tranType: Type.PLOT,
+        tranNo: tranNo,
+        search: 'Plot Log Details'
       }
     });
   }

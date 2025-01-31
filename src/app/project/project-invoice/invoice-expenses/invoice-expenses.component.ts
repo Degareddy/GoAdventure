@@ -8,6 +8,8 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 @Component({
   selector: 'app-invoice-expenses',
   templateUrl: './invoice-expenses.component.html',
@@ -19,8 +21,8 @@ export class InvoiceExpensesComponent implements OnInit, OnDestroy {
   vatAmount: string = "0";
   private invDetailCls: invoiceDetailClass
   private subSink!: SubSink;
-  textMessageClass: string="";
-  retMessage: string="";
+  textMessageClass: string = "";
+  retMessage: string = "";
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
@@ -78,13 +80,12 @@ export class InvoiceExpensesComponent implements OnInit, OnDestroy {
     this.invDetailCls.tranNo = this.data.tranNo;
     this.invDetailCls.mode = this.data.mode;
     try {
-    this.loader.start();
+      this.loader.start();
       this.subSink.sink = this.projectService.UpdateTenantInvoiceDet(this.invDetailCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.dataFlag = true;
           this.GetTenantInvoiceCosts(res.tranNoNew);
-
           if (this.slNum === 0) {
             const highestSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
               return Math.max(maxSlNo, currentItem.slNo);
@@ -92,30 +93,30 @@ export class InvoiceExpensesComponent implements OnInit, OnDestroy {
             console.log('Highest slNo:', highestSlNo);
             this.slNum = highestSlNo;
           }
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+        this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
 
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);;
     }
 
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
 
   add() {
     this.slNum = 0;
     this.refNo = "";
     this.amount = 0;
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
   }
 
   Delete() {
@@ -127,7 +128,6 @@ export class InvoiceExpensesComponent implements OnInit, OnDestroy {
       data: dialogData,
       disableClose: true
     });
-
     dialogRef.afterClosed().subscribe(dialogResult => {
       if (dialogResult) {
         this.apply();
@@ -178,21 +178,20 @@ export class InvoiceExpensesComponent implements OnInit, OnDestroy {
       this.loader.start()
       this.subSink.sink = this.projectService.pullTenantInvoiceCosts(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
           this.dataFlag = true;
-          this.retMessage = res.message;
-          this.textMessageClass = 'green';
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           this.dataFlag = false;
         }
       });
     }
     catch (ex: any) {
-
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      this.loader.stop();
     }
   }
 
@@ -205,18 +204,16 @@ export class InvoiceExpensesComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.projectService.GetTenantInvoiceCosts(invDetBody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }

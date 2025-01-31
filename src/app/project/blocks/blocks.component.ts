@@ -17,7 +17,7 @@ import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
-import { Items, Log, Mode, ScreenId, searchDocs, searchNotes, TranType, Type } from 'src/app/utils/enums';
+import { displayMsg, Items, Log, Mode, ScreenId, searchDocs, searchNotes, TextClr, TranType, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
@@ -104,13 +104,13 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.loadData();
-    if(this.blkHdrForm.get('mode')!.value !== 'Add'){
+    if(this.blkHdrForm.get('mode')!.value.toUpperCase() !== Mode.Add){
       this.blkHdrForm.get('blockID')?.disable();
     }
     else{
       this.blkHdrForm.get('blockID')?.enable();
     }
-    
+
   }
   async loadData() {
     const modebody = this.buildRequestParams(ScreenId.BLOCKS_SCRID);
@@ -127,13 +127,12 @@ export class BlocksComponent implements OnInit, OnDestroy {
           this.handleDataLoadSuccess(modesRes, propRes);
         },
         error => {
-          this.handleDataLoadError(error);
+          this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
         }
       );
     }
     catch (ex: any) {
-      this.retMessage = "Exception: " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -156,8 +155,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
       }
     }
     else {
-      this.retMessage = "Modes list empty!";
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.ERROR+ "Modes list empty!", TextClr.red);
       return;
     }
     if (propRes.status.toUpperCase() === AccessSettings.SUCCESS) {
@@ -168,16 +166,15 @@ export class BlocksComponent implements OnInit, OnDestroy {
       }
     }
     else {
-      this.retMessage = "Properties list empty!";
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.ERROR+ "Properties list empty!", TextClr.red);
       return;
     }
   }
 
-  private handleDataLoadError(error: any): void {
-    this.retMessage = error.message;
-    this.textMessageClass = 'red';
-  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
 
   modeChange(event: string): void {
     this.resetMessages();
@@ -202,12 +199,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.blkHdrForm = this.formInit();
     this.unitCount = 0;
     this.blockStatus = '';
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
   }
 
   async onSelectedPropertyChanged() {
-    // if (this.blkHdrForm.get('mode')?.value.toUpperCase() != Mode.view) {
       this.resetMessages();
       const propertyValue = this.blkHdrForm.controls['property'].value;
       this.masterParams.type = Type.BLOCK;
@@ -220,14 +215,13 @@ export class BlocksComponent implements OnInit, OnDestroy {
             this.handlePropertyChangedResponse(result);
           },
           (error: any) => {
-            this.handlePropertyChangedError(error);
+            this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
           }
         );
       } catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
-    // }
+
   }
 
   private handlePropertyChangedResponse(result: getResponse) {
@@ -242,10 +236,6 @@ export class BlocksComponent implements OnInit, OnDestroy {
       this.textMessageClass = 'red';
     }
   }
-  private handlePropertyChangedError(error: any): void {
-    this.retMessage = error.message;
-    this.textMessageClass = 'red';
-  }
   async onSelectedBlockChanged(event: string) {
     this.resetMessages();
     this.masterParams.type = Type.BLOCK;
@@ -256,28 +246,25 @@ export class BlocksComponent implements OnInit, OnDestroy {
           this.handleBlockDetailsResponse(result);
         },
         (error: any) => {
-          this.handleBlockDetailsError(error);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   private resetMessages(): void {
-    this.retMessage = '';
-    this.textMessageClass = '';
+    this.displayMessage("","");
   }
 
   private handleBlockDetailsResponse(result: getResponse): void {
     if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.populateBlockDetails(result.data);
-      this.retMessage = this.selMode === 'Add' ? this.newTranMsg : `Retrieving data ${result.message} has completed`;
+      this.retMessage = this.selMode.toUpperCase() === Mode.Add ? this.newTranMsg : `Retrieving data ${result.message} has completed`;
       this.textMessageClass = 'green';
     } else {
-      this.retMessage = result.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.ERROR+ result.message, TextClr.red);
     }
   }
 
@@ -293,15 +280,11 @@ export class BlocksComponent implements OnInit, OnDestroy {
       latitude: data.latitude,
       longitude: data.longitude,
       notes: data.notes
-    });
+    },{emitEvent:false});
     this.unitCount = data.unitCount;
     this.blockStatus = data.blockStatus;
   }
 
-  private handleBlockDetailsError(error: any): void {
-    this.retMessage = error.message;
-    this.textMessageClass = 'red';
-  }
 
   async onUpdate() {
     if (this.blkHdrForm.valid) {
@@ -314,12 +297,12 @@ export class BlocksComponent implements OnInit, OnDestroy {
         },
           (error: any) => {
             this.loader.stop();
-            this.handleUpdateError(error);
+            this.displayMessage(displayMsg.ERROR+ error.message, TextClr.red);
           }
         );
       } catch (ex: any) {
         this.loader.stop();
-        this.handleUpdateError(ex);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -347,7 +330,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
     if (this.isUpdateSuccessful(res.retVal)) {
       this.handleSuccessfulUpdate(res);
     } else {
-      this.handleFailedUpdate(res);
+      this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
     }
   }
 
@@ -361,8 +344,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
       this.handleSuccessfulAddMode();
 
     } else {
-      this.retMessage = res.message;
-      this.textMessageClass = 'green';
+      this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
     }
   }
 
@@ -371,19 +353,9 @@ export class BlocksComponent implements OnInit, OnDestroy {
     this.blockList.push({ itemCode: this.blkHdrForm.controls['blockID'].value, itemName: this.blkHdrForm.controls['blockName'].value });
     this.modeChange('Modify');
     this.blkHdrForm.controls['block'].patchValue(this.blkHdrForm.controls['blockID'].value);
-    this.retMessage = this.newTranMsg;
-    this.textMessageClass = 'green';
+    this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
   }
 
-  private handleFailedUpdate(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'red';
-  }
-
-  private handleUpdateError(error: any) {
-    this.retMessage = error?.message || 'An error occurred during update.';
-    this.textMessageClass = 'red';
-  }
 
   onInputChange(controlName: string, event: any) {
     const value = parseInt(event.target.value, 10);
@@ -406,8 +378,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
 
   clear() {
     this.blkHdrForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     this.blockCode = "";
     this.blockStatus = "";
     this.selMode = "";
@@ -423,11 +394,7 @@ export class BlocksComponent implements OnInit, OnDestroy {
       const date = new Date(year, month - 1, day);
       if (!isNaN(date.getTime())) {
         control?.patchValue(date);
-      } else {
-        // console.error('Invalid date:', inputValue);
       }
-    } else {
-      // console.error('Invalid date format:', inputValue);
     }
   }
 
@@ -473,11 +440,11 @@ export class BlocksComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.blkHdrForm.controls['mode'].value,
-        'note': this.blkHdrForm.controls['notes'].value,
-        'TranType': TranType.BLOCKS,
-        'search': searchNotes.BLOCK_NOTE
+        tranNo: tranNo,
+        mode: this.blkHdrForm.controls['mode'].value,
+        note: this.blkHdrForm.controls['notes'].value,
+        TranType: TranType.BLOCKS,
+        search: searchNotes.BLOCK_NOTE
       }
     });
 
@@ -488,12 +455,10 @@ export class BlocksComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': TranType.BLOCKS,
-        'tranNo': tranNo,
-        'search': Log.BLOCK_LOG
+        tranType: TranType.BLOCKS,
+        tranNo: tranNo,
+        search: Log.BLOCK_LOG
       }
     });
   }
-
-
 }

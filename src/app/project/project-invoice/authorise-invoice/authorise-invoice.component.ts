@@ -1,10 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { data } from 'jquery';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { debounceTime, forkJoin } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
@@ -14,16 +13,15 @@ import { MasterParams } from 'src/app/modals/masters.modal';
 import { MastersService } from 'src/app/Services/masters.service';
 import { ProjectsService } from 'src/app/Services/projects.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, TextClr, Type } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
-// import {
-//   RowSelectionOptions,
-// } from "@ag-grid-community";
 @Component({
   selector: 'app-authorise-invoice',
   templateUrl: './authorise-invoice.component.html',
   styleUrls: ['./authorise-invoice.component.css']
 })
-export class AuthoriseInvoiceComponent implements OnInit {
+export class AuthoriseInvoiceComponent implements OnInit, OnDestroy {
   authoriseInvoiceForm!: FormGroup;
   invoiceType: Item[] = [
     { itemCode: 'TENINV', itemName: 'Tenant Invoice' },
@@ -46,13 +44,6 @@ export class AuthoriseInvoiceComponent implements OnInit {
   displayColumns = ["mapped", "slNo", "tranNo", "tranDate", "tenantName"];
   dataSource: any = [];
   masterParams: MasterParams;
-
-  // public rowSelection: 'single' | 'multiple' = {
-  //   mode: "multiRow",
-  // };;
-  // public rowSelection: RowSelectionOptions | "single" | "multiple" = {
-  //   mode: "multiRow",
-  // };
   columnDefs: any = [
     { headerName: 'Property', field: 'propertyName', sortable: false, filter: true, resizable: true, flex: 1 },
     { headerName: 'Block', field: 'blockName', sortable: false, filter: true, resizable: true, flex: 1 },
@@ -61,6 +52,9 @@ export class AuthoriseInvoiceComponent implements OnInit {
     this.authoriseInvoiceForm = this.forminit();
     this.masterParams = new MasterParams();
 
+  }
+  ngOnDestroy(): void {
+    this.subSink.unsubscribe();
   }
   toggleAllRows(isSelected: boolean) {
     this.isAllSelected = isSelected;
@@ -71,7 +65,6 @@ export class AuthoriseInvoiceComponent implements OnInit {
     else {
       this.count = 0;
     }
-    // this.count = this.dataSource.filteredData.length;
     if (this.dataSource.data && Array.isArray(this.dataSource.data)) {
       this.dataSource.data.forEach((row: any) => (row.mapped = isSelected));
     }
@@ -79,7 +72,6 @@ export class AuthoriseInvoiceComponent implements OnInit {
 
 
 
-  // Update the status of a single row
   updateMapStatus(row: any, isSelected: boolean) {
 
     row.mapped = isSelected;
@@ -89,19 +81,13 @@ export class AuthoriseInvoiceComponent implements OnInit {
     else {
       this.buttonEnable = !isSelected;
     }
-    // this.buttonEnable=!isSelected;
     if (isSelected) {
       this.count++;
-      // this.authorisedDisable(this.count);
     }
     else {
       this.count--;
-      // this.authorisedDisable(this.count);
     }
   }
-
-  // Check if all rows are selected
-
   ngOnInit(): void {
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -110,14 +96,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
     this.loadData();
 
   }
-  // authorisedDisable(count:number){
-  //   if(count>0){
-  //     this.buttonEnable=false;
-  //     return;
-  //   }
-  //   this.buttonEnable=true;
 
-  // }
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -126,21 +105,25 @@ export class AuthoriseInvoiceComponent implements OnInit {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   async loadData() {
-    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY' });
+    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.PROPERTY });
     this.subSink.sink = await forkJoin([property$]).subscribe(
       ([propertyRes]: any) => {
         this.handleloadRes(propertyRes)
       },
       error => {
-        this.handelError(error, 'red');
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     );
   }
 
   handleloadRes(propertyRes: getResponse) {
 
-    if (propertyRes.status.toUpperCase() === "SUCCESS") {
+    if (propertyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.properytList = propertyRes['data'];
       if (this.properytList.length === 1) {
         this.authoriseInvoiceForm.get('property')!.patchValue(this.properytList[0].itemCode);
@@ -153,29 +136,28 @@ export class AuthoriseInvoiceComponent implements OnInit {
     }
   }
   clearMsgs() {
-    this.handelError('', '');
+    this.displayMessage("", "");
   }
   async propertyChnaged() {
     this.blocksList = [];
     this.clearMsgs();
-    this.masterParams.type = 'BLOCK';
+    this.masterParams.type = Type.BLOCK;
     this.masterParams.item = this.authoriseInvoiceForm.controls['property'].value;
     try {
       if (this.masterParams.item != 'All' && this.authoriseInvoiceForm.controls['property'].value != '') {
         this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams)
           .pipe(
-            debounceTime(300) // Adjust the debounce time as needed (in milliseconds)
+            debounceTime(300)
           )
           .subscribe((result: getResponse) => {
-            if (result.status.toUpperCase() === "SUCCESS") {
+            if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
               this.blocksList = result['data'];
               if (this.blocksList.length === 1) {
                 this.authoriseInvoiceForm.get('block')!.patchValue(this.blocksList[0].itemCode);
               }
             }
             else {
-              this.retMessage = "Block list empty!";
-              this.textMessageClass = 'red';
+              this.displayMessage(displayMsg.ERROR + "Block list empty!", TextClr.red);
               return;
             }
           });
@@ -183,7 +165,7 @@ export class AuthoriseInvoiceComponent implements OnInit {
     }
     catch (ex: any) {
       this.loader.stop();
-      this.handelError(ex, 'red');
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   applyFilter(event: Event) {
@@ -205,17 +187,17 @@ export class AuthoriseInvoiceComponent implements OnInit {
             this.loader.start();
             const res: any = await this.projService.authoriseSelectedData(body).toPromise();
             this.loader.stop();
-            if (res['status'].toUpperCase() === 'SUCCESS') {
-              this.handelError(res, 'green');
+            if (res['status'].toUpperCase() === AccessSettings.SUCCESS) {
+              this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
               response = 1;
               --this.count;
 
             } else {
-              this.handelError(res, 'red');
+              this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
               response = 0;
             }
           } catch (ex: any) {
-            this.handelError(ex, 'red');
+            this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
             response = 0;
           }
         }
@@ -263,26 +245,26 @@ export class AuthoriseInvoiceComponent implements OnInit {
       this.loader.start();
       this.subSink.sink = this.projService.getAuthoriseInvoicesData(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res['status'].toUpperCase() === "SUCCESS") {
+        if (res['status'].toUpperCase() === AccessSettings.SUCCESS) {
           this.checkBoxEnable = false;
           this.dataSource = new MatTableDataSource(res['data']);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.matsort;
-          this.handelError(res, 'green');
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.handelError(res, 'red');
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handelError(ex, 'red');
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-  handelError(res: any, colour: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = colour;
-  }
+  // handelError(res: any, colour: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = colour;
+  // }
   forminit() {
     return this.fb.group({
       tranType: ['', [Validators.required]],
@@ -294,14 +276,10 @@ export class AuthoriseInvoiceComponent implements OnInit {
     })
   }
 
-  update(row: any, i: number) {
 
-  }
-  onRowClick(row: any, i: number) {
-
-  }
   Clear() {
     this.authoriseInvoiceForm = this.forminit();
     this.dataSource = [];
+    this.displayMessage("", "");
   }
 }

@@ -17,6 +17,8 @@ import { MasterParams } from 'src/app/modals/masters.modal';
 import { DecimalPipe } from '@angular/common';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-legal-charges',
@@ -88,9 +90,9 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "LEGLCHARGE",
-        'tranNo': tranNo,
-        'search': 'Legal Charges Log Details'
+        tranType: TranType.LEGLCHARGE,
+        tranNo: tranNo,
+        search: 'Legal Charges Log Details'
       }
     });
   }
@@ -99,11 +101,11 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': 'modify',
-        'note': this.legaChargeForm.controls['notes'].value,
-        'TranType': "legalChargetype",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Legal Charges Notes"
+        tranNo: tranNo,
+        mode: Mode.Modify,
+        note: this.legaChargeForm.controls['notes'].value,
+        TranType: TranType.LEGLCHARGETYPE,
+        search: "Legal Charges Notes"
       }
     });
 
@@ -111,14 +113,14 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
   _amountMessage() {
 
     this.amountMessage = '';
-    if (this.legaChargeForm.get('chargeType')?.value === 'FLAT') {
+    if (this.legaChargeForm.get('chargeType')?.value === Type.FLAT) {
       this.amountMessage = '';
       if (parseFloat(this.legaChargeForm.get('amount')?.value.toString()) <= 0) {
         this.amountMessage = '';
         this.amountMessage = 'Amount must be greater than 0';
       }
     }
-    else if (this.legaChargeForm.get('chargeType')?.value === 'PERCENTAGE') {
+    else if (this.legaChargeForm.get('chargeType')?.value === Type.PERCENTAGE) {
       this.amountMessage = '';
       if (parseFloat(this.legaChargeForm.get('amount')?.value.toString()) >= 100) {
         this.amountMessage = '';
@@ -129,7 +131,6 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
         this.amountMessage = 'Percentage must be greater than 0';
       }
     }
-    // Regex pattern to match any alphabet or special character
     var format = /[a-zA-Z!@#$%^&*()_+\-=\[\]{};':"\\|<>\/?]+/;
     if (this.legaChargeForm.get('amount')?.value.toString().match(format)) {
       this.amountMessage = '';
@@ -161,7 +162,6 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       mode: this.legaChargeForm.controls['mode'].value,
-      //property:this.legaChargeForm.controls['propCode'].value,
       ChargeItem: this.legaChargeForm.controls['legalChargetype'].value,
       Currency: this.legaChargeForm.controls['currency'].value,
       ChargeMethod: this.legaChargeForm.controls['chargeType'].value,
@@ -172,45 +172,44 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.projService.updateLegalCharges(body).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        // this.rowData=res['data'];
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.legalChargeChange();
-          this.handelError(res, 'green');
-
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.handelError(res, 'red');
-
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.handelError(ex, 'red');
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   async propertyChnaged() {
     this.blocksList = [];
-    // this.clearMsgs();
     this.legaChargeForm.controls['legalChargetype'].patchValue('');
-    this.masterParams.type = 'BLOCK';
+    this.masterParams.type = Type.BLOCK;
     this.masterParams.item = this.legaChargeForm.controls['propCode'].value;
     try {
       if (this.masterParams.item != 'All' && this.legaChargeForm.controls['propCode'].value != '') {
         this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams)
           .pipe(
-            debounceTime(300) // Adjust the debounce time as needed (in milliseconds)
+            debounceTime(300)
           )
           .subscribe((result: getResponse) => {
-            if (result.status.toUpperCase() === "SUCCESS") {
+            if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
               this.blocksList = result['data'];
               if (this.blocksList.length === 1) {
                 this.legaChargeForm.get('blockCode')!.patchValue(this.blocksList[0].itemCode);
               }
             }
             else {
-              this.retMessage = "Block list empty!";
-              this.textMessageClass = 'red';
+              this.displayMessage(displayMsg.ERROR + "Block list empty!", TextClr.red);
               return;
             }
           });
@@ -218,37 +217,37 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
     }
     catch (ex: any) {
       this.loader.stop();
-      this.handelError(ex, 'red');
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   async legalChargeChange() {
     this.rowData = [];
     const body = {
       ...this.commonParams(),
-      item: 'LEGLCHARGE',
+      item: TranType.LEGLCHARGE,
     };
     try {
       this.loader.start();
       this.subSink.sink = await this.projService.getLegalCharges(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
           this.rowData = [];
-          this.handelError(res, 'red');
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handelError(ex, 'red');
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onHelpClicked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM807",
+        ScrId: ScreenId.LEGAL_CHARGES_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -270,30 +269,24 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
-  // onGridReady(params: any) {
-  //   this.gridApi = params.api;
-  //   this.columnApi = params.columnApi;
-  //   const gridApi = params.api;
-  //   gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
-  // }
+
   async loadData() {
-    const mode$ = this.masterService.getModesList({ ...this.commonParams(), item: 'SM809',mode:this.legaChargeForm.get('mode')?.value });
-    const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY',mode:this.legaChargeForm.get('mode')?.value })
-    const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATRATE',mode:this.legaChargeForm.get('mode')?.value });
-    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY',mode:this.legaChargeForm.get('mode')?.value });
-    const legalfee$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE' ,mode:this.legaChargeForm.get('mode')?.value});
-    try{
+    const mode$ = this.masterService.getModesList({ ...this.commonParams(), item: ScreenId.LEGAL_CHARGES_SCRID, mode: this.legaChargeForm.get('mode')?.value });
+    const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.CURRENCY, mode: this.legaChargeForm.get('mode')?.value })
+    const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.VATRATE, mode: this.legaChargeForm.get('mode')?.value });
+    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.PROPERTY, mode: this.legaChargeForm.get('mode')?.value });
+    const legalfee$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: TranType.LEGLCHARGE, mode: this.legaChargeForm.get('mode')?.value });
+    try {
       this.subSink.sink = await forkJoin([vbody$, property$, legalfee$, currency$, mode$]).subscribe(
         ([vatRes, propertyRes, chargeRes, currencyRes, mode]: any) => {
           this.handleloadRes(vatRes, propertyRes, chargeRes, currencyRes, mode)
         },
         error => {
-          this.handelError(error, 'red');
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         });
     }
-    catch(ex:any){
-      this.retMessage=ex.message;
-      this.textMessageClass="red";
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       this.loader.stop();
     }
 
@@ -308,11 +301,11 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
       currency: event.data.currency,
       amount: event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       notes: event.data.notes
-    });
+    },{emitEvent:false});
   }
   modeChange(value: any) {
-    if (value === 'Add') {
-        this.legaChargeForm= this.formInit();
+    if (value.toUpperCase() === Mode.Add) {
+      this.legaChargeForm = this.formInit();
       this.Clear();
       this.legaChargeForm.get('mode')!.patchValue('Add', { emitEvent: false });
       this.loadData();
@@ -320,52 +313,33 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
   }
   handleloadRes(vatRes: getResponse, propertyRes: getResponse, legalfee: getResponse, currencyRes: getResponse, mode: getResponse) {
 
-    if (mode.status.toUpperCase() === "SUCCESS") {
+    if (mode.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.modes = mode['data'];
       if (this.modes.length === 1) {
         this.legaChargeForm.get('mode')!.patchValue(this.modes[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Mode list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
     }
-    // if (propertyRes.status.toUpperCase() === "SUCCESS") {
-    //   this.properytList = propertyRes['data'];
-    //   if (this.properytList.length === 1) {
-    //     this.legaChargeForm.get('propCode')!.patchValue(this.properytList[0].itemCode);
-    //     this.propertyChnaged();
-    //   }
-    // } else {
-    //   this.retMessage = "Property list empty!";
-    //   this.textMessageClass = "red";
 
-    // }
-    // if (vatRes.status.toUpperCase() === "SUCCESS") {
-    //   this.vatList = vatRes['data'];
-    //   if (this.vatList.length === 1) {
-    //     this.legaChargeForm.get('vatRate')!.patchValue(this.vatList[0].itemCode);
-    //   }
-    // }
-    //
-    if (legalfee.status.toUpperCase() === "SUCCESS") {
+    if (legalfee.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.legaCharges = legalfee['data'];
       if (this.legaCharges.length === 1) {
         this.legaChargeForm.get('legalChargetype')!.patchValue(this.legaCharges[0].itemCode);
       }
     } else {
-      this.retMessage = "Legal Charges list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Legal charges list empty", TextClr.red);
 
     }
-    if (currencyRes.status.toUpperCase() === "SUCCESS") {
+    if (currencyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.currency = currencyRes['data'];
       if (this.currency.length === 1) {
         this.legaChargeForm.get('currency')!.patchValue(this.currency[0].itemCode);
       }
     } else {
-      this.retMessage = "Currency list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Currency list empty", TextClr.red);
+
     }
   }
 

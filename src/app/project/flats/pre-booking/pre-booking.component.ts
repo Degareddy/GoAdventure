@@ -8,6 +8,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr, Type } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 export interface preBooking {
   status: string,
@@ -26,10 +28,10 @@ export class PreBookingComponent implements OnInit, OnDestroy {
   tenantCode: any;
   private subSink!: SubSink;
   dialogOpen: boolean = false;
-  retMessage: string="";
+  retMessage: string = "";
   @Input() max: any;
   today = new Date();
-  textMessageClass: string="";
+  textMessageClass: string = "";
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
@@ -40,7 +42,6 @@ export class PreBookingComponent implements OnInit, OnDestroy {
     { field: "tenantName", headerName: "Tenant Name", sortable: true, filter: true, resizable: true, flex: 1 },
     {
       field: "bookingDate", headerName: "Booking Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -53,7 +54,6 @@ export class PreBookingComponent implements OnInit, OnDestroy {
     },
     {
       field: "joiningDate", headerName: "Joining Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -128,23 +128,29 @@ export class PreBookingComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.projectService.UpdateUnitPreBooking(body).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.handleSuccessMsg(res);
             this.getUnitHistory();
           }
           else {
-            this.handleErrorMsg(res);
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+
           }
         });
       }
       catch (ex: any) {
-        this.handleErrorMsg(ex);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+
       }
     }
     else {
       this.retMessage = "Select Valid Tenant!";
       this.textMessageClass = 'red';
     }
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   commonParams() {
     return {
@@ -163,16 +169,16 @@ export class PreBookingComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.projectService.GetUnitPreBookings(body).subscribe((res: preBooking) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.handleErrorMsg(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleErrorMsg(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onGridReady(params: any) {
@@ -183,20 +189,19 @@ export class PreBookingComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    console.log(event);
     this.tenantCode = event.data.tenant,
-    this.preBookingForm.patchValue({
-      tenantName:event.data.tenantName,
-      bookingDate:event.data.bookingDate,
-      joinDate:event.data.joiningDate,
-      status: event.data.bookingStatus,
-      notes: event.data.notes,
-    })
+      this.preBookingForm.patchValue({
+        tenantName: event.data.tenantName,
+        bookingDate: event.data.bookingDate,
+        joinDate: event.data.joiningDate,
+        status: event.data.bookingStatus,
+        notes: event.data.notes,
+      }, { emitEvent: false })
   }
   onTenantSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "TENANT",
+      Type: Type.TENANT,
       item: this.preBookingForm.controls['tenantName'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: "",
@@ -214,27 +219,28 @@ export class PreBookingComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.preBookingForm.controls['tenantName'].value, 'PartyType': "Tenant",
-                  'search': 'Tenant Search'
+                  PartyName: this.preBookingForm.controls['tenantName'].value, PartyType: Type.TENANT,
+                  search: 'Tenant Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.preBookingForm.controls['tenantName'].setValue(result.partyName);
-                this.tenantCode = result.code;
+                if(result != true && result != undefined){
+                  this.preBookingForm.controls['tenantName'].setValue(result.partyName);
+                  this.tenantCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
-
           }
         }
         else {
-          this.handleErrorMsg(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleErrorMsg(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   handleErrorMsg(res: any) {
@@ -246,8 +252,7 @@ export class PreBookingComponent implements OnInit, OnDestroy {
     this.textMessageClass = 'green';
   }
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage('', '');
   }
 }
 

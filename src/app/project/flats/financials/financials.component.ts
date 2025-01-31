@@ -112,7 +112,6 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   },
   {
     field: "reviewedOn", headerName: "Last Reviewed", sortable: true, filter: true, resizable: true, flex: 1, hide: true, valueFormatter: function (params: any) {
-      // Format date as dd-MM-yyyy
       if (params.value) {
         const date = new Date(params.value);
         const day = date.getDate().toString().padStart(2, '0');
@@ -199,8 +198,8 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    const vatBody = { ...this.createRequestData('VATRATE'), mode: this.data.mode };
-    const chargeBody = { ...this.createRequestData('RENTCHARGE'), mode: this.data.mode };
+    const vatBody = { ...this.createRequestData(Items.VATRATE), mode: this.data.mode };
+    const chargeBody = { ...this.createRequestData(Items.RENTCHARGE), mode: this.data.mode };
     const vat$ = this.masterService.GetMasterItemsList(vatBody);
     const charge$ = this.masterService.GetMasterItemsList(chargeBody);
     this.subSink.sink = forkJoin([vat$, charge$]).subscribe(
@@ -230,7 +229,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
       PropCode: this.data.Property,
       BlockCode: this.data.Block,
       UnitCode: this.data.Flat,
-      itemType: "LANDLORD"
+      itemType: Items.LANDLORD
     };
   }
 
@@ -255,11 +254,11 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   getUnitCharges(flat: string, loadFlag: boolean) {
     const body = {
       ...this.createLandlordRequestData(),
-      ItemType: "Charge"
+      ItemType: Items.CHARGE
     };
 
     this.subSink.sink = this.projService.GetUnitChargeDetails(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.handleChargeSuccess(res, loadFlag);
       } else {
         this.handleChargeError(res);
@@ -284,12 +283,12 @@ export class FinancialsComponent implements OnInit, OnDestroy {
   handleChargeSuccess(res: any, loadFlag: boolean) {
     this.rowData = res.data || [];
     this.calculateTotals(this.rowData);
-    if (loadFlag && this.data.mode !== "Delete" && this.slNum === 0) {
+    if (loadFlag && this.data.mode.toUpperCase() !== Mode.Delete && this.slNum === 0) {
       const maxSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
         return Math.max(maxSlNo, currentItem.slNo);
       }, 0);
       this.slNum = maxSlNo;
-    } else if (loadFlag && this.data.mode === "Delete" && this.slNum !== 0) {
+    } else if (loadFlag && this.data.mode.toUpperCase() === Mode.Delete && this.slNum !== 0) {
       this.slNum = 0;
       this.financeForm = this.formInit();
       this.retMessage = this.returnMsg || '';
@@ -341,7 +340,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
     this.loader.start();
     this.subSink.sink = this.projService.UpdateUnitLandlordCharge(updateData).subscribe((res: SaveApiResponse) => {
       this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.handleSuccess(res.message, res.tranNoNew);
       } else {
         this.handleError(res.message);
@@ -372,8 +371,6 @@ export class FinancialsComponent implements OnInit, OnDestroy {
         slNo: this.slNum,
         tranStatus: this.tranStatus,
         unitCode: this.data.Flat,
-
-        // amount: this.financeForm1.value.amount,
         amount: Number(this.financeForm1.controls['amount'].value.toString().replace(',', '')),
         discType: this.financeForm1.value.discType,
         discRate: Number(this.financeForm1.controls['discRate'].value.toString().replace(',', '')),
@@ -393,7 +390,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.projService.UpdateUnitCharges(updateData).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.handleSuccess(res.message, res.tranNoNew);
           } else {
             this.handleError(res.message);
@@ -486,7 +483,7 @@ export class FinancialsComponent implements OnInit, OnDestroy {
         revenueTo: event.data.revenueTo,
         IsRecurring: event.data.isRecurring,
         IsRefundable: event.data.isRefundable
-      });
+      }, { emitEvent: false });
     }
   }
 
@@ -567,6 +564,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { Items, Mode } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Pipe({
   name: 'commaSeparator'

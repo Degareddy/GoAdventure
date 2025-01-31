@@ -30,6 +30,8 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { VacantNoticeComponent } from './vacant-notice/vacant-notice.component';
 import { MulticlientsAllocationComponent } from './multiclients-allocation/multiclients-allocation.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 interface flatHistoyObject {
   company: string;
@@ -264,14 +266,14 @@ export class FlatsComponent implements OnInit, OnDestroy {
       extraHall: [false],
       waterDiscount: [false],
       noRent: [false],
-      isSimilar:[false],
+      isSimilar: [false],
       multiLandLord: [false],
       discType: [{ value: '', disabled: true }],
       discRate: [{ value: '0.00', disabled: true }],
       currency: ['', [Validators.required]],
       unitRate: ['0'],
       furnish: ['', Validators.required],
-      UnitsList:['']
+      UnitsList: ['']
     })
   }
 
@@ -297,14 +299,13 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
   private handleDataLoadSuccess(modesRes: getResponse, propertyRes: getResponse, floorRes: getResponse, useTypeRes: getResponse,
     flatTypeRes: getResponse, comfortRes: getResponse, bedRes: getResponse, currency: getResponse, unitType: getResponse) {
-    if (modesRes.status.toUpperCase() === "SUCCESS") {
+    if (modesRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.modes = modesRes.data;
     } else {
-      this.retMessage = "Modes list Empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Modes list empty", TextClr.red);
       return;
     }
-    if (propertyRes.status.toUpperCase() === "SUCCESS") {
+    if (propertyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.props = propertyRes.data;
       if (this.props.length === 1) {
         this.unitDetForm.get('property')!.patchValue(this.props[0].itemCode);
@@ -312,65 +313,64 @@ export class FlatsComponent implements OnInit, OnDestroy {
       }
     }
     else {
-      this.retMessage = "Properties list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Properties list empty", TextClr.red);
       return;
     }
-    if (floorRes.status.toUpperCase() === "SUCCESS") {
+    if (floorRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.floorTypes = floorRes.data;
       if (this.floorTypes.length === 1) {
         this.unitDetForm.get('floorType')!.patchValue(this.floorTypes[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Floortype list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Floor type list empty", TextClr.red);
       return;
     }
 
 
-    if (useTypeRes.status.toUpperCase() === "SUCCESS") {
+    if (useTypeRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.usageTypes = useTypeRes.data;
       if (this.usageTypes.length === 1) {
         this.unitDetForm.get('usageType')!.patchValue(this.usageTypes[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Usagetype list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Usage type list empty", TextClr.red);
       return;
     }
 
-    if (flatTypeRes.status.toUpperCase() === "SUCCESS") {
+    if (flatTypeRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.flatTypes = flatTypeRes.data;
       if (this.flatTypes.length === 1) {
         this.unitDetForm.get('flatType')!.patchValue(this.flatTypes[0].itemCode);
       }
     }
-    if (unitType.status.toUpperCase() === "SUCCESS") {
+    else{
+      this.displayMessage(displayMsg.ERROR + "Flat type list empty", TextClr.red);
+      return;
+    }
+    if (unitType.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.unitTypeList = unitType.data;
       if (this.unitTypeList.length === 1) {
         this.unitDetForm.get('furnish')!.patchValue(this.unitTypeList[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Furnish list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Furnish list empty", TextClr.red);
       return;
     }
-    if (comfortRes.status.toUpperCase() === "SUCCESS") {
+    if (comfortRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.comfortsList = comfortRes.data;
       if (this.comfortsList.length === 1) {
         this.unitDetForm.get('luxuryType')!.patchValue(this.comfortsList[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Comfort list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Comfort list empty", TextClr.red);
       return;
     }
 
-    if (bedRes.status.toUpperCase() === "SUCCESS") {
+    if (bedRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.bedroomList = bedRes.data;
       if (this.bedroomList.length === 1) {
         this.unitDetForm.get('bedRooms')!.patchValue(this.bedroomList[0].itemCode);
@@ -378,24 +378,22 @@ export class FlatsComponent implements OnInit, OnDestroy {
 
     }
     else {
-      this.retMessage = "Bedroom list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Bedroom list empty", TextClr.red);
       return;
     }
-    if (currency.status.toUpperCase() === "SUCCESS") {
+    if (currency.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.currencyList = currency.data;
       if (this.currencyList.length === 1) {
         this.unitDetForm.get('currency')!.patchValue(this.currencyList[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Currency list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Currency list empty", TextClr.red);
       return;
     }
   }
   ifCmpUser() {
-    if (this.loggedInUserProfile === 'cmpuser') {
+    if (this.loggedInUserProfile.toLowerCase() === 'cmpuser') {
       this.unitDetForm.get('floorNo')?.disable();
       this.unitDetForm.get('size')?.disable();
       this.unitDetForm.get('flinthArea')?.disable();
@@ -430,45 +428,45 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
   async loadData() {
     this.ifCmpUser();
-    const modeBody = this.createRequestData('SM806');
+    const modeBody = this.createRequestData(ScreenId.UNITS_SCRID);
     const propertyBody = {
-      ...this.createRequestData('PROPERTY'),
+      ...this.createRequestData(Items.PROPERTY),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     const comfortBody = {
-      ...this.createRequestData('COMFORT'),
+      ...this.createRequestData(Items.COMFORT),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     const floorBody = {
-      ...this.createRequestData('FLOORTYPE'),
+      ...this.createRequestData(Items.FLOORTYPE),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     const useTypeBody = {
-      ...this.createRequestData('USAGETYPE'),
+      ...this.createRequestData(Items.USAGETYPE),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     const flatTypeBody = {
-      ...this.createRequestData('FLATTYPE'),
+      ...this.createRequestData(Items.FLATTYPE),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     const bedroomBody = {
-      ...this.createRequestData('BEDROOM'),
+      ...this.createRequestData(Items.BEDROOM),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     const unitTypeBody = {
-      ...this.createRequestData('FURNISH'),
+      ...this.createRequestData(Items.FURNISH),
       mode: this.unitDetForm.get('mode')!.value
     };
 
     try {
       const modes$ = this.masterService.getModesList(modeBody);
-      const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', })
+      const currency$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.CURRENCY, })
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
       const floor$ = this.masterService.GetMasterItemsList(floorBody);
       const useType$ = this.masterService.GetMasterItemsList(useTypeBody);
@@ -580,7 +578,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     });
   }
   modeChange(event: string): void {
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.flatStatus = '';
       this.unitDetForm = this.formInit();
       this.unitDetForm.controls.mode.patchValue(event, { emitEvent: false });
@@ -602,7 +600,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
       this.unitDetForm.controls.unitID.disable();
       this.unitDetForm.get('flat')!.enable({ emitEvent: false });
     }
-    if (event === 'Pending') {
+    if (event.toUpperCase() === TranStatus.PENDING) {
       this.unitDetForm.get('notes')?.setValidators([Validators.required, Validators.minLength(5)]);
     } else {
       this.unitDetForm.get('notes')?.clearValidators();
@@ -612,16 +610,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
 
   async onSelectedPropertyChanged() {
     this.clearMsgs();
-    this.unitDetForm.controls.block.patchValue("");
-    this.unitDetForm.controls.flat.patchValue("");
+    this.unitDetForm.controls.block.patchValue("", { emitEvent: false });
+    this.unitDetForm.controls.flat.patchValue("", { emitEvent: false });
     if (this.unitDetForm.controls.property.value != "") {
-      this.masterParams.type = 'BLOCK';
-      this.masterParams.mode=this.unitDetForm.get('mode')!.value;
+      this.masterParams.type = Type.BLOCK;
+      this.masterParams.mode = this.unitDetForm.get('mode')!.value;
       this.masterParams.item = this.unitDetForm.controls.property.value;
       this.unitDetForm.controls.propCode.patchValue(this.unitDetForm.controls.property.value);
       try {
         this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: getResponse) => {
-          if (result.status.toUpperCase() === 'SUCCESS') {
+          if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.blocks = result.data;
             if (this.blocks.length === 1) {
               this.unitDetForm.get('block')!.patchValue(this.blocks[0].itemCode);
@@ -642,108 +640,175 @@ export class FlatsComponent implements OnInit, OnDestroy {
 
   onSelectedBlockChanged() {
     this.clearMsgs();
-    this.unitDetForm.controls.flat.patchValue("");
+    this.unitDetForm.controls.flat.patchValue("", { emitEvent: false });
     if (this.unitDetForm.controls.block.value != "") {
-      this.masterParams.type = 'FLAT';
+      this.masterParams.type = Type.FLAT;
       this.masterParams.item = this.unitDetForm.controls['property'].value;
       this.masterParams.itemFirstLevel = this.unitDetForm.controls['block'].value;
-      this.unitDetForm.controls['blockCode'].patchValue(this.unitDetForm.controls['block'].value);
+      this.unitDetForm.controls['blockCode'].patchValue(this.unitDetForm.controls['block'].value, { emitEvent: false });
     }
   }
 
   clearMsgs(): void {
-    this.retMessage = "";
-    this.textMessageClass = "";
-    // this.newTranMsg = "";
+    this.displayMessage("", "");
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
+
+  // populateFlatData(result: flatApiResponse) {
+
+  //   const flatCls = result.data;
+  //   const formControls = this.unitDetForm.controls;
+  //   formControls.rentType.patchValue(flatCls.rentType);
+  //   const tntJoinedDate = flatCls.tenantJoinDate === "0001-01-01T00:00:00" ? new Date() : flatCls.tenantJoinDate;
+  //   formControls.joinDate.patchValue(tntJoinedDate);
+  //   formControls.unitID.patchValue(flatCls.unitID);
+  //   formControls.flat.patchValue(flatCls.unitName);
+  //   formControls.unitName.patchValue(flatCls.unitName);
+  //   formControls.unitDate.patchValue(flatCls.unitDate);
+  //   formControls.propCode.patchValue(flatCls.propCode);
+  //   formControls.blockCode.patchValue(flatCls.blockCode);
+  //   formControls.floorNo.patchValue(flatCls.floorNo);
+  //   formControls.totalRooms.patchValue(flatCls.totalRooms);
+  //   formControls.floorType.patchValue(flatCls.floorType);
+  //   formControls.usageType.patchValue(flatCls.usageType);
+  //   formControls.size.patchValue(flatCls.size);
+  //   formControls.flinthArea.patchValue(flatCls.flinthArea);
+  //   formControls.carpetArea.patchValue(flatCls.carpetArea);
+  //   formControls.flatType.patchValue(flatCls.flatType);
+  //   formControls.plexType.patchValue(flatCls.plexType);
+  //   formControls.landLordName.patchValue(flatCls.landLordName);
+  //   formControls.pattern.patchValue(flatCls.pattern);
+  //   formControls.bolcony.patchValue(flatCls.bolconyCount < 0 ? 0 : flatCls.bolconyCount);
+
+  //   formControls.luxuryType.patchValue(flatCls.luxuryType);
+  //   this.landlordCode = flatCls.landLord;
+  //   formControls.empName.patchValue(flatCls.empName);
+  //   this.empCode = flatCls.employee;
+  //   formControls.tenantName.patchValue(flatCls.tenantName);
+  //   this.tenantCode = flatCls.currentTenant;
+  //   formControls.petsAllowed.patchValue(flatCls.petsAllowed);
+  //   formControls.smokingAllowed.patchValue(flatCls.smokingAllowed);
+  //   formControls.bedRooms.patchValue(flatCls.bedRooms);
+  //   // formControls.bathRooms.patchValue(flatCls.bathRooms);
+  //   formControls.bathRooms.patchValue(flatCls.bathRooms < 0 ? 0 : flatCls.bathRooms);
+
+  //   this.flatStatus = flatCls.unitStatus;
+  //   // formControls.latitude.patchValue(flatCls.latitude);
+  //   formControls.latitude.patchValue(flatCls.latitude < 0 ? 0 : flatCls.latitude);
+  //   // formControls.longitude.patchValue(flatCls.longitude);
+  //   formControls.longitude.patchValue(flatCls.longitude < 0 ? 0 : flatCls.longitude);
+
+  //   formControls.landlordPayDay.patchValue(flatCls.landlordPayDay);
+  //   formControls.tenantPayDay.patchValue(flatCls.tenantPayDay);
+  //   formControls.invDay.patchValue(flatCls.invDay);
+  //   formControls.notes.patchValue(flatCls.notes);
+  //   formControls.payWhenVacant.patchValue(flatCls.payWhenVacant);
+  //   formControls.extraHall.patchValue(flatCls.hasExtraHall);
+  //   formControls.studyRoom.patchValue(flatCls.hasExtraStudyroom);
+  //   formControls.servantRoom.patchValue(flatCls.hasServantRoom);
+  //   formControls.servantToilet.patchValue(flatCls.hasServantToilet);
+  //   formControls.store.patchValue(flatCls.hasStore);
+  //   formControls.utility.patchValue(flatCls.hasUtility);
+  //   formControls.waterDiscount.patchValue(flatCls.waterDiscount);
+  //   formControls.discType.patchValue(flatCls.discType);
+  //   formControls.discRate.patchValue(flatCls.discRate);
+  //   formControls.noRent.patchValue(flatCls.noRent);
+
+  //   this.isRentSelected = flatCls.noRent;
+  //   this.flatCode = flatCls.unitID;
+  //   formControls.currency.patchValue(flatCls.currency);
+  //   formControls.unitRate.patchValue(flatCls.unitCost);
+
+  //   formControls.furnish.patchValue(flatCls.furnish);
+  //   this.llCount = parseInt(flatCls.llCount);
+  //   if (this.llCount > 1) {
+
+  //     this.unitDetForm.get('landLordName')?.disable();
+  //   }
+  //   else {
+  //     this.unitDetForm.get('landLordName')?.enable();
+  //   }
+  // }
 
   populateFlatData(result: flatApiResponse) {
-
     const flatCls = result.data;
-    const formControls = this.unitDetForm.controls;
-    formControls.rentType.patchValue(flatCls.rentType);
-    const tntJoinedDate = flatCls.tenantJoinDate === "0001-01-01T00:00:00" ? new Date() : flatCls.tenantJoinDate;
-    formControls.joinDate.patchValue(tntJoinedDate);
-    formControls.unitID.patchValue(flatCls.unitID);
-    formControls.flat.patchValue(flatCls.unitName);
-    formControls.unitName.patchValue(flatCls.unitName);
-    formControls.unitDate.patchValue(flatCls.unitDate);
-    formControls.propCode.patchValue(flatCls.propCode);
-    formControls.blockCode.patchValue(flatCls.blockCode);
-    formControls.floorNo.patchValue(flatCls.floorNo);
-    formControls.totalRooms.patchValue(flatCls.totalRooms);
-    formControls.floorType.patchValue(flatCls.floorType);
-    formControls.usageType.patchValue(flatCls.usageType);
-    formControls.size.patchValue(flatCls.size);
-    formControls.flinthArea.patchValue(flatCls.flinthArea);
-    formControls.carpetArea.patchValue(flatCls.carpetArea);
-    formControls.flatType.patchValue(flatCls.flatType);
-    formControls.plexType.patchValue(flatCls.plexType);
-    formControls.landLordName.patchValue(flatCls.landLordName);
-    formControls.pattern.patchValue(flatCls.pattern);
-    formControls.bolcony.patchValue(flatCls.bolconyCount < 0 ? 0 : flatCls.bolconyCount);
-
-    formControls.luxuryType.patchValue(flatCls.luxuryType);
+    const formValues = {
+      rentType: flatCls.rentType,
+      joinDate: flatCls.tenantJoinDate === "0001-01-01T00:00:00" ? new Date() : flatCls.tenantJoinDate,
+      unitID: flatCls.unitID,
+      flat: flatCls.unitName,
+      unitName: flatCls.unitName,
+      unitDate: flatCls.unitDate,
+      propCode: flatCls.propCode,
+      blockCode: flatCls.blockCode,
+      floorNo: flatCls.floorNo,
+      totalRooms: flatCls.totalRooms,
+      floorType: flatCls.floorType,
+      usageType: flatCls.usageType,
+      size: flatCls.size,
+      flinthArea: flatCls.flinthArea,
+      carpetArea: flatCls.carpetArea,
+      flatType: flatCls.flatType,
+      plexType: flatCls.plexType,
+      landLordName: flatCls.landLordName,
+      pattern: flatCls.pattern,
+      bolcony: flatCls.bolconyCount < 0 ? 0 : flatCls.bolconyCount,
+      luxuryType: flatCls.luxuryType,
+      empName: flatCls.empName,
+      tenantName: flatCls.tenantName,
+      petsAllowed: flatCls.petsAllowed,
+      smokingAllowed: flatCls.smokingAllowed,
+      bedRooms: flatCls.bedRooms,
+      bathRooms: flatCls.bathRooms < 0 ? 0 : flatCls.bathRooms,
+      latitude: flatCls.latitude < 0 ? 0 : flatCls.latitude,
+      longitude: flatCls.longitude < 0 ? 0 : flatCls.longitude,
+      landlordPayDay: flatCls.landlordPayDay,
+      tenantPayDay: flatCls.tenantPayDay,
+      invDay: flatCls.invDay,
+      notes: flatCls.notes,
+      payWhenVacant: flatCls.payWhenVacant,
+      extraHall: flatCls.hasExtraHall,
+      studyRoom: flatCls.hasExtraStudyroom,
+      servantRoom: flatCls.hasServantRoom,
+      servantToilet: flatCls.hasServantToilet,
+      store: flatCls.hasStore,
+      utility: flatCls.hasUtility,
+      waterDiscount: flatCls.waterDiscount,
+      discType: flatCls.discType,
+      discRate: flatCls.discRate,
+      noRent: flatCls.noRent,
+      currency: flatCls.currency,
+      unitRate: flatCls.unitCost,
+      furnish: flatCls.furnish,
+    };
+    this.unitDetForm.patchValue(formValues, { emitEvent: false });
     this.landlordCode = flatCls.landLord;
-    formControls.empName.patchValue(flatCls.empName);
     this.empCode = flatCls.employee;
-    formControls.tenantName.patchValue(flatCls.tenantName);
     this.tenantCode = flatCls.currentTenant;
-    formControls.petsAllowed.patchValue(flatCls.petsAllowed);
-    formControls.smokingAllowed.patchValue(flatCls.smokingAllowed);
-    formControls.bedRooms.patchValue(flatCls.bedRooms);
-    // formControls.bathRooms.patchValue(flatCls.bathRooms);
-    formControls.bathRooms.patchValue(flatCls.bathRooms < 0 ? 0 : flatCls.bathRooms);
-
     this.flatStatus = flatCls.unitStatus;
-    // formControls.latitude.patchValue(flatCls.latitude);
-    formControls.latitude.patchValue(flatCls.latitude < 0 ? 0 : flatCls.latitude);
-    // formControls.longitude.patchValue(flatCls.longitude);
-    formControls.longitude.patchValue(flatCls.longitude < 0 ? 0 : flatCls.longitude);
-
-    formControls.landlordPayDay.patchValue(flatCls.landlordPayDay);
-    formControls.tenantPayDay.patchValue(flatCls.tenantPayDay);
-    formControls.invDay.patchValue(flatCls.invDay);
-    formControls.notes.patchValue(flatCls.notes);
-    formControls.payWhenVacant.patchValue(flatCls.payWhenVacant);
-    formControls.extraHall.patchValue(flatCls.hasExtraHall);
-    formControls.studyRoom.patchValue(flatCls.hasExtraStudyroom);
-    formControls.servantRoom.patchValue(flatCls.hasServantRoom);
-    formControls.servantToilet.patchValue(flatCls.hasServantToilet);
-    formControls.store.patchValue(flatCls.hasStore);
-    formControls.utility.patchValue(flatCls.hasUtility);
-    formControls.waterDiscount.patchValue(flatCls.waterDiscount);
-    formControls.discType.patchValue(flatCls.discType);
-    formControls.discRate.patchValue(flatCls.discRate);
-    formControls.noRent.patchValue(flatCls.noRent);
-
     this.isRentSelected = flatCls.noRent;
     this.flatCode = flatCls.unitID;
-    formControls.currency.patchValue(flatCls.currency);
-    formControls.unitRate.patchValue(flatCls.unitCost);
-
-    formControls.furnish.patchValue(flatCls.furnish);
     this.llCount = parseInt(flatCls.llCount);
     if (this.llCount > 1) {
-
-      this.unitDetForm.get('landLordName')?.disable();
-    }
-    else {
-      this.unitDetForm.get('landLordName')?.enable();
+      this.unitDetForm.get('landLordName')?.disable({ emitEvent: false });
+    } else {
+      this.unitDetForm.get('landLordName')?.enable({ emitEvent: false });
     }
   }
-
 
 
 
   async onSelectedFlatChanged(unitId: string, mode: string) {
 
     this.clearMsgs();
-    this.masterParams.type = 'UNIT';
+    this.masterParams.type = Type.UNIT;
     this.masterParams.item = unitId;
     this.subSink.sink = await this.projectService.getFlatDetails(this.masterParams).subscribe((result: flatApiResponse) => {
 
-      if (result.status.toUpperCase() === 'SUCCESS') {
+      if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.populateFlatData(result);
         this.msgHandling(result, mode);
         this.newTranMsg = "";
@@ -764,14 +829,14 @@ export class FlatsComponent implements OnInit, OnDestroy {
     }
     const body = {
       ...this.commonParams(),
-      Type: 'FLAT',
+      Type: Type.FLAT,
       Item: this.unitDetForm.get('flat')!.value || '',
       ItemFirstLevel: "",
       ItemSecondLevel: ""
     }
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res && res.data && res.data.nameCount === 1) {
             this.unitDetForm.get('flat')!.patchValue(res.data.selName);
             this.flatCode = res.data.selCode;
@@ -783,26 +848,22 @@ export class FlatsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'flat': this.unitDetForm.get('flat')?.value, 'type': 'FLAT',
-                  'search': 'Flat Search', property: this.unitDetForm.get('property')!.value, block: this.unitDetForm.get('block')!.value,
+                  flat: this.unitDetForm.get('flat')?.value, type: Type.FLAT,
+                  search: 'Flat Search', property: this.unitDetForm.get('property')!.value,
+                  block: this.unitDetForm.get('block')!.value,
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
                 this.dialogOpen = false;
-                if (result != true) {
-
+                if (result != true && result !== undefined) {
                   this.unitDetForm.controls['flat'].patchValue(result.unitName);
                   this.flatCode = result.unitId;
-
                   try {
                     this.onSelectedFlatChanged(result.unitId, this.unitDetForm.get('mode')?.value);
-                    // this.isRentSelected = result.data.noRent;
-
                   }
                   catch (ex: any) {
-                    this.retMessage = ex.message;
-                    this.textMessageClass = 'red';
+                    this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
                   }
                 }
               });
@@ -810,14 +871,12 @@ export class FlatsComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -836,7 +895,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
 
               this.finacials();
             }
-            if (this.unitDetForm.controls.mode.value == "Add") {
+            if (this.unitDetForm.controls.mode.value.toUpperCase() == Mode.Add) {
               this.newTranMsg = res.message;
               this.modeChange("Modify");
               this.onSelectedFlatChanged(res.tranNoNew, "Add");
@@ -848,13 +907,12 @@ export class FlatsComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = 'red';
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
         this.loader.stop();
-        this.handleError(ex.message);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     } else {
       this.retMessage = 'Enter all mandatory fields!';
@@ -863,13 +921,11 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
 
   msgHandling(res: any, mode: string) {
-    if (mode != "View" && this.newTranMsg != "") {
-      this.retMessage = this.newTranMsg;
-      this.textMessageClass = 'green';
+    if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
+      this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
     }
     else {
-      this.retMessage = res.message;
-      this.textMessageClass = 'green';
+      this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
     }
   }
 
@@ -950,7 +1006,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
       currency: formControls.currency.value,
       unitCost: formControls.unitRate.value,
       furnish: formControls.furnish.value,
-      UnitsList:formControls.UnitsList.value,
+      UnitsList: formControls.UnitsList.value,
     } as FlatClass;
   }
 
@@ -959,8 +1015,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "PREBOOK",
+        type: Type.FLAT,
+        Trantype: TranType.PREBOOK,
         Property: this.unitDetForm.get('property')!.value,
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
@@ -974,8 +1030,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "PREBOOK",
+        type: Type.FLAT,
+        Trantype: TranType.PREBOOK,
         Property: this.unitDetForm.get('property')!.value,
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
@@ -990,17 +1046,15 @@ export class FlatsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<SendsmsComponent> = this.dialog.open(SendsmsComponent, {
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "PREBOOK",
+        type: Type.FLAT,
+        Trantype: TranType.PREBOOK,
         Property: this.unitDetForm.get('property')!.value,
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
         mode: this.unitDetForm.get('mode')!.value,
-        from: "UNIT",
-        message:''
+        from: Type.UNIT,
+        message: ''
       }
-    });
-    dialogRef.afterClosed().subscribe(result => {
     });
   }
   reset() {
@@ -1021,7 +1075,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   }
 
   async onSupplierSearch() {
-    const body = this.createRequestDataForSearch(this.unitDetForm.get('landLordName')!.value || "", "LANDLORD");
+    const body = this.createRequestDataForSearch(this.unitDetForm.get('landLordName')!.value || "", Items.LANDLORD);
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
@@ -1035,14 +1089,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.unitDetForm.get('landLordName')!.value, 'PartyType': "MAPLL",
-                  'search': 'Landlord Search'
+                  PartyName: this.unitDetForm.get('landLordName')!.value, PartyType: TranType.MAPLL,
+                  search: 'Landlord Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.unitDetForm.get('landLordName')!.patchValue(result.partyName);
-                this.landlordCode = result.code;
+                if (result != true && result != undefined) {
+                  this.unitDetForm.get('landLordName')!.patchValue(result.partyName);
+                  this.landlordCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
@@ -1050,19 +1106,17 @@ export class FlatsComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   async onEmployeeSearch() {
-    const body = this.createRequestDataForSearch(this.unitDetForm.get('empName')!.value || "", "EMPLOYEE");
+    const body = this.createRequestDataForSearch(this.unitDetForm.get('empName')!.value || "", Items.EMPLOYEE);
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
@@ -1077,14 +1131,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.unitDetForm.get('empName')!.value, 'PartyType': "EMPLOYEE",
-                  'search': 'Employee Search'
+                  PartyName: this.unitDetForm.get('empName')!.value, PartyType: Items.EMPLOYEE,
+                  search: 'Employee Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.unitDetForm.get('empName')!.patchValue(result.partyName);
-                this.empCode = result.code;
+                if (result != true && result != undefined) {
+                  this.unitDetForm.get('empName')!.patchValue(result.partyName);
+                  this.empCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
@@ -1092,19 +1148,17 @@ export class FlatsComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   async onTenantSearch() {
-    const body = this.createRequestDataForSearch(this.unitDetForm.get('tenantName')!.value || "", "TENANT");
+    const body = this.createRequestDataForSearch(this.unitDetForm.get('tenantName')!.value || "", Items.TENANT);
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
@@ -1118,17 +1172,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.unitDetForm.get('tenantName')!.value, 'PartyType': "MAPTNT",
-                  'search': 'Tenant Search'
+                  PartyName: this.unitDetForm.get('tenantName')!.value, PartyType: TranType.MAPTNT,
+                  search: 'Tenant Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if (result != true) {
+                if (result != true && result != undefined) {
                   this.unitDetForm.get('tenantName')!.patchValue(result.partyName);
                   this.tenantCode = result.code;
                 }
-
                 this.dialogOpen = false;
               });
             }
@@ -1136,14 +1189,12 @@ export class FlatsComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -1155,7 +1206,11 @@ export class FlatsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<DirectionsComponent> = this.dialog.open(DirectionsComponent, {
       width: '90%',
       disableClose: true,
-      data: { type: 'FLAT', Trantype: "BOUNDARY", TranNo: this.unitDetForm.controls['unitID'].value, mode: this.unitDetForm.controls['mode'].value }
+      data: {
+        type: Type.FLAT, Trantype: TranType.BOUNDARY,
+        TranNo: this.unitDetForm.controls['unitID'].value,
+        mode: this.unitDetForm.controls['mode'].value
+      }
     });
 
   }
@@ -1165,8 +1220,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "Charge",
+        type: Type.FLAT,
+        Trantype: TranType.CHARGE,
         Property: this.unitDetForm.get('property')!.value,
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
@@ -1198,8 +1253,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "Service",
+        type: Type.FLAT,
+        Trantype: TranType.SERVICE,
         Property: this.unitDetForm.get('property')!.value,
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
@@ -1214,8 +1269,8 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "Equipment",
+        type: Type.FLAT,
+        Trantype: TranType.EQUIPMENT,
         Property: this.unitDetForm.get('property')!.value,
         Block: this.unitDetForm.get('block')!.value,
         Flat: this.flatCode,
@@ -1229,7 +1284,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.unitDetForm.get('mode')!.value, tranNo: this.flatCode, search: 'Flat Docs', tranType: "FLAT" }
+      data: { mode: this.unitDetForm.get('mode')!.value, tranNo: this.flatCode, search: 'Flat Docs', tranType: Type.FLAT }
     });
 
   }
@@ -1266,33 +1321,28 @@ export class FlatsComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = await this.projectService.GetTenantAgreementDetails(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           if (res.data.code == '999') {
-            this.retMessage = res.data.sixthNote;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.data.sixthNote, TextClr.red);
             return;
           }
           else {
             this.agreementGeneration(res);
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
 
 
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       }),
         (error: any) => {
-          this.retMessage = error.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
 
@@ -1316,18 +1366,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = await this.projectService.GetUnitAllocationDetails(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.pdfService.generatePDfReport(res, "Flat History");
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       })
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   commonParams() {
@@ -1350,16 +1398,16 @@ export class FlatsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = await this.projectService.GetReportUnitGrievancesHistory(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.pdfService.generatePDfReport(res, "Grievances History");
         }
         else {
-          this.handleError(res.message);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       })
     }
     catch (ex: any) {
-      this.handleError(ex.message);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -1387,7 +1435,11 @@ export class FlatsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<CustomerDetailsComponent> = this.dialog.open(CustomerDetailsComponent, {
       width: '980px',
       disableClose: true,
-      data: { customerId: this.tenantCode, customerName: this.tenantCode, mode: "Modify" }, // Pass any data you want to send to CustomerDetailsComponent
+      data: {
+        customerId: this.tenantCode,
+        customerName: this.tenantCode,
+        mode: "Modify"
+      },
     });
 
   }
@@ -1396,7 +1448,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM806",
+        ScrId: ScreenId.UNITS_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -1411,11 +1463,11 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.unitDetForm.get('mode')!.value,
-        'note': this.unitDetForm.get('notes')!.value,
-        'TranType': "FLAT",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Units Notes"
+        tranNo: tranNo,
+        mode: this.unitDetForm.get('mode')!.value,
+        note: this.unitDetForm.get('notes')!.value,
+        TranType: Type.FLAT,
+        search: "Units Notes"
       }
     });
   }
@@ -1425,9 +1477,9 @@ export class FlatsComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "FLAT",
-        'tranNo': tranNo,
-        'search': 'FLAT Log Details'
+        tranType: Type.FLAT,
+        tranNo: tranNo,
+        search: 'FLAT Log Details'
       }
     });
   }

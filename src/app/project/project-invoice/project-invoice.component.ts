@@ -27,6 +27,8 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { SendsmsComponent } from 'src/app/general/sendsms/sendsms.component';
+import { displayMsg, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-project-invoice',
@@ -61,7 +63,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   private subSink: SubSink;
   private invCls: invoiceClass;
   public rentalCharges: number = 0;
-  message:string='';
+  message: string = '';
   public othrCharges: number = 0;
   public discAmount: number = 0;
   public totalCharges: number = 0;
@@ -298,9 +300,9 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   }
 
   async loadData() {
-    const propertyBody = {...this.createRequestData('PROPERTY'),mode: this.saleForm.get('mode')?.value };
+    const propertyBody = { ...this.createRequestData('PROPERTY'), mode: this.saleForm.get('mode')?.value };
     try {
-      const service1 = this.masterService.getModesList({ ...this.commonParams(), item: 'ST913'});
+      const service1 = this.masterService.getModesList({ ...this.commonParams(), item: 'ST913' });
       const service2 = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'CURRENCY', mode: this.saleForm.get('mode')?.value });
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
       this.subSink.sink = await forkJoin([service1, service2, property$]).subscribe(
@@ -612,12 +614,12 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'TENINV',
+      TranType: TranType.TENINV,
       TranNo: this.saleForm.controls['tranNo'].value,
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "Open"
+      TranStatus: TranStatus.OPEN
     }
     try {
       this.loader.start();
@@ -649,7 +651,6 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
                     this.getInvoiceData(this.masterParams, this.saleForm.controls.mode.value);
                   }
                   catch (ex: any) {
-                    // this.handleError(ex);
                     this.displayMessage("Exception: " + ex.message, "red");
                   }
                 }
@@ -659,21 +660,18 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage("Error: " + res.message, "red");
-          // this.handleError(res);
-
         }
 
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.clear();
       this.saleForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.saleForm.get('tranNo')!.patchValue('');
@@ -696,11 +694,10 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
         this.saleForm.controls['block'].disable({ emitEvent: false });
         this.saleForm.get('flat')!.disable({ emitEvent: false });
       }
-
     }
   }
   bindFormData(res: any) {
-    
+
     this.salesExecCode = res['data'].executive;
     this.saleForm.patchValue({
       tranNo: res['data'].tranNo,
@@ -730,7 +727,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       transferTo: res['data'].transferTo,
       miscellaneous: res['data'].isMiscInvoice,
       isUtility: res['data'].isUtilityInvoice
-    });
+    }, { emitEvent: false });
 
     this.invCls.tenant = res['data'].tenant;
     this.custCode = res['data'].custCode;
@@ -743,22 +740,22 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.vatAmount = res['data'].vatAmount;
     this.totalAmount = res['data'].totalCharges;
 
-    if(this.userDataService.userData.company.toUpperCase() === 'NPML' || this.userDataService.userData.company.toUpperCase() === 'TAKOW' ){
-      this.message= `Dear ${res['data'].tenantName},
-            
+    if (this.userDataService.userData.company.toUpperCase() === 'NPML' || this.userDataService.userData.company.toUpperCase() === 'TAKOW') {
+      this.message = `Dear ${res['data'].tenantName},
+
             Rental invoice ${res['data'].tranNo} is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${this.saleForm.controls['invMonth']?.value.toUpperCase()} ${res['data'].rentYear}.
             The total amount due is KES ${res['data'].totalCharges}. We request you to pay before the due date ${res['data'].dueDate}.
             Thank you,
             Nagaad Properties`;;
     }
-    else if(this,this.userDataService.userData.company.toUpperCase() === 'SADASA'){
-    this.message=  `Mudane/Marwo [${res['data'].tenant}],
+    else if (this, this.userDataService.userData.company.toUpperCase() === 'SADASA') {
+      this.message = `Mudane/Marwo [${res['data'].tenant}],
 
                     Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
                     Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-                    
-                    Mahadsanid,  
-                    Omar Mumin Mohammed  
+
+                    Mahadsanid,
+                    Omar Mumin Mohammed
                     Sadasa Construction and Property`;
     }
   }
@@ -767,34 +764,27 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = await this.saleService.getTenantInvoiceHeaderData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.bindFormData(res);
-          if (mode != "View" && this.newTranMsg != "") {
-            this.retMessage = this.newTranMsg;
-            this.textMessageClass = "green";
+          if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
+            this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
           }
           else {
-            this.displayMessage("Success: " + res.message, "green");
-            // this.handleSuccess(res);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         }
         else {
           this.loader.stop();
-          // this.handleError(res);
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
-      this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-  // updateExchangeRate(event: Event): void {
-  //   const value = parseFloat((event.target as HTMLInputElement).value);
-  //   this.saleForm.get('exchRate')?.patchValue(isNaN(value) ? null : value);
-  // }
+
   formatDates(unitDateValue: string): string {
     const unitDateObject = new Date(unitDateValue);
     if (unitDateObject instanceof Date && !isNaN(unitDateObject.getTime())) {
@@ -809,7 +799,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   async onCustomerSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "TENANT",
+      Type: Type.TENANT,
       item: this.saleForm.controls['customer'].value || ""
     }
     try {
@@ -817,10 +807,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
             this.saleForm.controls['customer'].patchValue(res.data.selName);
-            // this.invCls.tenantName = res.data.selName;
-            // this.invCls.tenant = res.data.selCode;
             this.invCls.unit = res.data.selCode
-            // this.custCode = res.data.selCode;
             if (this.invCls.unit) {
               this.fetchTenantData();
             }
@@ -831,43 +818,43 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleForm.controls['customer'].value || "", 'PartyType': "TENANT",
-                  'search': 'Tenant Search'
+                  PartyName: this.saleForm.controls['customer'].value || "",
+                  PartyType: Type.TENANT,
+                  search: 'Tenant Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.retMessage = "";
-                this.textMessageClass = "";
-                this.saleForm.controls['customer'].patchValue(result.partyName);
-                this.custCode = result.code;
-                // this.invCls.tenantName = result.partyName
-                this.invCls.unit = result.selCode
-                // this.invCls.tenant = result.code;
-                if (this.invCls.unit) {
-                  this.fetchTenantData();
+                if (result != undefined && result != true) {
+                  this.retMessage = "";
+                  this.textMessageClass = "";
+                  this.saleForm.controls['customer'].patchValue(result.partyName);
+                  this.custCode = result.code;
+                  this.invCls.unit = result.selCode
+                  if (this.invCls.unit) {
+                    this.fetchTenantData();
+                  }
                 }
+
                 this.dialogOpen = false;
               });
             }
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
-          // this.handleError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   async onTransferSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "TENANT",
+      Type: Type.TENANT,
       item: this.saleForm.controls['transferTo'].value || ""
     }
     try {
@@ -888,41 +875,42 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleForm.controls['transferTo'].value || "", 'PartyType': "TENANT",
-                  'search': 'Transfer to search'
+                  PartyName: this.saleForm.controls['transferTo'].value || "", PartyType: Type.TENANT,
+                  search: 'Transfer to search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.retMessage = "";
-                this.textMessageClass = "";
-                this.saleForm.controls['transferTo'].patchValue(result.partyName);
-                this.invCls.transferTo = result.code;
-                this.dialogOpen = false;
-                if (this.invCls.transferTo === this.invCls.tenant) {
-                  this.displayMessage("Error: Transfer To cannot be same as Tenant", "red");
-                  return;
+                if (result != true && result != undefined) {
+                  this.retMessage = "";
+                  this.textMessageClass = "";
+                  this.saleForm.controls['transferTo'].patchValue(result.partyName);
+                  this.invCls.transferTo = result.code;
+                  if (this.invCls.transferTo === this.invCls.tenant) {
+                    this.displayMessage("Error: Transfer To cannot be same as Tenant", "red");
+                    return;
+                  }
                 }
+                this.dialogOpen = false;
+
               });
             }
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
-          // this.handleError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   async onEmployeeSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "EMPLOYEE",
+      Type: Type.EMPLOYEE,
       PartyName: this.saleForm.controls['excutive'].value
     }
     try {
@@ -938,29 +926,29 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.saleForm.controls['excutive'].value, 'PartyType': "Employee",
-                  'search': 'Employee Search'
+                  PartyName: this.saleForm.controls['excutive'].value, PartyType: Type.EMPLOYEE,
+                  search: 'Employee Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.saleForm.controls['excutive'].patchValue(result.partyName);
-                this.salesExecCode = result.code;
-                this.invCls.exeName = result.partyName;
+                if (result != true && result != undefined) {
+                  this.saleForm.controls['excutive'].patchValue(result.partyName);
+                  this.salesExecCode = result.code;
+                  this.invCls.exeName = result.partyName;
+                }
                 this.dialogOpen = false;
               });
             }
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
-          // this.handleError(res);
+          this.displayMessage(displayMsg.EXCEPTION + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
-      // this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -971,8 +959,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.amountExclVat = 0.00;
     this.vatAmount = 0.00;
     this.charges = 0.00;
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("", "");
     this.custCode = "";
     this.salesExecCode = "";
     this.newTranMsg = "";
@@ -1005,8 +992,8 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.loader.start();
     this.subSink.sink = await this.projService.GetReportTenantInvoice(reportBody).subscribe((res: any) => {
       this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
-        if (type.toUpperCase() === "EMAIL") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+        if (type.toUpperCase() === Type.EMAIL) {
           const mailTo = res.data[0].emailId;
           if (mailTo) {
             const formFile: any = this.reportsService.generatePDF(res.data, 'Invoice', new Date(), type);
@@ -1017,8 +1004,6 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
             this.subSink.sink = this.projService.sendEmailWithAttachment(formFile, mailTo, mailToName, mailSubject, mailMsg)
               .subscribe(response => {
                 this.displayMessage("Success: Email sent successfully.", "green");
-                // this.retMessage = "Email sent successfully";
-                // this.textMessageClass = "green";
               }, error => {
                 this.displayMessage("Error: " + error.message, "red");
               });
@@ -1037,7 +1022,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
 
       }
       else {
-        this.displayMessage("Error: " + res.message, "red");
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     })
   }
@@ -1045,35 +1030,35 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<SendsmsComponent> = this.dialog.open(SendsmsComponent, {
       disableClose: true,
       data: {
-        type: 'FLAT',
-        Trantype: "PREBOOK",
+        type: Type.FLAT,
+        Trantype: TranType.PREBOOK,
         Property: this.saleForm.get('property')!.value,
         Block: this.saleForm.get('block')!.value,
         Flat: this.flatCode,
         mode: this.saleForm.get('mode')!.value,
-        from: "UNIT",
-        message:this.message
+        from: Type.UNIT,
+        message: this.message
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
-    });
+
   }
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.saleForm.controls['mode'].value, tranNo: this.saleForm.controls['tranNo'].value, search: 'Invoice Docs', tranType: "DIRINV" }
+      data: {
+        mode: this.saleForm.controls['mode'].value,
+        tranNo: this.saleForm.controls['tranNo'].value,
+        search: 'Invoice Docs', tranType: TranType.DIRINV
+      }
     });
 
   }
   onCheckboxChange(controlName: string) {
     const controls = this.saleForm.controls;
-
     if (controlName === 'applyVAT') {
-      // No additional actions for "Apply VAT" checkbox since it can be independent
-    } else if (['isUtility','miscellaneous', 'includeExpenses', 'isRentInvoice'].includes(controlName)) {
-      // Uncheck the others when one of these grouped checkboxes is checked
-      ['isUtility','miscellaneous', 'includeExpenses', 'isRentInvoice'].forEach(name => {
+    } else if (['isUtility', 'miscellaneous', 'includeExpenses', 'isRentInvoice'].includes(controlName)) {
+      ['isUtility', 'miscellaneous', 'includeExpenses', 'isRentInvoice'].forEach(name => {
         if (name !== controlName) {
           controls[name].setValue(false);
         }
@@ -1085,25 +1070,23 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.saleForm.controls.flat.patchValue('');
     if (this.saleForm.controls.property.value != "") {
       this.blocks = [];
-      this.masterParams.type = 'BLOCK';
+      this.masterParams.type = Type.BLOCK;
       this.masterParams.item = this.saleForm.controls.property.value;
       this.saleForm.controls.property.value;
       try {
         this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-          if (result.status.toUpperCase() === 'SUCCESS') {
+          if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.blocks = result.data;
             if (this.blocks.length === 1) {
               this.saleForm.controls.block.patchValue(this.blocks[0].itemCode);
             }
           } else {
-            // this.handleError(result.message);
-            this.displayMessage("Error: " + result.message, "red");
+            this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
-        // this.handleError(ex.message);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
 
@@ -1115,8 +1098,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   }
 
   async onFlatSearch() {
-    this.retMessage = ""
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     if (this.saleForm.get('property')!.value === "" || this.saleForm.get('property')!.value === undefined) {
       this.retMessage = "Select Valid Property!"
       this.textMessageClass = "red";
@@ -1129,7 +1111,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     }
     const body = {
       ...this.commonParams(),
-      Type: 'FLAT',
+      Type: Type.FLAT,
       Item: this.saleForm.controls['flat'].value || '',
       ItemFirstLevel: "",
       ItemSecondLevel: ""
@@ -1141,7 +1123,6 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
             this.saleForm.controls['flat'].patchValue(res.data.selName);
             this.masterParams.item = res.data.selCode;
             this.flatCode = res.data.selCode;
-            // this.invCls.tenant = res.data.selCode;
             if (this.flatCode) {
               this.fetchTenantData();
             }
@@ -1152,14 +1133,15 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'flat': this.saleForm.controls['flat'].value, 'type': 'FLAT',
-                  'search': 'Flat Search', property: this.saleForm.controls['property'].value, block: this.saleForm.controls['block'].value,
+                  flat: this.saleForm.controls['flat'].value, type: Type.FLAT,
+                  search: 'Flat Search', property: this.saleForm.controls['property'].value,
+                  block: this.saleForm.controls['block'].value,
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
                 this.dialogOpen = false;
-                if (result != true) {
+                if (result != true && result != undefined) {
                   this.saleForm.controls['flat'].patchValue(result.unitName);
                   this.masterParams.item = result.unitId;
                   this.flatCode = result.unitId;
@@ -1175,28 +1157,24 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          // this.handleError(res);
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      // this.handleError(ex);
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onHelpCilcked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST913",
+        ScrId: ScreenId.TENANT_INVOICE_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
-
-
       }
     });
   }
@@ -1206,11 +1184,11 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.saleForm.controls['mode'].value,
-        'note': this.saleForm.controls['remarks'].value,
-        'TranType': "TENINV",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Invoice Notes"
+        tranNo: tranNo,
+        mode: this.saleForm.controls['mode'].value,
+        note: this.saleForm.controls['remarks'].value,
+        TranType: TranType.TENINV,
+        search: "Invoice Notes"
       }
     });
   }
@@ -1220,9 +1198,9 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "TENINV",
-        'tranNo': tranNo,
-        'search': 'Invoice Logs'
+        tranType: TranType.TENINV,
+        tranNo: tranNo,
+        search: 'Invoice Logs'
       }
     });
   }
