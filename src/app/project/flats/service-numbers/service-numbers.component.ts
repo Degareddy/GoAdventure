@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 import { serviceClass } from '../../Project.class';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { displayMsg, Items, Mode, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-service-numbers',
@@ -19,7 +21,7 @@ import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
   styleUrls: ['./service-numbers.component.css']
 })
 
-export class ServiceNumbersComponent implements OnInit,OnDestroy {
+export class ServiceNumbersComponent implements OnInit, OnDestroy {
   serviceForm!: FormGroup;
   retMessage: string = '';
   textMessageClass: string = '';
@@ -43,7 +45,6 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
     { field: "notes", headerName: "Notes", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
     {
       field: "deviceDate", headerName: "Recorded Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -63,7 +64,7 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
   constructor(
     protected router: Router,
     private fb: FormBuilder,
-    public dialog: MatDialog,private userDataService: UserDataService,
+    public dialog: MatDialog, private userDataService: UserDataService,
     private masterService: MastersService,
     private projService: ProjectsService,
     private loader: NgxUiLoaderService,
@@ -124,14 +125,16 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
   }
 
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
-
-  commonParams(){
-    return{
-      company:this.userDataService.userData.company,
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID
@@ -139,9 +142,9 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
   }
   loadData() {
     const serbody = {
-   ...this.commonParams(),
-      item: 'SERNUMBER',
-      mode:this.data.mode
+      ...this.commonParams(),
+      item: Items.SERNUMBER,
+      mode: this.data.mode
     };
     const Sbody$ = this.masterService.GetMasterItemsList(serbody);
     this.subSink.sink = forkJoin([Sbody$]).subscribe(
@@ -161,32 +164,30 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
       PropCode: this.data.Property,
       BlockCode: this.data.Block,
       UnitCode: flat,
-      ItemType: "Service"
+      ItemType: TranType.SERVICE
     }
     try {
       this.subSink.sink = this.projService.GetUnitServiceDetails(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
-          if (loadFlag && this.data.mode != "Delete" && this.srNum === 0) {
+          if (loadFlag && this.data.mode.toUpperCase() != Mode.Delete && this.srNum === 0) {
             const maxSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
               return Math.max(maxSlNo, currentItem.slNo);
             }, 0);
             this.srNum = maxSlNo;
           }
-          else if (loadFlag && this.data.mode === "Delete" && this.srNum != 0) {
+          else if (loadFlag && this.data.mode.toUpperCase() === Mode.Delete && this.srNum != 0) {
             this.srNum = 0;
             this.initForm();
-            this.retMessage = this.returnMsg;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + this.returnMsg, TextClr.green);
           }
         }
         else {
-          if (this.data.mode === 'Delete') {
+          if (this.data.mode.toUpperCase() === Mode.Delete) {
             this.srNum = 0;
             this.initForm();
             this.rowData = [];
-            this.retMessage = this.returnMsg;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + this.returnMsg, TextClr.green);
           } else {
             this.handleError(res.message);
           }
@@ -199,20 +200,19 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
   }
   onDeviceDateChange(event: any): void {
     const selectedDate = new Date(event.value);
-    // Adjust for timezone offset (if necessary)
     const adjustedDate = new Date(
       selectedDate.getTime() + Math.abs(selectedDate.getTimezoneOffset() * 60000)
     );
     this.serviceForm.get('deviceDate')?.setValue(adjustedDate);
   }
-  serviceTypeChnage(){
+  serviceTypeChnage() {
     this.serviceForm.get('serviceNo')?.patchValue('');
     this.serviceForm.get('deviceNo')?.patchValue('');
     this.serviceForm.get('deviceDate')?.patchValue(new Date());
     this.serviceForm.get('serviceStatus')?.patchValue('');
     this.serviceForm.get('notes')?.patchValue('');
   }
-  
+
   prepareServiceCls() {
     const formValues = this.serviceForm.value;
     this.serviceCls.blockCode = this.data.Block;
@@ -228,7 +228,7 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
     this.serviceCls.unitCode = this.data.Flat;
     this.serviceCls.mode = this.data.mode;
     this.serviceCls.refNo = this.userDataService.userData.sessionID;
-    this.serviceCls.devicedate=this.serviceForm.get('deviceDate')?.value
+    this.serviceCls.devicedate = this.serviceForm.get('deviceDate')?.value
   }
   onSubmit() {
     if (this.serviceForm.invalid) {
@@ -239,17 +239,15 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
         this.loader.start();
         this.subSink.sink = this.projService.UpdateUnitServices(this.serviceCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            if (this.data.mode === 'Delete') {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            if (this.data.mode.toUpperCase() === Mode.Delete) {
               this.getServiceData(this.data.Flat, true);
               this.returnMsg = res.message;
-              this.retMessage = res.message;
-              this.textMessageClass = "green";
+              this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             }
             else {
               this.getServiceData(res.tranNoNew, true);
-              this.retMessage = res.message;
-              this.textMessageClass = "green";
+              this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             }
           }
           else {
@@ -295,7 +293,7 @@ export class ServiceNumbersComponent implements OnInit,OnDestroy {
       serviceStatus: event.data.serviceStatus,
       notes: event.data.notes,
       deviceDate: event.data.deviceDate
-    });
+    }, { emitEvent: false });
   }
 
   onGridReady(params: any) {

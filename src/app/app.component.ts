@@ -4,19 +4,17 @@ import { IdleService } from './Services/idle.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from './Services/authentication/auth.service';
 import { ToastrService } from 'ngx-toastr';
-import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { Router } from '@angular/router';
 import { ThemeService } from './Services/theme.service';
 import { LogoService } from './Services/logo.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  encapsulation: ViewEncapsulation.None // Set encapsulation to None
+  encapsulation: ViewEncapsulation.None
 })
 
 export class AppComponent implements OnInit, OnDestroy {
-  isLoading = true; // Initial loading state
+  isLoading = true;
 
   public logoPath: string = "";
 

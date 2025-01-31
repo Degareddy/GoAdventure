@@ -13,6 +13,8 @@ import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/conf
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { displayMsg, Items, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-equipment',
@@ -106,8 +108,8 @@ export class EquipmentComponent implements OnInit, OnDestroy {
   loadData() {
     const serbody = {
       ...this.commonParams(),
-      item: 'ASSETS',
-      mode:this.data.mode
+      item: Items.ASSETS,
+      mode: this.data.mode
     };
     const Sbody$ = this.masterService.GetMasterItemsList(serbody);
     this.subSink.sink = forkJoin([Sbody$]).subscribe(
@@ -127,27 +129,28 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       PropCode: this.data.Property,
       BlockCode: this.data.Block,
       UnitCode: flat,
-      ItemType: "Equipment",
+      ItemType: TranType.EQUIPMENT,
 
     }
     try {
       this.subSink.sink = this.projService.GetUnitEquipmentDetails(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.handleError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-  handleError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = "red";
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
+
   prepareSaveCls() {
     const formValue = this.equipmentForm.value;
     this.invCls.notes = "";
@@ -170,9 +173,9 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     this.invCls.refNo = this.userDataService.userData.sessionID;
     this.invCls.blockCode = this.data.Block;
     this.invCls.unitCode = this.data.Flat;
-    this.invCls.assetSlNo =formValue.assSrnum;
-    this.invCls.item =formValue.asset.itemName;
-    this.invCls.code =formValue.asset.itemCode;
+    this.invCls.assetSlNo = formValue.assSrnum;
+    this.invCls.item = formValue.asset.itemName;
+    this.invCls.code = formValue.asset.itemCode;
   }
   onSubmit() {
     this.clearMsg();
@@ -184,14 +187,12 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       this.loader.start()
       this.subSink.sink = this.projService.UpdateUnitEquipment(this.invCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.getInventoryData(res.tranNoNew);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
 
@@ -222,7 +223,6 @@ export class EquipmentComponent implements OnInit, OnDestroy {
 
   addNew() {
     this.Clear();
-    // this.clearMsg();
   }
   onPageSizeChanged() {
     if (this.gridApi) {
@@ -240,15 +240,13 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     this.equipmentForm.get('unitRate')!.valueChanges.subscribe(() => this.calculateValue());
   }
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
   Close() {
     this.router.navigateByUrl('/home');
   }
   onRowSelected(event: any) {
-    console.log(event.data);
     this.srNum = event.data.slNo;
     const selectedAsset = this.assetData.find((asset: any) => asset.itemCode === event.data.code);
     this.equipmentForm.patchValue({
@@ -257,7 +255,7 @@ export class EquipmentComponent implements OnInit, OnDestroy {
       quantity: event.data.quantity,
       unitRate: event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       value: event.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    });
+    },{emitEvent:false});
   }
 
   onGridReady(params: any) {
@@ -278,7 +276,6 @@ export class EquipmentComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(dialogResult => {
-      console.log(dialogResult);
       if (dialogResult) {
         this.onSubmit();
       }

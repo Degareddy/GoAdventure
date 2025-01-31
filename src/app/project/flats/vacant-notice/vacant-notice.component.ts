@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
@@ -7,6 +7,8 @@ import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { ProjectsService } from 'src/app/Services/projects.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 
 @Component({
@@ -14,12 +16,12 @@ import { SubSink } from 'subsink';
   templateUrl: './vacant-notice.component.html',
   styleUrls: ['./vacant-notice.component.css']
 })
-export class VacantNoticeComponent implements OnInit {
-  vacantNoticeForm!:FormGroup;
+export class VacantNoticeComponent implements OnInit, OnDestroy {
+  vacantNoticeForm!: FormGroup;
   private subSink!: SubSink;
   rowData: any = [];
-  retMessage: string="";
-  textMessageClass: string="";
+  retMessage: string = "";
+  textMessageClass: string = "";
   columnDefs: any = [
     { field: "propertyName", headerName: "Property Name", sortable: true, filter: true, resizable: true, flex: 1 },
     { field: "blockName", headerName: "Block Name", sortable: true, filter: true, resizable: true, flex: 1 },
@@ -27,7 +29,6 @@ export class VacantNoticeComponent implements OnInit {
     { field: "tenantName", headerName: "Tenant Name", sortable: true, filter: true, resizable: true, flex: 1 },
     {
       field: "noticeDate", headerName: "Notice Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -40,7 +41,6 @@ export class VacantNoticeComponent implements OnInit {
     },
     {
       field: "vacateDate", headerName: "Vacate Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -60,18 +60,22 @@ export class VacantNoticeComponent implements OnInit {
 
   pageSizes = [25, 50, 100, 250, 500];
   pageSize = 25;
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, Trantype: string, Property: string, Block: string, Flat: string, type: string, status: string,tenant:string,tenantCode:string },
-  private utlService: UtilitiesService, private userDataService: UserDataService, private loader: NgxUiLoaderService,
-  public dialog: MatDialog, private fb: FormBuilder, private projectService: ProjectsService,) {
-  this.subSink = new SubSink();
-  this.vacantNoticeForm = this.formInit();
-}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, Trantype: string, Property: string, Block: string, Flat: string, type: string, status: string, tenant: string, tenantCode: string },
+    private utlService: UtilitiesService, private userDataService: UserDataService, private loader: NgxUiLoaderService,
+    public dialog: MatDialog, private fb: FormBuilder, private projectService: ProjectsService,) {
+    this.subSink = new SubSink();
+    this.vacantNoticeForm = this.formInit();
+  }
+  ngOnDestroy(): void {
+    this.subSink.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.vacantNoticeForm.get('tenantName')?.patchValue(this.data.tenant);
     this.loadData();
   }
-  onSubmit(){
+  onSubmit() {
+    this.displayMessage("","");
     if (this.data.tenant) {
       const body = {
         ...this.commonParams(),
@@ -89,23 +93,26 @@ export class VacantNoticeComponent implements OnInit {
         this.loader.start();
         this.subSink.sink = this.projectService.updateNoticeDate(body).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.loadData();
-            this.retMessage = res.message;
-          this.textMessageClass = 'green';
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+
           }
           else {
-            this.retMessage = res.message;
-    this.textMessageClass = 'red';
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = 'red';
+        this.loader.stop();
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   getUnitHistory() {
     const body = {
       ...this.commonParams(),
@@ -115,25 +122,17 @@ export class VacantNoticeComponent implements OnInit {
     }
     try {
       this.subSink.sink = this.projectService.GetUnitPreBookings(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.handleErrorMsg(res.message);
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleErrorMsg(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
-  }
-  handleErrorMsg(res: any) {
-    this.retMessage = res;
-    this.textMessageClass = 'red';
-  }
-  handleSuccessMsg(res: any) {
-    this.retMessage = res;
-    this.textMessageClass = 'green';
   }
   commonParams() {
     return {
@@ -162,41 +161,35 @@ export class VacantNoticeComponent implements OnInit {
     const gridApi = params.api;
     gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
-loadData(){
-  const body = {
-    ...this.commonParams(),
-    PropCode: this.data.Property,
-    BlockCode: this.data.Block,
-    UnitCode: this.data.Flat,
+  loadData() {
+    const body = {
+      ...this.commonParams(),
+      PropCode: this.data.Property,
+      BlockCode: this.data.Block,
+      UnitCode: this.data.Flat,
+    }
+    try {
+      this.subSink.sink = this.projectService.getNoticeDateDetails(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.rowData = res['data'];
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
   }
-  try {
-    this.loader.start();
-    this.subSink.sink = this.projectService.getNoticeDateDetails(body).subscribe((res: any) => {
-      this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.rowData = res['data'];
-        // this.handleSuccessMsg(res.message);
-      }
-      else {
-        this.handleErrorMsg(res.message);
-      }
-    });
-  }
-  catch (ex: any) {
-    this.handleErrorMsg(ex.message);
-  }
-}
   onRowSelected(event: any) {
-   
-    // this.tenantCode = event.data.tenant,
     this.vacantNoticeForm.patchValue({
-      tenantName:event.data.tenantName,
-      
-      noticeDate:event.data.noticeDate,
-      vacantDate:event.data.vacateDate,
+      tenantName: event.data.tenantName,
+      noticeDate: event.data.noticeDate,
+      vacantDate: event.data.vacateDate,
       status: event.data.vacateStatus,
       notes: event.data.notes,
-    })
+    },{emitEvent:false})
   }
   onPageSizeChanged() {
     if (this.gridApi) {

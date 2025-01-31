@@ -11,6 +11,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SubSink } from 'subsink';
 import { multiClients } from '../../Project.class';
+import { displayMsg, Items, Mode, TextClr, TranStatus, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-multiclients-allocation',
@@ -30,14 +32,13 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
   public gridOptions!: GridOptions;
   pageSizes = [25, 50, 100, 250, 500];
   pageSize = 25;
-  isHundredPercent:number=0;
+  isHundredPercent: number = 0;
   rowData: any = [];
   dialogOpen: boolean = false;
   landlordCode: string = "";
   private multiCls: multiClients = new multiClients();
   columnDefs: any = [
     { field: "slNo", headerName: "slNo", width: 70 },
-    // { field: "tranNo", headerName: "Tran No", resizable: true, flex: 1 },
     { field: "landlordName", headerName: "Landlord", sortable: true, filter: true, resizable: true, width: 180, },
 
     {
@@ -55,7 +56,6 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     },
     {
       field: "dateJoined", headerName: "Joined Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -68,7 +68,6 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     },
     {
       field: "dateLeft", headerName: "Left Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-        // Format date as dd-MM-yyyy
         if (params.value) {
           const date = new Date(params.value);
           const day = date.getDate().toString().padStart(2, '0');
@@ -86,7 +85,7 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
       filter: true,
       resizable: true,
       width: 180,
-      cellStyle: (params:any) => {
+      cellStyle: (params: any) => {
         if (params.value === 'Deleted') {
           return { color: 'red' };
         }
@@ -119,15 +118,15 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     this.columnApi = params.columnApi;
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
-    onRowSelected(event: any) {
-    this.displayMessage('','');
-    this.landlordCode=event.data.landlord;
+  onRowSelected(event: any) {
+    this.displayMessage('', '');
+    this.landlordCode = event.data.landlord;
     this.mulitClientsForm.patchValue({
-      landlord:event.data.landlordName,
-      joinDate:event.data.dateJoined,
-      dateLeft:event.data.dateLeft,
+      landlord: event.data.landlordName,
+      joinDate: event.data.dateJoined,
+      dateLeft: event.data.dateLeft,
       share: event.data.share,
-    });
+    }, { emitEvent: false });
     this.slNum = event.data.slNo;
   }
   private displayMessage(message: string, cssClass: string) {
@@ -166,7 +165,7 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     this.getmultiClientDate(this.data.Property, this.data.Block, this.data.Flat);
   }
   async searchParty() {
-    const body = this.createRequestDataForSearch(this.mulitClientsForm.get('landlord')!.value || "", "LANDLORD");
+    const body = this.createRequestDataForSearch(this.mulitClientsForm.get('landlord')!.value || "", Items.LANDLORD);
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
@@ -180,14 +179,16 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'PartyName': this.mulitClientsForm.get('landlord')!.value, 'PartyType': "Landlord",
-                  'search': 'Landlord Search'
+                  PartyName: this.mulitClientsForm.get('landlord')!.value, PartyType: Items.LANDLORD,
+                  search: 'Landlord Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.mulitClientsForm.get('landlord')!.patchValue(result.partyName);
-                this.landlordCode = result.code;
+                if (result != true && result != undefined) {
+                  this.mulitClientsForm.get('landlord')!.patchValue(result.partyName);
+                  this.landlordCode = result.code;
+                }
                 this.dialogOpen = false;
               });
             }
@@ -195,85 +196,21 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          // this.retMessage = res.message;
-          // this.textMessageClass = 'red';
-          this.displayMessage(res.message,"red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage(ex.message,"red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   _isHundredPercent() {
     if (this.isHundredPercent !== 100) {
       this.displayMessage("Please ensure the total share is exactly 100.", "red");
     } else {
-      this.dialog.closeAll(); // Close the dialog explicitly
+      this.dialog.closeAll();
     }
   }
-
-  // onSubmit(mode:any) {
-  //   if(this.data.mode === "Modify"){
-  //     if (this.landlordCode === null || this.landlordCode === undefined || this.landlordCode === '') {
-  //       this.displayMessage("Enter Landlord", "red");
-  //       return;
-  //     }
-  //     if (this.mulitClientsForm.invalid) {
-  //       this.displayMessage("Enter required fields", "red");
-  //       return;
-  //     }
-  //     else {
-  //       this.prepareCls(mode);
-  //       try {
-  //         this.loader.start();
-  //         this.subSink.sink = this.projService.UpdateUnitLandlordDetails(this.multiCls).subscribe((res: SaveApiResponse) => {
-  //           this.loader.stop();
-  //           if (res.status.toUpperCase() === "SUCCESS") {
-  //             this.displayMessage("Success: " + res.message, "green");
-  //             this.getmultiClientDate(this.data.Property, this.data.Block, this.data.Flat);
-  //           }
-  //           else {
-  //             this.displayMessage("Error: " + res.message, "red");
-  //           }
-  //         });
-  //       }
-  //       catch (ex: any) {
-  //         this.displayMessage("Exception: " + ex.message, "red");
-  //       }
-  //     }
-  //   }
-  //   else if(this.data.mode === "Delete"){
-  //     if (this.landlordCode === null || this.landlordCode === undefined || this.landlordCode === '') {
-  //       this.displayMessage("Enter Landlord", "red");
-  //       return;
-  //     }
-  //     if (this.mulitClientsForm.invalid) {
-  //       this.displayMessage("Enter required fields", "red");
-  //       return;
-  //     }
-  //     else {
-  //       this.prepareCls(mode);
-  //       try {
-  //         this.loader.start();
-  //         this.subSink.sink = this.projService.UpdateUnitLandlordDetails(this.multiCls).subscribe((res: SaveApiResponse) => {
-  //           this.loader.stop();
-  //           if (res.status.toUpperCase() === "SUCCESS") {
-  //             this.displayMessage("Success: " + res.message, "green");
-  //           }
-  //           else {
-  //             this.displayMessage("Error: " + res.message, "red");
-  //           }
-  //         });
-  //       }
-  //       catch (ex: any) {
-  //         this.displayMessage("Exception: " + ex.message, "red");
-  //       }
-  //     }
-  //   }
-
-
-  // }
   onSubmit(mode: any): void {
     if (!this.landlordCode) {
       this.displayMessage("Enter Landlord", "red");
@@ -287,9 +224,9 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     try {
       this.loader.start();
       let serviceCall$;
-      if (this.data.mode === "Modify") {
+      if (this.data.mode.toUpperCase() === Mode.Modify) {
         serviceCall$ = this.projService.UpdateUnitLandlordDetails(this.multiCls);
-      } else if (this.data.mode === "Delete") {
+      } else if (this.data.mode.toUpperCase() === Mode.Delete) {
         serviceCall$ = this.projService.UpdateUnitLandlordDetails(this.multiCls);
       } else {
         this.displayMessage("Invalid mode", "red");
@@ -299,14 +236,13 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
       this.subSink.sink = serviceCall$.subscribe({
         next: (res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            this.displayMessage(`Success: ${res.message}`, "green");
-
-            if (this.data.mode === "Modify") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            if (this.data.mode.toUpperCase() === Mode.Modify) {
               this.getmultiClientDate(this.data.Property, this.data.Block, this.data.Flat);
             }
           } else {
-            this.displayMessage(`Error: ${res.message}`, "red");
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         },
         error: (err: any) => {
@@ -316,7 +252,7 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
       });
     } catch (ex: any) {
       this.loader.stop();
-      this.displayMessage(`Exception: ${ex.message}`, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -331,27 +267,27 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.projService.GetUnitLandlords(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.displayMessage( res.message + " : Data Retrived " , "green");
-          this.rowData=res['data'];
-          this.isHundredPercent=0;
-          res.data.forEach((item :any) => {
-            if(item.llStatus === 'Open'){
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          this.rowData = res['data'];
+          this.isHundredPercent = 0;
+          res.data.forEach((item: any) => {
+            if (item.llStatus.toUpperCase() === TranStatus.OPEN) {
               this.isHundredPercent += parseFloat(item.share) || 0.0;
             }
           });
 
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.ERROR + ex.message, TextClr.red);
     }
   }
-  prepareCls(mode:any) {
+  prepareCls(mode: any) {
     this.multiCls.property = this.data.Property;
     this.multiCls.block = this.data.Block;
     this.multiCls.unitId = this.data.Flat;
@@ -359,13 +295,13 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     this.multiCls.share = this.mulitClientsForm.get('share')!.value;
     this.multiCls.mode = mode;
     this.multiCls.llStatus = "";
-    if(this.data.mode === "Delete"){
-    this.multiCls.dateLeft = this.mulitClientsForm.get('dateLeft')!.value;
-    this.multiCls.llStatus="Delete";
+    if (this.data.mode.toUpperCase() === Mode.Delete) {
+      this.multiCls.dateLeft = this.mulitClientsForm.get('dateLeft')!.value;
+      this.multiCls.llStatus =Mode.Delete;
     }
-    if(this.data.mode === "Modify"){
+    if (this.data.mode.toUpperCase() === Mode.Modify) {
       this.multiCls.dateJoined = this.mulitClientsForm.get('joinDate')!.value;
-      this.multiCls.llStatus="Open";
+      this.multiCls.llStatus = TranStatus.OPEN;
     }
     this.multiCls.company = this.userDataService.userData.company;
     this.multiCls.location = this.userDataService.userData.location;
@@ -373,12 +309,9 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     this.multiCls.refNo = this.userDataService.userData.sessionID;
   }
   newItem() {
-  //  this.mulitClientsForm.get('landlord')?.patchValue('');
-  //  this.mulitClientsForm.get('share')?.patchValue('');
-  //  this.mulitClientsForm.get('joinDate')?.patchValue(new Date());
-  //  this.mulitClientsForm.get('dateLeft')?.patchValue(new Date());
-  this.mulitClientsForm = this.formInit();
-  this.slNum=0;
-  this.landlordCode="";
+    this.mulitClientsForm = this.formInit();
+    this.slNum = 0;
+    this.landlordCode = "";
+    this.displayMessage("", "");
   }
 }
