@@ -12,6 +12,8 @@ import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/conf
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, TextClr, TranType, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-invoice-details',
@@ -183,12 +185,12 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     if (typeof value === 'string') {
       return parseFloat(value.replace(/,/g, '')) || 0;
     } else if (typeof value === 'number') {
-      return value; 
+      return value;
     } else {
-      return 0; 
+      return 0;
     }
   }
-  
+
 
   private setCommonValues(mode: string) {
     const formValues = this.invDetForm.value;
@@ -220,12 +222,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   apply() {
-    debugger;
-    // if (!this.invDetForm.invalid) {
-    //   debugger;
-    //   return;
-    // }
-     {
+    {
       if (this.invDetForm.get('isRepeat')?.value) {
         const message = `The current invoice amount of ${this.invDetForm.controls['itemType'].value} ${this.invDetForm.controls['net'].value} will be applied to subsequent invoices.`;
         const dialogData = new ConfirmDialogModel("Confirm repeat invoice?", message);
@@ -264,18 +261,18 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.projectService.getLegalChargesCalcs(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.dataFlag = true;
           this.invDetForm.get('amount')?.patchValue(res.data[0].amount);
-          this.displayMessage("Success: " + res.message, "green");
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   deleteInvDetails() {
@@ -286,20 +283,20 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.projectService.UpdateTenantInvoiceDet(this.invDetailCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
 
           this.dataFlag = true;
           this.getTenantInvoiceDetails(res.tranNoNew);
-          this.displayMessage("Success: " + res.message, "green");
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
 
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   submit() {
@@ -308,7 +305,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.projectService.UpdateTenantInvoiceDet(this.invDetailCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.dataFlag = true;
           this.getTenantInvoiceDetails(res.tranNoNew);
           this.displayMessage("Success: " + res.message, "green");
@@ -388,11 +385,11 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
   loadData() {
     try {
-      let cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'RENTCHARGE', mode: this.data.mode });
-      let vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATR', mode: this.data.mode });
+      let cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item:Items.RENTCHARGE, mode: this.data.mode });
+      let vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.VATR, mode: this.data.mode });
       if (this.data.isMiscellaneous) {
-        cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'LEGLCHARGE', mode: this.data.mode });
-        vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATR', mode: this.data.mode });
+        cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: TranType.LEGLCHARGE, mode: this.data.mode });
+        vatbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.VATR, mode: this.data.mode });
       }
       this.subSink.sink = forkJoin([cbody$, vatbody$]).subscribe(
         ([chargeRes, vatRes]: any) => {
@@ -406,13 +403,13 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
           }
         },
         error => {
-          this.displayMessage("Error: " + error.message, "red");
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
       this.getTenantInvoiceDetails(this.data.tranNo);
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -424,17 +421,17 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.projectService.GetTenantInvoiceDet(invDetBody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
           this.rowData = [];
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -446,58 +443,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
 
 
-  // doCalculation() {
 
-  //   let numAmount: number=0;
-  //   let numDiscRate: number=0;
-  //   let numDiscAmount: number=0;
-  //   let numVatRate: number=0;
-  //   let numVatAmount: number=0;
-  //   let numNetAmount: number=0;
-
-  //   // let strAmount = value.target.value.toString();
-  //   let strAmount = this.invDetForm.controls['amount'].value.toString();
-  //   let strDiscRate = this.invDetForm.controls['discRate'].value.toString();
-  //   let strVatRate = this.invDetForm.controls['vatRate'].value.toString();
-
-  //   if (strAmount == "") {
-  //     return;
-  //   }
-
-  //   if (strVatRate == "") {
-  //     return;
-  //   }
-
-  //   if (strDiscRate == "") {
-  //     strDiscRate = '0';
-  //   }
-
-  //   numAmount = Number(strAmount.replace(/,/g, ''));
-  //   numDiscRate = Number(strDiscRate.replace(/,/g, ''));
-  //   numVatRate = Number(strVatRate.replace(/,/g, ''));
-
-  //   if (this.invDetForm.controls['discType'].value.toUpperCase() == 'PERCENTAGE') {
-  //     numDiscAmount = numAmount * numDiscRate / 100.0;
-  //   }
-  //   else {
-  //     numDiscAmount = numDiscRate;
-  //   }
-
-  //   numVatAmount = (numAmount - numDiscAmount) * numVatRate / 100.00;
-  //   numNetAmount = numAmount - numDiscAmount + numVatAmount;
-
-  //   let options: Intl.NumberFormatOptions = {
-  //     style: 'decimal',
-  //     minimumFractionDigits: 2,
-  //     maximumFractionDigits: 2,
-  //   };
-
-  //   this.invDetForm.controls['amount'].patchValue(numAmount.toLocaleString(undefined, options));
-  //   this.invDetForm.controls['discRate'].patchValue(numDiscRate.toLocaleString(undefined, options));
-  //   this.invDetForm.controls['discAmount'].patchValue(numDiscAmount.toLocaleString(undefined, options));
-  //   this.invDetForm.controls['vatAmount'].patchValue(numVatAmount.toLocaleString(undefined, options));
-  //   this.invDetForm.controls['netAmount'].patchValue(numNetAmount.toLocaleString(undefined, options));
-  // }
   onAmountChanged() {
     this.calculateNetAmount();
   }
@@ -523,9 +469,9 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
     let discAmount = 0;
 
-    if (discType === 'PERCENTAGE') {
+    if (discType === Type.PERCENTAGE) {
       discAmount = (amount * discRate) / 100;
-    } else if (discType === 'FLAT') {
+    } else if (discType === Type.FLAT) {
       discAmount = discRate;
     }
 

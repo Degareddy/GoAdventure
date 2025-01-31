@@ -18,7 +18,8 @@ import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GeneratedInvoicesComponent } from './generated-invoices/generated-invoices.component';
-import { select } from '@ngrx/store';
+import { displayMsg, Items, ScreenId, TextClr, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-generate-invoices',
@@ -116,7 +117,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   async loadData() {
-    const propertybody = this.buildRequestParams('PROPERTY');
+    const propertybody = this.buildRequestParams(Items.PROPERTY);
     const property$ = this.masterService.GetMasterItemsList(propertybody);
     try {
       this.subsink.sink = await forkJoin([property$]).subscribe(
@@ -133,41 +134,39 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     }
     const body = {
       ...this.commonParams(),
-      serviceType: "SMS",
-      MsgType: "SMS"
+      serviceType: Type.SMS,
+      MsgType: Type.SMS
     }
     try {
       this.subsink.sink = this.smsService.getMessageCredentials(body).subscribe((res: any) => {
-        //  console.log(res);
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.API_KEY = res.data.apI_KEY;
           this.PARTNER_ID = res.data.partneR_ID;
           this.SHORTCODE = res.data.shortcode;
-          // this.smsUrl = res.data.apI_SMS_URL;
-          // this.bulkSmsUrl = res.data.apI_BULK_SMS_URL;
         }
         else {
-          // this.retMessage = "SMS credntials are not found!";
-          // this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + "SMS credntials are not found!", TextClr.red);
         }
 
 
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   private handleDataLoadError(error: any): void {
     this.retMessage = error.message;
     this.textMessageClass = 'red';
   }
 
   private handleDataLoadSuccess(propRes: any): void {
-    if (propRes.status.toUpperCase() === "SUCCESS") {
+    if (propRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.propertyList = propRes['data'];
       if (this.propertyList.length === 1) {
         this.autoGenForm.get('property')!.setValue(this.propertyList[0].itemCode);
@@ -175,8 +174,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       }
     }
     else {
-      this.retMessage = "Property list empty!";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Property list empty!", TextClr.red);
       return;
     }
 
@@ -199,10 +197,10 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       const startTime = new Date().getTime();
       this.loader.start();
       this.subsink.sink = await this.projService.AutogenerateTenantInvoices(body).subscribe((res: SaveApiResponse) => {
-        const endTime = new Date().getTime(); // Capture the end time
-        const elapsedTimeInSeconds = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
+        const endTime = new Date().getTime();
+        const elapsedTimeInSeconds = (endTime - startTime) / 1000;
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.retMessage = res.message + " Time taken : " + elapsedTimeInSeconds;
           this.textMessageClass = "green";
           this.getReportTenantInvoicesData();
@@ -219,14 +217,13 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
           });
         }
         else {
-          this.handleDataLoadError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
-      // console.log('called submit');
     }
     catch (ex: any) {
       this.loader.stop();
-      this.handleDataLoadError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -272,66 +269,35 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
     try {
       this.subsink.sink = await this.projService.GetReportTenantInvoicesData(body).subscribe((resp: any) => {
-        if (resp.status.toUpperCase() === "SUCCESS") {
+        if (resp.status.toUpperCase() === AccessSettings.SUCCESS) {
           let reportData = resp.data;
           let type: string = "";
           if (this.autoGenForm.controls.email.value === true) {
-            type = "EMAIL";
+            type = Type.EMAIL;
           }
           if (this.autoGenForm.controls.sms.value === true) {
-            type = "SMS";
+            type =Type.SMS;
           }
-          if (type === "EMAIL" || type === "SMS") {
-            if (type.toUpperCase() === "EMAIL") {
+          if (type === Type.EMAIL|| type === Type.SMS) {
+            if (type.toUpperCase() === Type.EMAIL) {
               const groupByInvoiceNo = (arr: any) => {
                 return arr.reduce((acc: any, invoice: any) => {
                   const { invoiceNo, ...rest } = invoice;
                   if (!acc[invoiceNo]) {
                     acc[invoiceNo] = [];
                   }
-                  acc[invoiceNo].push({ invoiceNo, ...rest }); // Include invoiceNo along with the rest of the object
+                  acc[invoiceNo].push({ invoiceNo, ...rest });
                   return acc;
                 }, {});
               };
 
               const groupedInvoices = groupByInvoiceNo(reportData);
               const filteredInvoices = Object.values(groupedInvoices);
-              // for (let i = 0; i < filteredInvoices.length; i++) {
-              //   const eachfilterData: any = filteredInvoices[i];
-
-              //   const formFile: any = this.reportsService.generatePDF(filteredInvoices[i], 'GINV', new Date(), type.toUpperCase());
-
-              //   // Alternate the recipient email based on the index
-              //   const mailTo = i % 2 === 0 ? 'prathapgundla@gmail.com' : 'dega99@gmail.com';
-              //   const mailToName = eachfilterData[0].tenantName;
-              //   const mailSubject = 'Invoice : ' + eachfilterData[0].invoiceNo;
-              //   const mailMsg = 'Dear ' + eachfilterData[0].tenantName +
-              //     ', find the invoice attached for the month of ' + eachfilterData[0].tranYear.toString() +
-              //     '-' + eachfilterData[0].tranMonthName + '.';
-
-              //   this.subsink.sink = this.projService.sendEmailWithAttachment(formFile, mailTo, mailToName, mailSubject, mailMsg)
-              //     .pipe(timeout(5000))
-              //     .subscribe(
-              //       (res: any) => {
-              //         console.log(res);
-              //         this.retMessage = "Email sent successfully";
-              //         this.textMessageClass = "green";
-              //       },
-              //       (error) => {
-              //         if (error.name === 'TimeoutError') {
-              //           console.error('Request timed out');
-              //         } else {
-              //           console.error('Error:', error);
-              //         }
-              //       }
-              //     );
-              // }
 
               for (let i = 0; i < filteredInvoices.length; i++) {
                 const eachfilterData: any = filteredInvoices[i];
                 const formFile: any = this.reportsService.generatePDF(filteredInvoices[i], 'GINV', new Date(), type.toUpperCase());
                 const mailTo = eachfilterData[0].emailId;
-                // const mailTo = i % 2 === 0 ? 'prathapgundla@gmail.com' : 'dega99@gmail.com';
                 const mailToName = eachfilterData[0].tenantName;
                 const mailSubject = 'Invoice : ' + eachfilterData[0].invoiceNo;
                 const mailMsg = 'Dear ' + eachfilterData[0].tenantName +
@@ -353,71 +319,13 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                 );
               }
             }
-            // else if (type.toUpperCase() === "SMS") {
-            //   if (this.PARTNER_ID && this.API_KEY && this.SHORTCODE) {
-            //     const output: { count?: number; smslist: { [key: string]: any }[] } = {
-            //       smslist: []
-            //     };
-            //     let count = 0;
-            //     for (const item of reportData) {
-            //       const dateObject = new Date(item.tranDate);
-            //       const dueObject = new Date(item.dueDate);
-            //       const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
-            //       const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
-            //       const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
-            //       let message = "";
-            //       if (this.userDataService.userData.company === "NPML") {
-
-            //         message = `Dear ${item.tenantName},
-
-            //     Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-            //     The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-            //     Thank you,
-            //     Nagaad Properties`;
-            //       }
-            //       else if (this.userDataService.userData.company === "SADASA") {
-
-            //         message = `Mudane/Marwo [${item.tenantName}],
-            //         Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
-            //         Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-
-            //       Mahadsanid,
-            //       Omar Mumin Mohammed
-            //       Sadasa Construction and Property`
-            //       }
-
-            //       //               const message = `Dear ${item.tenantName},
-
-            //       // Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-            //       // The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-            //       // Thank you,
-            //       // Nagaad Properties`;
-
-            //       if (item.slNo === 1) {
-            //         if (item.clientContacts) {
-            //           count++;
-            //           const smsObject = {
-            //             partnerID: this.PARTNER_ID,
-            //             apikey: this.API_KEY,
-            //             pass_type: "plain",
-            //             mobile: item.clientContacts.replace(/[\s+]/g, ''),
-            //             message: message,
-            //             shortcode: this.SHORTCODE
-            //           };
-            //           output.smslist.push(smsObject);
-            //         }
-            //       }
-            //       if (count > 0) {
-            //         output.count = count;
-            //       }
-            // //     }
-            else if (type.toUpperCase() === "SMS") {
+            else if (type.toUpperCase() === Type.SMS) {
               if (this.PARTNER_ID && this.API_KEY && this.SHORTCODE) {
                 const output: { count?: number; smslist: { [key: string]: any }[] } = {
                   smslist: []
                 };
                 let count = 0;
-            
+
                 for (const item of reportData) {
                   const dateObject = new Date(item.tranDate);
                   const dueObject = new Date(item.dueDate);
@@ -425,18 +333,18 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                   const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
                   const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
                   let message = "";
-            
-                  if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('rentInvoice')?.value ) {
+
+                  if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('rentInvoice')?.value) {
                     message = `Dear ${item.tenantName},
-            
+
             Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
             The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
             Thank you,
             Nagaad Properties`;
                   }
-                  else if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('IncludeUtility')?.value ) {
+                  else if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('IncludeUtility')?.value) {
                     message = `Dear ${item.tenantName},
-            
+
             Utility invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
             The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
             Thank you,
@@ -447,22 +355,22 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
                     Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
                     Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-                    
-                    Mahadsanid,  
-                    Omar Mumin Mohammed  
+
+                    Mahadsanid,
+                    Omar Mumin Mohammed
                     Sadasa Construction and Property`;
-                    
+
                   }
-                   else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('rentInvoice')?.value) {
+                  else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('rentInvoice')?.value) {
                     message = `Mudane/Marwo [${item.tenantName}],
             Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
             Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-            
+
             Mahadsanid,
             Omar Mumin Mohammed
             Sadasa Construction and Property`;
                   }
-            
+
                   if (item.slNo === 1) {
                     if (item.clientContacts) {
                       count++;
@@ -478,20 +386,20 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                     }
                   }
                 }
-            
+
                 if (output.smslist.length > 0) {
-                  const batches:any[] = [];
+                  const batches: any[] = [];
                   for (let i = 0; i < output.smslist.length; i += 20) {
                     batches.push(output.smslist.slice(i, i + 20));
                   }
-            
+
                   const sendBatchSMS = async (batch: { [key: string]: any }[]) => {
                     const batchOutput = { smslist: batch };
                     try {
                       const res = await this.smsService.SendBulkSMS(batchOutput).toPromise();
                       const responses = res.responses;
                       const successCount = responses.filter((res: any) => res['response-code'] === 200).length;
-            
+
                       if (successCount > 0) {
                         this.snackBar.open(`${successCount} message(s) sent successfully`, 'Close', {
                           duration: 10000,
@@ -511,13 +419,13 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                       console.error('Error:', error);
                     }
                   };
-            
+
                   const processBatches = async () => {
                     for (const batch of batches) {
                       await sendBatchSMS(batch);
                     }
                   };
-            
+
                   processBatches();
                 } else {
                   this.textMessageClass = "red";
@@ -528,7 +436,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                 this.retMessage = "Credentials not registered for sending bulksms";
               }
             }
-            
+
           }
         }
         else {
@@ -538,12 +446,10 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       });
 
     } catch (error: any) {
-      // Handle error
-      this.retMessage = error.message;
-      this.textMessageClass = "red";
+    	this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
     }
   }
-  
+
   handleSuccess(res: any) {
     this.retMessage = res.message;
     this.textMessageClass = "green";
@@ -572,7 +478,6 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
       property: ['', Validators.required],
       block: ['', Validators.required],
       IncludeUtility: [false],
-      // invDate: [new Date(), Validators.required],
       rentInvoice: [false],
       includeExpenses: [false],
       authorize: [false],
@@ -596,7 +501,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   private handlePropertyChangedResponse(result: any): void {
-    if (result.message.toUpperCase() === 'SUCCESS') {
+    if (result.message.toUpperCase() === AccessSettings.SUCCESS) {
       this.blockList = result.data;
       if (this.blockList.length === 1) {
         this.autoGenForm.get('block')!.setValue(this.blockList[0].itemCode);
@@ -609,7 +514,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   private handleBlockChangedResponse(result: any): void {
-    if (result.status.toUpperCase() === 'SUCCESS') {
+    if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
 
       if (result.data.invYear !== 0) {
         this.invYear = result.data.invYear;
@@ -709,38 +614,13 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
 
   async onSelectedBlockChanged() {
-
-    // this.resetMessages();
-
-    // if (this.autoGenForm.controls['property'].value != "") {
-    //   // const propertyValue = this.autoGenForm.controls['property'].value;
-
-    //   this.masterParams.type = this.autoGenForm.controls['property'].value;
-    //   this.masterParams.item = this.autoGenForm.controls['block'].value;
-
-    //   try {
-    //     this.subsink.sink = await this.projService.GetLastGeneratedInvoiceInfo(this.masterParams).subscribe(
-    //       (result: any) => {
-    //         this.handleBlockChangedResponse(result);
-    //       },
-    //       (error: any) => {
-    //         this.handleDataLoadError(error);
-    //       }
-    //     );
-    //   } catch (ex: any) {
-    //     this.handleDataLoadError(ex);
-    //   }
-    // }
-    // else {
-    //   this.blockList = [];
-    // }
   }
 
   onHelpCilcked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST916",
+        ScrId: ScreenId.GENERATE_INVOICE_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -751,44 +631,25 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   }
 
   onCheckboxChange(selectedCheckbox: string) {
-    this.retMessage='';
-    this.textMessageClass='';
-      //   if (selectedCheckbox === 'rentInvoice') {
-    //     this.autoGenForm.patchValue({
-    //       includeExpenses: false,
-    //     });
-    //   } else if (selectedCheckbox === 'includeExpenses') {
-    //     this.autoGenForm.patchValue({
-    //       rentInvoice: false,
-    //     });
-    //   }
-    //   else if (selectedCheckbox === 'IncludeUtility') {
-    //     this.autoGenForm.patchValue({
-    //       IncludeUtility: false,
-    //     });
-    //   }
-    let type:string='';
-    if(selectedCheckbox === 'rentInvoice'){
-      type='RENTAL'
-       
+    this.retMessage = '';
+    this.textMessageClass = '';
+    let type: string = '';
+    if (selectedCheckbox === 'rentInvoice') {
+      type = Type.RENTAL
     }
-    else if(selectedCheckbox === 'includeExpenses'){
-      type='EXPENSE'
+    else if (selectedCheckbox === 'includeExpenses') {
+      type = Type.EXPENSE
     }
-    else if(selectedCheckbox === 'IncludeUtility'){
-      type='UTILITY'
+    else if (selectedCheckbox === 'IncludeUtility') {
+      type = Type.UTILITY
     }
-     
-    if (true ) {
-      // const propertyValue = this.autoGenForm.controls['property'].value;
-
+    if (true) {
       const body = {
         ...this.commonParams(),
         Type: type,
         ItemFirstLevel: this.autoGenForm.controls['property'].value,
         ItemSecondLevel: this.autoGenForm.controls['block'].value,
       }
-
       try {
         this.subsink.sink = this.projService.GetLastGeneratedInvoiceInfo(body).subscribe(
           (result: any) => {
@@ -802,10 +663,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
         this.handleDataLoadError(ex);
       }
     }
-    else {
-      // this.blockList = [];
-    }
-    if(!this.autoGenForm.get('authorize')?.value){
+    if (!this.autoGenForm.get('authorize')?.value) {
       this.autoGenForm.get('email')?.setValue(false);
       this.autoGenForm.get('sms')?.setValue(false);
       this.autoGenForm.get('whatsapp')?.setValue(false);
