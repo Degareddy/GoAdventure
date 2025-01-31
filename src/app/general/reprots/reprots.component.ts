@@ -1880,27 +1880,27 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           };
 
         }
-        else if(this.reportForm.get('clientType')!.value.toUpperCase() === 'STAFF') {
-          if (row.amount < 0 && (row.tranNo.toUpperCase() == "CLOSING" && row.tranNo.toUpperCase() != "OPENING" && row.tranType.toUpperCase() == "PAYMENT"  || row.tranType.toUpperCase() == "OPENING" )) {
-             debit = row.amount; // Positive amounts are now considered as credit
-            balance += debit;
-            totalDebit += debit;
-          }
-           else if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranNo.toUpperCase() == "OPENING" && row.tranType.toUpperCase() == "RECEIPT" || row.tranType.toUpperCase() == "OPENING")) {
-            credit = -row.amount; // Negative amounts are now considered as debit
-            balance -= credit; // Subtract debit from balance
-             totalCredit += credit;
-          }
+        // else if(this.reportForm.get('clientType')!.value.toUpperCase() === 'STAFF') {
+        //   if (row.amount < 0 && (row.tranNo.toUpperCase() == "CLOSING" && row.tranNo.toUpperCase() != "OPENING" && row.tranType.toUpperCase() == "PAYMENT"  || row.tranType.toUpperCase() == "OPENING" )) {
+        //      debit = row.amount; // Positive amounts are now considered as credit
+        //     balance += debit;
+        //     totalDebit += debit;
+        //   }
+        //    else if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranNo.toUpperCase() == "OPENING" && row.tranType.toUpperCase() == "RECEIPT" || row.tranType.toUpperCase() == "OPENING")) {
+        //     credit = -row.amount; // Negative amounts are now considered as debit
+        //     balance -= credit; // Subtract debit from balance
+        //      totalCredit += credit;
+        //   }
 
-          return {
-            ...row,
-            credit,
-            debit,
-            balance,
-            detail: 'Details'
-          };
+        //   return {
+        //     ...row,
+        //     credit,
+        //     debit,
+        //     balance,
+        //     detail: 'Details'
+        //   };
 
-        }
+        // }
         else {
           if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranNo.toUpperCase() != "OPENING")) {
             debit = -row.amount;
