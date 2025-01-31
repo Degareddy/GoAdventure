@@ -9,6 +9,8 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { SubSink } from 'subsink';
 import { DatePipe } from '@angular/common';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-search-engine',
@@ -22,7 +24,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   tomorrow = new Date();
   textMessageClass!: string;
   retMessage!: string;
-  tranStatus: any = ['ANY','Closed', 'Authorized', 'Open', 'Deleted','Confirmed']
+  tranStatus: any = ['ANY', 'Closed', 'Authorized', 'Open', 'Deleted', 'Confirmed']
   masterParams!: MasterParams;
   tranNo!: any[];
   searchName!: string;
@@ -35,18 +37,18 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   loader!: NgxUiLoaderService;
   pageSizes = [100, 250, 500];
   pageSize = 100;
-  totalAmount:number=0;
+  totalAmount: number = 0;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
-  { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true,width: 90 ,hide:true},
+  { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 90, hide: true },
   { field: "unitName", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
   { field: "partyName", headerName: "Party Name", sortable: true, filter: true, resizable: true, width: 190 },
-  { field: "partyId", headerName: "Party Id", sortable: true, filter: true, resizable: true, width: 190,hide:true },
+  { field: "partyId", headerName: "Party Id", sortable: true, filter: true, resizable: true, width: 190, hide: true },
   { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 190 },
 
-  { field: "tranType", headerName: "Tran Type", sortable: true, filter: true, resizable: true,width: 120 },
+  { field: "tranType", headerName: "Tran Type", sortable: true, filter: true, resizable: true, width: 120 },
 
   {
-    field: "tranAmount", headerName: "Tran Amount", sortable: true, filter: true, resizable: true,width: 120,
+    field: "tranAmount", headerName: "Tran Amount", sortable: true, filter: true, resizable: true, width: 120,
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
         const numericValue = parseFloat(params.value.toString());
@@ -60,7 +62,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
     cellStyle: { justifyContent: "flex-end" },
   },
   {
-    field: "totalAmount", headerName: "Total Amount", sortable: true, filter: true, resizable: true,width: 120,
+    field: "totalAmount", headerName: "Total Amount", sortable: true, filter: true, resizable: true, width: 120,
     valueFormatter: function (params: any) {
       if (typeof params.value === 'number' || typeof params.value === 'string') {
         const numericValue = parseFloat(params.value.toString());
@@ -75,7 +77,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   },
   { field: "tranStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 120 },
   {
-    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true,width: 120,
+    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
     valueFormatter: function (params: any) {
       if (params.value) {
         const date = new Date(params.value);
@@ -151,9 +153,8 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
       refNo: this.userDataService.userData.sessionID
     }
   }
-async  search() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+  async search() {
+    this.displayMessage("", "");
     if (this.tranSearchForm.invalid) {
       return
     }
@@ -161,8 +162,7 @@ async  search() {
       const fromDate = new Date(this.tranSearchForm.get('fromDate')!.value);
       const toDate = new Date(this.tranSearchForm.get('toDate')!.value);
       if (fromDate > toDate) {
-        this.retMessage = "From date should be less than To date";
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR+ "From date should be less than To date", TextClr.red);
         return;
       }
       const body = {
@@ -175,38 +175,38 @@ async  search() {
         TranStatus: this.tranSearchForm.get('tranStatus')!.value,
       }
       try {
-        this.subSink.sink =await this.mastService.GetTranSearchList(body).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "FAIL") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
+        this.subSink.sink = await this.mastService.GetTranSearchList(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
             this.rowData = [];
           }
           else {
             this.rowData = res['data'];
             console.log(this.rowData);
             this.calculateTotal(this.rowData);
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
   }
-  
-  calculateTotal(data:any){
+
+  calculateTotal(data: any) {
     this.totalAmount = data.reduce((sum: number, item: any) => {
-      return sum + (item?.totalAmount || 0); // Safely access totalAmount
+      return sum + (item?.totalAmount || 0);
     }, 0);
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
 
   onRowClick(row: any, i: number) {
     this.dialogRef.close(row.tranNo);
@@ -214,11 +214,9 @@ async  search() {
   clear() {
     this.tranSearchForm.reset()
     this.tranSearchForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
+   this.displayMessage("", "");
   }
   onFilterData(event: any) {
-    // console.log(event);
     this.calculateTotal(event);
   }
 }

@@ -23,7 +23,7 @@ import { PropertyDetailsResponse } from '../property.interface';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { AccessSettings } from 'src/app/utils/access';
-import { Items, Log, Mode, ScreenId, searchDocs, searchNotes, searchType, TranType, Type } from 'src/app/utils/enums';
+import { Items, Log, Mode, ScreenId, searchDocs, searchNotes, searchType, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-project',
@@ -128,7 +128,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       waterDiscount: [false],
       discType: [{ value: '', disabled: true }],
       discRate: [{ value: 0.00, disabled: true }, this.discRateValidator()],
-      unitRate:[0.00]
+      unitRate: [0.00]
     })
   }
 
@@ -171,8 +171,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
               const dialogRef: MatDialogRef<SearchProjectComponent> = this.dialog.open(SearchProjectComponent, {
                 disableClose: true,
                 data: {
-                  'project': this.propForm.controls['propertyName'].value, 'type':  Items.PROPERTY,
-                  'search': searchType.PROPERTY
+                  project: this.propForm.controls['propertyName'].value, type: Items.PROPERTY,
+                  search: searchType.PROPERTY
                 }
               });
               this.dialogOpen = true;
@@ -233,8 +233,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
       waterDiscount: data.waterDiscount,
       discType: data.discType,
       discRate: data.discRate,
-      unitRate:data.waterUnitRate
-    },{emitEvent:false});
+      unitRate: data.waterUnitRate
+    }, { emitEvent: false });
   }
 
   getPropertyData(masterParams: MasterParams, mode: string) {
@@ -256,8 +256,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   handleSuccess(res: any, mode: string) {
-    this.textMessageClass = "green";
-    if (mode != 'View' && this.newTranMsg != "") {
+    this.textMessageClass = TextClr.green;
+    if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
       this.retMessage = this.newTranMsg;
     }
     else {
@@ -286,7 +286,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
           this.propForm.get('mode')!.patchValue(this.modes[0].itemCode);
         }
       }
-      else{
+      else {
         this.displayMessage("Modes list empty!", "red");
       }
     });
@@ -299,7 +299,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.propCls.refNo = this.userDataService.userData.sessionID;
     this.propCls.langId = this.userDataService.userData.langId;;
     this.propCls.propertyID = this.propertyId;
-    this.propCls.WaterUnitRate=this.propForm.get('unitRate')?.value
+    this.propCls.WaterUnitRate = this.propForm.get('unitRate')?.value
     this.propCls = { ...this.propCls, ...this.propForm.value };
     this.propCls.venture = this.venture;
     this.propCls.landlord = this.landlordCode;
@@ -307,7 +307,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     if (transformedDate !== undefined && transformedDate !== null) {
       this.propCls.acquiredDate = transformedDate.toString();
     } else {
-      this.propCls.acquiredDate = ''; // or any default value you prefer
+      this.propCls.acquiredDate = '';
     }
     if (this.propForm.controls['employeeName'].value != '') {
       this.propCls.employee = this.empCode;
@@ -331,7 +331,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       const mode = this.propForm.controls.mode.value.toUpperCase();
       const tranNo = this.propForm.controls.propertyName.value;
       const tranStatus = this.propStatus.toUpperCase();
-      if (mode === 'ACTIVATE' && tranStatus != "DELETED") {
+      if (mode === TranStatus.ACTIVATE && tranStatus != TranStatus.DELETED) {
         this.displayMessage(`Failed : Property with the given name ${tranNo} is not in deleted status to activate.`, "red");
         return;
       }
@@ -399,8 +399,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<DirectionsComponent> = this.dialog.open(DirectionsComponent, {
       width: '90%',
       disableClose: true,
-      data: { status: this.propStatus, type: Items.PROPERTY, Trantype: TranType.BOUNDARY,
-         TranNo: this.propForm.controls['propertyId'].value, mode: this.propForm.controls['mode'].value }
+      data: {
+        status: this.propStatus, type: Items.PROPERTY, Trantype: TranType.BOUNDARY,
+        TranNo: this.propForm.controls['propertyId'].value, mode: this.propForm.controls['mode'].value
+      }
     });
 
   }
@@ -409,8 +411,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.propForm.controls['mode'].value, tranNo: this.propForm.controls['propertyId'].value,
-         search: searchDocs.PROPERTY_DOC, tranType: Items.PROPERTY }
+      data: {
+        mode: this.propForm.controls['mode'].value, tranNo: this.propForm.controls['propertyId'].value,
+        search: searchDocs.PROPERTY_DOC, tranType: Items.PROPERTY
+      }
     });
 
   }
@@ -506,8 +510,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.propForm.controls['employeeName'].value, 'PartyType': Items.EMPLOYEE,
-                  'search': 'Employee Search'
+                  tranNum: this.propForm.controls['employeeName'].value, PartyType: Items.EMPLOYEE,
+                  search: 'Employee Search'
                 }
               });
               this.dialogOpen = true;
@@ -583,11 +587,11 @@ export class ProjectComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.propForm.controls['mode'].value,
-        'note': this.propForm.controls['notes'].value,
-        'TranType': Items.PROPERTY,  // Pass any data you want to send to CustomerDetailsComponent
-        'search': searchNotes.PROPERTY_NOTE
+        tranNo: tranNo,
+        mode: this.propForm.controls['mode'].value,
+        note: this.propForm.controls['notes'].value,
+        TranType: Items.PROPERTY,
+        search: searchNotes.PROPERTY_NOTE
       }
     });
 
@@ -598,9 +602,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': Items.PROPERTY,
-        'tranNo': tranNo,
-        'search': Log.PROPERTY_LOG
+        tranType: Items.PROPERTY,
+        tranNo: tranNo,
+        search: Log.PROPERTY_LOG
       }
     });
   }

@@ -102,18 +102,19 @@
   <div class="flex justify-between items-center mb-0.1 h-8">
     <div class="flex items-center text-white">
       <mat-icon class="mr-1">payment</mat-icon>
-      <b>Utility Bills</b>
+      <b>Extended Bills(Water/Electricity)</b>
     </div>
     <div class="flex items-end space-x-1 mb-2.5">
       <button mat-raised-button color="primary" type="button" class="btnUp" (click)="onDetCilcked()"
-      [disabled]="waterReadingForm.get('mode')!.value == 'Add' || waterReadingForm.invalid || waterReadingForm.get('tranNo')?.value === ''"><mat-icon>info</mat-icon>
-      Details
-    </button>
+        [disabled]="waterReadingForm.get('mode')!.value == 'Add' || waterReadingForm.invalid || waterReadingForm.get('tranNo')?.value === ''"><mat-icon>info</mat-icon>
+        Details
+      </button>
       <button mat-raised-button color="accent" type="button" class="btnUp" (click)="onDocsCilcked()"
         [disabled]="waterReadingForm.get('mode')!.value == 'Add' || waterReadingForm.invalid || waterReadingForm.get('tranNo')?.value === ''"><mat-icon>cloud_upload</mat-icon>
         Docs
       </button>
-      <button mat-raised-button class="btnUp" type="button" (click)="NotesDetails(waterReadingForm.get('tranNo')!.value )"
+      <button mat-raised-button class="btnUp" type="button"
+        (click)="NotesDetails(waterReadingForm.get('tranNo')!.value )"
         [disabled]="waterReadingForm.get('tranNo')!.value === '' || waterReadingForm.get('tranNo')!.value === null">
         <mat-icon>note_add</mat-icon>
         Notes
@@ -134,7 +135,7 @@
   <form [formGroup]="waterReadingForm" (ngSubmit)="onSubmit()">
     <div class="row justify-content-left">
       <div class="col-2">
-        <mat-form-field appearance="outline"style="width:100%">
+        <mat-form-field appearance="outline" style="width:100%">
           <mat-label class="mat-label-class">Mode</mat-label>
           <mat-select formControlName="mode" (selectionChange)="modeChanged($event.value)">
             <mat-option value="">--Select--</mat-option>
@@ -175,7 +176,7 @@
         </mat-form-field>
       </div>
       <div class="col-2">
-        <mat-form-field appearance="outline"style="width:100%">
+        <mat-form-field appearance="outline" style="width:100%">
           <mat-label class="mat-label-class">Flat</mat-label>
           <input matInput type="text" placeholder="Flat" formControlName="flat" />
           <button matSuffix mat-icon-button aria-label="Clear" *ngIf="waterReadingForm.get('flat')!.value"

@@ -69,7 +69,9 @@ export enum TranStatus {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',
   ANY = 'ANY',
-  AUTHOURIZED = 'AUTHOURIZED'
+  AUTHOURIZED = 'AUTHOURIZED',
+  ACTIVATE = 'ACTIVATE',
+  DELETED = 'DELETED'
 }
 
 export enum searchType {

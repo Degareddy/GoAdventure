@@ -9,13 +9,15 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { SubSink } from 'subsink';
 import { DatePipe } from '@angular/common';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-search-cash-transfer',
   templateUrl: './search-cash-transfer.component.html',
   styleUrls: ['./search-cash-transfer.component.css']
 })
-export class SearchCashTransferComponent implements OnInit,OnDestroy {
+export class SearchCashTransferComponent implements OnInit, OnDestroy {
 
   tranSearchForm!: FormGroup;
   @Input() max: any;
@@ -36,9 +38,11 @@ export class SearchCashTransferComponent implements OnInit,OnDestroy {
   loader!: NgxUiLoaderService;
   pageSizes = [25, 50, 100, 250, 500];
   pageSize = 25;
-  columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
-  { field: "partyName", headerName: "Party", sortable: true, filter: true, resizable: true, width: 190 },
-  { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 190 },
+  paymentAmount: number = 0;
+  receivedAmount: number = 0;
+  columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 100 },
+  { field: "partyName", headerName: "Party", sortable: true, filter: true, resizable: true, width: 280 },
+  { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 380 },
   { field: "tranType", headerName: "Tran Type", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "tranForDesc", headerName: "Tran For", sortable: true, filter: true, resizable: true, flex: 1 },
 
@@ -73,7 +77,7 @@ export class SearchCashTransferComponent implements OnInit,OnDestroy {
   },
   ];
   constructor(protected mastService: MastersService, private userDataService: UserDataService,
-    private fb: FormBuilder, private datePipe: DatePipe,
+    private fb: FormBuilder, private datePipe: DatePipe,private cdr: ChangeDetectorRef,
     private dialogRef: MatDialogRef<SearchCashTransferComponent>,
     private loaderService: NgxUiLoaderService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -136,9 +140,8 @@ export class SearchCashTransferComponent implements OnInit,OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
- async search() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+  async search() {
+    this.displayMessage("", "");
     if (this.tranSearchForm.invalid) {
       return
     }
@@ -146,8 +149,7 @@ export class SearchCashTransferComponent implements OnInit,OnDestroy {
       const fromDate = new Date(this.tranSearchForm.get('fromDate')!.value);
       const toDate = new Date(this.tranSearchForm.get('toDate')!.value);
       if (fromDate > toDate) {
-        this.retMessage = "From date should be less than To date";
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR + "From date should be less than To date", TextClr.red);
         return;
       }
       const body = {
@@ -158,34 +160,55 @@ export class SearchCashTransferComponent implements OnInit,OnDestroy {
         FromDate: this.datePipe.transform(this.tranSearchForm.get('fromDate')!.value, 'yyyy-MM-dd'),
         ToDate: this.datePipe.transform(this.tranSearchForm.get('toDate')!.value, 'yyyy-MM-dd'),
         TranStatus: this.tranSearchForm.get('tranStatus')!.value,
-        AllocStatus:this.tranSearchForm.get('allocationStatus')!.value,
+        AllocStatus: this.tranSearchForm.get('allocationStatus')!.value,
       }
       try {
-        this.subSink.sink =await this.mastService.GetRctPmtTranSearchList(body).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "FAIL") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
+        this.subSink.sink = await this.mastService.GetRctPmtTranSearchList(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];
           }
           else {
             this.rowData = res['data'];
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            const totalsByTranType = this.calculateTotalByTranType(this.rowData);
+            // console.log(totalsByTranType);
+            this.receivedAmount = totalsByTranType.RECEIPT || 0;
+            this.paymentAmount = totalsByTranType.PAYMENT || 0;
+            this.cdr.detectChanges();
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
   }
+  onFilterData(event: any) {
+     console.log(event);
+     const totalsByTranType = this.calculateTotalByTranType(event);
+     this.receivedAmount = totalsByTranType.RECEIPT || 0;
+     this.paymentAmount = totalsByTranType.PAYMENT || 0;
+     this.cdr.detectChanges();
+  }
+  calculateTotalByTranType = (data: any[]) => {
+    return data.reduce((acc, item) => {
+      const { tranType, totalAmount } = item;
+      acc[tranType] = (acc[tranType] || 0) + totalAmount;
+      return acc;
+    }, {} as { [key: string]: number });
+  };
+
+
 
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
 
   onRowClick(row: any, i: number) {
     this.dialogRef.close(row.tranNo);
@@ -193,8 +216,7 @@ export class SearchCashTransferComponent implements OnInit,OnDestroy {
   clear() {
     this.tranSearchForm.reset()
     this.tranSearchForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("", "");
   }
 
 }
