@@ -8,6 +8,14 @@
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="mulitClientsForm">
     <div class="row  justify-content-left myCustomClass">
+      <div class="col-3">
+      <mat-form-field appearance="outline">
+        <mat-label>Mode</mat-label>
+        <mat-select formControlName="mode" >
+          <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
       <div class="col-1">
         <mat-label>SlNo:&nbsp;<b class="data">{{slNum}}</b></mat-label>
       </div>
@@ -35,20 +43,20 @@
       </div>
       <div class="col-2">
         <mat-form-field class="mat-date" appearance="outline">
-          <mat-label class="mat-label-class">Join Date</mat-label>
+          <mat-label class="mat-label-class">Date</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="joinDate" [max]="today"/>
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
-      <div class="col-2">
+      <!-- <div class="col-2">
         <mat-form-field class="mat-date" appearance="outline">
           <mat-label class="mat-label-class">Date Left</mat-label>
           <input matInput [matDatepicker]="picker1" formControlName="dateLeft" [max]="today"/>
           <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
-      </div>
+      </div> -->
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">

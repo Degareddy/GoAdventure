@@ -206,7 +206,7 @@
           <div class="matfield">
             <mat-checkbox [labelPosition]="labelPosition" formControlName="sms" class="small-label">Send
               SMS</mat-checkbox> &nbsp;&nbsp;
-              <button mat-raised-button color="primary" class="btnUp" type="button" (click)="sendSms(mobileNo)" [disabled]="mobileNo === '' || mobileNo === null || receiptsForm.get('sms')?.value">
+              <button mat-raised-button color="primary" class="btnUp" type="button" (click)="sendsms()" [disabled]="mobileNo === '' || mobileNo === null || receiptsForm.get('sms')?.value">
                 <mat-icon>sms</mat-icon> Send Sms
               </button>
           </div>

@@ -11,6 +11,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SubSink } from 'subsink';
 import { multiClients } from '../../Project.class';
+import { Item } from 'src/app/general/Interface/interface';
 
 @Component({
   selector: 'app-multiclients-allocation',
@@ -21,6 +22,12 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
   mulitClientsForm!: FormGroup;
   slNum = 0;
   retMessage: string = "";
+  modes: Item[] = [
+    {itemCode:'',itemName:'Select'},
+    { itemCode: 'Modify', itemName: 'Modify' },
+    { itemCode: 'Delete', itemName: 'Delete' },
+    { itemCode: 'View', itemName: 'View' },
+  ];
   textMessageClass: string = "";
   today: Date = new Date();
   private subSink: SubSink = new SubSink();
@@ -102,16 +109,18 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     private loader: NgxUiLoaderService,
     @Inject(MAT_DIALOG_DATA) public data: {
       mode: string, Trantype: string,
-      Property: string, Block: string, Flat: string, type: string, status: string
+      Property: string, Block: string, Flat: string, type: string, status: string,modes:Item[]
     }) {
     this.mulitClientsForm = this.formInit();
+    // this.modes=this.data.modes:
   }
   formInit() {
     return this.fb.group({
-      dateLeft: [new Date(), Validators.required],
+      // dateLeft: [new Date(), Validators.required],
       joinDate: [new Date(), Validators.required],
       share: ['0', Validators.required],
-      landlord: ['']
+      landlord: [''],
+      mode:['']
     })
   }
   onGridReady(params: any) {
@@ -122,10 +131,16 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     onRowSelected(event: any) {
     this.displayMessage('','');
     this.landlordCode=event.data.landlord;
+
+    if(event.data.status.toUpperCase() == 'OPEN'){
+      this.mulitClientsForm.get('dateLeft')!.patchValue(event.data.joinDate);
+    }
+    else if(event.data.status.toUpperCase() == 'DELETE'){
+      this.mulitClientsForm.get('dateLeft')!.patchValue(event.data.dateLeft);
+    }
     this.mulitClientsForm.patchValue({
       landlord:event.data.landlordName,
-      joinDate:event.data.dateJoined,
-      dateLeft:event.data.dateLeft,
+      // dateLeft:event.data.dateLeft,
       share: event.data.share,
     });
     this.slNum = event.data.slNo;
@@ -164,6 +179,7 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.getmultiClientDate(this.data.Property, this.data.Block, this.data.Flat);
+    this.mulitClientsForm.get('mode')?.patchValue(this.data.mode)
   }
   async searchParty() {
     const body = this.createRequestDataForSearch(this.mulitClientsForm.get('landlord')!.value || "", "LANDLORD");
@@ -274,7 +290,7 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
 
 
   // }
-  onSubmit(mode: any): void {
+  onSubmit(mode:string): void {
     if (!this.landlordCode) {
       this.displayMessage("Enter Landlord", "red");
       return;
@@ -287,9 +303,9 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     try {
       this.loader.start();
       let serviceCall$;
-      if (this.data.mode === "Modify") {
+      if (this.data.mode === "Modify" || this.mulitClientsForm.get('mode')?.value === 'Modify') {
         serviceCall$ = this.projService.UpdateUnitLandlordDetails(this.multiCls);
-      } else if (this.data.mode === "Delete") {
+      } else if (this.data.mode === "Delete" || this.mulitClientsForm.get('mode')?.value === 'Delete') {
         serviceCall$ = this.projService.UpdateUnitLandlordDetails(this.multiCls);
       } else {
         this.displayMessage("Invalid mode", "red");
@@ -360,7 +376,7 @@ export class MulticlientsAllocationComponent implements OnInit, OnDestroy {
     this.multiCls.mode = mode;
     this.multiCls.llStatus = "";
     if(this.data.mode === "Delete"){
-    this.multiCls.dateLeft = this.mulitClientsForm.get('dateLeft')!.value;
+    this.multiCls.dateLeft = this.mulitClientsForm.get('joinDate')!.value;
     this.multiCls.llStatus="Delete";
     }
     if(this.data.mode === "Modify"){

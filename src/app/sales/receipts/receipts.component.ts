@@ -92,7 +92,8 @@ isPayment: boolean=false;
   receiptNoValid: boolean = true;
   modes: Item[] = [];
   Report!: string;
-  mobileNo:string='';
+  message:string='';
+  mobileNo:string='+254794465654';
   receiptmodes: Item[] = [
     { itemCode: 'receiveRent', itemName: 'Receive Rent' },
     { itemCode: 'payRent', itemName: 'Pay Rent' },
@@ -823,7 +824,73 @@ isPayment: boolean=false;
     this.displayMessage("", "");
     this.payStatus = '';
   }
+  sendsms() {
+    const dateObject = new Date(this.responseData.data.receiptDate);
+      const receiptMonth = this.datePipe.transform(dateObject, 'MMMM');
+      const receiptYear = this.datePipe.transform(dateObject, 'yyyy');
+      let tranFor='';
+      let tranType='';
+      let company='';
+      let messages='';
+      console.log( this.responseData.data)
 
+      if(this.responseData.data.company === 'NPML'){
+        company='NAGAAD PROPERTIES';
+      }
+      else if(this.responseData.data.company === 'SADASA'){
+        company='SADASA';
+      }
+      if(this.responseData.data.rctType === "RECEIPT"){
+        tranType='Receipt';
+      }
+      else if(this.responseData.data.rctType === "PAYMENT"){
+        tranType='Payment';
+      }
+      switch (this.responseData.data.txnFor) {
+        case "RENTPMT":
+          tranFor = 'Rent';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
+          break;
+
+        case "UTILITY":
+          tranFor = 'Utility';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
+          break;
+        case "CASHTRF":
+        tranFor = 'Cash Transfer';
+        messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} from ${this.responseData.data.rctAccountName}, for an amount of ${this.responseData.data.rctAmount} Please confirm the transaction or decline it as soon as possible. Thank you. \n${company}`
+        break;
+        case "EXPENSE":
+          tranFor = 'Expense';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
+          break;
+
+        default:
+          tranFor = 'Unknown Transaction';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the transaction with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
+          break;
+      }
+      this.message=messages;
+    const dialogData = new ConfirmDialogModel(
+      `Sending Sms? to ${this.mobileNo}`,
+      this.message
+     );
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: '400px',
+      height: '210px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+  dialogRef.afterClosed().subscribe((dialogResult) => {
+    if (dialogResult != true && dialogResult === 'YES') {
+      this.sendSms(this.mobileNo);
+    } else {
+      return;
+    }
+  });
+   
+  }
   sendSms(mobile: string) {
 
     if (mobile) {
@@ -851,36 +918,32 @@ isPayment: boolean=false;
       switch (this.responseData.data.txnFor) {
         case "RENTPMT":
           tranFor = 'Rent';
-          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}. Thank you. \n${company}`;
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
           break;
 
         case "UTILITY":
           tranFor = 'Utility';
-          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}. Thank you. \n${company}`;
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} for the month of ${receiptMonth} ${receiptYear}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
           break;
         case "CASHTRF":
         tranFor = 'Cash Transfer';
-        messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} from ${this.responseData.data.rctAccountName}. Please confirm the transaction or decline it as soon as possible. Thank you. \n${company}`
+        messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo} from ${this.responseData.data.rctAccountName}, for an amount of ${this.responseData.data.rctAmount} Please confirm the transaction or decline it as soon as possible. Thank you. \n${company}`
         break;
         case "EXPENSE":
           tranFor = 'Expense';
-          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo}. Thank you. \n${company}`;
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
           break;
 
         default:
           tranFor = 'Unknown Transaction';
-          messages = `Dear ${this.responseData.data.customerName}, we confirm the transaction with Ref. No. ${this.responseData.data.receiptNo}. Thank you. \n${company}`;
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the transaction with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
           break;
       }
-
-
-
-
       const body = {
         ...this.commonParams(),
         serviceType: 'SMS',
         MsgType: 'SMS',
-        mobile: mobile,
+        mobile: "+254794465654",
         message: messages,
       };
       this.subSink.sink = this.smsService
@@ -1196,7 +1259,7 @@ isPayment: boolean=false;
       instrumentDate: res['data'].instrumentDate,
       instrumentStatus: res['data'].instrumentStatus,
       rctBank: res['data'].rctBank,
-      rctAccount: res['data'].rctAccount,
+      rctAccount: res['data'].rctAccountName,
       rctDate: res['data'].rctDate,
       rctStatus: res['data'].rctStatus,
       rctAmount:
