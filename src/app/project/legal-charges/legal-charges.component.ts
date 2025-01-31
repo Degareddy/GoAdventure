@@ -196,7 +196,7 @@ export class LegalChargesComponent implements OnInit, OnDestroy {
     this.masterParams.type = Type.BLOCK;
     this.masterParams.item = this.legaChargeForm.controls['propCode'].value;
     try {
-      if (this.masterParams.item != 'All' && this.legaChargeForm.controls['propCode'].value != '') {
+      if (this.masterParams.item.toUpperCase() != 'ALL' && this.legaChargeForm.controls['propCode'].value != '') {
         this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams)
           .pipe(
             debounceTime(300)
