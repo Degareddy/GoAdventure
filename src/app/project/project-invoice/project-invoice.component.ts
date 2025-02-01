@@ -725,10 +725,11 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       isFull: res['data'].isFull,
       transferAmount: res['data'].transferAmount,
       transferTo: res['data'].transferTo,
-      miscellaneous: res['data'].isMiscInvoice,
-      isUtility: res['data'].isUtilityInvoice
-    }, { emitEvent: false });
-
+      miscellaneous: res['data'].isUtilityInvoice,
+      isUtility: res['data'].isMiscInvoice
+    });
+    const dueDate = new Date(res['data'].dueDate);
+    const formattedDate = dueDate.toLocaleDateString('en-GB'); 
     this.invCls.tenant = res['data'].tenant;
     this.custCode = res['data'].custCode;
     this.invPeriodicity = res['data'].invPeriodicity;
@@ -739,24 +740,31 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
     this.discAmount = res['data'].discAmount;
     this.vatAmount = res['data'].vatAmount;
     this.totalAmount = res['data'].totalCharges;
-
-    if (this.userDataService.userData.company.toUpperCase() === 'NPML' || this.userDataService.userData.company.toUpperCase() === 'TAKOW') {
-      this.message = `Dear ${res['data'].tenantName},
-
-            Rental invoice ${res['data'].tranNo} is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${this.saleForm.controls['invMonth']?.value.toUpperCase()} ${res['data'].rentYear}.
-            The total amount due is KES ${res['data'].totalCharges}. We request you to pay before the due date ${res['data'].dueDate}.
-            Thank you,
-            Nagaad Properties`;;
+    if(res['data'].isRentInvoice){
+      if(this.userDataService.userData.company.toUpperCase() === 'NPML'){
+        this.message= `Dear ${res['data'].tenantName}, Rental invoice ${res['data'].tranNo} is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${this.saleForm.controls['invMonth']?.value.toUpperCase()} ${res['data'].rentYear}.The total amount due is KES ${res['data'].totalCharges}. We request you to pay before the due date ${formattedDate}.
+        Thank you,`;
+      }
+      else if(this,this.userDataService.userData.company.toUpperCase() === 'SADASA'){
+      this.message=  `Mudane/Marwo [${res['data'].tenant}],Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${formattedDate}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666]. 
+      Mahadsanid,  
+      Omar Mumin Mohammed  
+      Sadasa Construction and Property`;
+      }
     }
-    else if (this, this.userDataService.userData.company.toUpperCase() === 'SADASA') {
-      this.message = `Mudane/Marwo [${res['data'].tenant}],
-
-                    Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
-                    Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-
-                    Mahadsanid,
-                    Omar Mumin Mohammed
-                    Sadasa Construction and Property`;
+    else if(res['data'].isMiscInvoice ){
+      if(this.userDataService.userData.company.toUpperCase() === 'NPML'){
+        this.message= `Dear ${res['data'].tenantName},  Water Bill invoice  is generated for the unit ${res['data'].unitName} at ${res['data'].property} for the month of ${this.saleForm.controls['invMonth']?.value.toUpperCase()} ${res['data'].rentYear}. The total amount due is KES ${res['data'].totalCharges}. 
+        We request you to pay before the due date ${res['data'].dueDate}.
+        Thank you,
+        Nagaad Properties`;
+      }
+      else if(this,this.userDataService.userData.company.toUpperCase() === 'SADASA'){
+      this.message=  `Mudane/Marwo [${res['data'].tenant}],Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${formattedDate}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+       Mahadsanid,  
+       Omar Mumin Mohammed  
+       Sadasa Construction and Property`;
+      }
     }
   }
   async getInvoiceData(masterParams: MasterParams, mode: string) {

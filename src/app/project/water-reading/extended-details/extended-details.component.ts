@@ -262,7 +262,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     this.tranCls.tranNo = this.data.tranNo;
     this.tranCls.slNo = this.slNo;
     this.tranCls.serviceType = this.updateBillsForm.get('serviceType')?.value;
-    this.tranCls.expenseType = this.updateBillsForm.get('expenseType')?.value;
+    this.tranCls.expenseType = "WATERM";
     this.tranCls.PrevRdg = parseFloat(this.updateBillsForm.get('prevReading')?.value);
     this.tranCls.CurrRdg = parseFloat(this.updateBillsForm.get('reading')?.value.replace(/,/g, ''));
     this.tranCls.unitCount = parseFloat(this.updateBillsForm.get('unit')?.value.replace(/,/g, ''));

@@ -1223,6 +1223,33 @@ isPayment: boolean=false;
           }
         }
       }
+      else if(!res.retVal){
+        if (!this.dialogOpen) {
+          const dialogRef: MatDialogRef<SearchCashTransferComponent> = this.dialog.open(SearchCashTransferComponent,
+            {
+              width: '100%',
+              disableClose: true,
+              data: {
+                tranNum: this.receiptsForm.controls['receiptNo'].value,
+                search: 'Receipt Search',
+                TranType: 'RECEIPT',
+                cashBalance: this.balanceAmount
+              },
+            });
+          this.dialogOpen = true;
+          dialogRef.afterClosed().subscribe((result) => {
+            this.dialogOpen = false;
+            // console.log(result);
+            if (result != true) {
+              this.masterParams.tranNo = result;
+              this.getReceiptDetails(
+                this.masterParams,
+                this.receiptsForm.get('mode')?.value
+              );
+            }
+          });
+        }
+      }
       else {
         this.displayMessage("Error: " + res.message, "red");
       }

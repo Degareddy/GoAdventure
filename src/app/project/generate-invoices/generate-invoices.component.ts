@@ -334,42 +334,26 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                   const dueDate = this.datePipe.transform(dueObject, 'yyyy-MM-dd');
                   let message = "";
 
-                  if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('rentInvoice')?.value) {
-                    message = `Dear ${item.tenantName},
-
-            Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-            The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-            Thank you,
-            Nagaad Properties`;
+                  if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('rentInvoice')?.value ) {
+                    message = `Dear ${item.tenantName} Rental invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.Thank you,`;
                   }
-                  else if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('IncludeUtility')?.value) {
-                    message = `Dear ${item.tenantName},
-
-            Utility invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}.
-            The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.
-            Thank you,
-            Nagaad Properties`;
+                  else if (this.userDataService.userData.company === "NPML" && this.autoGenForm.get('IncludeUtility')?.value ) {
+                    message = `Dear ${item.tenantName} Utility invoice ${item.invoiceNo} is generated for the unit ${item.unit} at ${item.property} for the month of ${receiptMonth} ${receiptYear}. The total amount due is KES ${item.totalCharge}. We request you to pay before the due date ${dueDate}.Thank you,`;
                   }
                   else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('IncludeUtility')?.value) {
-                    message = `Mudane/Marwo [${item.tenantName}],
-
-                    Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
-                    Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-
+                    message = `Mudane/Marwo [${item.tenantName}],Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${receiptMonth} ${receiptYear}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
+                    Mahadsanid,  
+                    Omar Mumin Mohammed  
+                    Sadasa Construction and Property`;
+                    
+                  }
+                   else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('rentInvoice')?.value) {
+                    message = `Mudane/Marwo [${item.tenantName}],Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${receiptMonth} ${receiptYear}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
                     Mahadsanid,
                     Omar Mumin Mohammed
                     Sadasa Construction and Property`;
-
                   }
-                  else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('rentInvoice')?.value) {
-                    message = `Mudane/Marwo [${item.tenantName}],
-            Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor 5th January 2025.
-            Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-
-            Mahadsanid,
-            Omar Mumin Mohammed
-            Sadasa Construction and Property`;
-                  }
+            
 
                   if (item.slNo === 1) {
                     if (item.clientContacts) {
