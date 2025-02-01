@@ -2,8 +2,11 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 
 @Component({
@@ -84,7 +87,6 @@ export class CashTransfersComponent implements OnInit, OnDestroy {
   }
 
   onLnkClicked(event: any): void {
-    // console.log(event);
     this.confirmReject(event, event.data.confirm);
 
   }
@@ -100,13 +102,12 @@ export class CashTransfersComponent implements OnInit, OnDestroy {
         fromLocn: event.data.location,
         action: action
       }
-
       try {
         this.loader.start();
-        this.subSink.sink =await this.msService.UpdateMyCashTransfers(body).subscribe((res: any) => {
+        this.subSink.sink =await this.msService.UpdateMyCashTransfers(body).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            this.displayMessage(res.message, "green");
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             const cashbody = {
               company: this.userDataService.userData.company,
               location: this.userDataService.userData.location,
@@ -116,7 +117,7 @@ export class CashTransfersComponent implements OnInit, OnDestroy {
             this.rowData = [];
             this.data = [];
             this.subSink.sink = this.msService.GetMyCashTransfers(cashbody).subscribe((res: any) => {
-              if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+              if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
                 this.rowData = res.data;
                 if (this.rowData.length >= 1) {
                   for (let i = 0; i < this.rowData.length; i++) {
@@ -131,12 +132,12 @@ export class CashTransfersComponent implements OnInit, OnDestroy {
             })
           }
           else {
-            this.displayMessage(res.message, "red")
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         })
       }
       catch (ex: any) {
-        this.displayMessage(ex.message, "red")
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }

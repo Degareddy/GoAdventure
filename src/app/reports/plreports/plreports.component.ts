@@ -18,6 +18,8 @@ import { PLReportState } from 'src/app/utils/location.reducer';
 import { clearPLReportState, loadPLReportState, savePLReportState } from 'src/app/utils/location.actions';
 import { selectPLReportData } from 'src/app/utils/location.selectors';
 import { Item } from 'src/app/general/Interface/interface';
+import { Items, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 interface ProfitLossItem {
   company: string;
   companyName: string;
@@ -54,7 +56,6 @@ export class PlreportsComponent implements OnInit, OnDestroy {
   today = new Date();
   private subscriptions: Subscription = new Subscription();
   profitLossData = [
-    // Paste your provided JSON data here
   ];
   incomeChartData: any;
   expenseChartData: any;
@@ -169,17 +170,17 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     let firstExpenses = true;
     for (let i = 0; i < data.length; i++) {
       const category = data[i]['mainHeader'];
-      if (firstIncome && category === 'INCOME') {
+      if (firstIncome && category === Type.INCOME) {
         firstIncome = false;
-      } else if (firstExpenses && category === 'EXPENSES') {
+      } else if (firstExpenses && category === Type.EXPENSES) {
         firstExpenses = false;
-      } else if (category === 'INCOME') {
+      } else if (category === Type.INCOME) {
         skipIncome = true;
-      } else if (category === 'INCOME TOTAL') {
+      } else if (category === Type.INCOME_TOTAL) {
         skipIncome = false;
-      } else if (category === 'EXPENSES') {
+      } else if (category === Type.EXPENSES) {
         skipExpenses = true;
-      } else if (category === 'EXPENSES TOTAL') {
+      } else if (category === Type.EXPENSES_TOTAL) {
         skipExpenses = false;
       }
       data[i]['tranAmount'] = this.formatAmount(data[i]['tranAmount']);
@@ -256,34 +257,34 @@ export class PlreportsComponent implements OnInit, OnDestroy {
             const mainHeader = params.value.toUpperCase();
             const displayedRowCount = params.api.getDisplayedRowCount();
             const rowIndex = params.node.rowIndex;
-            if (mainHeader === "INCOME" && rowIndex === 0) {
+            if (mainHeader === Type.INCOME && rowIndex === 0) {
               return mainHeader;
             }
 
-            if (mainHeader === "EXPENSES" && rowIndex > 0 && params.api.getRowNode(rowIndex - 1).data.mainHeader === "INCOME TOTAL") {
+            if (mainHeader === Type.EXPENSES && rowIndex > 0 && params.api.getRowNode(rowIndex - 1).data.mainHeader === Type.INCOME_TOTAL) {
               return mainHeader;
             }
-            if (mainHeader === "INCOME TOTAL" || mainHeader === "EXPENSES TOTAL" || mainHeader === "NET PROFIT/LOSS") {
+            if (mainHeader === Type.INCOME_TOTAL || mainHeader === Type.EXPENSES_TOTAL || mainHeader === Type.NET_PROFIT_LOSS) {
               return mainHeader;
             }
             return '';
           },
           cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -297,21 +298,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         },
         {
           headerName: 'Charge', field: 'subHeaderDesc', resizable: true, filter: true, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -326,7 +327,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         {
           headerName: 'Amount', field: 'tranAmount', resizable: true, type: 'rightAligned',
           cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -334,7 +335,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
                 justifyContent: 'flex-end'
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -342,7 +343,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
                 justifyContent: 'flex-end'
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '14px',
@@ -389,34 +390,34 @@ export class PlreportsComponent implements OnInit, OnDestroy {
             const mainHeader = params.value.toUpperCase();
             const displayedRowCount = params.api.getDisplayedRowCount();
             const rowIndex = params.node.rowIndex;
-            if (mainHeader === "INCOME" && rowIndex === 0) {
+            if (mainHeader === Type.INCOME && rowIndex === 0) {
               return mainHeader;
             }
 
-            if (mainHeader === "EXPENSES" && rowIndex > 0 && params.api.getRowNode(rowIndex - 1).data.mainHeader === "INCOME TOTAL") {
+            if (mainHeader === Type.EXPENSES && rowIndex > 0 && params.api.getRowNode(rowIndex - 1).data.mainHeader === Type.INCOME_TOTAL) {
               return mainHeader;
             }
-            if (mainHeader === "INCOME TOTAL" || mainHeader === "EXPENSES TOTAL" || mainHeader === "NET PROFIT/LOSS") {
+            if (mainHeader === Type.INCOME_TOTAL || mainHeader === Type.EXPENSES_TOTAL || mainHeader === Type.NET_PROFIT_LOSS) {
               return mainHeader;
             }
             return '';
           },
           cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -430,21 +431,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         },
         {
           headerName: 'Property', field: 'propName', sortable: true, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -458,21 +459,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         },
         {
           headerName: 'Block', field: 'blockName', sortable: true, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -486,21 +487,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         },
         {
           headerName: 'Unit', field: 'unitName', sortable: true, filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -513,22 +514,22 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Charge', field: 'subHeaderDesc', filter: true, sortable:true, flex: 1, resizable: true, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+          headerName: 'Charge', field: 'subHeaderDesc', filter: true, sortable: true, flex: 1, resizable: true, cellStyle: function (params: any) {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '14px',
@@ -541,22 +542,22 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran Type', field: 'tranType', resizable: true, sortable:true,flex: 1, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+          headerName: 'Tran Type', field: 'tranType', resizable: true, sortable: true, flex: 1, cellStyle: function (params: any) {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -569,22 +570,22 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran No', field: 'tranNo', flex: 1, sortable:true, resizable: true, cellRenderer: 'agLnkRenderer', cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+          headerName: 'Tran No', field: 'tranNo', width:330, sortable: true, resizable: true, cellRenderer: 'agLnkRenderer', cellStyle: function (params: any) {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -598,7 +599,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran Date', field: 'tranDate', flex: 1,sortable:true, resizable: true, valueFormatter: function (params: any) {
+          headerName: 'Tran Date', field: 'tranDate', flex: 1, sortable: true, resizable: true, valueFormatter: function (params: any) {
             if (params.value) {
               const date = new Date(params.value);
               const day = date.getDate().toString().padStart(2, '0');
@@ -608,21 +609,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
             }
             return null;
           }, cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'green',
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
                 color: 'red',
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -637,7 +638,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         {
           headerName: 'Amount', field: 'tranAmount', type: 'rightAligned', flex: 1, resizable: true,
           cellStyle: function (params: any) {
-            if (params.data.mainHeader === "INCOME TOTAL") {
+            if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -645,7 +646,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
                 justifyContent: 'flex-end'
               };
             }
-            if (params.data.mainHeader === "EXPENSES TOTAL") {
+            if (params.data.mainHeader === Type.EXPENSES_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '12px',
@@ -653,7 +654,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
                 justifyContent: 'flex-end'
               };
             }
-            if (params.data.mainHeader === "NET PROFIT/LOSS") {
+            if (params.data.mainHeader === Type.NET_PROFIT_LOSS) {
               return {
                 backgroundColor: 'lightyellow',
                 fontSize: '14px',
@@ -684,7 +685,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
               const numericValue = parseFloat(params.value.toString());
               if (!isNaN(numericValue)) {
                 const formattedValue = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
-                return numericValue < 0 ? `${formattedValue}` : formattedValue; // Wrap negative values in parentheses
+                return numericValue < 0 ? `${formattedValue}` : formattedValue;
               }
             }
             return null;
@@ -703,7 +704,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         this.PandLForm.controls.summary.markAsPristine();
       }
       if (this.PandLForm.controls.reportType.dirty) {
-        if (this.PandLForm.controls.reportType.value.toUpperCase() === "COMPANY") {
+        if (this.PandLForm.controls.reportType.value.toUpperCase() === Type.COMPANY) {
           this.branchList = [];
           this.PandLForm.controls.branch.patchValue("All", { emitEvent: false });
         } else {
@@ -734,10 +735,10 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     };
     this.store.dispatch(savePLReportState({ state: currentState }));
 
-    if (event.data.tranType.toUpperCase() === "INVOICE") {
+    if (event.data.tranType.toUpperCase() === Type.INVOICE) {
       this.router.navigate(['property/invoice'], { state: { data: event.data } });
     }
-    else if (event.data.tranType.toUpperCase() === "PAYMENT" || event.data.tranType.toUpperCase() === "RECEIPT") {
+    else if (event.data.tranType.toUpperCase() === TranType.PAYMENT || event.data.tranType.toUpperCase() === TranType.RECEIPT) {
       this.router.navigate(['property/receipts-payments'], { state: { data: event.data } });
     }
 
@@ -751,8 +752,6 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     const fromDate = this.datepipe.transform(this.PandLForm.get('fromDate')?.value, "yyyy-MM-dd") || "";
     const toDate = this.datepipe.transform(this.PandLForm.get('toDate')?.value, "yyyy-MM-dd") || "";
     if (fromDate && toDate && fromDate > toDate) {
-      // this.retMessage = "Error: From Date should be earlier than To Date!";
-      // this.textMessageClass = "red";
       this.displayMessage("Error: From Date should be earlier than To Date!", "red");
       return;
     }
@@ -772,62 +771,63 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subsink.sink = this.reportService.GetReportProfitAndLoss(body).subscribe((res: any) => {
           this.loader.stop();
-          if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+          if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.profitLossData = res.data;
             if (this.profitLossData) {
               this.processData();
               this.prepareChartData();
             }
             let modifiedData = [...res.data];
-            const incomeRows = modifiedData.filter(item => item.mainHeader === 'INCOME');
+            const incomeRows = modifiedData.filter(item => item.mainHeader === Type.INCOME);
             const incomeTotal = incomeRows.reduce((total, item) => total + item.tranAmount, 0);
 
-            const expensesRows = modifiedData.filter(item => item.mainHeader === 'EXPENSES');
+            const expensesRows = modifiedData.filter(item => item.mainHeader === Type.EXPENSES);
             const expenseTotal = expensesRows.reduce((total, item) => total + item.tranAmount, 0);
 
             const netTotal = incomeTotal + expenseTotal;
 
-            const lastIncomeIndex = modifiedData.map((item, index) => item.mainHeader === 'INCOME' ? index : -1)
+            const lastIncomeIndex = modifiedData.map((item, index) => item.mainHeader === Type.INCOME ? index : -1)
               .filter(index => index !== -1)
               .pop() || 0;
             modifiedData.splice(lastIncomeIndex + 1, 0, {
-              mainHeader: 'INCOME TOTAL',
+              mainHeader: Type.INCOME_TOTAL,
               tranAmount: incomeTotal,
             });
 
             if (expensesRows.length > 0) {
-              const lastExpensesIndex = modifiedData.map((item, index) => item.mainHeader === 'EXPENSES' ? index : -1)
+              const lastExpensesIndex = modifiedData.map((item, index) => item.mainHeader === Type.EXPENSES ? index : -1)
                 .filter(index => index !== -1)
                 .pop() || 0;
 
               modifiedData.splice(lastExpensesIndex + 1, 0, {
-                mainHeader: 'EXPENSES TOTAL',
+                mainHeader: Type.EXPENSES_TOTAL,
                 tranAmount: expenseTotal,
               });
 
-              const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'EXPENSES TOTAL');
+              const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === Type.EXPENSES_TOTAL);
               modifiedData.splice(expensesTotalIndex + 1, 0, {
-                mainHeader: 'NET PROFIT/LOSS',
+                mainHeader: Type.NET_PROFIT_LOSS,
                 tranAmount: netTotal,
               });
             } else {
-              const incomeTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'INCOME TOTAL');
+              const incomeTotalIndex = modifiedData.findIndex(item => item.mainHeader === Type.INCOME_TOTAL);
               modifiedData.splice(incomeTotalIndex + 1, 0, {
-                mainHeader: 'EXPENSES TOTAL',
+                mainHeader: Type.EXPENSES_TOTAL,
                 tranAmount: expenseTotal,
               });
 
-              const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === 'EXPENSES TOTAL');
+              const expensesTotalIndex = modifiedData.findIndex(item => item.mainHeader === Type.EXPENSES_TOTAL);
               modifiedData.splice(expensesTotalIndex + 1, 0, {
-                mainHeader: 'NET PROFIT/LOSS',
+                mainHeader: Type.NET_PROFIT_LOSS,
                 tranAmount: netTotal,
               });
             }
             this.rowData = modifiedData;
             if (this.rowData.length >= 1) {
               for (let i = 0; i < this.rowData.length; i++) {
-                if (this.rowData[i].tranType != "" && this.rowData[i].tranType != undefined && this.rowData[i].tranType != null && this.rowData[i].tranType.toUpperCase() === "SALE") {
-                  this.rowData[i].tranType = "INVOICE";
+                if (this.rowData[i].tranType != "" && this.rowData[i].tranType != undefined &&
+                  this.rowData[i].tranType != null && this.rowData[i].tranType.toUpperCase() === TranType.SALE) {
+                  this.rowData[i].tranType = Type.INVOICE;
                 }
               }
             }
@@ -871,8 +871,8 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     }
   }
   processData() {
-    this.incomeData = this.profitLossData.filter((item: any) => item.mainHeader === 'INCOME');
-    this.expenseData = this.profitLossData.filter((item: any) => item.mainHeader === 'EXPENSES');
+    this.incomeData = this.profitLossData.filter((item: any) => item.mainHeader === Type.INCOME);
+    this.expenseData = this.profitLossData.filter((item: any) => item.mainHeader === Type.EXPENSES);
 
     this.totalIncome = this.incomeData.reduce((acc, item) => acc + item.tranAmount, 0);
     this.totalExpenses = Math.abs(this.expenseData.reduce((acc, item) => acc + item.tranAmount, 0)); // Expenses are negative
@@ -882,10 +882,10 @@ export class PlreportsComponent implements OnInit, OnDestroy {
   loadData() {
     const branchbody: getPayload = {
       ...this.commonParams(),
-      item: 'BRANCHES'
+      item: Items.BRANCHES
     };
     const service2 = this.adminService.GetMasterItemsList(branchbody);
-    try{
+    try {
       this.subsink.sink = forkJoin([service2]).subscribe(
         (results: any[]) => {
           const res2 = results[0];
@@ -903,7 +903,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
         }
       );
     }
-    catch(ex:any){
+    catch (ex: any) {
       this.loader.stop();
       this.displayMessage("Exception: " + ex.message, "red");
     }
@@ -930,7 +930,6 @@ export class PlreportsComponent implements OnInit, OnDestroy {
   }
 
   prepareChartData() {
-    // Prepare income chart data
     this.incomeChartData = {
       labels: this.incomeData.map(item => item.subHeader),
       datasets: [
@@ -942,7 +941,6 @@ export class PlreportsComponent implements OnInit, OnDestroy {
       ]
     };
 
-    // Prepare expense chart data
     this.expenseChartData = {
       labels: this.expenseData.map(item => item.subHeader),
       datasets: [

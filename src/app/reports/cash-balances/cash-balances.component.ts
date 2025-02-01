@@ -7,6 +7,7 @@ import { CashTransfersComponent } from 'src/app/layouts/cash-transfers/cash-tran
 import { MastersService } from 'src/app/Services/masters.service';
 import { ReportsService } from 'src/app/Services/reports.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
 import { SubSink } from 'subsink';
 
 @Component({
@@ -155,15 +156,12 @@ export class CashBalancesComponent implements OnInit, OnDestroy {
     };
     try {
       this.subsink.sink = this.msService.GetMyCashTransfers(body).subscribe((res: any) => {
-        if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+        if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
           const dialogRef: MatDialogRef<CashTransfersComponent> = this.dialog.open(CashTransfersComponent, {
             width: '70%',
             disableClose: true,
             data: res.data
           });
-          // dialogRef.afterClosed().subscribe(result => {
-
-          // })
         }
         else {
           this.displayMessage("No pending transactions found to confirm.", "red");

@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-// import { MasterParams } from 'src/app/modals/masters.modal';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -22,6 +21,8 @@ import { NavigationService } from 'src/app/Services/navigation.service';
 import { selectTransactionReportData } from 'src/app/utils/location.selectors';
 import { TransactionReportState } from 'src/app/utils/location.reducer';
 import { clearTransctionReportState, loadTransctionReportState, saveTransctionReportState } from 'src/app/utils/location.actions';
+import { displayMsg, Items, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-tran-register',
   templateUrl: './tran-register.component.html',
@@ -49,7 +50,6 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
   columnDefs: any = [{ field: "tranNo", headerName: "Tran No", flex: 1, resizable: true, sortable: true, filter: true, cellRenderer: 'agLnkRenderer' },
   {
     field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-      // Format date as dd-MM-yyyy
       if (params.value) {
         const date = new Date(params.value);
         const day = date.getDate().toString().padStart(2, '0');
@@ -162,7 +162,7 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
             toDate: state.toDate,
             branch: state.branch,
             item: state.item
-          });
+          }, { emitEvent: false });
           this.tranAmount = state.tranAmount;
           this.totalAmount = state.totalAmount;
           this.rowData = state.data;
@@ -170,7 +170,6 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Load the state when the component initializes
     const previousUrl = this.navigationService.getPreviousUrl();
     if (previousUrl === '/property/receipts-payments' || previousUrl === '/property/invoice' || previousUrl === '/property/grievance-service') {
       this.store.dispatch(loadTransctionReportState());
@@ -196,17 +195,8 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
       }
     });
   }
-  // onRowSelected(event: any) {
-  //   if (event.data.tranType.toUpperCase() === 'INVOICE') {
-  //     this.masterParams.tranNo = event.data.tranNo;
-  //     this.getInvoiceData(this.masterParams);
-  //   }
-  //   else if (event.data.tranType.toUpperCase() === 'GRIEVANCE') {
-  //     this.getGrievanceDetails(event.data.tranNo);
-  //   }
-  // }
+
   onDtlClicked(event: any): void {
-    // console.log('Details link clicked', event);
     if (event.data.tranType.toUpperCase() === 'INVOICE') {
       this.masterParams.tranNo = event.data.tranNo;
       this.getInvoiceData(this.masterParams);
@@ -225,8 +215,8 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
       item: this.TransactionreciptForm.controls.item.value,
       data: this.rowData,
       pagination: {
-        pageIndex: 0, // Set to current page index
-        pageSize: 25 // Set to current page size
+        pageIndex: 0,
+        pageSize: 25
       },
       totalAmount: this.totalAmount,
       tranAmount: this.tranAmount
@@ -234,10 +224,10 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
     };
     this.store.dispatch(saveTransctionReportState({ state: currentState }));
 
-    if (event.data.tranType.toUpperCase() === "INVOICE") {
+    if (event.data.tranType.toUpperCase() === Type.INVOICE) {
       this.router.navigate(['property/invoice'], { state: { data: event.data } });
     }
-    else if (event.data.tranType.toUpperCase() === "GRIEVANCE") {
+    else if (event.data.tranType.toUpperCase() === TranType.GRIEVANCE) {
       this.router.navigate(['property/grievance-service'], { state: { data: event.data } });
     }
   }
@@ -247,47 +237,50 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
   getGrievanceDetails(tranNo: string) {
     this.retMessage = "";
     this.textMessageClass = "";
-    // this.refernceNo = tranNo;
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
     const formattedCurrentDate = this.formatDate(currentDate);
-    this.grParams.issueStatus = "ANY";
+    this.grParams.issueStatus = TranStatus.ANY;
     this.grParams.fromDate = formattedFirstDayOfMonth;
     this.grParams.toDate = formattedCurrentDate;
     this.grParams.tranNo = tranNo;
-    this.grParams.tranType = "GRIEVANCE";
+    this.grParams.tranType = TranType.GRIEVANCE;
     try {
       this.loader.start();
       this.subSink.sink = this.utilityService.GetTenantSpecificGrievanceDetails(this.grParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.dialog.open(ReceiptDetailsDataComponent, {
             width: '85%',
-            data: { data: res.data, name: "Grievance Details", type: "GRIEVANCE" },
+            data: {
+              data: res.data, name: "Grievance Details",
+              type: TranType.GRIEVANCE
+            },
             disableClose: true
           });
 
         }
         else {
           this.loader.stop();
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
-      this.retMessage = "Exception: " + ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
+
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   onLinkClicked(event: any) {
-    // console.log(event);
   }
   onFilterData(event: any) {
-    // console.log(event);
     this.processRowPostCreate(event);
   }
   getInvoiceData(masterParams: MasterParams) {
@@ -295,22 +288,26 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.saleService.getTenantInvoiceHeaderData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.dialog.open(ReceiptDetailsDataComponent, {
             width: '80%',
-            data: { data: res.data, name: "Invoice Details", type: "INVOICE" },
+            data: {
+              data: res.data,
+              name: "Invoice Details",
+              type: Type.INVOICE
+            },
             disableClose: true
           });
         }
         else {
           this.loader.stop();
-          this.hanldeError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
-      this.hanldeError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -342,11 +339,11 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
   loadData() {
     const branchbody: getPayload = {
       ...this.commonParams(),
-      item: 'BRANCHES'
+      item: Items.BRANCHES
     };
     const reportbody: getPayload = {
       ...this.commonParams(),
-      item: 'REPORTS',
+      item: Items.REPORTS,
     };
     const service1 = this.adminService.GetMasterItemsList(branchbody);
     const service2 = this.adminService.GetMasterItemsList(reportbody);
@@ -357,31 +354,33 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
           this.loader.stop();
           const res1 = results[0];
           const res2 = results[1];
-          this.branchList = res1.data;
-          this.reportList = res2.data;
+          if (res1.status.toUpperCase() !== AccessSettings.SUCCESS) {
+            this.branchList = res1.data;
+
+          } else {
+            this.displayMessage(displayMsg.ERROR + "Branch list empty!", TextClr.red);
+          }
+          if (res2.status.toUpperCase() !== AccessSettings.SUCCESS) {
+            this.reportList = res2.data;
+
+          } else {
+            this.displayMessage(displayMsg.ERROR + "Branch list empty!", TextClr.red);
+          }
         },
         error => {
           this.loader.stop();
-          this.hanldeError(error);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     }
     catch (ex: any) {
       this.loader.stop();
-      this.textMessageClass = "red";
-      this.retMessage = "Exception: " + ex.message;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
-  hanldeError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'red';
-  }
-  handleSuccess(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = "green";
-  }
+
 
   onSubmit() {
     this.retMessage = "";
@@ -407,8 +406,7 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.adminService.GetTransactionRecipt(body).subscribe((res: any) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            // this.handleSuccess(res);
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.rowData = res.data;
             this.calculateTotals(this.rowData);
             if (this.rowData.length >= 1) {
@@ -418,7 +416,7 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            this.hanldeError(res);
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = []
             this.loader.stop();
           }
@@ -426,7 +424,7 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
       }
       catch (ex: any) {
         this.loader.stop();
-        this.hanldeError(ex);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -455,7 +453,7 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
     const body = {
       Company: this.userDataService.userData.company,
       Location: this.userDataService.userData.location,
-      Type: "TENANT",
+      Type: Type.TENANT,
       PartyName: this.TransactionreciptForm.controls['item'].value || "",
       User: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID
@@ -472,27 +470,27 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
               width: '90%',
               disableClose: true,
               data: {
-                'PartyName': this.TransactionreciptForm.controls['item'].value || "", 'PartyType': "CUSTOMER",
-                'search': 'Client Search'
+                PartyName: this.TransactionreciptForm.controls['item'].value || "",
+                PartyType: Type.CUSTOMER,
+                search: 'Client Search'
               }
             });
             this.dialogOpen = true;
             dialogRef.afterClosed().subscribe(result => {
-              this.TransactionreciptForm.controls['item'].setValue(result.partyName);
-              this.itemCode = result.code;
+              if (result != true && result != undefined) {
+                this.TransactionreciptForm.controls['item'].setValue(result.partyName);
+                this.itemCode = result.code;
+              }
+
               this.dialogOpen = false;
             });
           }
 
         }
-        // }
-        // else {
-        //   this.hanldeError(res);
-        // }
       });
     }
     catch (ex: any) {
-      this.hanldeError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -502,14 +500,12 @@ export class TranRegisterComponent implements OnInit, OnDestroy {
 
   reset() {
     this.TransactionreciptForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
   clear() {
     this.TransactionreciptForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     this.rowData = [];
     this.itemCode = "All";
     this.totalAmount = 0;
