@@ -1861,12 +1861,12 @@ export class ReprotsComponent implements OnInit, OnDestroy {
         let credit = 0;
         let debit = 0;
         if (this.reportForm.get('clientType')!.value.toUpperCase() === 'TENANT') {
-          if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranType.toUpperCase() != "OPENING" && row.tranType.toUpperCase() == "RECEIPT"  || row.tranType.toUpperCase() == "OPENING" )) {
+          if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" || row.tranType.toUpperCase() != "OPENING" || row.tranType.toUpperCase() == "RECEIPT"  || row.tranType.toUpperCase() == "OPENING" )) {
             credit = row.amount; // Positive amounts are now considered as credit
             balance += credit;
             totalCredit += credit;
           }
-           else if (row.amount < 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranType.toUpperCase() != "OPENING" && row.tranType.toUpperCase() == "PAYMENT" || row.tranType.toUpperCase() == "OPENING")) {
+           else if (row.amount < 0 && (row.tranNo.toUpperCase() != "CLOSING" || row.tranType.toUpperCase() != "OPENING" || row.tranType.toUpperCase() == "PAYMENT" || row.tranType.toUpperCase() == "OPENING")) {
             debit = -row.amount; // Negative amounts are now considered as debit
             balance -= debit; // Subtract debit from balance
             totalDebit += debit;
