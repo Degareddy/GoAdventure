@@ -41,6 +41,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   @Input() max: any;
   today = new Date();
   amountExclVat: number = 0.00;
+  invFor:string='';
   charges: number = 0.00;
   vatAmount: number = 0.00;
   totalAmount: number = 0.00;
@@ -133,6 +134,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
         property: this.saleForm.get('property')?.value,
         block: this.saleForm.get('block')?.value,
         unit: this.flatCode,
+        InvFor :this.invFor
         // tenant: this.invCls.tenant
 
       }
@@ -207,6 +209,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       isRentInvoice: [false],
       isUtility: [false],
       isApplyForAll: [false],
+      deposit: [false],
       // isFull: [false],
       // transferAmount: ["0.00"],
       // transferTo: [""]
@@ -1065,13 +1068,34 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   onCheckboxChange(controlName: string) {
     const controls = this.saleForm.controls;
     if (controlName === 'applyVAT') {
-    } else if (['isUtility', 'miscellaneous', 'includeExpenses', 'isRentInvoice'].includes(controlName)) {
+    }
+    else if (['isUtility', 'miscellaneous', 'includeExpenses', 'isRentInvoice'].includes(controlName)) {
       ['isUtility', 'miscellaneous', 'includeExpenses', 'isRentInvoice'].forEach(name => {
         if (name !== controlName) {
           controls[name].setValue(false);
         }
       });
     }
+    this.invFor='';
+    if(controlName === 'isRentInvoice' && this.saleForm.get('isRentInvoice')?.value){
+      this.invFor = 'RENTAL';
+      this.fetchTenantData();
+    }
+    else if(controlName === 'isUtility' && this.saleForm.get('isUtility')?.value){
+      this.invFor = 'UTILITY';
+      this.fetchTenantData();
+    }
+    else if(controlName === 'deposit' && this.saleForm.get('deposit')?.value){
+      this.invFor = 'DEPOSIT';
+      this.fetchTenantData();
+    }
+    // else if(controlName === 'miscellaneous'){
+      
+    // }
+    // else if(controlName === 'includeExpenses'){
+      
+    // }
+     
   }
   async onSelectedPropertyChanged() {
 
@@ -1122,7 +1146,8 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       Type: Type.FLAT,
       Item: this.saleForm.controls['flat'].value || '',
       ItemFirstLevel: "",
-      ItemSecondLevel: ""
+      ItemSecondLevel: "",
+      
     }
     try {
       this.subSink.sink = await this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {

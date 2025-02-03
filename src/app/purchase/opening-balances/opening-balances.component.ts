@@ -32,6 +32,7 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
     { itemCode: 'OPNBAL', itemName: 'Opening Balance' },
     { itemCode: 'LOANBAL', itemName: 'Loan Balance' },
     { itemCode: 'UTILITY', itemName: 'Utility' },
+    { itemCode: 'RENTDPST', itemName: 'Rent Deposit' },
   ];
   rowData: any = [];
   masterParams!: MasterParams;
