@@ -497,7 +497,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       property: ['', Validators.required],
       block: ['', Validators.required],
       flat: ['', Validators.required],
-      tranDate: ["2024-12-31", Validators.required],
+      tranDate: ["2025-01-31", Validators.required],
       notes: [''],
       mode: ['View'],
       tranNo: ['']

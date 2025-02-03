@@ -1519,7 +1519,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           ...this.commonParams(),
           DateAsOn: this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "",
           IsSummary: this.reportForm.get('summary')?.value || false,
-          ClientType: 'TENANT'
+          ClientType: 'TENANT',
+          Report:'Deposit'
         }
         try {
           this.loader.start();

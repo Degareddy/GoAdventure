@@ -396,6 +396,7 @@ export class invoiceClass {
   public applyVAT!: boolean
   public includeExpenses!: boolean
   public IsMiscInvoice!:boolean;
+  public InvFor!:boolean;
   public AllUnits!: boolean
   public dueDate!: Date
   public penaltyPerDay!: number
