@@ -98,7 +98,8 @@ export enum TranType {
   SUPGRN="SUPGRN",
   PURCHASE="PURCHASE",
   SUPQUOTEAUTH="SUPQUOTEAUTH",
-  STOCKCON="STOCKCON"
+  STOCKCON="STOCKCON",
+  MATREQ="MATREQ"
 }
 
 export enum TranStatus {
