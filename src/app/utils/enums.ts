@@ -91,6 +91,10 @@ export enum TranType {
   SALE="SALE",
   PAYMENT="PAYMENT",
   RECEIPT="RECEIPT",
+  SUPINV="SUPINV",
+  SUPGRN="SUPGRN",
+  PURCHASE="PURCHASE",
+  SUPQUOTEAUTH="SUPQUOTEAUTH"
 }
 
 export enum TranStatus {
@@ -117,6 +121,7 @@ export enum searchType {
 export enum Type{
   PRODUCT="PRODUCT",
   COMPANY="COMPANY",
+  SUPPLIER="SUPPLIER",
   USER="USER",
   BLOCK="BLOCK",
   FLAT="FLAT",
@@ -282,4 +287,8 @@ export enum displayMsg {
   SUCCESS = "Success: ",
   ERROR = "Error: ",
   EXCEPTION = "Exception: "
+}
+
+export enum Company{
+  DEGANIUM="DEGANIUM"
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
@@ -11,6 +11,8 @@ import { forkJoin } from 'rxjs';
 import { Item } from 'src/app/general/Interface/interface';
 import { supInvoiceDet } from '../../purchase.class';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, Mode, TextClr, TranStatus } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-purchasedetails',
@@ -124,39 +126,45 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       langId: this.userDataService.userData.langId,
       tranNo: this.data.tranNo, client: this.data.client, currency: this.data.currency, ApplyVat: this.data.vat === 1 ? true : false
     }).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
-        // this.grnList = res2.data;
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.rowData = res.data;
       }
       else {
-        this.retMessage = "No pending GRN's found!";
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR + "No pending GRN's found!", TextClr.red);
       }
     });
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
+
   loadData() {
-    const service1 = this.suppInvoiceService.GetMasterItemsList({ ...this.commonParams(), item: "CURRENCY" });
-    this.subSink.sink = forkJoin([service1]).subscribe(
-      (results: any[]) => {
-        this.loader.stop();
-        const res1 = results[0];
-        // const res2 = results[1];
-        if (res1.status.toUpperCase() === "SUCCESS") {
-          this.currencyList = res1.data;
-        }
-        else {
-          this.retMessage = "Currency list empty!";
-          this.textMessageClass = "red";
-        }
+    try{
+      const service1 = this.suppInvoiceService.GetMasterItemsList({ ...this.commonParams(), item: Items.CURRENCY });
+      this.subSink.sink = forkJoin([service1]).subscribe(
+        (results: any[]) => {
+          this.loader.stop();
+          const res1 = results[0];
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.currencyList = res1.data;
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Currency list empty!", TextClr.red);
+          }
 
 
-      },
-      (error: any) => {
-        this.retMessage = error.message;
-        this.textMessageClass = "red";
-        this.loader.stop();
-      }
-    );
+        },
+        (error: any) => {
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
+          this.loader.stop();
+        }
+      );
+    }
+    catch(ex:any){
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
   commonParams() {
     return {
@@ -175,7 +183,6 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    // console.log(event.rowIndex);
     this.slNum = event.rowIndex + 1;
     this.onRowClick(event.data);
     console.log(this.slNum);
@@ -205,10 +212,10 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       this.get(this.data.tranNo);
     }
     this.loadData();
-    this.supInvDetForm.get('grnAmt')?.valueChanges.subscribe((value:any)=>{
+    this.supInvDetForm.get('grnAmt')?.valueChanges.subscribe((value: any) => {
       this.calculateNetAmount();
     });
-    this.supInvDetForm.get('vatAmt')?.valueChanges.subscribe((value:any) =>{
+    this.supInvDetForm.get('vatAmt')?.valueChanges.subscribe((value: any) => {
       this.calculateNetAmount();
     });
   }
@@ -216,22 +223,16 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
   calculateNetAmount() {
     const grnAmt = this.supInvDetForm.get('grnAmt')?.value || '0';
     const vatAmt = this.supInvDetForm.get('vatAmt')?.value || '0';
-  
-    // Remove commas and parse as float
     const grnAmtValue = parseFloat(grnAmt.toString().replace(/,/g, '')) || 0;
     const vatAmtValue = parseFloat(vatAmt.toString().replace(/,/g, '')) || 0;
-  
     const totalAmount = grnAmtValue + vatAmtValue;
-  
-    // Update the 'amount' form control
     this.supInvDetForm.get('amount')?.setValue(totalAmount.toLocaleString('en-US'));
   }
-  
+
   addNew() {
     this.supInvDetForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass = "";
-    this.slNum=0;
+    this.displayMessage("","");
+    this.slNum = 0;
   }
   get(tarnNO: string) {
     this.masterParams.tranNo = tarnNO;
@@ -244,31 +245,26 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.suppInvoiceService.GetSuppInvoiceDetails(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+        if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          if (this.data.status.toUpperCase() == "OPEN" && this.data.mode.toUpperCase() === "MODIFY") {
+          if (this.data.status.toUpperCase() == TranStatus.OPEN && this.data.mode.toUpperCase() === Mode.Modify) {
             this.getPensingGrns();
           } else {
-            this.retMessage = res.message
-            this.textMessageClass = 'red';
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
-
-
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
-      this.retMessage = ex.message
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
   onRowClick(row: any) {
-    // this.slNum = row.slNo;
     this.supInvDetForm.patchValue({
       grnNo: row.grnNo,
       grnDate: row.grnDate,
@@ -277,15 +273,13 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       grnAmt: row.grnAmt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       vatAmt: row.vatAmt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       amount: row.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    });
+    },{emitEvent:false});
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
   prepareCls() {
-
     const formValues = this.supInvDetForm.value;
-
     this.supInvoiceDetCls.mode = this.data.mode;
     this.supInvoiceDetCls.company = this.userDataService.userData.company;
     this.supInvoiceDetCls.location = this.userDataService.userData.location;
@@ -298,27 +292,18 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
     this.supInvoiceDetCls.grnNo = formValues.grnNo;
     this.supInvoiceDetCls.slNo = this.slNum;
     this.supInvoiceDetCls.currency = formValues.currency;
-    // this.supInvoiceDetCls.amount = parseFloat(formValues.amount.replace(/,/g, ''));
-    // this.supInvoiceDetCls.exchRate = parseFloat(formValues.exchRate.replace(/,/g, ''));
-    // this.supInvoiceDetCls.grnAmt = parseFloat(formValues.grnAmt.replace(/,/g, ''));
-    // this.supInvoiceDetCls.vatAmt = parseFloat(formValues.vatAmt.replace(/,/g, ''));
     this.supInvoiceDetCls.amount = parseFloat(
       formValues.amount
         ? formValues.amount.toString().replace(/,/g, '')
         : '0'
     );
-    
+
     this.supInvoiceDetCls.exchRate = parseFloat(formValues.exchRate ? formValues.exchRate.replace(/,/g, '') : '0');
     this.supInvoiceDetCls.grnAmt = parseFloat(formValues.grnAmt ? formValues.grnAmt.replace(/,/g, '') : '0');
     this.supInvoiceDetCls.vatAmt = parseFloat(formValues.vatAmt ? formValues.vatAmt.replace(/,/g, '') : '0');
-
-
-
   }
   onSubmit() {
-    
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     if (this.supInvDetForm.invalid) {
       this.retMessage = "Form invalid enter all required fields!";
       this.textMessageClass = "red";
@@ -330,28 +315,20 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.suppInvoiceService.UpdateSuppInvoiceDetails(this.supInvoiceDetCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          
-          if (res.status.toUpperCase() === "SUCCESS") {
-            
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             this.get(res.tranNoNew);
           }
           else {
-            
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         })
 
       }
       catch (ex: any) {
         this.loader.stop();
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
-      // console.log(this.supInvoiceDetCls);
-
     }
   }
 }

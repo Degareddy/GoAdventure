@@ -22,6 +22,8 @@ import { LogComponent } from 'src/app/general/log/log.component';
 import { LinkUnitComponent } from 'src/app/gl/expenses/link-unit/link-unit.component';
 import { SideOverlayComponent } from 'src/app/general/side-overlay/side-overlay.component';
 import { CustomerDetailsComponent } from 'src/app/sales/customer/customer-details/customer-details.component';
+import { Company, displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-supplier-invoice',
   templateUrl: './supplier-invoice.component.html',
@@ -86,12 +88,12 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
   }
   formInit() {
     return this.fb.group({
-      tranNo: ['', ],
+      tranNo: ['',],
       tranDate: [new Date(), [Validators.required]],
       supplier: ['', [Validators.required, Validators.maxLength(50)]],
       currency: ['', [Validators.required, Validators.maxLength(20)]],
       applyVAT: [false, [Validators.required]],
-      inclusiveVAT:[false],
+      inclusiveVAT: [false],
       vatMonth: ['', [Validators.required]],
       vatYear: ['', [Validators.required]],
       supplierAmt: ['0.00', [Validators.required]],
@@ -136,27 +138,37 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const body = {
       ...this.commonParams(),
-      item: "ST104"
+      item: ScreenId.SUPPLIER_INVOICE_SCRID
     }
     const curbody = {
       ...this.commonParams(),
-      Item: "CURRENCY",
-      mode:this.supinvForm.get('mode')?.value
+      Item: Items.CURRENCY,
+      mode: this.supinvForm.get('mode')?.value
     };
     this.subSink.sink = this.masterService.getModesList(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.modes = res['data'];
+      }
+      else {
+        this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
       }
     });
     this.subSink.sink = this.masterService.GetMasterItemsList(curbody).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.currencyList = res['data'];
+      } else {
+        this.displayMessage(displayMsg.ERROR + "Currency list empty!", TextClr.red);
       }
     });
     this.masterParams.item = this.supinvForm.controls['tranNo'].value;
   }
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
 
   searcInvoice() {
@@ -166,54 +178,54 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'SUPINV',
+      TranType: TranType.SUPINV,
       TranNo: this.supinvForm.controls['tranNo'].value,
       Party: "",
       FromDate: this.datePipe.transform(formattedFirstDayOfMonth, 'yyyy-MM-dd'),
       ToDate: this.datePipe.transform(formattedCurrentDate, 'yyyy-MM-dd'),
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     this.subSink.sink = this.purchreqservice.GetTranCount(body).subscribe((res: any) => {
       if (res.retVal === 0) {
-        // if (res && res.data && res.data.tranCount === 1) {
-        //   this.masterParams.tranNo = res.data.selTranNo;
-        //   this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
-        // }
-        // else {
-          if (!this.dialogOpen) {
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: {
-                'tranNum': this.supinvForm.controls['tranNo'].value, 'TranType': "SUPINV",
-                'search': 'Supplier Invoice Search'
-              }
-            });
-            this.dialogOpen = true;
-            dialogRef.afterClosed().subscribe(result => {
-              this.dialogOpen = false;
-              if (result != true && result != undefined) {
-                this.masterParams.tranNo = result;
-                this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
-              }
-            });
-          }
-        // }
+        if (res && res.data && res.data.tranCount === 1) {
+          this.masterParams.tranNo = res.data.selTranNo;
+          this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
+        }
+        else {
+          this.openSearch();
+        }
       }
       else {
-        this.tranStatus = '';
-        this.supinvForm.controls['tranDate'].patchValue(new Date());
-        this.retMessage = res.message;
-        this.textMessageClass = 'red';
+        // this.supinvForm.controls['tranDate'].patchValue(new Date());
+        this.openSearch();
       }
     });
+  }
+  openSearch() {
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: this.supinvForm.controls['tranNo'].value, TranType: TranType.SUPINV,
+          search: 'Supplier Invoice Search'
+        }
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true && result != undefined) {
+          this.masterParams.tranNo = result;
+          this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
+        }
+      });
+    }
   }
   reset() {
     this.supinvForm = this.formInit();
     this.dialogOpen = false;
     this.tranStatus = "";
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
   handleGetData(res: any) {
     this.supinvForm.controls['tranNo'].patchValue(res['data'].tranNo);
@@ -240,34 +252,32 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.purchreqservice.GetSupplierInvoice(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.handleGetData(res);
-          if (mode === 'View') {
-            this.textMessageClass = 'green';
-            this.retMessage = 'Retriving data ' + res.message + ' has completed';
+          if (mode.toUpperCase() === Mode.view) {
+            this.displayMessage(displayMsg.SUCCESS + 'Retriving data ' + res.message + ' has completed', TextClr.green);
           }
           else {
             this.retMessage = this.newMessage;
+            this.displayMessage(displayMsg.SUCCESS + this.retMessage, TextClr.green);
           }
 
         }
         else {
-          this.textMessageClass = 'red';
-          this.retMessage = res.message;
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       })
     }
     catch (ex: any) {
-      this.textMessageClass = 'red';
-      this.retMessage = ex.message;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
   onDetailsCilcked(tranNo: any) {
     const dialogRef: MatDialogRef<SupplierInvoiceDetailsComponent> = this.dialog.open(SupplierInvoiceDetailsComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
       data: {
         mode: this.supinvForm.controls.mode.value, tranNo: tranNo, currency: this.supinvForm.controls.currency.value,
@@ -281,7 +291,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     });
   }
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.reset();
       this.supinvForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.loadData();
@@ -294,8 +304,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
 
   clear() {
     this.supinvForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     this.newMessage = "";
   }
 
@@ -305,9 +314,13 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.supinvForm.controls['mode'].value, tranNo: this.supinvForm.controls['tranNo'].value, search: 'Supplier Invoice Docs', tranType: "SUPINV" }
+      data: {
+        mode: this.supinvForm.controls['mode'].value,
+        tranNo: this.supinvForm.controls['tranNo'].value, search: 'Supplier Invoice Docs',
+        tranType: TranType.SUPINV
+      }
     });
   }
   prepareSupInvCls() {
@@ -328,13 +341,6 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     this.suppInvCls.vATYear = value.vatYear
     this.suppInvCls.currency = value.currency;
     this.suppInvCls.remarks = value.remarks;
-
-    // this.suppInvCls.balAmt = parseFloat(value.balAmt.replace(/,/g, ''));
-    // this.suppInvCls.gRNAmt = parseFloat(value.grnAmt.replace(/,/g, ''));
-    // this.suppInvCls.invoiceAmt = parseFloat(value.invoiceAmt.replace(/,/g, ''));
-    // this.suppInvCls.paidAmt = parseFloat(value.paidAmt.replace(/,/g, ''));
-    // this.suppInvCls.payableAmt = parseFloat(value.payableAmt.replace(/,/g, ''));
-    // this.suppInvCls.supplierAmt = parseFloat(value.supplierAmt.replace(/,/g, ''));
     this.suppInvCls.balAmt = parseFloat(value.balAmt ? value.balAmt.replace(/,/g, '') : '0');
     this.suppInvCls.gRNAmt = parseFloat(value.grnAmt ? value.grnAmt.replace(/,/g, '') : '0');
     this.suppInvCls.invoiceAmt = parseFloat(value.invoiceAmt ? value.invoiceAmt.replace(/,/g, '') : '0');
@@ -356,16 +362,19 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     }
   }
   clearMsg() {
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("", "");
   }
   onAllocation() {
     const dialogRef: MatDialogRef<LinkUnitComponent> = this.dialog.open(LinkUnitComponent,
       {
-        width: '80%', // Set the width of the dialog
+        width: '80%',
         disableClose: true,
-        data: {mode: this.supinvForm.controls['mode'].value, tranNo: this.supinvForm.controls['tranNo'].value,tranType:'SUPINV',
-           search: 'Supplier Invoice Allocation'},
+        data: {
+          mode: this.supinvForm.controls['mode'].value,
+          tranNo: this.supinvForm.controls['tranNo'].value,
+          tranType: TranType.SUPINV,
+          search: 'Supplier Invoice Allocation'
+        },
       }
     );
     dialogRef.afterClosed().subscribe((result) => {
@@ -374,48 +383,45 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       }
     });
   }
-  GetClietBalanceSummary(supplierCode:string){
-    let currency:string='';
-    if(this.userDataService.userData.company === "DEGANIUM"){
+  GetClietBalanceSummary(supplierCode: string) {
+    let currency: string = '';
+    if (this.userDataService.userData.company === Company.DEGANIUM) {
       currency = 'INR';
-    }else{
+    } else {
       currency = "KES"
     }
     const body = {
-      Company:this.userDataService.userData.company,
-      Location:this.userDataService.userData.location,
-      Client:supplierCode,
-      TranType : 'SUPGRN',
-      Currency:currency,
-      AsOnDate: this.formatDate(new Date()) ,
-      User:this.userDataService.userData.userID,
-      RefNo:this.userDataService.userData.sessionID
+      Company: this.userDataService.userData.company,
+      Location: this.userDataService.userData.location,
+      Client: supplierCode,
+      TranType: TranType.SUPGRN,
+      Currency: currency,
+      AsOnDate: this.formatDate(new Date()),
+      User: this.userDataService.userData.userID,
+      RefNo: this.userDataService.userData.sessionID
     }
-    try{
+    try {
       this.subSink.sink = this.purchreqservice.GetClietBalanceSummary(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS" && supplierCode === res.data.client) {
-          this.textMessageClass = "green";
-          this.newMessage = res.message;
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS && supplierCode === res.data.client) {
           this.supinvForm.get('supplierAmt')?.patchValue('');
           this.supinvForm.get('invoiceAmt')?.patchValue('');
           this.supinvForm.get('supplierAmt')?.patchValue(res.data.tranAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           this.supinvForm.get('invoiceAmt')?.patchValue(res.data.tranAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           this.supinvForm.get('supplierAmt')?.disable();
           this.supinvForm.get('currency')?.patchValue((res.data.currency));
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
 
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
-      
+
     }
-    
+
     catch (ex: any) {
-      this.retMessage = "Exception: " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onSubmit() {
@@ -425,32 +431,36 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     }
     else {
       this.prepareSupInvCls();
-      this.loader.start();
-      this.subSink.sink = this.purchreqservice.updateSupplierInvoice(this.suppInvCls).subscribe((res: any) => {
-        this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.textMessageClass = "green";
-          this.newMessage = res.message;
-          this.masterParams.tranNo = res.tranNoNew;
-          if (this.supinvForm.get('mode')?.value === "Add") {
-            this.modeChange("Modify");
+      try {
+        this.loader.start();
+        this.subSink.sink = this.purchreqservice.updateSupplierInvoice(this.suppInvCls).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            // this.textMessageClass = "green";
+            this.newMessage = res.message;
+            this.masterParams.tranNo = res.tranNoNew;
+            if (this.supinvForm.get('mode')?.value.toUpperCase() === Mode.Add) {
+              this.modeChange("Modify");
+            }
+            this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
           }
-          this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
+          else {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.loader.stop();
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
 
-
-        }
-        else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
-        }
-      });
     }
   }
 
   onSupplierSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "SUPPLIER",
+      Type: Type.SUPPLIER,
       Item: this.supinvForm.controls['supplier'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
@@ -469,13 +479,13 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.supinvForm.controls['supplier'].value, 'PartyType': "SUPPLIER",
-                  'search': 'Supplier Search', 'PartyName': this.supinvForm.controls['supplier'].value
+                  tranNum: this.supinvForm.controls['supplier'].value, PartyType: Type.SUPPLIER,
+                  search: 'Supplier Search', PartyName: this.supinvForm.controls['supplier'].value
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if (result != true) {
+                if (result != true && result != undefined) {
                   this.supinvForm.controls['supplier'].patchValue(result.partyName);
                   this.suppInvCls.supplier = result.code;
                   this.GetClietBalanceSummary(result.code);
@@ -486,21 +496,19 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception: " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onHelpCilcked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST104",
+        ScrId: ScreenId.SUPPLIER_INVOICE_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -516,15 +524,15 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.supinvForm.controls['mode'].value,
-        'TranType': "SUPINV",
-        'search': "Supplier Invoice Notes"
+        tranNo: tranNo,
+        mode: this.supinvForm.controls['mode'].value,
+        TranType: TranType.SUPINV,
+        search: "Supplier Invoice Notes"
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
   logDetails(tranNo: string) {
@@ -532,9 +540,9 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "SUPINV",
-        'tranNo': tranNo,
-        'search': 'Supplier Log Details'
+        tranType: TranType.SUPINV,
+        tranNo: tranNo,
+        search: 'Supplier Log Details'
       }
     });
   }
@@ -544,7 +552,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<CustomerDetailsComponent> = this.dialog.open(CustomerDetailsComponent, {
       width: '980px',
       disableClose: true,
-      data: { customerId: '', customerName: '', mode: "Add" }, // Pass any data you want to send to CustomerDetailsComponent
+      data: { customerId: '', customerName: '', mode: "Add" },
     });
     // debugger;
     // if (this.overlay) {

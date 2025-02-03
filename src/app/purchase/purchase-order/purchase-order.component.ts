@@ -22,6 +22,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-purchase-order',
   templateUrl: './purchase-order.component.html',
@@ -110,34 +112,44 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
 
     }
   }
+  // ST102
   loadData() {
-    const service1 = this.invService.getModesList({ ...this.commonParams(), item: 'ST102' });
-    const service2 = this.invService.GetMasterItemsList({ ...this.commonParams(), item: "CURRENCY",mode:this.purhdrForm.get('mode')?.value });
-    this.subSink.sink = forkJoin([service1, service2]).subscribe(
-      (results: any[]) => {
-        this.loader.stop();
-        const res1 = results[0];
-        const res2 = results[1];
-        if (res1.status.toUpperCase() === "SUCCESS") {
-          this.modes = res1.data;
+    try {
+      const service1 = this.invService.getModesList({ ...this.commonParams(), item: ScreenId.PURCHASE_ORDER_SCRID });
+      const service2 = this.invService.GetMasterItemsList({
+        ...this.commonParams(), item: Items.CURRENCY,
+        mode: this.purhdrForm.get('mode')?.value
+      });
+      this.subSink.sink = forkJoin([service1, service2]).subscribe(
+        (results: any[]) => {
+          this.loader.stop();
+          const res1 = results[0];
+          const res2 = results[1];
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.modes = res1.data;
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
+            return;
+          }
+          if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.currencyList = res2.data;
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Currency list empty!", TextClr.red);
+            return;
+          }
+        },
+        (error: any) => {
+          this.loader.stop();
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
-        else {
-          this.displayMessage("Modes list empty!", "red");
-          return;
-        }
-        if (res2.status.toUpperCase() === "SUCCESS") {
-          this.currencyList = res2.data;
-        }
-        else {
-          this.displayMessage("Currency list empty!", "red");
-          return;
-        }
-      },
-      (error: any) => {
-        this.loader.stop();
-        this.displayMessage(error.message, "red");
-      }
-    );
+      );
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
@@ -157,10 +169,10 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': this.purhdrForm.controls['tranNo'].value,
-        'mode': this.purhdrForm.controls['mode'].value,
-        'applyVat': applyVat,
-        'status': this.tranStatus,
+        tranNo: this.purhdrForm.controls['tranNo'].value,
+        mode: this.purhdrForm.controls['mode'].value,
+        applyVat: applyVat,
+        status: this.tranStatus,
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -173,14 +185,14 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
   onSupplierSearch() {
     const body = {
       ...this.commonParams(),
-      Type: "SUPPLIER",
+      Type: Type.SUPPLIER,
       Item: this.purhdrForm.controls['supplier'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: "",
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR") {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           if (res && res.data && res.data.nameCount === 1) {
             this.purhdrForm.controls['supplier'].patchValue(res.data.selName);
             this.supCode = res.data.selCode;
@@ -191,13 +203,14 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.purhdrForm.controls['supplier'].value, 'PartyType': "SUPPLIER",
-                  'search': 'Supplier Search'
+                  tranNum: this.purhdrForm.controls['supplier'].value,
+                  PartyType: Type.SUPPLIER,
+                  search: 'Supplier Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                if(result != true && result != undefined){
+                if (result != true && result != undefined) {
                   this.purhdrForm.controls['supplier'].setValue(result.partyName);
                   this.supCode = result.code;
                 }
@@ -208,12 +221,12 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -230,33 +243,48 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.purchaseService.getPurchaseHeaderData(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.purhdrForm.controls['tranNo'].setValue(res['data'].tranNo);
-          this.purhdrForm.controls['isQtnBased'].setValue(res['data'].isQtnBased);
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          // this.purhdrForm.controls['tranNo'].setValue(res['data'].tranNo);
+          // this.purhdrForm.controls['isQtnBased'].setValue(res['data'].isQtnBased);
+          // this.isQtnBased = res['data'].isQtnBased;
+          // this.purhdrForm.controls['quotationNo'].setValue(res['data'].quotationNo);
+          // this.purhdrForm.controls['tranType'].setValue(res['data'].tranType);
+          // this.purhdrForm.controls['tranCategory'].setValue(res['data'].tranCategory);
+          // this.purhdrForm.controls['supplier'].setValue(res['data'].suppName);
+          // this.supCode = res['data'].supplier;
+          // this.purhdrForm.controls['tranDate'].setValue(res['data'].tranDate);
+          // this.purhdrForm.controls['currency'].setValue(res['data'].currency);
+          // this.purhdrForm.controls['exchRate'].setValue(res['data'].exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }));
+          // this.purhdrForm.controls['isVatable'].setValue(res['data'].isVatable);
+          // this.purhdrForm.controls['suppRefNo'].setValue(res['data'].suppRefNo);
+          // this.purhdrForm.controls['notes'].setValue(res['data'].notes);
+          this.purhdrForm.patchValue({
+            tranNo: res['data'].tranNo,
+            isQtnBased: res['data'].isQtnBased,
+            quotationNo: res['data'].quotationNo,
+            tranType: res['data'].tranType,
+            tranCategory: res['data'].tranCategory,
+            supplier: res['data'].suppName,
+            tranDate: res['data'].tranDate,
+            currency: res['data'].currency,
+            exchRate: res['data'].exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
+            isVatable: res['data'].isVatable,
+            suppRefNo: res['data'].suppRefNo,
+            notes: res['data'].notes
+          }, { emitEvent: false });
           this.isQtnBased = res['data'].isQtnBased;
-          this.purhdrForm.controls['quotationNo'].setValue(res['data'].quotationNo);
-          this.purhdrForm.controls['tranType'].setValue(res['data'].tranType);
-          this.purhdrForm.controls['tranCategory'].setValue(res['data'].tranCategory);
-          this.purhdrForm.controls['supplier'].setValue(res['data'].suppName);
           this.supCode = res['data'].supplier;
-          this.purhdrForm.controls['tranDate'].setValue(res['data'].tranDate);
-          this.purhdrForm.controls['currency'].setValue(res['data'].currency);
-          this.purhdrForm.controls['exchRate'].setValue(res['data'].exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }));
-          this.purhdrForm.controls['isVatable'].setValue(res['data'].isVatable);
-          this.purhdrForm.controls['suppRefNo'].setValue(res['data'].suppRefNo);
-          this.purhdrForm.controls['notes'].setValue(res['data'].notes);
           this.authorizedBy = res['data'].authorizedBy;
           this.tranAmount = res['data'].amount;
           this.itemCount = res['data'].itemCount;
-
-          if (res['data'].tranStatus == 'Authorized') {
+          if (res['data'].tranStatus.toUpperCase() == TranStatus.AUTHOURIZED) {
             this.authorizedOn = res['data'].authorizedOn.startsWith('0001-01-01') ? '' : res['data'].authorizedOn;
           }
           else {
             this.authorizedOn = "";
           }
           this.tranStatus = res['data'].tranStatus;
-          if (mode != 'View') {
+          if (mode.toUpperCase() != Mode.view) {
             this.retMessage = this.newTranMsg;
           }
           else {
@@ -266,13 +294,13 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
         }
         else {
           this.purhdrForm = this.formInit();
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
 
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -283,46 +311,49 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'PURCHASE',
+      TranType: TranType.PURCHASE,
       TranNo: this.purhdrForm.controls['tranNo'].value,
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.retVal === 0) {
         if (res && res.data && res.data.tranCount === 1) {
           this.masterParams.tranNo = res.data.selTranNo;
           this.purchaseOrderData(this.masterParams, this.purhdrForm.controls['mode'].value);
-
         }
         else {
-          this.retMessage = '';
-          if (!this.detdialogOpen) {
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: { 'tranNum': this.purhdrForm.controls['tranNo'].value, 'search': 'Purchase-Order Search', 'TranType': "PURCHASE" }  // Pass any data you want to send to CustomerDetailsComponent
-            });
-            this.detdialogOpen = true;
-            dialogRef.afterClosed().subscribe(result => {
-              this.detdialogOpen = false;
-              if (result != true && result != undefined) {
-                this.masterParams.tranNo = result;
-                this.purchaseOrderData(this.masterParams, this.purhdrForm.controls['mode'].value);
-              }
-
-            });
-          }
+          this.openSearch();
         }
       }
       else {
-        this.displayMessage("Error: " + res.message, "red");
+        this.openSearch();
       }
     });
   }
-
+  openSearch() {
+    if (!this.detdialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: this.purhdrForm.controls['tranNo'].value,
+          search: 'Purchase-Order Search',
+          TranType: TranType.PURCHASE
+        }
+      });
+      this.detdialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.detdialogOpen = false;
+        if (result != true && result != undefined) {
+          this.masterParams.tranNo = result;
+          this.purchaseOrderData(this.masterParams, this.purhdrForm.controls['mode'].value);
+        }
+      });
+    }
+  }
   close() {
     this.router.navigateByUrl('/home');
   }
@@ -338,9 +369,13 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.purhdrForm.controls['mode'].value, tranNo: this.purhdrForm.controls['tranNo'].value, search: 'Purchase Docs', tranType: "PURCHASE" }
+      data: {
+        mode: this.purhdrForm.controls['mode'].value,
+        tranNo: this.purhdrForm.controls['tranNo'].value, search: 'Purchase Docs',
+        tranType: TranType.PURCHASE
+      }
     });
 
   }
@@ -351,7 +386,7 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.repService.getPurchaseOrderDetails(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != 'FAIL') {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           if (type === "Excel") {
             this.excelService.generatePurchaseOrderExcel(res['data']);
           }
@@ -359,12 +394,12 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
             this.excelService.generatePurchaseOrderPDF(res['data']);
           }
         } else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -397,7 +432,7 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
     if (transformedDate !== undefined && transformedDate !== null) {
       this.purOrder.tranDate = transformedDate.toString();
     } else {
-      this.purOrder.tranDate = ''; // or any default value you prefer
+      this.purOrder.tranDate = '';
     }
     this.purOrder.currency = this.purhdrForm.controls['currency'].value;
     this.purOrder.exchRate = this.purhdrForm.controls['exchRate'].value.replace(/,/g, '');
@@ -425,17 +460,17 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
             this.masterParams.tranNo = res.tranNoNew;
             this.newTranMsg = res.message;
             this.textMessageClass = "green";
-            if (this.purhdrForm.controls['mode'].value.toUpperCase() === "ADD") {
+            if (this.purhdrForm.controls['mode'].value.toUpperCase() === Mode.Add) {
               this.modeChange("Modify");
             }
             this.purchaseOrderData(this.masterParams, this.purhdrForm.controls['mode'].value);
           }
           else {
-            this.displayMessage(res.message, "red");
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        this.displayMessage(ex.message, "red");
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -448,12 +483,12 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'SUPQUOTEAUTH',
+      TranType: TranType.SUPQUOTEAUTH,
       TranNo: this.purhdrForm.controls['tranNo'].value,
       Party: "",
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.retVal === 0) {
@@ -462,35 +497,39 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
           this.masterParams.tranNo = res.data.selTranNo;
         }
         else {
-          this.retMessage = '';
-          if (!this.detdialogOpen) {
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: {
-                'tranNum': this.purhdrForm.controls['tranNo'].value, 'search': 'Authorized Supplier Quotation Search',
-                'TranType': "SUPQUOTEAUTH", 'supplier': this.purhdrForm.controls['supplier'].value
-              }
-            });
-            this.detdialogOpen = true;
-            dialogRef.afterClosed().subscribe(result => {
-              this.detdialogOpen = false;
-              if (result != true) {
-                this.purhdrForm.controls['quotationNo'].patchValue(result);
-              }
-
-            });
-          }
+            this.opnSearch();
         }
       }
       else {
-        this.displayMessage(res.message, "red");
+        this.openSearch();
       }
     });
   }
 
+  opnSearch(){
+    if (!this.detdialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: this.purhdrForm.controls['tranNo'].value, 'search': 'Authorized Supplier Quotation Search',
+          TranType: TranType.SUPQUOTEAUTH,
+           supplier: this.purhdrForm.controls['supplier'].value
+        }
+      });
+      this.detdialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.detdialogOpen = false;
+        if (result != true  && result != undefined) {
+          this.purhdrForm.controls['quotationNo'].patchValue(result);
+        }
+
+      });
+    }
+  }
+
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.clear();
       this.purhdrForm.get('tranNo')!.setValue('');
       this.purhdrForm.get('tranNo')!.disable();
@@ -508,7 +547,7 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: {
 
-        ScrId: "ST102",
+        ScrId: ScreenId.PURCHASE_ORDER_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -523,10 +562,10 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.purhdrForm.controls['mode'].value,
-        'TranType': "PURCHASE",
-        'search': "Purchase Order Notes"
+        tranNo: tranNo,
+        mode: this.purhdrForm.controls['mode'].value,
+        TranType: TranType.PURCHASE,
+        search: "Purchase Order Notes"
       }
     });
   }

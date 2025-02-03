@@ -11,6 +11,8 @@ import { SubSink } from 'subsink';
 import { PurchaseOrderDetails } from 'src/app/purchase/purchase.class';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-purchasedetails',
@@ -158,14 +160,12 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    // this.data.mode ="Delete";
     this.mode = "Delete";
     this.onSubmit();
   }
   formInit() {
     return this.fb.group({
       prodName: ['', [Validators.required, Validators.maxLength(300)]],
-      // uom: ['', [Validators.required, Validators.maxLength(10)]],
       unitRate: ['0', [Validators.required]],
       discPer: ['0'],
       vatRate: ['0'],
@@ -189,7 +189,6 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    //console.log(event.data);
     this.onRowClick(event.data);
   }
 
@@ -200,7 +199,6 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.mode = this.data.mode;
     this.status = this.data.status;
     this.masterParams.langId = this.userDataService.userData.langId;;
@@ -222,7 +220,6 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
     this.rowValue = 0;
     this.prodCode = "";
     this.purDetForm.controls['prodName'].patchValue("");
-    // this.purDetForm.controls['uom'].patchValue("");
     this.units = '';
     this.purDetForm.controls['unitRate'].patchValue("");
     this.purDetForm.controls['discPer'].patchValue("0");
@@ -233,43 +230,30 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
     this.purDetForm.controls['rowValue'].patchValue("0");
     this.retMessage = '';
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   getPOData(tarnNo: any) {
     this.masterParams.tranNo = tarnNo;
-
-    // //console.log(this.masterParams);
     try {
       this.loader.start();
       this.subSink.sink = this.purchorddetervice.getPurchaseDetailsData(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.handleChargeSuccess(res);
         } else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      // //console.log(ex);
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
   handleChargeSuccess(res: any) {
     this.rowData = res.data || [];
-    // if (this.data.mode !== "Delete" && this.slNum === 0) {
-    //   const maxSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
-    //     return Math.max(maxSlNo, currentItem.slNo);
-    //   }, 0);
-    //   this.slNum = maxSlNo;
-    // } else if (this.data.mode === "Delete" && this.slNum !== 0) {
-    //   this.slNum = 0;
-    //   this.purDetForm = this.formInit();
-    //   this.retMessage = this.returnMsg || '';
-    //   this.textMessageClass = "green";
-    // }
   }
   commonParams() {
     return {
@@ -282,13 +266,13 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   searchProduct() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.purDetForm.controls['prodName'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: "",
     }
     this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-      if (res.status.toUpperCase() != "FAIL") {
+      if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
         if (res && res.data && res.data.nameCount === 1) {
           this.purDetForm.controls['prodName'].patchValue(res.data.selName);
           this.prodCode = res.data.selCode;
@@ -298,19 +282,18 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
             width: '90%',
             disableClose: true,
             data: {
-              'tranNum': this.purDetForm.controls['prodName'].value, 'TranType': "PRODUCT",
-              'search': 'Product Search'
+              tranNum: this.purDetForm.controls['prodName'].value, TranType:  Type.PRODUCT,
+              search: 'Product Search'
             }
           });
           dialogRef.afterClosed().subscribe(result => {
-            if (result) {
+            if (result != true && result != undefined) {
               this.prodCode = result.prodCode;
               this.purDetForm.controls['prodName'].patchValue(result.prodName);
               this.units = result.uom;
               this.purDetForm.controls['unitRate'].patchValue(result.stdPurRate);
               this.purDetForm.controls['discPer'].patchValue(0);
               this.vatRate = result.vatRate;
-
               let numNetRate: number = 0;
               if (this.data.applyVat) {
                 numNetRate = result.stdPurRate * (1 + this.vatRate / 100.0);
@@ -328,34 +311,31 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     });
   }
 
   onRowClick(row: any) {
-    // //console.log(row, i);
-    // this.selectedRowIndex = i;
     let options: Intl.NumberFormatOptions = {
       style: 'decimal',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     };
-
     this.slNum = row.slNo;
     this.rowValue = row.rowValue;
     this.prodCode = row.prodCode;
-
-    //  this.purDetForm.patchValue(row);
-    this.purDetForm.controls['prodName'].patchValue(row.prodName);
     this.units = row.uom;
     this.vatRate = row.vatRate;
-    this.purDetForm.controls['unitRate'].patchValue(row.unitRate.toLocaleString(undefined, options));
-    this.purDetForm.controls['discPer'].patchValue(row.discPer.toLocaleString(undefined, options));
-    this.purDetForm.controls['netRate'].patchValue(row.netRate.toLocaleString(undefined, options));
-    this.purDetForm.controls['quantity'].patchValue(row.quantity.toLocaleString(undefined, options));
-    this.purDetForm.controls['rowValue'].patchValue(row.rowValue.toLocaleString(undefined, options));
+    this.purDetForm.patchValue({
+      prodName: row.prodName,
+      unitRate: row.unitRate.toLocaleString(undefined, options),
+      discPer: row.discPer.toLocaleString(undefined, options),
+      netRate: row.netRate.toLocaleString(undefined, options),
+      quantity: row.quantity.toLocaleString(undefined, options),
+      rowValue: row.rowValue.toLocaleString(undefined, options)
+    }, { emitEvent: false });
+
   }
   prepareDetCls() {
     this.purDet.company = this.userDataService.userData.company;
@@ -381,24 +361,27 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.purDetForm.valid) {
       this.prepareDetCls();
-      this.loader.start();
-      this.subSink.sink = this.purchorddetervice.updatePurchaseOrderDetails(this.purDet).subscribe((res: SaveApiResponse) => {
-        this.loader.stop();
-        if (res.status.toUpperCase() === 'FAIL' || res.status.toUpperCase() === 'ERROR' || res.status.toUpperCase() === 'WARNING') {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
-        }
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.dataFlag = true;
-          this.getPOData(this.masterParams.tranNo);
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
-          this.purDetForm = this.formInit();
-          this.slNum = 0;
-          this.vatRate = 0;
-          this.units = "";
-        }
-      });
+      try{
+        this.loader.start();
+        this.subSink.sink = this.purchorddetervice.updatePurchaseOrderDetails(this.purDet).subscribe((res: SaveApiResponse) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR || res.status.toUpperCase() === AccessSettings.WARNING) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          }
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.dataFlag = true;
+            this.getPOData(this.masterParams.tranNo);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            this.purDetForm = this.formInit();
+            this.slNum = 0;
+            this.vatRate = 0;
+            this.units = "";
+          }
+        });
+      }
+      catch(ex:any){
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
     }
   }
 
