@@ -15,6 +15,8 @@ export enum Role {
 }
 
 export enum Items {
+  WORKTYPE="WORKTYPE",
+  WRKMAIN="WRKMAIN",
   PRODUCTS="PRODUCTS",
   SUPPLIER="SUPPLIER",
   WAREHOUSE="WAREHOUSE",
@@ -51,6 +53,7 @@ export enum Items {
   VATR="VATR",
   REPORTS="REPORTS",
   BRANCHES="BRANCHES",
+  VENTPROP="VENTPROP"
 }
 export enum Mode {
   Add = 'ADD',
@@ -94,7 +97,8 @@ export enum TranType {
   SUPINV="SUPINV",
   SUPGRN="SUPGRN",
   PURCHASE="PURCHASE",
-  SUPQUOTEAUTH="SUPQUOTEAUTH"
+  SUPQUOTEAUTH="SUPQUOTEAUTH",
+  STOCKCON="STOCKCON"
 }
 
 export enum TranStatus {
@@ -141,7 +145,8 @@ export enum Type{
   EXPENSES="EXPENSES",
   INCOME_TOTAL="INCOME TOTAL",
   EXPENSES_TOTAL="EXPENSES TOTAL",
-  NET_PROFIT_LOSS="NET PROFIT/LOSS"
+  NET_PROFIT_LOSS="NET PROFIT/LOSS",
+  VENTBLOCK="VENTBLOCK"
 }
 
 export enum ScreenId {

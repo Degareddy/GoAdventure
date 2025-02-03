@@ -10,17 +10,16 @@ import { MastersService } from 'src/app/Services/masters.service';
 import { SubSink } from 'subsink';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SearchProductComponent } from 'src/app/general/search-product/search-product.component';
-import { ToastrService } from 'ngx-toastr';
-import { stockConsumptionDetails, stocktransferDetailsclass } from '../../inventory.class';
+import { stockConsumptionDetails } from '../../inventory.class';
 import { Router } from '@angular/router';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
-import { PropertyCls } from 'src/app/project/Project.class';
 import { forkJoin } from 'rxjs';
-import { ProjectsService } from 'src/app/Services/projects.service';
 import { FlatSearchComponent } from 'src/app/general/flat-search/flat-search.component';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { displayMsg, Items, Mode, TextClr, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-consumption-details',
@@ -64,10 +63,6 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
   flatCode: string = "";
 
   columnDef: any = [{ field: "slNo", headerName: "S.No", width: 90 },
-  // { field: "propertyName", headerName: "Property", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
-  // { field: "blockName", headerName: "BlockId", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
-  // { field: "unitId", headerName: "Unit", sortable: true, filter: true, resizable: true, flex: 1 },
-
   { field: "product", headerName: "Proerty Code", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
   { field: "productName", headerName: "Product", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "uom", headerName: "UOM", sortable: true, filter: true, resizable: true, flex: 1 },
@@ -110,7 +105,6 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
       return null;
     }
   },
-  //{ field: "lotNo", headerName: "Lot No", sortable: true, filter: true, resizable: true, flex: 1 }
   { field: "mainWorkType", headerName: "Main Work Type", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
   { field: "mainWorkName", headerName: "Main Work", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "subWorkType", headerName: "Sub Work Type", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
@@ -161,24 +155,24 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
 
     const warehouseBody: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE",
-      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
+      item: Items.WAREHOUSE,
+      ...(this.data.mode.toUpperCase() === Mode.Add ? { mode: this.data.mode } : {})
     };
 
     const mainWorksBody: getPayload = {
       ...this.commonParams(),
-      item: "WRKMAIN",
-      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
+      item: Items.WRKMAIN,
+      ...(this.data.mode.toUpperCase() === Mode.Add ? { mode: this.data.mode } : {})
     };
 
     const subWorksBody: getPayload = {
       ...this.commonParams(),
-      item: "WORKTYPE",
-      ...(this.data.mode === "Add" ? { mode: this.data.mode } : {})
+      item: Items.WORKTYPE,
+      ...(this.data.mode.toUpperCase() === Mode.Add ? { mode: this.data.mode } : {})
     };
 
     this.subSink.sink = this.invService.GetMasterItemsList(warehouseBody).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.warehouseList = res['data'];
       }
     });
@@ -192,17 +186,20 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
           this.subWorksList = swRes['data'];
         },
         error => {
-          // console.error(error);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
     this.getStockConDetails(this.data.tranNo, this.data.mode);
   }
 
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -220,27 +217,17 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.invService.GetStockConsumptionDetails(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() != 'FAIL') {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           this.rowData = res['data'];
-          // if (mode != "View" && this.newMsg != "") {
-          //   this.retMessage = this.newMsg;
-          //   this.textMessageClass = "green";
-          // }
-          // else {
-          //   this.retMessage = res.message;
-          //   this.textMessageClass = "red";
-          // }
         }
         else {
           this.rowData = [];
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -364,8 +351,7 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
   clear() {
     this.consumptionDetForm = this.formInit();
     this.slNum = 0;
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     this.stkConDtCls.product = "";
     this.stkConDtCls.warehouse = "";
   }
@@ -395,15 +381,12 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
 
     }
     else {
-      this.retMessage = "Transaction Number not selected!";
-      this.textMessageClass = "red";
-
+      this.displayMessage(displayMsg.ERROR + "Transaction Number not selected!", TextClr.red);
     }
   }
 
   onSubmit() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     if (this.consumptionDetForm.invalid) {
       return;
     }
@@ -413,21 +396,19 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.invService.UpdateStockConsDetails(this.stkConDtCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.dataFlag = true;
             this.getStockConDetails(res.tranNoNew, this.consumptionDetForm.get('mode')?.value);
             this.newMsg = res.message;
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.dataFlag = false;
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
@@ -436,7 +417,7 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
   searchProduct() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.consumptionDetForm.controls['product'].value
     }
     this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
@@ -449,12 +430,12 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
           width: '90%',
           disableClose: true,
           data: {
-            'tranNum': this.consumptionDetForm.controls['product'].value, 'TranType': "PRODUCT",
-            'search': 'Product Search'
+            tranNum: this.consumptionDetForm.controls['product'].value, TranType: Type.PRODUCT,
+            search: 'Product Search'
           }
         });
         dialogRef.afterClosed().subscribe(result => {
-          if (result != true) {
+          if (result != true && result != undefined) {
             this.consumptionDetForm.controls['product'].patchValue(result.prodName);
             this.consumptionDetForm.controls['uom'].patchValue(result.uom);
             this.consumptionDetForm.controls['unitRate'].patchValue(result.stdPurRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -466,7 +447,6 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowClick(row: any) {
-    console.log(row);
     this.consumptionDetForm.patchValue({
       flat: row.unitName,
       uom: row.uom,
@@ -479,7 +459,7 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
       quantity: row.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       unitRate: row.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       rowValue: row.rowValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    });
+    }, { emitEvent: false });
     this.slNum = row.slNo;
     this.flatCode = row.unitId;
     this.prodCode = row.product;
@@ -500,8 +480,7 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
 
   }
   clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
   addNew() {
@@ -517,7 +496,7 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
     }
     const body = {
       ...this.commonParams(),
-      Type: 'FLAT',
+      Type: Type.FLAT,
       Item: this.consumptionDetForm.controls['flat'].value || '',
       ItemFirstLevel: "",
       ItemSecondLevel: ""
@@ -535,14 +514,14 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'flat': this.consumptionDetForm.controls['flat'].value || '', 'type': 'FLAT',
-                  'search': 'Flat Search', property: this.data.property, block: this.data.block,
+                  flat: this.consumptionDetForm.controls['flat'].value || '', type: Type.FLAT,
+                  search: 'Flat Search', property: this.data.property, block: this.data.block,
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
                 this.dialogOpen = false;
-                if (result != true) {
+                if (result != true && result != undefined) {
                   this.consumptionDetForm.controls['flat'].patchValue(result.unitName);
                   this.flatCode = result.unitId;
 
@@ -552,19 +531,12 @@ export class ConsumptionDetailsComponent implements OnInit, OnDestroy {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
-  }
-
-  private handleError(errorMessage: string): void {
-    this.retMessage = errorMessage;
-    this.textMessageClass = 'red';
   }
 }
