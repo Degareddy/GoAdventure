@@ -16,6 +16,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html',
@@ -41,9 +43,8 @@ export class WarehouseComponent implements OnInit, OnDestroy {
   tomorrow = new Date();
   @ViewChild('frmClear') public wrhFrm !: NgForm;
   constructor(private fb: FormBuilder,
-    private toastr: ToastrService, public dialog: MatDialog,
+    public dialog: MatDialog,
     protected router: Router, private userDataService: UserDataService,
-    private masterService: MastersService,
     private loader: NgxUiLoaderService,
     protected invService: InventoryService) {
     this.warehouseForm = this.formInit();
@@ -74,29 +75,13 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     })
   }
   ngOnInit(): void {
-    // const body = {
-    //   ...this.commonParams(),
-    //   item: 'ST301'
-    // };
-    // try {
-    //   this.subSink.sink = this.masterService.getModesList(body).subscribe((res: any) => {
-    //     if (res.status.toUpperCase() === "SUCCESS") {
-    //       this.modes = res['data'];
-    //     }
-    //   });
-    //   this.masterParams.item = this.warehouseForm.controls['list'].value;
-    // }
-    // catch (ex: any) {
-    //   this.retMessage = ex.message;
-    //   this.textMessageClass = "red";
-    // }
     this.loadData();
     this.warehouseForm.get('list')!.valueChanges.subscribe((value) => {
       this.onWarehouseChanged(value, this.warehouseForm.get('mode')!.value);
     });
   }
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.reset();
       this.warehouseForm.controls['mode'].setValue(event, { emitEvent: false });
       this.warehouseForm.controls['whid'].enable();
@@ -120,7 +105,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
   onWarehouseChanged(event: any, mode: string) {
     const body = {
       ...this.commonParams(),
-      Type: "WAREHOUSE",
+      Type: Items.WAREHOUSE,
       Item: event
     }
     if (event) {
@@ -128,24 +113,23 @@ export class WarehouseComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.invService.GetWarehouseDetails(body).subscribe((res: any) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-             this.warehouseForm.get('list')?.patchValue(res.data.whid, { emitEvent: false });
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.warehouseForm.get('list')?.patchValue(res.data.whid, { emitEvent: false });
             this.warehouseForm.patchValue({
               whid: res.data.whid,
               whName: res.data.whName,
               effectiveDate: res.data.effectiveDate,
               notes: res.data.notes,
               isDefault: res.data.isDefault,
-            });
+            }, { emitEvent: false });
             this.whStatus = res.data.whStatus;
             this.whousecls.whStatus = this.whStatus;
-            if (mode != 'View') {
-              this.retMessage = this.newTranMsg;
-              this.textMessageClass = "green";
+            if (mode.toUpperCase() != Mode.view) {
+
+              this.displayMessage(displayMsg.SUCCESS + this.retMessage, TextClr.green);
             }
             else {
-              this.retMessage = "Retrived " + res.message;
-              this.textMessageClass = "green";
+              this.displayMessage(displayMsg.SUCCESS + "Retrived " + res.message, TextClr.green);
             }
           }
 
@@ -153,21 +137,25 @@ export class WarehouseComponent implements OnInit, OnDestroy {
       }
       catch (ex: any) {
         this.loader.stop();
-        this.toastr.info(ex.message, "Exception");
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
 
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   loadData() {
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
-    this.masterParams.item = 'SM301';
+    this.masterParams.item = ScreenId.WAREHOUSE_SCRID;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     const body = {
       ...this.commonParams(),
-      Item: "WAREHOUSE",
-      mode:this.warehouseForm.get('mode')?.value
+      Item: Items.WAREHOUSE,
+      mode: this.warehouseForm.get('mode')?.value
     };
     try {
       const service1 = this.invService.getModesList(this.masterParams);
@@ -177,18 +165,31 @@ export class WarehouseComponent implements OnInit, OnDestroy {
           this.loader.stop();
           const res1 = results[0];
           const res2 = results[1];
-          this.wareHouseList = res2.data;
-          this.modes = res1.data;
+
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.modes = res1.data;
+
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
+          }
+          if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.wareHouseList = res2.data;
+
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + "Warehouse list empty!", TextClr.red);
+          }
 
         },
         (error: any) => {
           this.loader.stop();
-          this.toastr.info(error.message, "Error");
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     } catch (ex: any) {
       this.loader.stop();
-      this.toastr.info(ex.message, "Exception");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -196,63 +197,61 @@ export class WarehouseComponent implements OnInit, OnDestroy {
   getWarehousesList() {
     const body: getPayload = {
       ...this.commonParams(),
-      item: "WAREHOUSE"
+      item: Items.WAREHOUSE
     };
     const service = this.invService.GetMasterItemsList(body);
     this.subSink.sink = service.subscribe((results: any) => {
       this.loader.stop();
       const res = results[0];
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.wareHouseList = res.data;
       }
     },
       (error: any) => {
         this.loader.stop();
-        this.toastr.info(error.message, "ERROR");
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     );
 
   }
-
+  prepareCls() {
+    this.whousecls.mode = this.warehouseForm.controls['mode'].value;
+    this.whousecls.company = this.userDataService.userData.company;
+    this.whousecls.location = this.userDataService.userData.location;
+    this.whousecls.langID = this.userDataService.userData.langId;
+    this.whousecls.whid = this.warehouseForm.controls['whid'].value;
+    this.whousecls.whName = this.warehouseForm.controls['whName'].value;
+    this.whousecls.effectiveDate = this.warehouseForm.controls['effectiveDate'].value;
+    this.whousecls.isDefault = this.warehouseForm.controls['isDefault'].value;
+    this.whousecls.notes = this.warehouseForm.controls['notes'].value;
+    this.whousecls.whStatus = this.whStatus;
+    this.whousecls.user = this.userDataService.userData.userID;
+    this.whousecls.refNo = this.userDataService.userData.sessionID;
+  }
   onSubmit() {
     this.clearMsg();
     if (this.warehouseForm.valid) {
-      this.whousecls.mode = this.warehouseForm.controls['mode'].value;
-      this.whousecls.company = this.userDataService.userData.company;
-      this.whousecls.location = this.userDataService.userData.location;
-      this.whousecls.langID = this.userDataService.userData.langId;
-      this.whousecls.whid = this.warehouseForm.controls['whid'].value;
-      this.whousecls.whName = this.warehouseForm.controls['whName'].value;
-      this.whousecls.effectiveDate = this.warehouseForm.controls['effectiveDate'].value;
-      this.whousecls.isDefault = this.warehouseForm.controls['isDefault'].value;
-      this.whousecls.notes = this.warehouseForm.controls['notes'].value;
-      this.whousecls.whStatus = this.whStatus;
-      this.whousecls.user = this.userDataService.userData.userID;
-      this.whousecls.refNo = this.userDataService.userData.sessionID;
+      this.prepareCls();
       try {
         this.loader.start();
         this.subSink.sink = this.invService.saveWarehouse(this.whousecls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
             this.wareHouseList.push({ itemCode: res.tranNoNew, itemName: this.warehouseForm.get('whName')!.value })
-            if (this.warehouseForm.controls['mode'].value == "Add") {
-              // this.modeChange("Modify");
+            if (this.warehouseForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.warehouseForm.controls['mode'].patchValue('Modify');
             }
             this.newTranMsg = res.message;
-            this.textMessageClass = "green";
             if (res.tranNoNew) {
               this.onWarehouseChanged(res.tranNoNew, this.warehouseForm.controls['mode'].value)
             }
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -263,8 +262,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     this.warehouseForm.get('list')!.valueChanges.subscribe((value) => {
       this.onWarehouseChanged(value, this.warehouseForm.get('mode')!.value);
     });
-    this.retMessage = "";
-    this.textMessageClass = '';
+    this.displayMessage("", "");
   }
 
   clear() {
@@ -281,12 +279,10 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM301",
-        // Page: "Warehouse",
-        // SlNo: 36,
+        ScrId: ScreenId.WAREHOUSE_SCRID,
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
@@ -294,30 +290,28 @@ export class WarehouseComponent implements OnInit, OnDestroy {
 
   }
 
-  NotesDetails(tranNo:any){
+  NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
-      data: { 'tranNo': tranNo,
-      'mode': this.warehouseForm.controls['mode'].value,
-      //'note':this.warehouseForm.controls['notes'].value ,
-      'TranType': "WAREHOUSE",
-      'search' :"Warehouse Notes"}  // Pass any data you want to send to CustomerDetailsComponent
-
-    });
-    dialogRef.afterClosed().subscribe(result => {
+      data: {
+        tranNo: tranNo,
+        mode: this.warehouseForm.controls['mode'].value,
+        TranType: Items.WAREHOUSE,
+        search: "Warehouse Notes"
+      }
 
     });
   }
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "WAREHOUSE",
-        'tranNo': tranNo,
-        'search': 'Material Request log'
+        tranType: Items.WAREHOUSE,
+        tranNo: tranNo,
+        search: 'Material Request log'
       }
     });
   }
