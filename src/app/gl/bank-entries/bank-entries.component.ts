@@ -1,13 +1,10 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm } from '@angular/forms';
-import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { forkJoin } from 'rxjs';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
-import { UserData } from 'src/app/admin/admin.module';
-import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/general/date-format';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { MasterParams } from 'src/app/modals/masters.modal';
 import { SubSink } from 'subsink';

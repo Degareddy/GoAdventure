@@ -16,12 +16,9 @@ import { VatSubmitComponent } from './vat-submit/vat-submit.component';
 import { GlDashboardComponent } from './gl-dashboard/gl-dashboard.component';
 import { ExchangeRateComponent } from './exchange-rate/exchange-rate.component';
 import { GlGuard } from './_guard/gl.guard';
+import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-credit-note.component';
 
 const routes: Routes = [
-  // {
-  // path: 'gl',
-  // component: DefaultComponent,
-  // children: [
   { path: 'vat-details', component: VatDetailsComponent, canActivate: [GlGuard] },
   { path: 'fin-periods', component: FinPeriodsComponent, canActivate: [GlGuard] },
   { path: 'banks', component: BanksComponent, canActivate: [GlGuard] },
@@ -34,9 +31,10 @@ const routes: Routes = [
   { path: 'gross-margin', component: GrossMarginComponent, canActivate: [GlGuard] },
   { path: 'vat-submit', component: VatSubmitComponent, canActivate: [GlGuard] },
   { path: 'gl-dashboard', component: GlDashboardComponent, canActivate: [GlGuard] },
-  { path: 'exchange-rates', component: ExchangeRateComponent, canActivate: [GlGuard] }
+  { path: 'exchange-rates', component: ExchangeRateComponent, canActivate: [GlGuard] },
+  { path: 'debit-credit-note', component: DebitCreditNoteComponent, canActivate: [GlGuard] },
 ]
-// }];
+
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

@@ -162,7 +162,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
       const fromDate = new Date(this.tranSearchForm.get('fromDate')!.value);
       const toDate = new Date(this.tranSearchForm.get('toDate')!.value);
       if (fromDate > toDate) {
-        this.displayMessage(displayMsg.ERROR+ "From date should be less than To date", TextClr.red);
+        this.displayMessage(displayMsg.ERROR + "From date should be less than To date", TextClr.red);
         return;
       }
       const body = {
@@ -177,12 +177,11 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
       try {
         this.subSink.sink = await this.mastService.GetTranSearchList(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
-            this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];
           }
           else {
             this.rowData = res['data'];
-            console.log(this.rowData);
             this.calculateTotal(this.rowData);
             this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
@@ -206,7 +205,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
     this.textMessageClass = cssClass;
-    }
+  }
 
   onRowClick(row: any, i: number) {
     this.dialogRef.close(row.tranNo);
@@ -214,7 +213,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   clear() {
     this.tranSearchForm.reset()
     this.tranSearchForm = this.formInit();
-   this.displayMessage("", "");
+    this.displayMessage("", "");
   }
   onFilterData(event: any) {
     this.calculateTotal(event);
