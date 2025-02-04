@@ -14,6 +14,8 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, Mode, ScreenId, TextClr } from 'src/app/utils/enums';
 @Component({
   selector: 'app-product-groups',
   templateUrl: './product-groups.component.html',
@@ -66,29 +68,38 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.subSink.sink = this.masterService.getModesList(this.masterParams).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.modes = res['data'];
       }
+      else{
+         this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
+      }
     });
-    this.masterParams.item = 'PRODUCTGROUP';
+    this.masterParams.item = Items.PRODUCTGROUP;
 
     this.subSink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.typeNamesList = res['data'];
       }
+      else{
+
+      } this.displayMessage(displayMsg.ERROR + "Types list empty!", TextClr.red);
 
     });
     this.productGroupForm.get('typeName')!.valueChanges.subscribe((value) => {
       this.onSelectedTypeChanged(value, this.productGroupForm.get('mode')!.value);
     });
   }
-
+private displayMessage(message: string, cssClass: string) {
+			this.retMessage = message;
+			this.textMessageClass = cssClass;
+		  }
   onSelectedTypeChanged(type: string, mode: string) {
     this.masterParams.item = type;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.subSink.sink = this.invService.getProductGroupDetails(this.masterParams).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.productGroupForm.controls['groupCode'].patchValue(res['data'].groupCode);
         this.productGroupForm.controls['groupName'].patchValue(res['data'].groupName);
         this.productGroupForm.controls['effectiveDate'].patchValue(res['data'].effectiveDate);
@@ -97,18 +108,15 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
         this.productGroupForm.controls['notes'].patchValue(res['data'].notes);
         this.productGroupForm.get('typeName')?.patchValue(res.data.groupCode, { emitEvent: false });
 
-        if (mode === 'View') {
-          this.retMessage = res.message;
-          this.textMessageClass = 'green';
+        if (mode.toUpperCase() === Mode.view) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.retMessage = this.newMsg;
-          this.textMessageClass = 'green';
+          this.displayMessage(displayMsg.SUCCESS + this.newMsg, TextClr.green);
         }
 
       } else {
-        this.retMessage = res.message;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     });
   }
@@ -131,9 +139,9 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.invService.UpdateProductGroups(this.prodGroupCls).subscribe((result: SaveApiResponse) => {
         this.loader.stop();
-        if (result.status.toUpperCase() === "SUCCESS") {
+        if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.newMsg = result.message;
-          if (this.productGroupForm.get('mode')?.value === "Add") {
+          if (this.productGroupForm.get('mode')?.value.toUpperCase() === Mode.Add) {
             this.typeNamesList.push({ itemCode: this.productGroupForm.get('groupCode')?.value, itemName: this.productGroupForm.get('groupName')?.value })
             this.modeChanged('Modify');
           }
@@ -144,16 +152,14 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
       });
     }
     else {
-      this.retMessage = "Form Invalid";
-      this.textMessageClass = "red"
+      this.displayMessage(displayMsg.ERROR + "Form Invalid", TextClr.red);
     }
 
   }
   Clear() {
     this.productGroupForm = this.formInit();
     this.itemStatus = "";
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     this.productGroupForm.get('typeName')!.valueChanges.subscribe((value) => {
       this.onSelectedTypeChanged(value, this.productGroupForm.get('mode')!.value);
     });
@@ -162,7 +168,7 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/home');
   }
   modeChanged(event: string) {
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.productGroupForm = this.formInit();
       this.productGroupForm.controls['mode'].setValue(event, { emitEvent: false });
       this.retMessage = "";
@@ -178,7 +184,7 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM302",
+        ScrId: ScreenId.PRODUCT_GROUPS_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext:false,
@@ -193,16 +199,15 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
       height: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.productGroupForm.controls['mode'].value,
-        'note': this.productGroupForm.controls['notes'].value,
-        'TranType': "PRODGROUP",
-        'search' :"Product Group Notes"}  // Pass any data you want to send to CustomerDetailsComponent
-
+        tranNo: tranNo,
+        mode: this.productGroupForm.controls['mode'].value,
+        note: this.productGroupForm.controls['notes'].value,
+        TranType: Items.PRODUCTGROUP,
+        search :"Product Group Notes"}
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
   logDetails(tranNo:string) {
@@ -210,9 +215,9 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "PRODGROUP",
-        'tranNo': tranNo,
-        'search': 'Product Group log Details'
+        tranType: Items.PRODUCTGROUP,
+        tranNo: tranNo,
+        search: 'Product Group log Details'
       }
     });
   }

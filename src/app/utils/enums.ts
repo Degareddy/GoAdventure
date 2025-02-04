@@ -53,7 +53,8 @@ export enum Items {
   VATR="VATR",
   REPORTS="REPORTS",
   BRANCHES="BRANCHES",
-  VENTPROP="VENTPROP"
+  VENTPROP="VENTPROP",
+  PRODUCTGROUP="PRODUCTGROUP"
 }
 export enum Mode {
   Add = 'ADD',
@@ -99,7 +100,8 @@ export enum TranType {
   PURCHASE="PURCHASE",
   SUPQUOTEAUTH="SUPQUOTEAUTH",
   STOCKCON="STOCKCON",
-  MATREQ="MATREQ"
+  MATREQ="MATREQ",
+  PHYSTOCK="PHYSTOCK"
 }
 
 export enum TranStatus {
