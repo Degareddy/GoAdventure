@@ -1286,7 +1286,7 @@ isPayment: boolean=false;
       instrumentDate: res['data'].instrumentDate,
       instrumentStatus: res['data'].instrumentStatus,
       rctBank: res['data'].rctBank,
-      rctAccount: res['data'].rctAccountName,
+      rctAccount: res['data'].rctAccountName || res['data'].rctAccount,
       rctDate: res['data'].rctDate,
       rctStatus: res['data'].rctStatus,
       rctAmount:
