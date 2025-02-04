@@ -12,6 +12,8 @@ import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SearchProductComponent } from 'src/app/general/search-product/search-product.component';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { Item } from 'src/app/general/Interface/interface';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-material-request-details',
@@ -116,22 +118,23 @@ export class MaterialRequestDetailsComponent implements OnInit, OnDestroy {
     try {
       this.subSink.sink = this.invService.UpdateMaterialRequestDetails(this.materialdetcls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.dataFlag = true;
           this.getrequestDetails();
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
 
   addMaterialRequest() {
     this.mrhReqForm.reset();
@@ -165,9 +168,8 @@ export class MaterialRequestDetailsComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.invService.GetMaterialRequestDetails(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+        if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
         else {
           this.rowData = res['data'];
@@ -175,15 +177,14 @@ export class MaterialRequestDetailsComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   searchProduct() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.mrhReqForm.controls['productName'].value
 
     }
@@ -191,19 +192,18 @@ export class MaterialRequestDetailsComponent implements OnInit, OnDestroy {
       if (res && res.data && res.data.nameCount === 1) {
         this.mrhReqForm.controls['productName'].patchValue(res.data.selName);
         this.materialdetcls.product = res.data.selCode;
-        // this.mrhReqForm.controls['uom'].patchValue(res);
       }
       else {
         const dialogRef: MatDialogRef<SearchProductComponent> = this.dialog.open(SearchProductComponent, {
           width: '90%',
           disableClose: true,
           data: {
-            'tranNum': this.mrhReqForm.controls['productName'].value, 'TranType': "PRODUCT",
-            'search': 'Product Search'
+            tranNum: this.mrhReqForm.controls['productName'].value, TranType:  Type.PRODUCT,
+            search: 'Product Search'
           }
         });
         dialogRef.afterClosed().subscribe(result => {
-          if (result != true) {
+          if (result != true && result != undefined) {
             this.mrhReqForm.controls['productName'].patchValue(result.prodName);
             this.materialdetcls.product = result.prodCode;
             this.mrhReqForm.controls['uom'].patchValue(result.uom);

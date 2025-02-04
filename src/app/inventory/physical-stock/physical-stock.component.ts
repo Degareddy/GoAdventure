@@ -17,6 +17,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-physical-stock',
@@ -79,12 +81,12 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
       const formattedCurrentDate = this.formatDate(currentDate);
       const body = {
         ...this.commonParams(),
-        TranType: 'PHYSTOCK',
+        TranType: TranType.PHYSTOCK,
         TranNo: this.PhysicalStockForm.controls['tranNo'].value,
         Party: "",
         FromDate: formattedFirstDayOfMonth,
         ToDate: formattedCurrentDate,
-        TranStatus: "ANY"
+        TranStatus: TranStatus.ANY
       }
       this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
         if (res.retVal === 0) {
@@ -93,77 +95,78 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
             this.getPhyStockData(this.PhysicalDeails, this.PhysicalStockForm.get('mode')?.value);
           }
           else {
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: {
-                'tranNum': this.PhysicalStockForm.controls['tranNo'].value, 'TranType': "PHYSTOCK",
-                'search': 'Physical Stcock Search'
-              }
-            });
-            dialogRef.afterClosed().subscribe(result => {
-              if (result != true) {
-                this.PhysicalDeails.tranNo = result;
-                this.getPhyStockData(this.PhysicalDeails, this.PhysicalStockForm.get('mode')?.value);
-              }
-            });
+            this.openSearch();
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.openSearch();
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-
+  openSearch() {
+    const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+      width: '90%',
+      disableClose: true,
+      data: {
+        tranNum: this.PhysicalStockForm.controls['tranNo'].value,
+        TranType: TranType.PHYSTOCK,
+        search: 'Physical Stcock Search'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != true && result != undefined) {
+        this.PhysicalDeails.tranNo = result;
+        this.getPhyStockData(this.PhysicalDeails, this.PhysicalStockForm.get('mode')?.value);
+      }
+    });
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   getPhyStockData(phyCls: PhysicalDeails, mode: string) {
     try {
       this.loader.start();
       this.subSink.sink = this.invService.GetPhysicalStock(phyCls).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() == "SUCCESS") {
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
           this.PhysicalStockForm.controls['tranNo'].setValue(res['data'].tranNo);
           this.PhysicalStockForm.controls['tranDate'].setValue(res['data'].tranDate);
           this.PhysicalStockForm.controls['notes'].setValue(res['data'].notes);
           this.tranStatus = res['data'].tranStatus;
           this.PhysicalStockForm.controls['warehouse'].setValue(res['data'].warehouse);
 
-          if (mode != 'View') {
-            this.retMessage = this.newMsg;
-            this.textMessageClass = 'green';
+          if (mode.toUpperCase() != Mode.view) {
+            this.displayMessage(displayMsg.SUCCESS + this.newMsg, TextClr.green);
           }
           else {
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
 
         }
         else {
-          this.textMessageClass = 'red';
-          this.retMessage = res.message;
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.textMessageClass = 'red';
-      this.retMessage = ex;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.clear();
       this.PhysicalStockForm.controls['mode'].setValue(event, { emitEvent: false });
       this.PhysicalStockForm.get('tranNo')!.disable();
       this.PhysicalStockForm.get('tranNo')!.clearValidators();
       this.PhysicalStockForm.get('tranNo')!.updateValueAndValidity();
-      this.loadData();
+      // this.loadData();
     }
     else {
       this.PhysicalStockForm.controls['mode'].setValue(event, { emitEvent: false });
@@ -179,22 +182,29 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
     this.PhysicalDeails.refNo = this.userDataService.userData.sessionID;
     const body: getPayload = {
       ...this.commonParams(),
-      item: 'ST307',
+      item: ScreenId.PHYSICAL_STOCK_SCRID,
     };
+    // ST307
     const warehouseBody = {
       ...this.commonParams(),
-      item: "WAREHOUSE",
-      SelLocation:this.userDataService.userData.location,
-      mode:this.PhysicalStockForm.get('mode')?.value
+      item: Items.WAREHOUSE,
+      SelLocation: this.userDataService.userData.location,
+      mode: this.PhysicalStockForm.get('mode')?.value
     };
     this.subSink.sink = this.invService.GetMasterItemsListSelLocation(warehouseBody).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.warehouseList = res['data'];
+      }
+      else {
+        this.displayMessage(displayMsg.ERROR + "Warehouse list empty!", TextClr.red);
       }
     });
     this.subSink.sink = this.masterService.getModesList(body).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.modes = res['data'];
+      }
+      else {
+        this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
       }
     });
   }
@@ -206,9 +216,9 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: { tranNo: this.PhysicalStockForm.get('tranNo')?.value, mode: this.PhysicalStockForm.get('mode')?.value }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
+    // dialogRef.afterClosed().subscribe(result => {
+    //   console.log(`Dialog result: ${result}`);
+    // });
   }
 
   formInit() {
@@ -222,8 +232,7 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("", "");
     if (this.PhysicalStockForm.invalid) {
       return;
     }
@@ -239,9 +248,9 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
         warehouse: this.PhysicalStockForm.get('warehouse')?.value,
       }
       this.subSink.sink = this.invService.UpdatePhysicalStock(body).subscribe((res: SaveApiResponse) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.newMsg = res.message;
-          if (this.PhysicalStockForm.get('mode')?.value === "Add") {
+          if (this.PhysicalStockForm.get('mode')?.value.toUpperCase() === Mode.Add) {
             this.modeChange("Modify");
           }
           this.PhysicalStockForm.get('tranNo')?.patchValue(res.tranNoNew);
@@ -249,8 +258,7 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
           this.getPhyStockData(this.PhysicalDeails, this.PhysicalStockForm.get('mode')?.value)
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
@@ -262,8 +270,7 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
 
   clear() {
     this.PhysicalStockForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     this.tranStatus = "";
   }
 
@@ -275,10 +282,14 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.PhysicalStockForm.controls['mode'].value, tranNo: this.PhysicalStockForm.controls['tranNo'].value, search: 'Physical-Stock Docs', tranType: "PHYSTOCK" }
+      data: {
+        mode: this.PhysicalStockForm.controls['mode'].value,
+        tranNo: this.PhysicalStockForm.controls['tranNo'].value, search: 'Physical-Stock Docs',
+        tranType: TranType.PHYSTOCK
+      }
     });
-    dialogRef.afterClosed().subscribe(result => {
-    });
+    // dialogRef.afterClosed().subscribe(result => {
+    // });
 
   }
 
@@ -292,17 +303,17 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST307",
+        ScrId: ScreenId.PHYSICAL_STOCK_SCRID,
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
   NotesDetails(tranNo: any) {
@@ -310,16 +321,16 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.PhysicalStockForm.controls['mode'].value,
-        'note': this.PhysicalStockForm.controls['notes'].value,
-        'TranType': "PHYSTOCK",
+        tranNo: tranNo,
+        mode: this.PhysicalStockForm.controls['mode'].value,
+        note: this.PhysicalStockForm.controls['notes'].value,
+        TranType: TranType.PHYSTOCK,
       }
 
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
   logDetails(tranNo: any) {
@@ -328,14 +339,14 @@ export class PhysicalStockComponent implements OnInit, OnDestroy {
 
       disableClose: true,
       data: {
-        'tranType': 'PHYSTOCK',
-        'tranNo': tranNo,
-        'search': 'Physical Stock log Search'
+        tranType: TranType.PHYSTOCK,
+        tranNo: tranNo,
+        search: 'Physical Stock log Search'
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
 

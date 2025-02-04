@@ -22,6 +22,8 @@ import { Observable, forkJoin, map, startWith } from 'rxjs';
 import { MastersService } from 'src/app/Services/masters.service';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-consumption',
@@ -112,23 +114,21 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
-    // const propertyBody = this.createRequestData('PROPERTY');
-    const propertyBody ={...this.createRequestData('VENTPROP'),mode:this.consumptionForm.get('mode')?.value};
+    const propertyBody ={...this.createRequestData(Items.VENTPROP),mode:this.consumptionForm.get('mode')?.value};
     try {
-      const service1 = this.masterService.getModesList({ ...this.commonParams(), item: 'ST913' });
+      const service1 = this.masterService.getModesList({ ...this.commonParams(), item: ScreenId.CONSUMPTION_SCRID });
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
       this.subSink.sink = forkJoin([service1, property$]).subscribe(
         (results: any[]) => {
           const res1 = results[0];
           const res2 = results[1];
 
-          if (res1.status.toUpperCase() === "SUCCESS") {
+          if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.modes = res1.data;
           } else {
-            this.retMessage = "Modes list Empty!";
-            this.textMessageClass = "res";
+            this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
           }
-          if (res2.status.toUpperCase() === "SUCCESS") {
+          if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.propertyList = res2.data;
             if (this.props.length === 1) {
               this.consumptionForm.get('propertyName')!.patchValue(this.propertyList[0].itemName);
@@ -140,19 +140,18 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
               map(value => this._filter(value || '')),
             );
           } else {
-            this.retMessage = "Property list Empty!";
-            this.textMessageClass = "res";
+            this.displayMessage(displayMsg.ERROR + "Property list empty!", TextClr.red);
           }
         },
         (error: any) => {
           this.loader.stop();
-          this.handleError(error);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
       this.loader.stop();
-      this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -161,7 +160,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.invService.getStockConsumptionHeader(masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() == "SUCCESS") {
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
           this.consumptionForm.controls['tranNo'].patchValue(res['data'].tranNo);
           this.consumptionForm.controls['tranDate'].patchValue(res['data'].tranDate);
           this.consumptionForm.controls['purpose'].patchValue(res['data'].purpose);
@@ -179,26 +178,20 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
           this.stkIssueHdr.property = res.data.property;
           this.itemCount = res['data'].itemCount;
           this.tranStatus = res['data'].tranStatus;
-          if (mode != "View" && this.newTranMsg != "") {
-            this.textMessageClass = 'green';
-            this.retMessage = this.newTranMsg;
+          if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
+            this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
           }
           else {
-            this.textMessageClass = 'green';
-            this.retMessage =
-              'Retriving data ' + res.message + ' has completed';
+            this.displayMessage(displayMsg.SUCCESS +  'Retriving data ' + res.message + ' has completed', TextClr.green);
           }
         }
         else {
-          this.textMessageClass = 'red';
-          this.retMessage = res.message;
-          this.clear();
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.textMessageClass = 'red';
-      this.retMessage = ex.message;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -218,7 +211,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     } else {
       this.stkIssueHdr.tranDate = '';
     }
-    this.stkIssueHdr.tranStatus = "ANY";
+    this.stkIssueHdr.tranStatus = TranStatus.ANY;
     this.stkIssueHdr.remarks = this.consumptionForm.get('remarks')!.value;
     this.stkIssueHdr.mode = this.consumptionForm.get('mode')!.value;
     this.stkIssueHdr.purpose = this.consumptionForm.get('purpose')!.value;
@@ -240,23 +233,20 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
             this.newTranMsg = res.message;
-            if (this.consumptionForm.get('mode')!.value == "Add") {
+            if (this.consumptionForm.get('mode')!.value.toUpperCase() == Mode.Add) {
               this.modeChange("Modify");
               this.masterParams.tranNo = res.tranNoNew;
               this.getStockConsumptionData(this.masterParams, this.consumptionForm.get('mode')!.value);
             }
 
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -269,9 +259,8 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     this.consumptionForm.reset();
     this.consumptionForm = this.formInit();
     this.itemCount = 0;
-    this.retMessage = "";
+    this.displayMessage("","");
     this.newTranMsg = "";
-    this.textMessageClass = '';
     this.tranStatus="";
     this.filteredOptions = this.consumptionForm.get('block')!.valueChanges.pipe(startWith(''),
       map(value => this._filter(value || '')),
@@ -285,11 +274,11 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      TranType: 'STOCKCON',
+      TranType: TranType.STOCKCON,
       TranNo: this.consumptionForm.controls['tranNo'].value,
       FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate,
-      TranStatus: "ANY"
+      TranStatus: TranStatus.ANY
     }
 
     this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
@@ -300,31 +289,36 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
           this.getStockConsumptionData(this.masterParams, this.consumptionForm.get('mode')?.value);
         }
         else {
-          this.textMessageClass = "";
-          this.retMessage = "";
-          if (!this.dialogOpen) {
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: {
-                'tranNo': this.consumptionForm.get('tranNo')!.value,
-                'search': 'Consumption Search',
-                'TranType': "STOCKCON"
-              }
-            });
-            this.dialogOpen = true;
-            dialogRef.afterClosed().subscribe(result => {
-              this.dialogOpen = false;
-              if (result != true && result != undefined) {
-                this.masterParams.tranNo = result;
-                this.getStockConsumptionData(this.masterParams, this.consumptionForm.get('mode')?.value);
-              }
-            });
-          }
+          this.searchOpen();
         }
+      }
+      else{
+        this.searchOpen();
       }
 
     });
+  }
+
+  searchOpen(){
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNo: this.consumptionForm.get('tranNo')!.value,
+          search: 'Consumption Search',
+          TranType: TranType.STOCKCON
+        }
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true && result != undefined) {
+          this.masterParams.tranNo = result;
+          this.getStockConsumptionData(this.masterParams, this.consumptionForm.get('mode')?.value);
+        }
+      });
+    }
   }
 
   formatDate(date: Date): string {
@@ -337,11 +331,11 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: {
         mode: this.consumptionForm.get('mode')!.value,
-        tranNo: this.consumptionForm.get('tranNo')!.value, search: 'Consumption Docs', tranType: "STOCKCON"
+        tranNo: this.consumptionForm.get('tranNo')!.value, search: 'Consumption Docs', tranType:TranType.STOCKCON
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
-    });
+    // dialogRef.afterClosed().subscribe(result => {
+    // });
   }
 
   onDetailsCilcked() {
@@ -349,13 +343,13 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': this.consumptionForm.get('tranNo')!.value,
-        'mode': this.consumptionForm.get('mode')!.value,
-        'property': this.consumptionForm.get('propertyName')!.value,
-        'propertyName': this.propName,
-        'blockName': this.blockName,
-        'block': this.consumptionForm.get('block')!.value,
-        'status': this.tranStatus,
+        tranNo: this.consumptionForm.get('tranNo')!.value,
+        mode: this.consumptionForm.get('mode')!.value,
+        property: this.consumptionForm.get('propertyName')!.value,
+        propertyName: this.propName,
+        blockName: this.blockName,
+        block: this.consumptionForm.get('block')!.value,
+        status: this.tranStatus,
       }
     });
 
@@ -385,7 +379,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       this.loader.start();
       this.subSink.sink = this.repService.getPurchaseOrderDetails(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() != 'FAIL') {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           if (type === "Excel") {
             this.excelService.generatePurchaseOrderExcel(res['data']);
           }
@@ -393,19 +387,17 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
             this.excelService.generatePurchaseOrderPDF(res['data']);
           }
         } else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.reset();
       this.consumptionForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.consumptionForm.get('tranNo')!.disable();
@@ -421,39 +413,26 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
 
   reset() {
     this.consumptionForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("","");
     this.tranStatus = "";
     this.fetchStatus = true;
     this.disableDetail = true;
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   onHelpCilcked() {
-    // const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
-    //   disableClose: true,
-    //   data: {
-    //     ScrId: "ST308",
-    //     Page: "Consumption",
-    //     SlNo: 77,
-    //     User: this.userDataService.userData.userID,
-    //     RefNo: this.userDataService.userData.sessionID
-    //   }
-    // });
-    // dialogRef.afterClosed().subscribe(result => {
-    // });
-
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST308",
+        ScrId: ScreenId.CONSUMPTION_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext:false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
-    });
-    dialogRef.afterClosed().subscribe(result => {
     });
   }
 
@@ -466,15 +445,15 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'red';
-  }
+  // handleError(res: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = 'red';
+  // }
 
-  handleSuccess(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'green';
-  }
+  // handleSuccess(res: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = 'green';
+  // }
 
   displayProperty = (propertyCode: any): string => {
     if (this.propertyList && this.propertyList.length > 0) {
@@ -496,34 +475,28 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     this.stkIssueHdr.property = this.consumptionForm.get('propertyName')!.value;
     if (this.consumptionForm.controls.propertyName.value != "") {
       this.blockList = [];
-      // this.masterParams.type = 'BLOCK';
-      this.masterParams.type = 'VENTBLOCK';
+      this.masterParams.type = Type.VENTBLOCK;
       this.masterParams.company = this.userDataService.userData.company;
       this.masterParams.location = this.userDataService.userData.location;
       this.masterParams.refNo = this.userDataService.userData.sessionID;
       this.masterParams.item = this.consumptionForm.controls.propertyName.value;
       this.masterParams.user = this.userDataService.userData.userID;
       this.masterParams.langId = this.userDataService.userData.langId;
-      // this.consumptionForm.controls.propertyName.value;
       try {
         this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-          if (result.status.toUpperCase() === 'SUCCESS') {
-            //  console.log(result);
+          if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.blockList = result.data;
             if (this.blockList.length === 1) {
               this.consumptionForm.controls.block.patchValue(this.blockList[0].itemName);
               this.blockCode = this.blockList[0].itemCode;
-              // this.consumptionForm.controls.propertyName.patchValue(this.propertyList[0].itemName);
-              // this.propCode = this.propertyList[0].itemCode;
-              // this.stkIssueHdr.blockId = this.blockList[0].itemCode;
             }
           } else {
-            this.handleError(result.message);
+            this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.handleError(ex.message);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
 
@@ -533,7 +506,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
   onSelectedBlockChanged(): void {
     this.stkIssueHdr.blockId = this.consumptionForm.get('block')!.value;
     this.resetMessages();
-    this.masterParams.type = 'BLOCK';
+    this.masterParams.type = Type.BLOCK;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
@@ -542,7 +515,7 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
     this.masterParams.langId = this.userDataService.userData.langId;
     try {
       this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-        if (result.status.toUpperCase() === 'SUCCESS') {
+        if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.blockList = result.data;
           if (this.blockList.length === 1) {
             this.consumptionForm.controls.block.patchValue(this.blockList[0].itemName);
@@ -550,12 +523,12 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
 
           }
         } else {
-          this.handleError(result.message);
+          this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleError(ex.message);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -569,15 +542,14 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.consumptionForm.controls['mode'].value,
-        //'note': this.mrhForm.controls['notes'].value,
-        'TranType': "STOCKCON",
+        tranNo: tranNo,
+        mode: this.consumptionForm.controls['mode'].value,
+        TranType: TranType.STOCKCON,
         'search':"Consumption Notes"
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
-    });
+    // dialogRef.afterClosed().subscribe(result => {
+    // });
   }
 
   logDetails(tranNo: any) {
@@ -586,14 +558,14 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       height: '90%',
       disableClose: true,
       data: {
-        'tranType': 'STOCKCON',
-        'tranNo': tranNo,
+        tranType: TranType.STOCKCON,
+        tranNo: tranNo,
         'search': 'Consumption log Search'
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
 }

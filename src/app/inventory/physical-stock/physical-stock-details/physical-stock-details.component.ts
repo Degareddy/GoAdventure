@@ -11,6 +11,7 @@ import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SubSink } from 'subsink';
 import { physicalStockDetailsClass } from '../../inventory.class';
 import * as XLSX from 'xlsx';
+import { Type } from 'src/app/utils/enums';
 @Component({
   selector: 'app-physical-stock-details',
   templateUrl: './physical-stock-details.component.html',
@@ -178,7 +179,7 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
   searchProduct() {
     const body = {
       ...this.commonParams(),
-      Type: "PRODUCT",
+      Type: Type.PRODUCT,
       Item: this.phyDetForm.controls['item'].value
 
     }
@@ -192,12 +193,12 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
           width: '90%',
           disableClose: true,
           data: {
-            'tranNum': this.phyDetForm.controls['item'].value, 'TranType': "PRODUCT",
-            'search': 'Product Search'
+            tranNum: this.phyDetForm.controls['item'].value, TranType:  Type.PRODUCT,
+            search: 'Product Search'
           }
         });
         dialogRef.afterClosed().subscribe(result => {
-          if (result != true) {
+          if (result != true && result != undefined) {
             this.phyDetForm.controls['item'].patchValue(result.prodName);
             this.phyDetForm.controls['uom'].patchValue(result.uom);
             this.physicalStcokCls.tranNo = result.prodCode;

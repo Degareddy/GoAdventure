@@ -17,6 +17,8 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-material-request',
   templateUrl: './material-request.component.html',
@@ -43,7 +45,6 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
   public disableDetail: boolean = true;
   dialogOpen = false;
   public fetchStatus: boolean = true;
-  //materialRequestDetailscls!: materialRequestDetails;
   materialReqHdrcls: materialRequestHdr;
   constructor(private fb: FormBuilder, public dialog: MatDialog, private router: Router,
     private loader: NgxUiLoaderService, private userDataService: UserDataService,
@@ -51,7 +52,6 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
     private datePipe: DatePipe) {
     this.mrhForm = this.formInit();
     this.subSink = new SubSink();
-    // this.materialRequestDetailscls = new materialRequestDetails();
     this.materialReqHdrcls = new materialRequestHdr();
   }
 
@@ -66,7 +66,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
   }
 
   modeChange(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.reset();
       this.mrhForm.controls['mode'].setValue(event, { emitEvent: false });
       this.mrhForm.get('tranNo')!.disable();
@@ -85,7 +85,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        tranNum: this.mrhForm.controls['tranNo'].value, TranType: "MATREQ",
+        tranNum: this.mrhForm.controls['tranNo'].value, TranType: TranType.MATREQ,
         search: 'Material Search',
         mode: this.mrhForm.controls['mode'].value
       }
@@ -116,14 +116,13 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
   loadData() {
     const body = {
       ...this.commonParams(),
-      item: 'ST306'
+      item: ScreenId.MATERIAL_REQUEST_SCRID
     };
     this.subSink.sink = this.masterService.getModesList(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.modes = res['data'];
       }
     });
-
     this.getLocationsList();
     this.materialReqHdrcls.langID = this.userDataService.userData.langId;
     this.materialReqHdrcls.company = this.userDataService.userData.company;
@@ -144,12 +143,12 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
       const formattedCurrentDate = this.formatDate(currentDate);
       const body = {
         ...this.commonParams(),
-        TranType: 'MATREQ',
+        TranType: TranType.MATREQ,
         TranNo: this.mrhForm.controls['tranNo'].value,
         Party: "",
         FromDate: formattedFirstDayOfMonth,
         ToDate: formattedCurrentDate,
-        TranStatus: "ANY"
+        TranStatus: TranStatus.ANY
       }
       this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
         if (res.retVal === 0) {
@@ -162,19 +161,18 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
               width: '90%',
               disableClose: true,
               data: {
-                'tranNum': this.mrhForm.controls['tranNo'].value, 'TranType': "MATREQ",
-                'search': 'Material Search'
+                tranNum: this.mrhForm.controls['tranNo'].value, TranType: TranType.MATREQ,
+                search: 'Material Search'
               }
             });
             dialogRef.afterClosed().subscribe(result => {
-              if (result != true) {
+              if (result != true && result != undefined) {
                 this.materialReqHdrcls.tranNo = result;
                 try {
                   this.MaterialData(this.materialReqHdrcls, this.mrhForm.get('mode')?.value);
                 }
                 catch (ex: any) {
-                  this.retMessage = ex;
-                  this.textMessageClass = 'red';
+                  this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
                 }
               }
             });
@@ -183,17 +181,19 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
       });
     }
     catch (ex: any) {
-      this.retMessage = ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   MaterialData(mrDet: materialRequestHdr, mode: string) {
     try {
       this.loader.start();
       this.subSink.sink = this.invService.GetMaterialRequest(mrDet).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() == "SUCCESS") {
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
           this.mrhForm.controls['tranNo'].setValue(res['data'].tranNo);
           this.mrhForm.controls['tranDate'].setValue(res['data'].tranDate);
           this.mrhForm.controls['requestTo'].setValue(res['data'].requestToLocn);
@@ -205,25 +205,22 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
           this.receivedOn = res['data'].receivedOn.startsWith('0001-01-01') ? '' : res['data'].receivedOn;
           this.approvedBy = res['data'].approvedBy;
           this.tranStatus = res['data'].tranStatus;
-          if (mode === "View") {
-            this.textMessageClass = 'green';
-            this.retMessage = 'Retriving data ' + res.message + ' has completed';
+          if (mode.toUpperCase() === Mode.view) {
+            this.displayMessage(displayMsg.SUCCESS + 'Retriving data ' + res.message + ' has completed', TextClr.green);
           }
           else {
-            this.textMessageClass = 'green';
-            this.retMessage = this.newMessage;
+
+            this.displayMessage(displayMsg.SUCCESS + this.newMessage, TextClr.green);
           }
 
         }
         else {
-          this.textMessageClass = 'red';
-          this.retMessage = res.message;
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.textMessageClass = 'red';
-      this.retMessage = ex;
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -268,8 +265,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
   }
 
   clearMsg() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+   this.displayMessage("","");
   }
 
   onUpdate() {
@@ -294,13 +290,11 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -314,20 +308,15 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
     this.mrhForm = this.formInit();
     this.status = '';
     this.tranStatus = '';
-    this.retMessage = '';
-    // this.receivedOn = "";
-    // this.receivedBy = "";
-    // this.issuedOn = "";
-    // this.issuedBy = "";
-    // this.approvedOn = "";
-    // this.approvedBy = "";
+    this.displayMessage("","");
   }
 
   onDocsCilcked(value: string) {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
       width: '90%',
       disableClose: true,
-      data: { mode: this.mrhForm.controls['mode'].value, tranNo: this.mrhForm.controls['tranNo'].value, search: 'Material-Request Docs', tranType: "MATREQ" }
+      data: { mode: this.mrhForm.controls['mode'].value, tranNo: this.mrhForm.controls['tranNo'].value,
+        search: 'Material-Request Docs', tranType: TranType.MATREQ }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.isAltered === true) {
@@ -340,7 +329,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST306",
+        ScrId: ScreenId.MATERIAL_REQUEST_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext:false,
@@ -348,8 +337,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
         RefNo: this.userDataService.userData.sessionID
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
-    });
+
   }
 
   NotesDetails(tranNo: any) {
@@ -357,56 +345,53 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.mrhForm.controls['mode'].value,
-        //'note': this.mrhForm.controls['notes'].value,
-        'TranType': "MATREQ",
-        'search':"Material Request Notes"
+        tranNo: tranNo,
+        mode: this.mrhForm.controls['mode'].value,
+        TranType: TranType.MATREQ,
+        search:"Material Request Notes"
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
 
-    });
   }
 
   getLocationsList() {
     this.locationList = [];
     const locationbody = {
       ...this.commonParams(),
-      item: "LOCATION",
+      item:Items.LOCATION,
       mode:this.mrhForm.get('mode')?.value
     };
     try {
       this.subSink.sink = this.invService.GetMasterItemsList(locationbody).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.locationList = res['data'];
           if (this.locationList.length === 1) {
             this.mrhForm.controls['requestTo'].patchValue(this.locationList[0].itemCode, { emitEvent: false });
           }
         }
         else {
-          this.handleError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
-  handleError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = "red";
-  }
+  // handleError(res: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = "red";
+  // }
 
   logDetails(tranNo:string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "MATREQ",
-        'tranNo': tranNo,
-        'search': 'Material Request log'
+        tranType: TranType.MATREQ,
+        tranNo: tranNo,
+        search: 'Material Request log'
       }
     });
   }
