@@ -261,14 +261,14 @@
             </mat-form-field>
           </div>
           <div class="col-12 myCustomClass checkbox-container">
-            <mat-checkbox formControlName="isRentInvoice" (change)="onCheckboxChange('isRentInvoice')">Rental</mat-checkbox>
-            <mat-checkbox formControlName="isUtility" (change)="onCheckboxChange('isUtility')">Utility</mat-checkbox>
-            <mat-checkbox formControlName="deposit" (change)="onCheckboxChange('deposit')">Deposit</mat-checkbox>
-            <mat-checkbox formControlName="applyVAT" (change)="onCheckboxChange('applyVAT')">Apply VAT</mat-checkbox>
-            <mat-checkbox formControlName="miscellaneous" (change)="onCheckboxChange('miscellaneous')">Legal Charges</mat-checkbox>
-            <mat-checkbox formControlName="includeExpenses" (change)="onCheckboxChange('includeExpenses')">Expenses</mat-checkbox>
-            <mat-checkbox formControlName="isApplyForAll" 
-                          [disabled]="saleForm.get('mode')!.value !== 'Authorize' || !saleForm.get('miscellaneous')!.value" 
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="isRentInvoice" (change)="onCheckboxChange('isRentInvoice')">Rental</mat-checkbox>
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="isUtility" (change)="onCheckboxChange('isUtility')">Utility</mat-checkbox>
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="deposit" (change)="onCheckboxChange('deposit')">Deposit</mat-checkbox>
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="applyVAT" (change)="onCheckboxChange('applyVAT')">Apply VAT</mat-checkbox>
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="miscellaneous" (change)="onCheckboxChange('miscellaneous')">Legal Charges</mat-checkbox>
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="includeExpenses" (change)="onCheckboxChange('includeExpenses')">Expenses</mat-checkbox>
+            <mat-checkbox [disabled]="saleForm.get('mode')!.value !== 'Add'" formControlName="isApplyForAll" 
+                          [disabled]="saleForm.get('mode')!.value !== 'Authorize' || saleForm.get('mode')!.value !== 'Add' || !saleForm.get('miscellaneous')!.value" 
                           (change)="onCheckboxChange('isApplyForAll')">All Units</mat-checkbox>
           </div>
           

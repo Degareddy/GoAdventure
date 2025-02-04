@@ -25,6 +25,26 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   invDetForm!: FormGroup;
   slNum: number = 0;
   itemsList: Item[] = [];
+  modes: Item[] = [
+   {
+    itemCode:'',
+    itemName:'Select'
+   }, 
+  
+  {
+      itemCode: "Delete",
+      itemName: "Delete"
+  },
+  {
+      itemCode: "Modify",
+      itemName: "Modify"
+  },
+  
+  {
+      itemCode: "View",
+      itemName: "View"
+  }
+  ];
   vatAmount!: string;
   private invDetailCls: invoiceDetailClass
   private subSink!: SubSink;
@@ -154,6 +174,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   formInit() {
     return this.fb.group({
       itemType: ['', Validators.required],
+      mode:[this.data.mode],
       amount: ['0.00', Validators.required],
       vatAmount: ['0.00'],
       net: ['0.00', Validators.required],
@@ -218,7 +239,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   prepareCls() {
-    this.setCommonValues(this.data.mode);
+    this.setCommonValues(this.invDetForm.get('mode')?.value);
   }
 
   apply() {
