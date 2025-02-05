@@ -15,6 +15,7 @@ export enum Role {
 }
 
 export enum Items {
+  DIRECTIONS="DIRECTIONS",
   WORKTYPE="WORKTYPE",
   WRKMAIN="WRKMAIN",
   PRODUCTS="PRODUCTS",

@@ -11,6 +11,8 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { ProjectsService } from 'src/app/Services/projects.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from '../Interface/interface';
+import { displayMsg, TextClr, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-flat-search',
@@ -110,7 +112,7 @@ export class FlatSearchComponent implements OnInit, OnDestroy {
       const body = {
         Company: this.userDataService.userData.company,
         Location: this.userDataService.userData.location,
-        ItemType: "FLAT",
+        ItemType: Type.FLAT,
         Property: this.data.property || "",
         Block: this.data.block || "",
         Unit: this.flatSearchForm.controls['unit'].value,
@@ -123,36 +125,36 @@ export class FlatSearchComponent implements OnInit, OnDestroy {
       }
       try {
         this.subSink.sink =await this.prjService.GetUnitsSearchList(body).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];
           }
           else {
             this.rowData = res['data'];
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
 
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
+
   onRowClick(row: any) {
-  
+
     this.dialogRef.close(row);
   }
 
   clear() {
     this.flatSearchForm.reset()
     this.flatSearchForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
-
+    this.displayMessage("","");
   }
 
 }

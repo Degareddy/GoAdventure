@@ -11,6 +11,8 @@ import { Item } from '../Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse, SaveApiResponse } from '../Interface/admin/admin';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, Mode, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-directions',
@@ -79,17 +81,17 @@ export class DirectionsComponent implements OnInit, OnDestroy {
     gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
 
- async loadData() {
+  async loadData() {
     const dirBody: getPayload = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID,
-      item: 'DIRECTIONS',
+      item: Items.DIRECTIONS,
 
     }
-    this.subSink.sink =await this.masterService.GetMasterItemsList(dirBody).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+    this.subSink.sink = await this.masterService.GetMasterItemsList(dirBody).subscribe((res: getResponse) => {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.directionsList = res['data'];
       }
       else {
@@ -97,7 +99,7 @@ export class DirectionsComponent implements OnInit, OnDestroy {
       }
     });
   }
- async getBounderiesList(tran: string, loadFlag: boolean) {
+  async getBounderiesList(tran: string, loadFlag: boolean) {
     const body = {
       Company: this.userDataService.userData.company,
       Location: this.userDataService.userData.location,
@@ -107,27 +109,30 @@ export class DirectionsComponent implements OnInit, OnDestroy {
       User: this.userDataService.userData.userID,
       RefNo: this.userDataService.userData.sessionID
     }
-    this.subSink.sink =await this.utilitiesService.GetBoundaryDetails(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
+    this.subSink.sink = await this.utilitiesService.GetBoundaryDetails(body).subscribe((res: any) => {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.rowData = res['data'];
-        if (loadFlag && this.data.mode != "Delete" && this.slNum === 0) {
+        if (loadFlag && this.data.mode.toUpperCase() != Mode.Delete && this.slNum === 0) {
           const maxSlNo = this.rowData.reduce((maxSlNo: any, currentItem: any) => {
             return Math.max(maxSlNo, currentItem.slNo);
           }, 0);
           this.slNum = maxSlNo;
         }
-        else if (loadFlag && this.data.mode === "Delete" && this.slNum != 0) {
+        else if (loadFlag && this.data.mode.toUpperCase() === Mode.Delete && this.slNum != 0) {
           this.clear();
           this.retMessage = this.returnMsg;
           this.textMessageClass = "green";
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     })
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   prepareCls() {
     this.dirCls.Company = this.userDataService.userData.company;
     this.dirCls.Location = this.userDataService.userData.location;
@@ -144,34 +149,29 @@ export class DirectionsComponent implements OnInit, OnDestroy {
     this.dirCls.Remarks = "";
     this.dirCls.BoundaryDesc = this.directionForm.controls['boundery'].value;
   }
- async apply() {
+  async apply() {
     this.prepareCls();
     try {
       this.loader.start();
-      this.subSink.sink =await this.utilitiesService.UpdateBoundaryDetails(this.dirCls).subscribe((res: SaveApiResponse) => {
+      this.subSink.sink = await this.utilitiesService.UpdateBoundaryDetails(this.dirCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.returnMsg = res.message;
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           this.getBounderiesList(res.tranNoNew, true);
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   clear() {
     this.directionForm = this.formInit();
     this.slNum = 0;
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("","");
   }
   Delete() {
     const message = `Are you sure you want to do this?`;
