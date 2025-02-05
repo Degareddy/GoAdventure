@@ -8,6 +8,8 @@ import { MastersService } from 'src/app/Services/masters.service';
 import { SubSink } from 'subsink';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-search-project',
@@ -36,14 +38,12 @@ export class SearchProjectComponent implements OnInit,OnDestroy {
   public exportTmp: boolean = true;
   public excelName: string = "";
   columnDefs1: any = [
-    // { field: "slNo", headerName: "S.No", flex: 1 },
   { field: "itemLocn", headerName: "Item Location", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "itemCode", headerName: "Code", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "itemName", headerName: "Name", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "itemDesc", headerName: "Desc", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "itemStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 120 },
 
-    //
   ];
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
@@ -98,7 +98,10 @@ export class SearchProjectComponent implements OnInit,OnDestroy {
       unitStatus: ['Open', [Validators.required, Validators.maxLength(10)]]
     });
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
  async search() {
     if (this.SearchProjectForm.invalid) {
       return
@@ -115,20 +118,17 @@ export class SearchProjectComponent implements OnInit,OnDestroy {
       this.masterParams.itemSecondLevel = this.SearchProjectForm.controls['plot'].value;
       try {
         this.subSink.sink =await this.prjService.GetProjectsSearchResults(this.masterParams).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
           else {
             this.rowData = res['data'];
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -140,8 +140,7 @@ export class SearchProjectComponent implements OnInit,OnDestroy {
   clear() {
     this.SearchProjectForm.reset()
     this.SearchProjectForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("","");
   }
 
 }

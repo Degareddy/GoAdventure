@@ -9,6 +9,8 @@ import { SubSink } from 'subsink';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { PartyResponse } from '../Interface/admin/admin';
+import { displayMsg, TextClr, TranStatus } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-search-party',
   templateUrl: './search-party.component.html',
@@ -107,37 +109,37 @@ export class SearchPartyComponent implements OnInit, OnDestroy {
       this.partyCls.FullAddress = this.SearchPartyForm.controls['address'].value || "";
       this.partyCls.Phones = this.SearchPartyForm.controls['phone'].value || "";
       this.partyCls.PartyName = this.SearchPartyForm.controls['name'].value || "";
-      this.partyCls.PartyStatus = "Open";
+      this.partyCls.PartyStatus = TranStatus.OPEN;
       this.partyCls.RefNo = this.userDataService.userData.sessionID;
       this.partyCls.User = this.userDataService.userData.userID;
       this.partyCls.PartyType = this.data.PartyType || "";
       try {
         this.subSink.sink =await this.utlService.GetPartySearchList(this.partyCls).subscribe((res: PartyResponse) => {
-          if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];
           }
           else {
             this.rowData = res['data'];
             this.exportTmp = false;
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
 
   clear() {
     this.SearchPartyForm.reset()
     this.SearchPartyForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("","");
     this.rowData = "";
   }
 }

@@ -12,6 +12,8 @@ import { productSearchClass } from '../../layouts/productSearch';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { Item } from '../Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { displayMsg, Items, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-search-product',
@@ -59,8 +61,8 @@ export class SearchProductComponent implements OnInit, OnDestroy {
 
   selectedRowIndex: number = -1;
   constructor(protected utlService: UtilitiesService, private fb: FormBuilder, private invService: InventoryService,
-    private dialogRef: MatDialogRef<SearchProductComponent>,private userDataService: UserDataService,
-    private loader: NgxUiLoaderService,
+    private dialogRef: MatDialogRef<SearchProductComponent>, private userDataService: UserDataService,
+
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.masterParams = new MasterParams();
     this.productCls = new productSearchClass();
@@ -91,7 +93,6 @@ export class SearchProductComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    //console.log(event.data);
     this.onRowClick(event.data);
   }
 
@@ -102,40 +103,53 @@ export class SearchProductComponent implements OnInit, OnDestroy {
   }
   commonParams() {
     return {
-      company:this.userDataService.userData.company,
+      company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID
     }
   }
- async laodData() {
-  
+  async laodData() {
+
     const groupbody = {
       ...this.commonParams(),
-      Item: "PRODUCTGROUP"
+      Item: Items.PRODUCTGROUP
 
     };
 
     const uombody = {
       ...this.commonParams(),
-      Item: "UOM"
+      Item: Items.UOM
     };
     const service1 = this.invService.GetMasterItemsList(groupbody);
     const service2 = this.invService.GetMasterItemsList(uombody);
-    this.subSink.sink =await forkJoin([service1, service2]).subscribe(
+    this.subSink.sink = await forkJoin([service1, service2]).subscribe(
       (results: any[]) => {
-        this.loader.stop();
         const res1 = results[0];
         const res2 = results[1];
-        this.productGroupList = res1.data;
-        this.UOMList = res2.data;
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.productGroupList = res1.data;
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + " Product group list empty!", TextClr.red);
+        }
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.UOMList = res2.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + " UOM list empty!", TextClr.red);
+        }
       },
       (error: any) => {
-        this.loader.stop();
-        // this.toastr.info(error, "Exception");
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     );
 
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   formInit() {
     return this.fb.group({
@@ -143,11 +157,10 @@ export class SearchProductComponent implements OnInit, OnDestroy {
       group: ['ANY'],
       type: ['ANY'],
       uom: [''],
-      // email: ['']
     });
   }
-async  search() {
-  
+  async search() {
+
     if (this.SearchProductForm.invalid) {
       return
     }
@@ -156,37 +169,30 @@ async  search() {
       this.productCls.Location = this.userDataService.userData.location;
       this.productCls.GroupCode = this.SearchProductForm.controls['group'].value;
       this.productCls.ProdName = this.SearchProductForm.controls['name'].value;
-      this.productCls.ProdStatus = "ANY";
+      this.productCls.ProdStatus = TranStatus.ANY;
       this.productCls.ProdType = this.SearchProductForm.controls['type'].value;
       this.productCls.UOM = this.SearchProductForm.controls['uom'].value;
       this.productCls.RefNo = this.userDataService.userData.sessionID;
       this.productCls.User = this.userDataService.userData.userID;
       try {
-        this.loader.start();
-        this.subSink.sink =await this.utlService.GetProductSearchList(this.productCls).subscribe((res: any) => {
-          this.loader.stop();
-          if (res.status.toUpperCase() === "FAIL") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
-            this.rowData =[];
+        this.subSink.sink = await this.utlService.GetProductSearchList(this.productCls).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
           }
           else {
             this.rowData = res['data'];
             this.exportTmp = false;
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = 'red';
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
-  // search(){
 
-  // }
 
   onRowClick(row: any) {
     this.dialogRef.close(row);
@@ -194,8 +200,7 @@ async  search() {
   clear() {
     this.SearchProductForm.reset()
     this.SearchProductForm = this.formInit();
-    this.textMessageClass = "";
-    this.retMessage = "";
-    this.rowData = "";
+    this.displayMessage("", "");
+    this.rowData = [];
   }
 }

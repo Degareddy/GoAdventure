@@ -3,6 +3,8 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ColumnApi, GridApi } from 'ag-grid-community';
 import { SalesService } from 'src/app/Services/sales.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 @Component({
   selector: 'app-receipt-details-data',
@@ -110,7 +112,7 @@ export class ReceiptDetailsDataComponent implements OnInit {
     }
     try {
       this.subSink.sink = this.saleService.FetchPaymentsReceiptsToAllocate(body).subscribe((res: any) => {
-        if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+        if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res.data;
           const safeParse = (value: any) => {
             const parsedValue = parseFloat(value?.toString().replace(/,/g, '') || '0');
@@ -119,12 +121,12 @@ export class ReceiptDetailsDataComponent implements OnInit {
 
         }
         else {
-          this.displayMessage("This transactions is not allocated at the moment.", "red");
+          this.displayMessage(displayMsg.ERROR + "This transactions is not allocated at the moment.", TextClr.red);
         }
       })
     }
     catch (ex: any) {
-       this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   private displayMessage(message: string, cssClass: string) {

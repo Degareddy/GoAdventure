@@ -8,13 +8,15 @@ import { SubSink } from 'subsink';
 import { productAliasNameDetails } from '../../inventory.class';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-product-details',
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.css']
 })
-export class ProductDetailsComponent implements OnInit,OnDestroy {
+export class ProductDetailsComponent implements OnInit, OnDestroy {
   productListForm!: any;
   retMessage!: string;
   textMessageClass!: string;
@@ -37,7 +39,7 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
 
 
   constructor(private fb: FormBuilder, private invService: InventoryService,
-    public dialog: MatDialog,private userDataService: UserDataService,
+    public dialog: MatDialog, private userDataService: UserDataService,
     @Inject(MAT_DIALOG_DATA) public data: { mode: string, product: string, code: string }, private loader: NgxUiLoaderService
   ) {
     this.productListForm = this.formInit(),
@@ -50,8 +52,6 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
 
   ngOnInit(): void {
     this.getAliasNames(this.data.product);
-    this.load();
-
   }
 
   formInit() {
@@ -62,27 +62,18 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
     })
   }
 
-  load() {
-
-  }
   onPageSizeChanged() {
     if (this.gridApi) {
       this.gridApi.paginationSetPageSize(this.pageSize);
     }
   }
   onRowSelected(event: any) {
-    //console.log(event.data);
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     this.onRowClick(event.data);
   }
   onRowClick(row: any) {
     this.productListForm.patchValue(row);
     this.slNum = row.slNo;
-    //this.slNum = row.data.slNo;
-    //this.productListForm.controls['aliasName'].setValue(row.data.product);
-    //this.productListForm.controls['aliasName'].setValue(row.data.code);
-    // this.productListForm.controls['remarks'].setValue(row.data.remarks);
   }
   onGridReady(params: any) {
     this.gridApi = params.api;
@@ -101,28 +92,24 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
     }
     try {
       this.subSink.sink = this.invService.getProductAliasDetails(body).subscribe((res: any) => {
-        console.log(res);
-        if (res.status.toUpperCase() == "SUCCESS") {
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
-  clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
-
   productcls() {
     const formControls = this.productListForm.controls;
     this.prodCls = {
@@ -137,15 +124,8 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
       remarks: formControls.remarks.value,
     }
   }
-
-  hanldeError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = "red";
-  }
-
   onUpdate() {
-    //updateProductAliasDetails
-    //this.submitted = true;
+    this.displayMessage("", "");
     if (this.productListForm.invalid) {
       return;
     }
@@ -160,7 +140,7 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
           this.getAliasNames(this.data.product);
         }
         else {
-          this.hanldeError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
@@ -171,7 +151,7 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
   }
 
   addNew() {
-    this.clearMsgs();
+    this.displayMessage("", "");
     this.slNum = 0;
     this.productListForm = this.formInit();
   }
@@ -186,56 +166,11 @@ export class ProductDetailsComponent implements OnInit,OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(dialogResult => {
-      console.log(dialogResult);
       if (dialogResult) {
         this.onUpdate();
       }
     });
   }
-  // deleteSelectedRow() {
-  //   if (this.data.mode.toUpperCase() == "DELETE") {
-  //     // const selRow = this.get();
-
-  //     const selectedRows = this.gridApi.getSelectedRows();
-  //     console.log(selectedRows);
-  //     if (selectedRows.length === 0) {
-  //       this.retMessage = "No row selected for deletion.";
-  //       this.textMessageClass = "red";
-  //       return;
-  //     }
-
-  //     this.loader.start();
-  //     this.subSink.sink = this.invService.updateProductAliasDetails(selectedRows).subscribe((res: any) => {
-  //       this.loader.stop();
-  //       if (res.status.toUpperCase() === "SUCCESS") {
-  //         this.gridApi.applyTransaction({ remove: selectedRows });
-
-  //         this.retMessage = "Selected row(s) deleted successfully.";
-  //         this.textMessageClass = "green";
-  //       } else {
-  //         this.retMessage = res.message;
-  //         this.textMessageClass = "red";
-  //       }
-  //     }, (error) => {
-  //       console.error("Error deleting selected row(s):", error);
-  //       this.retMessage = "Error deleting selected row(s).";
-  //       this.textMessageClass = "red";
-  //       this.loader.stop();
-  //     });
-  //   }
-  // }
-
-  // getseletedRow() {
-  //   const selectedRows = this.gridApi.getSelectedRows()?.length;
-  //   if(selectedRows == 1)
-  //     {
-  //       return true;
-  //     }
-  //     else{
-  //       return false;
-  //     }
-  //   console.log(selectedRows); // You can access selected rows here
-  // }
 
 
 

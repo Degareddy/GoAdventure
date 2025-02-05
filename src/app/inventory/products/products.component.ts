@@ -19,6 +19,8 @@ import { Item } from 'src/app/general/Interface/interface';
 import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { SupplierProductsComponent } from './supplier-products/supplier-products.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 interface params {
   itemCode: string
   itemName: string
@@ -48,16 +50,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
   prodStatus!: string;
   @Input() max: any;
   tomorrow = new Date();
-
+  private dialogOpen: boolean = false;
   @ViewChild('frmClear') public sprFrm!: NgForm;
-  selectedObjects!: any[];
   constructor(private fb: FormBuilder, protected router: Router, private utlService: UtilitiesService,
     private invService: InventoryService, public dialog: MatDialog, private userDataService: UserDataService,
     private loader: NgxUiLoaderService, private toastr: ToastrService) {
     this.productForm = this.formInit();
     this.productCls = new Product();
     this.subSink = new SubSink();
-    this.selectedObjects = [{ itemCode: 'View', itemName: 'View' }];
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -84,11 +84,11 @@ export class ProductsComponent implements OnInit, OnDestroy {
       if (result) {
         const wrbody = {
           ...this.commonPrams(),
-          item: 'WAREHOUSE',
-          mode:this.productForm.get('mode')?.value,
+          item: Items.WAREHOUSE,
+          mode: this.productForm.get('mode')?.value,
         }
         this.subSink.sink = this.invService.GetMasterItemsList(wrbody).subscribe((res: any) => {
-          if (res.status.toUpperCase() === "SUCCESS") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.wareHouseList = res.data;
           }
         })
@@ -104,28 +104,71 @@ export class ProductsComponent implements OnInit, OnDestroy {
     }
   }
   loadData() {
-    const service1 = this.invService.getModesList({ ...this.commonPrams(), item: 'SM303' });
-    const service2 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'PRODUCTS',  mode:this.productForm.get('mode')?.value, });
-    const service3 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'VAT',  mode:this.productForm.get('mode')?.value, });
-    const service4 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'UOM',  mode:this.productForm.get('mode')?.value, });
-    const service5 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'WAREHOUSE',  mode:this.productForm.get('mode')?.value, });
-    const service6 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: 'PRODUCTGROUP',  mode:this.productForm.get('mode')?.value, });
-    this.loader.start();
+    const service1 = this.invService.getModesList({ ...this.commonPrams(), item: ScreenId.PRODUCTS_SCRID });
+    const service2 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: Items.PRODUCTS, mode: this.productForm.get('mode')?.value, });
+    const service3 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: Items.VAT, mode: this.productForm.get('mode')?.value, });
+    const service4 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: Items.UOM, mode: this.productForm.get('mode')?.value, });
+    const service5 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: Items.WAREHOUSE, mode: this.productForm.get('mode')?.value, });
+    const service6 = this.invService.GetMasterItemsList({ ...this.commonPrams(), item: Items.PRODUCTGROUP, mode: this.productForm.get('mode')?.value, });
     this.subSink.sink = forkJoin([service1, service2, service3, service4, service5, service6]).subscribe(
       (results: any[]) => {
-        this.loader.stop();
         const res1 = results[0];
         const res2 = results[1];
         const res3 = results[2];
         const res4 = results[3];
         const res5 = results[4];
         const res6 = results[5];
-        this.modes = res1.data;
-        this.productList = res2.data;
-        this.vatTypes = res3.data;
-        this.UOMList = res4.data;
-        this.wareHouseList = res5.data;
-        this.groupList = res6.data
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.modes = res1.data;
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
+          return;
+        }
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.productList = res2.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Product list empty!", TextClr.red);
+          return;
+        }
+
+        if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.vatTypes = res3.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Vat list empty!", TextClr.red);
+          return;
+        }
+
+        if (res4.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.UOMList = res4.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "UOM list empty!", TextClr.red);
+          return;
+        }
+
+        if (res5.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.wareHouseList = res5.data;
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Warehouse list empty!", TextClr.red);
+          return;
+        }
+
+        if (res6.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.groupList = res6.data
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + "Group list empty!", TextClr.red);
+          return;
+        }
         if (this.productList) {
           this.filteredProductList = this.productForm.get('productGroup')!.valueChanges.pipe(
             startWith(''),
@@ -138,15 +181,18 @@ export class ProductsComponent implements OnInit, OnDestroy {
       },
       (error: any) => {
         this.loader.stop();
-        this.toastr.info(error, "Exception");
+        this.displayMessage(displayMsg.EXCEPTION + error.message, TextClr.red);
       }
     );
   }
-
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   onProductSearch() {
     const body = {
       ...this.commonPrams(),
-      Type: "PRODUCT",
+      Type: TranType.PRODUCT,
       Item: this.productForm.controls['productGroup'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
@@ -159,26 +205,35 @@ export class ProductsComponent implements OnInit, OnDestroy {
           this.productChange(res.data.selCode, this.productForm.get('mode')?.value);
         }
         else {
-          const dialogRef: MatDialogRef<SearchProductComponent> = this.dialog.open(SearchProductComponent, {
-            width: '90%',
-            disableClose: true,
-            data: {
-              'tranNum': this.productForm.controls['productGroup'].value, 'TranType': "PRODUCT",
-              'search': 'Product Search'
-            }
-          });
-          dialogRef.afterClosed().subscribe(result => {
-            this.productForm.controls['productGroup'].patchValue(result.prodName);
-            this.productForm.controls['code'].patchValue(result.prodCode);
-            this.productChange(result.prodCode, this.productForm.get('mode')?.value);
-          });
+          this.openSearch();
         }
       }
       else {
-        this.retMessage = res.message;
-        this.textMessageClass = "red";
+        this.openSearch();
       }
     });
+  }
+  openSearch() {
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchProductComponent> = this.dialog.open(SearchProductComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: this.productForm.controls['productGroup'].value, TranType: TranType.PRODUCT,
+          search: 'Product Search'
+        }
+
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true && result != undefined) {
+          this.productForm.controls['productGroup'].patchValue(result.prodName);
+          this.productForm.controls['code'].patchValue(result.prodCode);
+          this.productChange(result.prodCode, this.productForm.get('mode')?.value);
+        }
+      });
+    }
   }
 
   productChange(code: string, mode: string) {
@@ -187,10 +242,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
       Item: code
     }
     try {
-      this.loader.start();
       this.subSink.sink = this.invService.GetProductDetails(body).subscribe((res: any) => {
-        this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.productForm.patchValue({
             reOrderQuantity: res.data.reOrdQty.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
             code: res.data.prodCode,
@@ -198,12 +251,12 @@ export class ProductsComponent implements OnInit, OnDestroy {
             vatType: res.data.vatType,
             product: res.data.prodName,
             saleRateStd: res.data.stdSalesRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-            tranDate: res.data.effDate, // Set to null or any other value from the result object
+            tranDate: res.data.effDate,
             uom: res.data.uom,
             saleRateMin: res.data.minSalesRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
             status: res.data.prodStatus,
-            itemCount: res.data.reOrdQty, // Set to null or any other value from the result object
-            type: res.data.prodType, // Set to null or any other value from the result object
+            itemCount: res.data.reOrdQty,
+            type: res.data.prodType,
             saleRateMax: res.data.maxSalesRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
             notes: res.data.remarks,
             wareHouse: res.data.defWHNo.trim(),
@@ -212,25 +265,20 @@ export class ProductsComponent implements OnInit, OnDestroy {
             displayName: res.data.displayName,
             hsCode: res.data.hsCode,
             productGroups: res.data.groupName
-          });
-          if (mode != 'View') {
-            this.retMessage = this.newTranMsg;
-            this.textMessageClass = "green";
+          }, { emitEvent: false });
+          if (mode.toUpperCase() != Mode.view) {
+            this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }
-
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
@@ -291,7 +339,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
     if (typeof reorder === 'string') {
       this.productCls.reOrdQty = reorder.replace(/,/g, '');
     }
-    // this.productCls.reOrdQty = reorder.replace(/,/g, '');
     this.productCls.prodCode = this.productForm.get('code')!.value;
     this.productCls.stdPurRate = this.productForm.get('purchaseRate')!.value.replace(/,/g, '');
     this.productCls.vatType = this.productForm.get('vatType')!.value;
@@ -317,26 +364,25 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.displayMessage("", "");
     if (this.productForm.valid) {
       this.prepareProductCls();
       this.loader.start();
       try {
         this.subSink.sink = this.invService.saveUpdateProducts(this.productCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            if (this.productForm.controls['mode'].value == "Add") {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            if (this.productForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.modeChanged("Modify");
             }
             this.newTranMsg = res.message;
-            this.textMessageClass = "green";
             this.productChange(res.tranNoNew, this.productForm.get('mode')?.value)
           } else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       } catch (ex: any) {
-        this.toastr.info(ex, "Exception")
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
@@ -356,8 +402,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
   }
 
   close() {
@@ -368,12 +413,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM303",
-        // Page: "Products",
-        // SlNo: 63,
+        ScrId: ScreenId.PRODUCTS_SCRID,
         SlNo: 0,
         IsPrevious: false,
-        IsNext:false,
+        IsNext: false,
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
@@ -382,7 +425,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   modeChanged(event: string) {
-    if (event === "Add") {
+    if (event.toUpperCase() === Mode.Add) {
       this.productForm = this.formInit();
       this.productForm.controls['mode'].setValue(event, { emitEvent: false });
       this.productForm.controls['productGroup'].disable();
@@ -421,26 +464,26 @@ export class ProductsComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.productForm.controls['mode'].value,
-        'note': this.productForm.controls['notes'].value,
-        'TranType': "PRODUCT",
-      }  // Pass any data you want to send to CustomerDetailsComponent
+        tranNo: tranNo,
+        mode: this.productForm.controls['mode'].value,
+        note: this.productForm.controls['notes'].value,
+        TranType: TranType.PRODUCT,
+      }
 
     });
-    dialogRef.afterClosed().subscribe(result => {
+    // dialogRef.afterClosed().subscribe(result => {
 
-    });
+    // });
   }
 
-  logDetails(tranNo:string) {
+  logDetails(tranNo: string) {
     const dialogRef: MatDialogRef<LogComponent> = this.dialog.open(LogComponent, {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "PRODUCT",
-        'tranNo': tranNo,
-        'search': 'Product log Details'
+        tranType: TranType.PRODUCT,
+        tranNo: tranNo,
+        search: 'Product log Details'
       }
     });
   }

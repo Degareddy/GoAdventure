@@ -10,13 +10,15 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { displayMsg, Items, TextClr, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-search-asset',
   templateUrl: './search-asset.component.html',
   styleUrls: ['./search-asset.component.css']
 })
-export class SearchAssetComponent implements OnInit,OnDestroy {
+export class SearchAssetComponent implements OnInit, OnDestroy {
   searchName!: string;
   textMessageClass!: string;
   retMessage!: string;
@@ -71,104 +73,118 @@ export class SearchAssetComponent implements OnInit,OnDestroy {
 
     })
   }
-  commonParams(){
-    return{
-      company:this.userDataService.userData.company,
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID
     }
   }
-async  ngOnInit() {
+  async ngOnInit() {
     const groupbody = {
-    ...this.commonParams(),
-      Item: "ASSETGROUP"
+      ...this.commonParams(),
+      Item: Items.ASSETGROUP
     }
     const locationbody = {
       ...this.commonParams(),
-      Item: "BRANCHES"
+      Item: Items.BRANCHES
     };
     const service1 = this.assetdtService.GetMasterItemsList(groupbody);
     const service2 = this.assetdtService.GetMasterItemsList(locationbody);
     this.loader.start();
-    this.subSink.sink =await forkJoin([service1, service2]).subscribe(
+    this.subSink.sink = await forkJoin([service1, service2]).subscribe(
       (results: any[]) => {
         console.log(results);
         this.loader.stop();
         const res1 = results[0];
         const res2 = results[1];
-        this.groupList = res1.data;
-        this.assetLocationList = res2.data;
+        if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.groupList = res1.data;
+
+        } else {
+          this.displayMessage(displayMsg.ERROR + "Group list empty!", TextClr.red);
+        }
+
+        if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.assetLocationList = res2.data;
+
+
+        } else {
+          this.displayMessage(displayMsg.ERROR + "Location list empty!", TextClr.red);
+        }
       },
 
       (error: any) => {
         this.loader.stop();
+        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
       }
     );
     this.searchName = this.data.search;
     this.search();
   }
-
- async onEmployeeSearch() {
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
+  async onEmployeeSearch() {
     const body = {
-    ...this.commonParams(),
-      Type: "USER",
+      ...this.commonParams(),
+      Type: Type.USER,
       item: this.assetSearchForm.controls['custodian'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
-
-
     }
     try {
       this.subSink.sink = await this.assetdtService.GetNameSearchCount(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() != "FAIL") {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           if (res.data.nameCount === 1) {
             this.assetSearchForm.controls['custodian'].patchValue(res.data.selName);
           }
           else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  'tranNum': this.assetSearchForm.controls['custodian'].value, 'PartyType': "USER",
-                  'search': 'Employee Search'
-                }
-              });
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                if (result != true) {
-                  this.assetSearchForm.controls['custodian'].setValue(result.partyName);
-                }
-                this.dialogOpen = false;
-              });
-            }
+            this.openSearch();
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.openSearch();
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+  }
+  openSearch(){
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: this.assetSearchForm.controls['custodian'].value, PartyType: Type.USER,
+          search: 'Employee Search'
+        }
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        if (result != true && result != undefined) {
+          this.assetSearchForm.controls['custodian'].setValue(result.partyName);
+        }
+        this.dialogOpen = false;
+      });
     }
   }
 
- async onSupplierSearch() {
+  async onSupplierSearch() {
     const body = {
-   ...this.commonParams(),
-      Type: "SUPPLIER",
+      ...this.commonParams(),
+      Type: Type.SUPPLIER,
       item: this.assetSearchForm.controls['supplier'].value,
       ItemFirstLevel: "",
       ItemSecondLevel: ""
     }
     try {
-      this.subSink.sink =await this.assetdtService.GetNameSearchCount(body).subscribe((res: any) => {
-        //console.log(res.data.selName);
-        if (res.status.toUpperCase() != "FAIL") {
+      this.subSink.sink = await this.assetdtService.GetNameSearchCount(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
           if (res.data.nameCount === 1) {
             this.assetSearchForm.controls['supplier'].patchValue(res.data.selName);
           }
@@ -179,13 +195,15 @@ async  ngOnInit() {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.assetSearchForm.controls['supplier'].value, 'PartyType': "SUPPLIER",
-                  'search': 'Supplier Search'
+                  tranNum: this.assetSearchForm.controls['supplier'].value, PartyType: Type.SUPPLIER,
+                  search: 'Supplier Search'
                 }
               });
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
-                this.assetSearchForm.controls['supplier'].setValue(result.partyName);
+                if(result !=true && result != undefined){
+                  this.assetSearchForm.controls['supplier'].setValue(result.partyName);
+                }
                 this.dialogOpen = false;
               });
             }
@@ -193,58 +211,50 @@ async  ngOnInit() {
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
- async search() {
+  async search() {
+    const body = {
+      ...this.commonParams(),
+      AssignedSlNo: this.assetSearchForm.controls['assignedSlNo'].value,
+      Party: Type.ASSET,
+      supplier: this.data.supplier || "",
+      custodian: this.data.custodian || "",
+      AssetGroup: this.assetSearchForm.controls['groupID'].value,
+      AssetDesc: this.assetSearchForm.controls['assetDesc'].value,
+      AssetLocn: this.assetSearchForm.controls['assetLocn'].value
 
-    console.log(this.data);
-      const body = {
-     ...this.commonParams(),
-        AssignedSlNo: this.assetSearchForm.controls['assignedSlNo'].value,
-        Party: "ASSET",
-        supplier: this.data.supplier || "",
-        custodian: this.data.custodian || "",
-        AssetGroup:this.assetSearchForm.controls['groupID'].value,
-       AssetDesc: this.assetSearchForm.controls['assetDesc'].value,
-       AssetLocn: this.assetSearchForm.controls['assetLocn'].value
-
-      }
-      try {
-        this.loader.start();
-        this.subSink.sink =await this.assetsearchService.GetAssetSearch(body).subscribe((res: any) => {
-          console.log(res['data']);
-          this.loader.stop();
-          if (res.status.toUpperCase() === "fail") {
-            this.textMessageClass = 'red';
-            this.retMessage = res.message;
-          }
-          else {
-            this.rowData = res['data'];
-            this.textMessageClass = 'green';
-            this.retMessage = res.message;
-          }
-        });
-      }
-      catch (ex: any) {
-        this.retMessage = ex;
-        this.textMessageClass = 'red';
-      }
+    }
+    try {
+      this.loader.start();
+      this.subSink.sink = await this.assetsearchService.GetAssetSearch(body).subscribe((res: any) => {
+        console.log(res['data']);
+        this.loader.stop();
+        if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+        else {
+          this.rowData = res['data'];
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
 
   }
 
   clear() {
     this.assetSearchForm = this.formInIt();
-    this.retMessage = "";
-    this.textMessageClass="";
+    this.displayMessage("","");
 
   }
 

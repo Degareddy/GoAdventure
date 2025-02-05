@@ -54,7 +54,10 @@ export enum Items {
   REPORTS="REPORTS",
   BRANCHES="BRANCHES",
   VENTPROP="VENTPROP",
-  PRODUCTGROUP="PRODUCTGROUP"
+  PRODUCTGROUP="PRODUCTGROUP",
+  VAT="VAT",
+  UOM="UOM",
+  ASSETGROUP="ASSETGROUP"
 }
 export enum Mode {
   Add = 'ADD',
@@ -126,6 +129,7 @@ export enum searchType {
   EMPLOYEE="Employee Search"
 }
 export enum Type{
+  ASSET="ASSET",
   PRODUCT="PRODUCT",
   COMPANY="COMPANY",
   SUPPLIER="SUPPLIER",
