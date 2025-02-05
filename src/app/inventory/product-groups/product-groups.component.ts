@@ -64,7 +64,7 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
-    this.masterParams.item = 'SM302';
+    this.masterParams.item = ScreenId.PRODUCT_GROUPS_SCRID;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.subSink.sink = this.masterService.getModesList(this.masterParams).subscribe((res: getResponse) => {
@@ -82,8 +82,9 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
         this.typeNamesList = res['data'];
       }
       else{
+      this.displayMessage(displayMsg.ERROR + "Types list empty!", TextClr.red);
 
-      } this.displayMessage(displayMsg.ERROR + "Types list empty!", TextClr.red);
+      }
 
     });
     this.productGroupForm.get('typeName')!.valueChanges.subscribe((value) => {
@@ -196,7 +197,6 @@ private displayMessage(message: string, cssClass: string) {
   NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
-      height: '90%',
       disableClose: true,
       data: {
         tranNo: tranNo,
