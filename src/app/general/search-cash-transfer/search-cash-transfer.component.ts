@@ -176,7 +176,7 @@ export class SearchCashTransferComponent implements OnInit, OnDestroy {
             this.paymentAmount = totalsByTranType.PAYMENT || 0;
             this.cdr.detectChanges();
             this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
-            if(this.rowData.length === 1){
+            if(this.rowData.length === 1 && this.data.isApplied){
               this.dialogRef.close(this.rowData[0].tranNo);
               // this.onRowSelected(this.rowData[0].tranNo);
             }

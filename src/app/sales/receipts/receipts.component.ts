@@ -140,6 +140,7 @@ isPayment: boolean=false;
   filteredItemsTranFor: any;
   filteredItemsTranType: any;
   isBalanceVisible: boolean = false;
+  isApplied:boolean=false;
   checkStatusList: Item[] = [
     { itemCode: 'balance', itemName: 'Balance' },
     { itemCode: 'recived', itemName: 'Recived' },
@@ -963,6 +964,7 @@ isPayment: boolean=false;
     }
   }
   onSubmit() {
+    this.isApplied=true;
     if (this.receiptsForm.valid) {
       if (this.supCode) {
         this.recptCls.customer = this.supCode;
@@ -1086,14 +1088,14 @@ isPayment: boolean=false;
             this.newMsg = res.message;
             if (this.receiptsForm.controls['mode'].value === 'Add') {
               this.modeChange('Modify');
-              this.getReceiptDetails(
-                this.masterParams,
-                this.receiptsForm.get('mode')?.value
-              );
             }
-            else {
-              this.onSearchCilcked();
-            }
+            this.getReceiptDetails(
+              this.masterParams,
+              this.receiptsForm.get('mode')?.value
+            );
+            // else {
+            //   this.onSearchCilcked();
+            // }
             this.getCashBalace();
           } else {
             this.displayMessage('Error: ' + res.message, 'red');
@@ -1205,9 +1207,11 @@ isPayment: boolean=false;
                   tranNum: this.receiptsForm.controls['receiptNo'].value,
                   search: 'Receipt Search',
                   TranType: 'RECEIPT',
-                  cashBalance: this.balanceAmount
+                  cashBalance: this.balanceAmount,
+                  isApplied : this.isApplied
                 },
               });
+              this.isApplied=false;
             this.dialogOpen = true;
             dialogRef.afterClosed().subscribe((result) => {
               this.dialogOpen = false;
