@@ -749,7 +749,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
         Thank you,`;
       }
       else if(this,this.userDataService.userData.company.toUpperCase() === 'SADASA'){
-      this.message=  `Mudane/Marwo [${res['data'].tenant}],Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${formattedDate}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666]. 
+      this.message=  `Mudane/Marwo [${res['data'].tenantName}],Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${formattedDate}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666]. 
       Mahadsanid,  
       Omar Mumin Mohammed  
       Sadasa Construction and Property`;

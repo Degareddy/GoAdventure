@@ -166,6 +166,9 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
           this.tenantName = res.data.tenant;
           this.lastReading = res.data.prevRdgDate
           this.updateBillsForm.get('expenseType')?.disable();
+          if(this.userDataService.userData.company.toUpperCase() === 'SADASA'){
+            this.updateBillsForm.get('reading')?.patchValue(this.lastReading + 1); 
+          }
         }
         else {
           this.displayMessage(res.message, "red")
@@ -214,6 +217,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     } catch (ex: any) {
       this.displayMessage("Exception: " + ex.message, "red");
     }
+   
   }
   getExtendedDet() {
     const body = {

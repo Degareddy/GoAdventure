@@ -93,13 +93,17 @@ isPayment: boolean=false;
   modes: Item[] = [];
   Report!: string;
   message:string='';
-  mobileNo:string='+254794465654';
+  mobileNo:string='';
   receiptmodes: Item[] = [
     { itemCode: 'receiveRent', itemName: 'Receive Rent' },
     { itemCode: 'payRent', itemName: 'Pay Rent' },
     { itemCode: 'utilityReceipt', itemName: 'Utility Receipt' },
     { itemCode: 'payexpense', itemName: 'Pay Expense' },
     { itemCode: 'internalTransfer', itemName: 'Internal Transfer' },
+    // { itemCode: 'receiveDeposit', itemName: 'Receive Deposit' },
+    // { itemCode: 'payDeposit', itemName: 'Pay Deposit' },
+    // { itemCode: 'landlordRefund', itemName: 'LandLord Refund' },
+    // { itemCode: 'tenantRefund', itemName: 'tenant Refund' },
     { itemCode: 'other', itemName: '...Other' },
   ];
   labelPosition: 'before' | 'after' = 'after';
