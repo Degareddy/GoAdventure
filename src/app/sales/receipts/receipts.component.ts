@@ -360,7 +360,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
-      this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
       this.Report = 'UTILBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
@@ -377,6 +377,78 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('CASHTRF');
       this.receiptsForm.controls['clientType'].patchValue("STAFF");
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+    }
+    else if (event.toUpperCase() === 'PAYEXPENSE') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
+      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
+      this.receiptsForm.controls['clientType'].patchValue("");
+      this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].enable();
+      // this.filteredItemsClientType=this.clientTypeList;
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+    }
+    else if (event.toUpperCase() === 'receiveDeposit') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
+      this.receiptsForm.controls['tranFor'].patchValue('RENTDPST');
+      this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
+      this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].enable();
+      // this.filteredItemsClientType=this.clientTypeList;
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+    }
+    else if (event.toUpperCase() === 'PAYEXPENSE') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
+      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
+      this.receiptsForm.controls['clientType'].patchValue("");
+      this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].enable();
+      // this.filteredItemsClientType=this.clientTypeList;
+      this.Report = 'CLIENTBAL';
+      this.receiptsForm.controls['mode'].patchValue('Add', {
+        emitEvent: false,
+      });
+      this.receiptsForm.controls['receiptNo'].disable();
+      this.loadData();
+    }
+    else if (event.toUpperCase() === 'PAYEXPENSE') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
+      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
+      this.receiptsForm.controls['clientType'].patchValue("");
+      this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].enable();
+      // this.filteredItemsClientType=this.clientTypeList;
       this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
@@ -948,7 +1020,7 @@ isPayment: boolean=false;
         ...this.commonParams(),
         serviceType: 'SMS',
         MsgType: 'SMS',
-        mobile: "+254794465654",
+        mobile: mobile,
         message: messages,
       };
       this.subSink.sink = this.smsService
@@ -1765,6 +1837,8 @@ isPayment: boolean=false;
             { header: 'Being Payment of ', data: `${beignPaymentOf}` },
             { header: 'Balance', data: 0 },
             { header: 'Mode of Payment', data: `${paymentMode}` },
+            // { header: 'Name Of the Tenant & ID', data: `Taha Hasen Genemo & 823111742692` },
+            // { header: 'Name Of the Tenant & ID', data: `Rahima Deffi Ibrahim & A13911727` },
 
           ];
           const data = headers.map(item => item.data);
