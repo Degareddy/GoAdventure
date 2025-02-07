@@ -95,7 +95,7 @@
           <div class="matfield" >
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">Client Type</mat-label>
-              <mat-select formControlName="clientType" [disabled]="this.receiptsForm.get('receiptmode')!.value !== 'other'">
+              <mat-select formControlName="clientType" >
                 <mat-option value="">--Select--</mat-option>
                 <mat-option *ngFor="let x of filteredItemsClientType" [value]="x.itemCode">{{x.itemName}}</mat-option>
               </mat-select>

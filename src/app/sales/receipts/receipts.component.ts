@@ -324,6 +324,7 @@ isPayment: boolean=false;
   receiptTypeChange(event: string) {
     // console.log(event);
     if (event.toUpperCase() === 'RECEIVERENT') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
@@ -341,6 +342,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event.toUpperCase() === 'PAYRENT') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
@@ -358,6 +360,7 @@ isPayment: boolean=false;
     }
 
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
@@ -377,6 +380,7 @@ isPayment: boolean=false;
     }
 
     else if (event === 'internalTransfer') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" );
@@ -393,7 +397,9 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event.toUpperCase() === 'PAYEXPENSE') {
+
       // this.clear();
+      this.receiptsForm.controls['clientType'].enable();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
@@ -411,6 +417,7 @@ isPayment: boolean=false;
       this.loadData();
     }
     else if (event === 'receiveDeposit') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
@@ -429,6 +436,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event === 'payDeposit') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
@@ -446,6 +454,7 @@ isPayment: boolean=false;
      this.receiptsForm.controls['clientType'].disable();
     }
     else if (event === 'landlordRefund') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
@@ -465,6 +474,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event === 'tenantRefund') {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
@@ -484,6 +494,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else {
+      this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.receiptsForm.controls['mode'].patchValue('View', {
         emitEvent: false,
