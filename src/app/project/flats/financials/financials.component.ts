@@ -196,7 +196,9 @@ export class FinancialsComponent implements OnInit, OnDestroy {
       nextReviewed: [new Date(), Validators.required],
     })
   }
-
+  onChargeTypeChanged(chargeType:string){
+    console.log(chargeType);
+  }
   loadData() {
     const vatBody = { ...this.createRequestData(Items.VATRATE), mode: this.data.mode };
     const chargeBody = { ...this.createRequestData(Items.RENTCHARGE), mode: this.data.mode };
