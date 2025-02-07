@@ -52,17 +52,17 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline" class="w-full mt-2"
-          *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other' ">
+          >
           <mat-label>Tran Type</mat-label>
-          <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
+          <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()" [disabled]="this.receiptsForm.get('receiptmode')!.value !== 'other'">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full mt-2"
-          *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other'">
+        <mat-form-field appearance="outline" class="w-full mt-2" 
+          >
           <mat-label>Tran For</mat-label>
-          <mat-select formControlName="tranFor" (selectionChange)="onSelectionChangeClientType()">
+          <mat-select formControlName="tranFor" (selectionChange)="onSelectionChangeClientType()" [disabled]="this.receiptsForm.get('receiptmode')!.value !== 'other'" >
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of filteredItemsTranFor" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
@@ -92,10 +92,10 @@
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
-          <div class="matfield" *ngIf="this.receiptsForm.get('receiptmode')!.value === 'other' || this.receiptsForm.get('receiptmode')!.value === 'payexpense'">
+          <div class="matfield" >
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">Client Type</mat-label>
-              <mat-select formControlName="clientType">
+              <mat-select formControlName="clientType" [disabled]="this.receiptsForm.get('receiptmode')!.value !== 'other'">
                 <mat-option value="">--Select--</mat-option>
                 <mat-option *ngFor="let x of filteredItemsClientType" [value]="x.itemCode">{{x.itemName}}</mat-option>
               </mat-select>

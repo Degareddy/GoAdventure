@@ -100,10 +100,10 @@ isPayment: boolean=false;
     { itemCode: 'utilityReceipt', itemName: 'Utility Receipt' },
     { itemCode: 'payexpense', itemName: 'Pay Expense' },
     { itemCode: 'internalTransfer', itemName: 'Internal Transfer' },
-    // { itemCode: 'receiveDeposit', itemName: 'Receive Deposit' },
-    // { itemCode: 'payDeposit', itemName: 'Pay Deposit' },
-    // { itemCode: 'landlordRefund', itemName: 'LandLord Refund' },
-    // { itemCode: 'tenantRefund', itemName: 'tenant Refund' },
+    { itemCode: 'receiveDeposit', itemName: 'Receive Deposit' },
+    { itemCode: 'payDeposit', itemName: 'Pay Deposit' },
+    { itemCode: 'landlordRefund', itemName: 'LandLord Refund' },
+    { itemCode: 'tenantRefund', itemName: 'tenant Refund' },
     { itemCode: 'other', itemName: '...Other' },
   ];
   labelPosition: 'before' | 'after' = 'after';
@@ -200,11 +200,12 @@ isPayment: boolean=false;
   onSelectionChangeClientType() {
     const tarnType = this.receiptsForm.controls['rctType'].value.toUpperCase();
     const tranFor = this.receiptsForm.controls['tranFor'].value.toUpperCase();
+    console.log(tranFor)
     if (tarnType) {
       this.onSelectionChangeTranFor(tarnType);
       switch (tarnType) {
         case "RECEIPT":
-          if (tranFor === "RENTPMT" || tranFor === "RENTDPST") {
+          if (tranFor === "RENT" || tranFor === "RENTDPST") {
             this.filteredItemsClientType = [];
             this.filteredItemsClientType = this.clientTypeList.filter(item => item.itemCode === "TENANT");
             this.receiptsForm.controls['clientType'].patchValue("TENANT");
@@ -330,12 +331,14 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      this.filteredItemsClientType=this.clientTypeList
       this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
     else if (event.toUpperCase() === 'PAYRENT') {
       // this.clear();
@@ -351,6 +354,7 @@ isPayment: boolean=false;
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
 
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
@@ -361,12 +365,15 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
       this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      this.filteredItemsClientType=this.clientTypeList
       this.Report = 'UTILBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
 
     else if (event === 'internalTransfer') {
@@ -383,6 +390,7 @@ isPayment: boolean=false;
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
     else if (event.toUpperCase() === 'PAYEXPENSE') {
       // this.clear();
@@ -402,32 +410,49 @@ isPayment: boolean=false;
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
     }
-    else if (event.toUpperCase() === 'receiveDeposit') {
+    else if (event === 'receiveDeposit') {
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTDPST');
-      this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
+      // this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.filteredItemsClientType=this.clientTypeList
-      this.receiptsForm.controls['clientType'].enable();
-      // this.filteredItemsClientType=this.clientTypeList;
-      this.Report = 'CLIENTBAL';
+      // this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
-    else if (event.toUpperCase() === 'PAYEXPENSE') {
+    else if (event === 'payDeposit') {
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
-      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
-      this.receiptsForm.controls['clientType'].patchValue("");
+      this.receiptsForm.controls['tranFor'].patchValue('RENTDPST');
+     // this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
+     this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
+     // this.Report = 'CLIENTBAL';
+     this.receiptsForm.controls['mode'].patchValue('Add', {
+       emitEvent: false,
+     });
+     this.receiptsForm.controls['receiptNo'].disable();
+     this.loadData();
+     this.receiptsForm.controls['clientType'].disable();
+    }
+    else if (event === 'landlordRefund') {
+      // this.clear();
+      this.filteredpayMode = "";
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
+      this.receiptsForm.controls['mode'].patchValue('Add');
+      this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
+      this.receiptsForm.controls['tranFor'].patchValue('REFUND');
+      this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
       this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['clientType'].enable();
       // this.filteredItemsClientType=this.clientTypeList;
@@ -437,15 +462,16 @@ isPayment: boolean=false;
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
-    else if (event.toUpperCase() === 'PAYEXPENSE') {
+    else if (event === 'tenantRefund') {
       // this.clear();
       this.filteredpayMode = "";
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
-      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
-      this.receiptsForm.controls['clientType'].patchValue("");
+      this.receiptsForm.controls['tranFor'].patchValue('REFUND');
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['clientType'].enable();
       // this.filteredItemsClientType=this.clientTypeList;
@@ -455,24 +481,7 @@ isPayment: boolean=false;
       });
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
-    }
-    else if (event.toUpperCase() === 'PAYEXPENSE') {
-      // this.clear();
-      this.filteredpayMode = "";
-      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER" || item.itemCode === "DEDUCTION");
-      this.receiptsForm.controls['mode'].patchValue('Add');
-      this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
-      this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
-      this.receiptsForm.controls['clientType'].patchValue("");
-      this.filteredItemsClientType=this.clientTypeList
-      this.receiptsForm.controls['clientType'].enable();
-      // this.filteredItemsClientType=this.clientTypeList;
-      this.Report = 'CLIENTBAL';
-      this.receiptsForm.controls['mode'].patchValue('Add', {
-        emitEvent: false,
-      });
-      this.receiptsForm.controls['receiptNo'].disable();
-      this.loadData();
+      this.receiptsForm.controls['clientType'].disable();
     }
     else {
       // this.clear();
@@ -546,7 +555,7 @@ isPayment: boolean=false;
   }
   formInit() {
     return this.fb.group({
-      receiptmode: [this.receiptmodes[5].itemCode],
+      receiptmode: [this.receiptmodes[this.receiptmodes.length-1].itemCode],
       mode: ['View'],
       receiptNo: [''],
       receiptDate: [new Date(), Validators.required],
@@ -941,7 +950,10 @@ isPayment: boolean=false;
           tranFor = 'Expense';
           messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
           break;
-
+        case "RENTDPST":
+          tranFor = 'Rent Deposit';
+          messages = `Dear ${this.responseData.data.customerName}, we confirm the ${tranType} of ${tranFor} with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;
+          break;
         default:
           tranFor = 'Unknown Transaction';
           messages = `Dear ${this.responseData.data.customerName}, we confirm the transaction with Ref. No. ${this.responseData.data.receiptNo}, for an amount of ${this.responseData.data.rctAmount} Thank you. \n${company}`;

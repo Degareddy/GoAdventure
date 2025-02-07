@@ -159,6 +159,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       this.partyCode=this.tenantCode;
       this.openinBalDetForm.get('partyName')?.patchValue(this.tenantName);
       this.openinBalDetForm.get('partyName')?.disable();
+      
     }
     else if(this.openinBalDetForm.get('clientType')?.value === 'LANDLORD'){
       if(this.landlordCount === 1){
@@ -438,6 +439,14 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
           this.displayMessage(ex.message,'red');
         }
       }
+      flatClear(){
+        this.openinBalDetForm.get('flat')!.setValue('');
+        this.openinBalDetForm.get('clientType')?.patchValue('');
+        this.openinBalDetForm.get('partyName')?.patchValue('');
+        this.partyCode='';
+        this.openinBalDetForm.get('currency')?.patchValue('');
+        this.openinBalDetForm.get('balAmount')?.patchValue('0.00');
+      }
 
   prepareOneCls() {
     this.openingDetCls.company = this.userDataService.userData.company;
@@ -458,9 +467,11 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     if (balAmountValue && typeof balAmountValue === 'string') {
       // Remove commas from the string and then parse it as a float
       this.openingDetCls.balAmount = parseFloat(balAmountValue.replace(/,/g, ''));
+      
     } else {
       // If no commas, parse it directly as a float
       this.openingDetCls.balAmount = parseFloat(balAmountValue);
+      
     }
 
     // this.openingDetCls.balAmount = parseFloat(this.openinBalDetForm.get('balAmount')?.value);
@@ -476,10 +487,26 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       return;
     }
     else {
+      this.prepareOneCls();
+      if(this.data.balType === 'RENTDPST'){
+        if(this.openingDetCls.partyType === 'LANDLORD'){
+          if(this.openingDetCls.balAmount < 0){
+            this.displayMessage("Negative amount not allowed for landlord for rent Deposit", 'red');
+            return;
+          }
+        }
+        else if(this.openingDetCls.partyType === 'TENANT'){
+          if(this.openingDetCls.balAmount > 0){
+            this.displayMessage("Positive amount not allowed for tenant for rent Deposit", 'red');
+            return;
+          }
+        }
+      }
       this.loader.start();
-      const data = this.prepareOneCls();
+      
+      
       try {
-        this.subSink.sink = this.purchaseService.UpdatePartyOpeningBalanceDetails(data).subscribe((res: SaveApiResponse) => {
+        this.subSink.sink = this.purchaseService.UpdatePartyOpeningBalanceDetails(this.openingDetCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.status.toUpperCase() === "SUCCESS") {
             this.displayMessage(res.message, "green");

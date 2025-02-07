@@ -34,7 +34,7 @@
           <mat-label class="mat-label-class">Flat</mat-label>
           <input matInput type="text" placeholder="Flat" formControlName="flat" />
           <button matSuffix mat-icon-button aria-label="Clear" *ngIf="openinBalDetForm.get('flat')!.value"
-            (click)="openinBalDetForm.get('flat')!.setValue('')" type="button">
+            (click)="flatClear()" type="button">
             <mat-icon class="mat-clear-icon">clear</mat-icon>
           </button>
           <button matSuffix mat-icon-button aria-label="Search" (click)="onFlatSearch()" type="button">
@@ -81,7 +81,7 @@
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Balance Amount</mat-label>
-          <input matInput placeholder="Balance Amount" formControlName="balAmount" type="text"
+          <input matInput placeholder="Balance Amount" formControlName="balAmount" type="text" 
             class="right-align-input">
         </mat-form-field>
       </div>
