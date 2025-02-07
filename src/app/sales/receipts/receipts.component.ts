@@ -102,8 +102,8 @@ isPayment: boolean=false;
     { itemCode: 'internalTransfer', itemName: 'Internal Transfer' },
     { itemCode: 'receiveDeposit', itemName: 'Receive Deposit' },
     { itemCode: 'payDeposit', itemName: 'Pay Deposit' },
-    { itemCode: 'landlordRefund', itemName: 'LandLord Refund' },
-    { itemCode: 'tenantRefund', itemName: 'tenant Refund' },
+    { itemCode: 'landlordRefund', itemName: 'Landlord Refund' },
+    { itemCode: 'tenantRefund', itemName: 'Tenant Refund' },
     { itemCode: 'other', itemName: '...Other' },
   ];
   labelPosition: 'before' | 'after' = 'after';
