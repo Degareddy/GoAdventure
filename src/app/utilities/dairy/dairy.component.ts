@@ -7,13 +7,14 @@ import { Item } from 'src/app/general/Interface/interface';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { AccessSettings } from 'src/app/utils/access';
-import { displayMsg, ScreenId, searchType, TextClr, Type } from 'src/app/utils/enums';
+import { displayMsg, Mode, ScreenId, searchType, TextClr, Type } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 import { ActivityDiary } from '../utilities.class';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dairy',
@@ -49,7 +50,8 @@ export class DairyComponent implements OnInit, OnDestroy {
   empCode!: string;
   dialogOpen: boolean = false;
   constructor(private fb: FormBuilder, protected router: Router, private loader: NgxUiLoaderService, private dialog: MatDialog,
-    private userDataService: UserDataService, private masterService: MastersService, private utilService: UtilitiesService) {
+    private userDataService: UserDataService, private datePipe: DatePipe,
+    private masterService: MastersService, private utilService: UtilitiesService) {
     this.dairyForm = this.formInit();
   }
   ngOnDestroy(): void {
@@ -63,8 +65,8 @@ export class DairyComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     const currentTime = this.getCurrentTime();
-    this.dairyForm.get('fromTime')?.setValue(currentTime);
-    this.dairyForm.get('toTime')?.setValue(currentTime);
+    this.dairyForm.get('fromTime')?.patchValue(currentTime);
+    this.dairyForm.get('toTime')?.patchValue(currentTime);
     // this.loadData();
     this.getActivity();
   }
@@ -114,7 +116,7 @@ export class DairyComponent implements OnInit, OnDestroy {
           }
         }
         else {
-        	this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
@@ -124,7 +126,7 @@ export class DairyComponent implements OnInit, OnDestroy {
   }
   prepareCls() {
 
-    let asDate:any;
+    let asDate: any;
     const formControls = this.dairyForm.controls;
     asDate = this.formatDate(formControls.date.value);
 
@@ -132,20 +134,39 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.actCls.location = this.userDataService.userData.location;
     this.actCls.user = this.userDataService.userData.userID;
     this.actCls.refNo = this.userDataService.userData.sessionID;
+    this.actCls.mode = Mode.Modify;
 
     this.actCls.activityDescription = this.dairyForm.controls.activity.value;
 
     this.actCls.activityStatus = this.dairyForm.controls.status.value;
     this.actCls.diaryDate = asDate;
     this.actCls.evalRating = this.dairyForm.controls.rating.value;
-    this.actCls.fromTime = this.dairyForm.controls.fromTime.value;
-    this.actCls.toTime = this.dairyForm.controls.toTime.value;
+
+    const fromTimeValue = this.dairyForm.controls.fromTime.value;
+    const toTimeValue = this.dairyForm.controls.toTime.value;
+
+    if (fromTimeValue) {
+      this.actCls.fromTime = this.datePipe.transform(`1970-01-01T${fromTimeValue}:00`, 'HH:mm:ss') || '';
+    }
+
+    if (toTimeValue) {
+      this.actCls.toTime = this.datePipe.transform(`1970-01-01T${toTimeValue}:00`, 'HH:mm:ss') || '';
+    }
+
+    // const fromTimeValue = this.dairyForm.controls.fromTime.value;
+    // const toTimeValue = this.dairyForm.controls.toTime.value;
+
+    // this.actCls.fromTime = this.datePipe.transform(fromTimeValue, 'HH:mm:ss') || '';
+    // this.actCls.toTime = this.datePipe.transform(toTimeValue, 'HH:mm:ss') || '';
+
+    // this.actCls.fromTime = this.dairyForm.controls.fromTime.value;
+    // this.actCls.toTime = this.dairyForm.controls.toTime.value;
     this.actCls.remarks = this.dairyForm.controls.remarks.value;
 
     this.actCls.empCode = this.empCode;
     this.actCls.slNo = this.slNum;
 
-    console.log(this.actCls);
+    // console.log(this.actCls);
 
   }
   formatDate(unitDateValue: string): string {
@@ -162,7 +183,7 @@ export class DairyComponent implements OnInit, OnDestroy {
   }
 
   getActivity() {
-    let asDate:any;
+    let asDate: any;
     const formControls = this.dairyForm.controls;
     asDate = this.formatDate(formControls.date.value);
     const body = {
@@ -171,17 +192,18 @@ export class DairyComponent implements OnInit, OnDestroy {
       asOnDate: asDate
     }
 
-    try{
-      this.subsink.sink = this.utilService.GetDiaryDetails(body).subscribe((res:any)=>{
-            if(res.status.toUpperCase()=== AccessSettings.SUCCESS){
-                this.rowData = res.data;
-            }
-            else{
-              this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
-            }
+    try {
+      this.subsink.sink = this.utilService.GetDiaryDetails(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.rowData = res.data;
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
       })
     }
-    catch(ex:any){
+    catch (ex: any) {
+      debugger;
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 

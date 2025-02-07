@@ -114,8 +114,8 @@ export class ActivityDiary {
   empCode!: string;
   diaryDate!: string;
   slNo!: number;
-  fromTime!: Date;
-  toTime!: Date;
+  fromTime!: string;
+  toTime!: string;
   activityDescription!: string;
   activityStatus!: string;
   selfRating!: number;
@@ -123,6 +123,7 @@ export class ActivityDiary {
   remarks!: string | null;
   user!: string;
   refNo!: string;
+  mode!: string;
 
   constructor(init?: Partial<ActivityDiary>) {
     Object.assign(this, init);
