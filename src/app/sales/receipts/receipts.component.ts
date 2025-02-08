@@ -331,8 +331,8 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
-      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
@@ -368,9 +368,10 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('UTILITY');
-      this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
-      this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      // this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
       this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      
       this.Report = 'UTILBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
@@ -388,6 +389,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('CASHTRF');
+      this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['clientType'].patchValue("STAFF");
       this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
@@ -406,8 +408,8 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('EXPENSE');
-      this.receiptsForm.controls['clientType'].patchValue("");
       this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].patchValue("");
       this.receiptsForm.controls['clientType'].enable();
       // this.filteredItemsClientType=this.clientTypeList;
       this.Report = 'CLIENTBAL';
@@ -426,8 +428,8 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTDPST');
       // this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
-      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       // this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
@@ -445,6 +447,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTDPST');
      // this.receiptsForm.controls['clientType'].patchValue("RENTDPST");
+     this.filteredItemsClientType=this.clientTypeList
      this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
      // this.Report = 'CLIENTBAL';
      this.receiptsForm.controls['mode'].patchValue('Add', {
@@ -462,8 +465,8 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('REFUND');
-      this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
       this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
       this.receiptsForm.controls['clientType'].enable();
       // this.filteredItemsClientType=this.clientTypeList;
       this.Report = 'CLIENTBAL';
@@ -482,8 +485,8 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('REFUND');
-      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.filteredItemsClientType=this.clientTypeList
+      this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.receiptsForm.controls['clientType'].enable();
       // this.filteredItemsClientType=this.clientTypeList;
       this.Report = 'CLIENTBAL';
@@ -502,6 +505,7 @@ isPayment: boolean=false;
       });
       this.receiptsForm.controls['receiptNo'].enable();
       this.loadData();
+      this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['rctType'].patchValue('');
       this.receiptsForm.controls['tranFor'].patchValue('');
       this.receiptsForm.controls['clientType'].patchValue("");
