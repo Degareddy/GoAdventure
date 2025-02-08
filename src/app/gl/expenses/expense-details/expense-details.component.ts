@@ -164,10 +164,10 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
 
   onUpdate() {
     this.clearMsgs();
-    if (this.expDetForm.invalid) {
-      return;
-    }
-    else {
+    // if (false) {
+    //   // return;
+    // }
+    // else {
       const formValues = this.expDetForm.value;
       this.expDetCls.mode = this.data.mode;
       this.expDetCls.company = this.userDataService.userData.company;
@@ -210,7 +210,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
         this.retMessage = ex.message;
         this.textMessageClass = "red";
       }
-    }
+    // }
   }
 
   getExpenseDetails(newTranNo: string) {
