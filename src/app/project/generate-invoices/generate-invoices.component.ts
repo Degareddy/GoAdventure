@@ -82,13 +82,13 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
   refreshData() {
     this.autoGenForm.controls.block.valueChanges.subscribe(() => {
       this.resetMessages();
-      this.autoGenForm.controls['rentInvoice'].setValue(false);
-      this.autoGenForm.controls['includeExpenses'].setValue(false);
-      this.autoGenForm.controls['IncludeUtility'].setValue(false);
-      this.autoGenForm.controls['authorize'].setValue(false);
-      this.autoGenForm.controls['email'].setValue(false);
-      this.autoGenForm.controls['sms'].setValue(false);
-      this.autoGenForm.controls['whatsapp'].setValue(false);
+      this.autoGenForm.controls['rentInvoice'].patchValue(false);
+      this.autoGenForm.controls['includeExpenses'].patchValue(false);
+      this.autoGenForm.controls['IncludeUtility'].patchValue(false);
+      this.autoGenForm.controls['authorize'].patchValue(false);
+      this.autoGenForm.controls['email'].patchValue(false);
+      this.autoGenForm.controls['sms'].patchValue(false);
+      this.autoGenForm.controls['whatsapp'].patchValue(false);
       this.onSelectedBlockChanged();
     });
   }
@@ -125,12 +125,12 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
           this.handleDataLoadSuccess(propRes);
         },
         error => {
-          this.handleDataLoadError(error);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     }
     catch (ex: any) {
-      this.handleDataLoadError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
     const body = {
       ...this.commonParams(),
@@ -160,16 +160,16 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     this.retMessage = message;
     this.textMessageClass = cssClass;
   }
-  private handleDataLoadError(error: any): void {
-    this.retMessage = error.message;
-    this.textMessageClass = 'red';
-  }
+  // private handleDataLoadError(error: any): void {
+  //   this.retMessage = error.message;
+  //   this.textMessageClass = 'red';
+  // }
 
   private handleDataLoadSuccess(propRes: any): void {
     if (propRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.propertyList = propRes['data'];
       if (this.propertyList.length === 1) {
-        this.autoGenForm.get('property')!.setValue(this.propertyList[0].itemCode);
+        this.autoGenForm.get('property')!.patchValue(this.propertyList[0].itemCode);
         this.onSelectedPropertyChanged();
       }
     }
@@ -342,10 +342,10 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                   }
                   else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('IncludeUtility')?.value) {
                     message = `Mudane/Marwo [${item.tenantName}],Fadlan bixinta biilka adeega ee gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${receiptMonth} ${receiptYear}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
-                    Mahadsanid,  
-                    Omar Mumin Mohammed  
+                    Mahadsanid,
+                    Omar Mumin Mohammed
                     Sadasa Construction and Property`;
-                    
+
                   }
                    else if (this.userDataService.userData.company === "SADASA" && this.autoGenForm.get('rentInvoice')?.value) {
                     message = `Mudane/Marwo [${item.tenantName}],Fadlan bixinta kirada gurigaaga ee Sunnah Towers hubi in la bixiyo kahor ${receiptMonth} ${receiptYear}.Haddii aad su’aalo qabtid, nala soo xiriir [0768757666].
@@ -353,7 +353,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
                     Omar Mumin Mohammed
                     Sadasa Construction and Property`;
                   }
-            
+
 
                   if (item.slNo === 1) {
                     if (item.clientContacts) {
@@ -488,7 +488,7 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
     if (result.message.toUpperCase() === AccessSettings.SUCCESS) {
       this.blockList = result.data;
       if (this.blockList.length === 1) {
-        this.autoGenForm.get('block')!.setValue(this.blockList[0].itemCode);
+        this.autoGenForm.get('block')!.patchValue(this.blockList[0].itemCode);
       }
     } else {
       this.retMessage = `${result.message} for this property`;
@@ -565,13 +565,13 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
 
   async onSelectedPropertyChanged() {
     this.resetMessages();
-    this.autoGenForm.controls['rentInvoice'].setValue(false);
-    this.autoGenForm.controls['includeExpenses'].setValue(false);
-    this.autoGenForm.controls['IncludeUtility'].setValue(false);
-    this.autoGenForm.controls['authorize'].setValue(false);
-    this.autoGenForm.controls['email'].setValue(false);
-    this.autoGenForm.controls['sms'].setValue(false);
-    this.autoGenForm.controls['whatsapp'].setValue(false);
+    this.autoGenForm.controls['rentInvoice'].patchValue(false);
+    this.autoGenForm.controls['includeExpenses'].patchValue(false);
+    this.autoGenForm.controls['IncludeUtility'].patchValue(false);
+    this.autoGenForm.controls['authorize'].patchValue(false);
+    this.autoGenForm.controls['email'].patchValue(false);
+    this.autoGenForm.controls['sms'].patchValue(false);
+    this.autoGenForm.controls['whatsapp'].patchValue(false);
     if (this.autoGenForm.controls['property'].value != "") {
       const propertyValue = this.autoGenForm.controls['property'].value;
       this.masterParams.type = 'BLOCK';
@@ -584,11 +584,11 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
             this.handlePropertyChangedResponse(result);
           },
           (error: any) => {
-            this.handleDataLoadError(error);
+            this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
           }
         );
       } catch (ex: any) {
-        this.handleDataLoadError(ex);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
     else {
@@ -640,17 +640,18 @@ export class GenerateInvoicesComponent implements OnInit, OnDestroy {
             this.handleBlockChangedResponse(result);
           },
           (error: any) => {
-            this.handleDataLoadError(error);
+            this.displayMessage(displayMsg.EXCEPTION + error.message, TextClr.red);
           }
         );
       } catch (ex: any) {
-        this.handleDataLoadError(ex);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
     if (!this.autoGenForm.get('authorize')?.value) {
-      this.autoGenForm.get('email')?.setValue(false);
-      this.autoGenForm.get('sms')?.setValue(false);
-      this.autoGenForm.get('whatsapp')?.setValue(false);
+      this.autoGenForm.get('email')?.patchValue(false, { emitEvent: false });
+      this.autoGenForm.get('sms')?.patchValue(false, { emitEvent: false });
+      this.autoGenForm.get('whatsapp')?.patchValue(false, { emitEvent: false });
+
     }
   }
 }

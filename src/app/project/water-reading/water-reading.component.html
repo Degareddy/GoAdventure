@@ -105,7 +105,7 @@
       <b>Extended Bills(Water/Electricity)</b>
     </div>
     <div class="flex items-end space-x-1 mb-2.5">
-      <button mat-raised-button color="primary" type="button" class="btnUp" (click)="onDetCilcked()"
+      <button mat-raised-button color="primary" type="button" class="btnUp" (click)="onDetCilcked(waterReadingForm.get('tranNo')!.value)"
         [disabled]="waterReadingForm.get('mode')!.value == 'Add' || waterReadingForm.invalid || waterReadingForm.get('tranNo')?.value === ''"><mat-icon>info</mat-icon>
         Details
       </button>
@@ -152,7 +152,7 @@
             <mat-icon class="mat-clear-icon">clear</mat-icon>
           </button>
           <button matSuffix mat-icon-button aria-label="Search"
-            [disabled]="waterReadingForm.controls['mode'].value==='Add'" (click)="onTranSearch()" type="button">
+            [disabled]="waterReadingForm.controls['mode'].value==='Add'" (click)="onTranSearch(waterReadingForm.get('tranNo')!.value)" type="button">
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button>
         </mat-form-field>

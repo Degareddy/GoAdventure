@@ -106,7 +106,8 @@ export enum TranType {
   SUPQUOTEAUTH="SUPQUOTEAUTH",
   STOCKCON="STOCKCON",
   MATREQ="MATREQ",
-  PHYSTOCK="PHYSTOCK"
+  PHYSTOCK="PHYSTOCK",
+  EXTDBILL="EXTDBILL"
 }
 
 export enum TranStatus {
@@ -117,6 +118,14 @@ export enum TranStatus {
   ACTIVATE = 'ACTIVATE',
   DELETED = 'DELETED',
   PENDING="PENDING"
+}
+
+export enum ExpenseType {
+  WM="WM",
+  ESN="ESN",
+  WATEXP="WATEXP",
+  ELECEXP="ELECEXP",
+  WATERM="WATERM"
 }
 
 export enum searchType {
@@ -306,5 +315,7 @@ export enum displayMsg {
 }
 
 export enum Company{
-  DEGANIUM="DEGANIUM"
+  DEGANIUM="DEGANIUM",
+  SADASA="SADASA",
+  NPML="NPML"
 }
