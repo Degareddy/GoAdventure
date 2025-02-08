@@ -6,7 +6,6 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { forkJoin } from 'rxjs';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { MastersService } from 'src/app/Services/masters.service';
-import { UserData } from 'src/app/admin/admin.module';
 import { SubSink } from 'subsink';
 import { ExpenseDet } from 'src/app/gl/gl.class'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -16,6 +15,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { LinkUnitComponent } from '../link-unit/link-unit.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Items, TextClr, Type } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-expense-details',
@@ -84,7 +85,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
     private loader: NgxUiLoaderService, private userDataService: UserDataService,
     private masterService: MastersService,
     protected glService: GeneralLedgerService, public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string, name:string }) {
+    @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string, name: string }) {
     this.expDetForm = this.formInit();
     this.subSink = new SubSink();
     this.masterParams = new MasterParams();
@@ -122,12 +123,11 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
     this.masterParams.location = this.userDataService.userData.location;
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
-
     const propertybody = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
-      item: 'PROPERTY',
+      item: Items.PROPERTY,
       refNo: this.userDataService.userData.sessionID
     };
 
@@ -135,82 +135,85 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
-      item: 'OVERHEADS',
+      item: Items.OVERHEADS,
       refNo: this.userDataService.userData.sessionID
     };
 
     try {
-      this.loader.start();
       const property$ = this.masterService.GetMasterItemsList(propertybody);
       const ibody$ = this.masterService.GetMasterItemsList(itemsbody);
-
       this.subSink.sink = forkJoin([property$, ibody$]).subscribe(
-        ([propRes, itemsRes, tranRes]: any) => {
-          this.loader.stop();
-          this.props = propRes['data'];
-          this.itemsList = itemsRes['data'];
+        ([propRes, itemsRes]: any) => {
+          if (propRes.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.props = propRes['data'];
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + propRes.message, TextClr.red);
+          }
+          if (itemsRes.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.itemsList = itemsRes['data'];
+
+          }
+          else {
+            this.displayMessage(displayMsg.ERROR + itemsRes.message, TextClr.red);
+          }
         },
         error => {
-          this.retMessage = error.message;
-          this.textMessageClass = 'red';
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
 
     } catch (ex: any) {
-      this.retMessage = ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+  prepareCls() {
+    const formValues = this.expDetForm.value;
+    this.expDetCls.mode = this.data.mode;
+    this.expDetCls.company = this.userDataService.userData.company;
+    this.expDetCls.location = this.userDataService.userData.location;
+    this.expDetCls.langId = this.userDataService.userData.langId;
+    this.expDetCls.tranNo = this.selTranNo;
+    this.expDetCls.slNo = this.slno;
 
+    this.expDetCls.property = this.expDetForm.controls['property'].value;
+    this.expDetCls.block = Type.ALL;
+    this.expDetCls.unit = Type.ALL;
+    this.expDetCls.expenseItem = this.expDetForm.controls['expenseItem'].value;
+
+    this.expDetCls.amount = Number(this.expDetForm.controls['amount'].value.toString().replace(/,(?=\d*\.\d*)/g, ''));
+    this.expDetCls.expTo = formValues.expTo;
+    this.expDetCls.expRefNo = formValues.expRefNo;
+    this.expDetCls.remarks = formValues.remarks;
+
+    this.expDetCls.user = this.userDataService.userData.userID;
+    this.expDetCls.refNo = this.userDataService.userData.sessionID;
+  }
   onUpdate() {
-    this.clearMsgs();
-    // if (false) {
-    //   // return;
-    // }
-    // else {
-      const formValues = this.expDetForm.value;
-      this.expDetCls.mode = this.data.mode;
-      this.expDetCls.company = this.userDataService.userData.company;
-      this.expDetCls.location = this.userDataService.userData.location;
-      this.expDetCls.langId = this.userDataService.userData.langId;
-      this.expDetCls.tranNo = this.selTranNo;
-      this.expDetCls.slNo = this.slno;
-
-      this.expDetCls.property = this.expDetForm.controls['property'].value;
-      this.expDetCls.block = "ALL";
-      this.expDetCls.unit = "ALL";
-      this.expDetCls.expenseItem = this.expDetForm.controls['expenseItem'].value;
-
-      this.expDetCls.amount = Number(this.expDetForm.controls['amount'].value.toString().replace(/,(?=\d*\.\d*)/g, ''));
-      this.expDetCls.expTo = formValues.expTo;
-      this.expDetCls.expRefNo = formValues.expRefNo;
-      this.expDetCls.remarks = formValues.remarks;
-
-      this.expDetCls.user = this.userDataService.userData.userID;
-      this.expDetCls.refNo = this.userDataService.userData.sessionID;
-
-      // console.log(this.expDetCls);
+    if (this.expDetForm.invalid) {
+      return;
+    }
+    else {
       try {
+        this.prepareCls();
         this.loader.start();
         this.subSink.sink = this.glService.UpdateExpensesDet(this.expDetCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            this.retMessage = res.message;
-            this.textMessageClass = "green";
-            this.isAltered=true
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            this.isAltered = true
             this.getExpenseDetails(res.tranNoNew);
           }
           else {
-            this.retMessage = res.message;
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.retMessage = ex.message;
-        this.textMessageClass = "red";
+        this.loader.stop();
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
-    // }
+    }
   }
 
   getExpenseDetails(newTranNo: string) {
@@ -218,78 +221,77 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
       Company: this.userDataService.userData.company,
       Location: this.userDataService.userData.location,
       LangId: this.userDataService.userData.langId,
-      tranNo: this.selTranNo,
+      tranNo: newTranNo,
       User: this.userDataService.userData.userID,
       RefNo: this.userDataService.userData.sessionID
     }
-    this.loader.start();
-    this.subSink.sink = this.glService.getExpensesDet(body).subscribe((res: any) => {
-      this.loader.stop();
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.rowData = res['data'];
-      }
-      else {
-        this.textMessageClass = "red";
-        this.retMessage = res.message;
-      }
-    });
+    try {
+      this.loader.start();
+      this.subSink.sink = this.glService.getExpensesDet(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.rowData = res['data'];
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
   }
 
   reset() {
     this.expDetForm.reset();
     this.slno = 0;
+
   }
   Close() {
 
   }
-
-  onViewClicked() {
-
-  }
-
-  onEditClicked() {
-
-  }
-
-  onDeleteClicked() {
-
-  }
-
-  clearMsgs() {
-
-  }
-
   onSelectedPropertyChanged() {
-    this.clearMsgs();
-    this.masterParams.type = 'BLOCK';
+    this.masterParams.type = Type.BLOCK;
     this.masterParams.item = this.expDetForm.controls['property'].value;
-    this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-      if (result.status.toUpperCase() === "SUCCESS") {
-        this.blocks = result['data'];
-      }
-      else {
-        this.retMessage = result.message;
-        this.textMessageClass = "red";
-      }
-    });
+    try {
+      this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
+        if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.blocks = result['data'];
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
   }
 
   onSelectedBlockChanged() {
-    this.clearMsgs();
-    this.masterParams.type = 'FLAT';
+    this.masterParams.type = Type.FLAT;
     this.masterParams.item = this.expDetForm.controls['property'].value;
     this.masterParams.itemFirstLevel = this.expDetForm.controls['block'].value;
-    this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
-      if (result.status.toUpperCase() === "SUCCESS") {
-        this.flats = result['data'];
-      }
-      else {
-        this.retMessage = result.message;
-        this.textMessageClass = "red";
-      }
-    });
-  }
+    try {
+      this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe((result: any) => {
+        if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.flats = result['data'];
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
 
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   onSelectedFlatChanged() {
 
   }
@@ -301,17 +303,14 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    // console.log(event.data);
     let options: Intl.NumberFormatOptions = {
       style: 'decimal',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     };
-
     this.slno = event.data.slNo;
     this.expAccount = event.data.expAccount;
     this.expDetForm.controls['amount'].setValue(event.data.amount.toLocaleString(undefined, options));
-
     if (event.data) {
       this.expDetForm.patchValue({
         slNo: event.data.slNo,
@@ -320,22 +319,12 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
         property: event.data.property,
         block: event.data.block,
         unit: event.data.unit,
-        // amount:event.data.amount,
         amount: event.data.amount.toLocaleString(undefined, options),
-
         expTo: event.data.expTo,
         expAccount: event.data.expAccount,
         expRefNo: event.data.expRefNo,
         remarks: event.data.remarks
-
-        // rate: event.data.amount,
-        // chargeType: event.data.charge,
-        // vatType: event.data.vatCode,
-        // lastReviewed: event.data.reviewedOn,
-        // nextReviewed: event.data.nextReviewOn,
-        // IsRecurring: event.data.isRecurring,
-        // IsRefundable: event.data.isRefundable
-      });
+      }, { emitEvent: false });
     }
   }
 
@@ -345,11 +334,10 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
     const gridApi = params.api;
     gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
-  newExepnse(){
+  newExepnse() {
     this.slno = 0;
     this.expDetForm = this.formInit();
-    this.retMessage = "";
-    this.textMessageClass="";
+    this.displayMessage('', '');
   }
 
   onAmountChanged() {

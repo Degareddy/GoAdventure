@@ -68,7 +68,6 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.dairyForm.get('fromTime')?.patchValue(currentTime);
     this.dairyForm.get('toTime')?.patchValue(currentTime);
     // this.loadData();
-    this.getActivity();
   }
   private createRequestDataForSearch(item: string, type: string) {
     return {
@@ -91,6 +90,7 @@ export class DairyComponent implements OnInit, OnDestroy {
           if (res && res.data && res.data.nameCount === 1) {
             this.dairyForm.get('name')!.patchValue(res.data.selName);
             this.empCode = res.data.selCode;
+            this.getActivity();
 
           }
           else {
@@ -108,6 +108,8 @@ export class DairyComponent implements OnInit, OnDestroy {
                 if (result != true && result != undefined) {
                   this.dairyForm.get('name')!.patchValue(result.partyName);
                   this.empCode = result.code;
+                  this.getActivity();
+
                 }
                 this.dialogOpen = false;
               });
