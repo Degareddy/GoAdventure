@@ -349,6 +349,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('PAYMENT');
       this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
+      this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['clientType'].patchValue("LANDLORD");
       this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {

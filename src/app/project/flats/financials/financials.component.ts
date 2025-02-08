@@ -197,7 +197,23 @@ export class FinancialsComponent implements OnInit, OnDestroy {
     })
   }
   onChargeTypeChanged(chargeType:string){
+    this.financeForm1.get('vatRate')?.patchValue('0.00');
     console.log(chargeType);
+    if(chargeType === "DEPOSIT"){
+      this.financeForm1.get('IsRecurring')?.setValue(false);
+      this.financeForm1.get('IsRefundable')?.setValue(true);
+      this.financeForm1.get('revenueTo')?.patchValue('LIABILITY');
+    }
+    else if(chargeType === "RENT"){
+      this.financeForm1.get('IsRecurring')?.setValue(true);
+      this.financeForm1.get('IsRefundable')?.setValue(false);
+      this.financeForm1.get('revenueTo')?.patchValue('LANDLORD');
+    }
+    else{
+      this.financeForm1.get('IsRecurring')?.setValue(true);
+      this.financeForm1.get('IsRefundable')?.setValue(false);
+      this.financeForm1.get('revenueTo')?.patchValue('PROPERTY');
+    }
   }
   loadData() {
     const vatBody = { ...this.createRequestData(Items.VATRATE), mode: this.data.mode };
