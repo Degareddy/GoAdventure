@@ -12,16 +12,13 @@ export const selectCompany = createSelector(
   (state: LocationState) => state.company
 );
 
-
-
+//NGRX statement storage
 export const selectReportState = createFeatureSelector<ReportState>('report');
 
 export const selectReportData = createSelector(
   selectReportState,
   (state: ReportState) => state
 );
-
-
 
 export const selectSaleReportState = createFeatureSelector<SaleReportState>('saleReport');
 

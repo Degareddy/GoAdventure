@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
@@ -25,7 +25,6 @@ import { selectReportData } from 'src/app/utils/location.selectors';
 import { ReportState } from 'src/app/utils/location.reducer';
 import { clearReportState, loadReportState, saveReportState } from 'src/app/utils/location.actions';
 import { NavigationService } from 'src/app/Services/navigation.service';
-import { debug } from 'console';
 @Component({
   selector: 'app-reprots',
   templateUrl: './reprots.component.html',
@@ -90,13 +89,13 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   selectDate: string = 'TO Date';
   loanBalAmount: number = 0;
   totLoanAmt: number = 0;
-  firstDayOfMonth:any = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  formattedFirstDayOfMonth : any = this.formatDated(this.firstDayOfMonth);
+  firstDayOfMonth: any = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  formattedFirstDayOfMonth: any = this.formatDated(this.firstDayOfMonth);
   totLoanPaid: number = 0;
   totLoanBal: number = 0;
   private subscriptions: Subscription = new Subscription();
-  constructor(private fb: FormBuilder, protected router: Router, private userDataService: UserDataService, protected projService: ProjectsService,
-    private datePipe: DatePipe,private masterService: MastersService, private datepipe: DatePipe, private saleService: SalesService, private store: Store, private navigationService: NavigationService,
+  constructor(private fb: FormBuilder, protected router: Router, private userDataService: UserDataService, protected projService: ProjectsService, private cdr: ChangeDetectorRef,
+    private datePipe: DatePipe, private masterService: MastersService, private datepipe: DatePipe, private saleService: SalesService, private store: Store, private navigationService: NavigationService,
     private utlService: UtilitiesService, private loader: NgxUiLoaderService, public dialog: MatDialog) {
     this.reportForm = this.formInit();
     this.subsink = new SubSink();
@@ -277,7 +276,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const balLoanAmtTotal = this.totLoanBal;
 
             }
-            return ''; // Empty value for non-last rows
+            return '';
           }
         }
       },
@@ -306,18 +305,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               };
             },
           },
-          // {
-          //   headerName: 'Party Name', field: 'partyName', filter: true, resizable: true, width: 220, cellStyle: function (params: any) {
-          //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-          //     const isNegative = params.value < 0;
-          //     return {
-          //       color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-          //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-          //       fontSize: isLastRow ? '12px' : 'inherit',
-          //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-          //     };
-          //   },
-          // },
           {
             headerName: 'Amount', field: 'amount', filter: 'agNumberColumnFilter', resizable: true, width: 220, type: 'rightAligned',
             cellStyle: function (params: any) {
@@ -378,8 +365,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
               const isNegative = params.value < 0;
               return {
-                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit',
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
@@ -390,8 +377,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
               const isNegative = params.value < 0;
               return {
-                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit',
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
@@ -402,8 +389,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
               const isNegative = params.value < 0;
               return {
-                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit',
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
@@ -414,8 +401,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
               const isNegative = params.value < 0;
               return {
-                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit',
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
@@ -437,25 +424,13 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
               const isNegative = params.value < 0;
               return {
-                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit',
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
             },
           },
-          // {
-          //   field: "partyName", headerName: "Party Name", filter: true, resizable: true, width: 180, cellStyle: function (params: any) {
-          //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-          //     const isNegative = params.value < 0;
-          //     return {
-          //       color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-          //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-          //       fontSize: isLastRow ? '12px' : 'inherit',
-          //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-          //     };
-          //   },
-          // },
           {
             headerName: 'Credit', field: 'credit', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned',
             cellStyle: function (params: any) {
@@ -463,8 +438,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isNegative = params.value > 0;
               return {
                 justifyContent: "flex-end",
-                // color: isLastRow ? 'green' : isNegative ? 'green' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
@@ -487,8 +461,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               const isNegative = params.value < 0;
               return {
                 justifyContent: "flex-end",
-                // color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
+                fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal',
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
               };
@@ -510,18 +483,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
             cellStyle: function (params: any) {
               const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
               const isNegative = params.value < 0;
-              // const tranNo = params.data.tranNo ? params.data.tranNo.toLowerCase() : '';
-              // const isExcludedRow = tranNo === 'opening' || tranNo === 'closing';
-
-              // if (isExcludedRow) {
-              //   // Return default styles if it's an "opening" or "closing" row
-              //   return {};
-              // }
               return {
                 justifyContent: "flex-end",
-                // color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-                // color: 'blue', // Text color for the link
-                // textDecoration: 'underline',
                 fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
                 fontSize: isLastRow ? '12px' : 'inherit',
                 backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
@@ -538,28 +501,13 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               return null;
             }
           },
-          // {
-          //   field: "payment", headerName: "Payment / Receipt", flex: 1, cellStyle: function (params: any) {
-          //     // const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-          //     // const isNegative = params.value < 0;
-          //     return {
-          //       // justifyContent: "flex-end",
-          //       color: 'blue', // Text color for the link
-          //       textDecoration: 'underline', // Underline text
-          //       cursor: 'pointer', // Pointer cursor to indicate it's clickable
-          //       // backgroundColor: 'yellow'
-          //     };
-          //   },
-          // },
-
         ];
       }
     }
     else if (this.reportForm.controls['reportType'].value === "Revenue") {
       if (this.reportForm.controls['summary'].value) {
         this.columnDefs = [
-          // Define your column definitions for summary true
-          // Example:
+
           { headerName: 'Branch Name', field: 'branchName', filter: true, resizable: true, flex: 1 },
           { headerName: 'Item Type', field: 'itemType', filter: true, resizable: true, flex: 1 },
           { headerName: 'Item Name', field: 'itemName', filter: true, resizable: true, flex: 1 },
@@ -576,7 +524,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               if (typeof params.value === 'number' || typeof params.value === 'string') {
                 const numericValue = parseFloat(params.value.toString());
                 if (!isNaN(numericValue)) {
-                  // Format value with parentheses for negative numbers
                   const formattedValue = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(numericValue));
                   return params.value < 0 ? `(${formattedValue})` : formattedValue;
                 }
@@ -584,18 +531,15 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               return null;
             }
           }
-          // Add more columns as needed
         ];
       }
       else {
         this.columnDefs = [
 
           { field: "tranNo", headerName: "Tran No", flex: 1, cellRenderer: 'agLnkRenderer', },
-          // { field: "reportName", headerName: "Report Name",  filter: true, resizable: true, flex: 1 },
           { field: "branchName", headerName: "Branch", filter: true, resizable: true, flex: 1 },
           {
             field: "tranDate", headerName: "Tran Date", filter: true, resizable: true, flex: 1, valueFormatter: function (params: any) {
-              // Format date as dd-MM-yyyy
               if (params.value) {
                 const date = new Date(params.value);
                 const day = date.getDate().toString().padStart(2, '0');
@@ -636,47 +580,10 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       this.columnDefs = [
         {
           field: "tranNo", headerName: "Tran No", flex: 1, cellRenderer: 'agLnkRenderer', resizable: true,
-          // cellStyle: function (params: any) {
-          //   const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-          //   const isNegative = params.value < 0;
-          //   return {
-          //     color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-          //     fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-          //     fontSize: isLastRow ? '12px' : 'inherit',
-          //     backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-          //   };
-          // },
         },
-        // { field: "detail", headerName: "Details", flex: 1, resizable: true, cellRenderer: 'agDtlRenderer' },
-        // {
-        //   field: "tranType", headerName: "Tran Type", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-        //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-        //     const isNegative = params.value < 0;
-        //     return {
-        //       color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-        //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-        //       fontSize: isLastRow ? '12px' : 'inherit',
-        //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-        //     };
-        //   },
-        // },
-        // { field: "reportName", headerName: "Report Name",  filter: true, resizable: true, flex: 1 },
-        // {
-        //   field: "branchName", headerName: "Branch", filter: true, resizable: true, flex: 1, cellStyle: function (params: any) {
-        //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-        //     const isNegative = params.value < 0;
-        //     return {
-        //       color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-        //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-        //       fontSize: isLastRow ? '12px' : 'inherit',
-        //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-        //     };
-        //   },
-        // },
         {
           field: "tranDate", headerName: "Tran Date", filter: true, resizable: true, flex: 1,
           valueFormatter: function (params: any) {
-            // Format date as dd-MM-yyyy
             if (params.value) {
               const date = new Date(params.value);
               const day = date.getDate().toString().padStart(2, '0');
@@ -686,41 +593,12 @@ export class ReprotsComponent implements OnInit, OnDestroy {
             }
             return null;
           },
-          //  cellStyle: function (params: any) {
-          //   const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-          //   const isNegative = params.value < 0;
-          //   return {
-          //     color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-          //     fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-          //     fontSize: isLastRow ? '12px' : 'inherit',
-          //     backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-          //   };
-          // },
+
         },
-        // {
-        //   field: "partyName", headerName: "Sender", filter: true, resizable: true, width: 180, cellStyle: function (params: any) {
-        //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-        //     const isNegative = params.value < 0;
-        //     return {
-        //       color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-        //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-        //       fontSize: isLastRow ? '12px' : 'inherit',
-        //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-        //     };
-        //   },
-        // },
+
         {
           field: "tranClientName", headerName: "Party", filter: true, resizable: true, width: 180,
-          //  cellStyle: function (params: any) {
-          //   const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-          //   const isNegative = params.value < 0;
-          //   return {
-          //     color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-          //     fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-          //     fontSize: isLastRow ? '12px' : 'inherit',
-          //     backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-          //   };
-          // },
+
         },
         {
           field: "tranStatus", headerName: "Status", flex: 1, resizable: true,
@@ -751,10 +629,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
             const isNegative = params.value > 0;
             return {
               justifyContent: "flex-end",
-              color: isNegative ? 'inherit' : 'red', // set color based on value
-              fontWeight: isNegative ? 'bold' : 'bold', // set font weight based on value
-              // fontSize: isLastRow ? '12px' : 'inherit',
-              // backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
+              color: isNegative ? 'inherit' : 'red',
+              fontWeight: isNegative ? 'bold' : 'bold',
             };
           },
           valueFormatter: function (params: any) {
@@ -767,71 +643,13 @@ export class ReprotsComponent implements OnInit, OnDestroy {
             }
             return null;
           }
-        },
-
-        // {
-        //   headerName: 'Debit', field: 'debit', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned',
-        //   cellStyle: function (params: any) {
-        //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-        //     const isNegative = params.value < 0;
-        //     return {
-        //       justifyContent: "flex-end",
-        //       // color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-        //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-        //       fontSize: isLastRow ? '12px' : 'inherit',
-        //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-        //     };
-        //   },
-        //   valueFormatter: function (params: any) {
-        //     if (typeof params.value === 'number' || typeof params.value === 'string') {
-        //       const numericValue = parseFloat(params.value.toString());
-        //       if (!isNaN(numericValue)) {
-        //         const formattedValue = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
-        //         return params.value < 0 ? `${formattedValue}` : formattedValue;
-        //       }
-        //     }
-        //     return null;
-        //   }
-        // },
-        // {
-        //   headerName: 'Balance', field: 'balance', filter: 'agNumberColumnFilter', resizable: true, flex: 1, type: 'rightAligned',
-        //   cellStyle: function (params: any) {
-        //     const isLastRow = params.node.rowIndex === params.api.getDisplayedRowCount() - 1;
-        //     const isNegative = params.value < 0;
-        //     // const tranNo = params.data.tranNo ? params.data.tranNo.toLowerCase() : '';
-        //     // const isExcludedRow = tranNo === 'opening' || tranNo === 'closing';
-
-        //     // if (isExcludedRow) {
-        //     //   // Return default styles if it's an "opening" or "closing" row
-        //     //   return {};
-        //     // }
-        //     return {
-        //       justifyContent: "flex-end",
-        //       // color: isLastRow ? 'green' : isNegative ? 'red' : 'inherit', // set color based on value
-        //       // color: 'blue', // Text color for the link
-        //       // textDecoration: 'underline',
-        //       fontWeight: isLastRow ? 'bold' : isNegative ? 'bold' : 'normal', // set font weight based on value
-        //       fontSize: isLastRow ? '12px' : 'inherit',
-        //       backgroundColor: isLastRow ? 'lightyellow' : 'inherit'
-        //     };
-        //   },
-        //   valueFormatter: function (params: any) {
-        //     if (typeof params.value === 'number' || typeof params.value === 'string') {
-        //       const numericValue = parseFloat(params.value.toString());
-        //       if (!isNaN(numericValue)) {
-        //         const formattedValue = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
-        //         return params.value < 0 ? `${formattedValue}` : formattedValue;
-        //       }
-        //     }
-        //     return null;
-        //   }
-        // }
+        }
 
       ];
     }
   }
-  async ngOnInit() {
-    
+  ngOnInit() {
+
     // this.getTotalRow();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
@@ -844,7 +662,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     };
 
     const charges$ = this.masterService.GetMasterItemsList(chargeBody);
-    this.subsink.sink = await forkJoin([charges$]).subscribe(
+    this.subsink.sink = forkJoin([charges$]).subscribe(
       ([chargesRes]: any) => {
         this.loader.stop();
         this.chargeList = chargesRes.data;
@@ -865,16 +683,21 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       }
     );
     this.refreshData();
+    this.customerType();
+    this.reportForm.get('fromDate')?.patchValue(this.formattedFirstDayOfMonth, { emitEvent: false });
     this.subscriptions.add(
       this.store.select(selectReportData).subscribe((state: ReportState) => {
         if (state.data) {
-          this.reportForm.controls['reportType'].patchValue(state.reportType);
-          this.reportForm.controls['clientType'].patchValue(state.clientType);
-          this.reportForm.controls['client'].patchValue(state.client);
-          this.reportForm.controls['chargeType'].patchValue(state.chargeType);
-          this.reportForm.controls['fromDate'].patchValue(state.fromDate);
-          this.reportForm.controls['toDate'].patchValue(state.toDate);
-          this.reportForm.controls['summary'].patchValue(state.summary);
+          this.reportForm.controls['reportType'].patchValue(state.reportType, { emitEvent: false });
+          this.reportForm.controls['clientType'].patchValue(state.clientType, { emitEvent: false });
+          this.reportForm.controls['client'].patchValue(state.client, { emitEvent: false });
+          this.reportForm.controls['chargeType'].patchValue(state.chargeType, { emitEvent: false });
+          this.reportForm.controls['fromDate'].patchValue(state.fromDate, { emitEvent: false });
+          this.reportForm.controls['toDate'].patchValue(state.toDate, { emitEvent: false });
+          this.reportForm.controls['summary'].patchValue(state.summary, { emitEvent: false });
+          // this.refreshData();
+          this.setColumnDefs();
+
           this.rowData = state.data;
           this.creditAmount = state.creditAmount;
           this.debitAmount = state.debitAmount;
@@ -885,6 +708,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           this.totalDepositPaid = 0;
           this.totalLandLord = 0;
           this.totalProperty = 0;
+          // this.cdr.detectChanges();
           // Restore pagination and other states if needed
         }
       })
@@ -899,9 +723,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
 
       this.store.dispatch(clearReportState());
     }
-    this.customerType();
-    console.log(this.formattedFirstDayOfMonth)
-    this.reportForm.get('fromDate')?.patchValue(this.formattedFirstDayOfMonth);
+
   }
   refreshData() {
     this.reportForm.controls['summary'].valueChanges.subscribe(() => {
@@ -1033,7 +855,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   }
 
   onFilterData(event: any) {
-    // console.log(event);
     this.processRowPostCreate(event);
   }
   getTotalRow() {
@@ -1066,7 +887,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT") {
       this.reportTypeTemp = [];
       this.reportTypeTemp = this.reportType.filter(item => item.itemCode === "Statement");
-      this.reportForm.get('reportType')?.patchValue('Statement');
+      this.reportForm.get('reportType')?.patchValue('Statement',{emitEvent:false});
       this.reportForm.controls['reportType'].disable();
     }
     else if (this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
@@ -1079,7 +900,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
   }
   isClientEnable(): boolean {
     if (this.userDataService.userData.userProfile.toUpperCase() === "TENANT" || this.userDataService.userData.userProfile.toUpperCase() === "LANDLORD") {
-      // this.reportForm.get('client')?.patchValue(this.userDataService.userData.userProfile.userID);
       return false;
     }
     else {
@@ -1325,7 +1145,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     this.store.dispatch(saveReportState({ state: currentState }));
   }
   onLnkClicked(event: any) {
-    if (event.data.property != this.userDataService.userData.location  && event.data.tranType != "PAYMENT") {
+    if (event.data.property != this.userDataService.userData.location && event.data.tranType != "PAYMENT") {
       this.displayMessage("Error: This transcation in " + event.data.propertyName + " Change loaction to see details!", "red");
       return;
     }
@@ -1344,7 +1164,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       }
     }
     else {
-      // if (event.data.tranNo.toUpperCase() != "CLOSING" && event.data.tranNo.toUpperCase() != "OPENING") {
       if (event.data.itemType.toUpperCase() === "RENT" || event.data.itemType.toUpperCase() === "GENC" || event.data.itemType.toUpperCase() === "SERVICE") {
         this.router.navigate(['property/invoice'], { state: { data: event.data } });
       }
@@ -1371,8 +1190,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     this.router.navigate(['property/receipts-payments'], { state: { data, type } });
   }
   onDtlClicked(event: any) {
-    console.log(event.data);
-    // console.log(this.userDataService.userData.location);
     if (event.data.property != this.userDataService.userData.location) {
       this.displayMessage("Error: This transcation in " + event.data.propertyName + " Change loaction to see details!", "red");
       return;
@@ -1407,7 +1224,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
         this.loader.stop();
 
         if (res.status.toUpperCase() === "SUCCESS") {
-          console.log(res.data);
           this.dialog.open(ReceiptDetailsDataComponent, {
             width: '75%',
             data: { data: res.data, name: "Invoice Details", type: "INVOICE" },
@@ -1520,7 +1336,7 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           DateAsOn: this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "",
           IsSummary: this.reportForm.get('summary')?.value || false,
           ClientType: 'TENANT',
-          Report:'Deposit'
+          Report: 'Deposit'
         }
         try {
           this.loader.start();
@@ -1532,20 +1348,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               this.rowData = this.processRowPostCreate(res['data']);
               for (const row of this.rowData) {
                 row.balDepAmount = row.unitDepositAmount - row.tenantAmount;
-                //   const clientType = this.reportForm.get('clientType')?.value;
-                //   if (clientType === "TENANT") {
-                //     row.payment = "Receipt";
-                //   }
               }
 
-              // const lastRow = this.rowData[this.rowData.length - 1];
-              // if (lastRow.tranNo === "Closing") {
-              //   lastRow.credit = this.creditAmount;
-              //   lastRow.debit = this.debitAmount;
-              //   lastRow.balance = this.balAmount;
-              //}
-
-              // console.log(this.rowData)
               this.displayMessage("Success: Statement retrived successfully", "green");
             }
             else {
@@ -1630,7 +1434,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
               this.rowData = this.processRowPostCreate(res['data']);
               for (const row of this.rowData) {
                 const clientType = this.reportForm.get('clientType')?.value;
-
                 if (clientType === "LANDLORD") {
                   row.payment = "Payment";
                 } else if (clientType === "TENANT") {
@@ -1638,15 +1441,12 @@ export class ReprotsComponent implements OnInit, OnDestroy {
                 }
               }
               this.loanBalAmount = this.rowData[0].loanBalAmount;
-
               const lastRow = this.rowData[this.rowData.length - 1];
               if (lastRow.tranNo === "Closing") {
                 lastRow.credit = this.creditAmount;
                 lastRow.debit = this.debitAmount;
                 lastRow.balance = this.balAmount;
               }
-
-
               this.displayMessage("Success: Statement retrived successfully", "green");
             }
             else {
@@ -1730,48 +1530,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           }
         })
       }
-      // else if(this.reportForm.valid && this.reportForm.get('reportType')?.value == "CASHTRF"){
-      //   if (this.reportForm.get('reportType')?.value == "Statement") {
-      //     if (this.landlordCode === "" || this.landlordCode === null || this.landlordCode === undefined) {
-      //       this.displayMessage("Error: Select valid Client!", "red");
-      //       return;
-      //     }
-      //   }
-      //   const fromDate = this.datepipe.transform(this.reportForm.get('fromDate')?.value, "yyyy-MM-dd") || "";
-      //   const toDate = this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "";
-
-      //   if (fromDate && toDate && fromDate > toDate) {
-      //     this.displayMessage("Error: From date should be lessthan todate!", "red");
-      //     return;
-      //   }
-      //   const body = {
-      //     ...this.commonParams(),
-      //     ReportType: this.reportForm.get('reportType')?.value || "",
-      //     Branch: this.userDataService.userData.location,
-      //     FromDate: this.datepipe.transform(this.reportForm.get('fromDate')?.value, "yyyy-MM-dd") || "",
-      //     ToDate: this.datepipe.transform(this.reportForm.get('toDate')?.value, "yyyy-MM-dd") || "",
-      //     ClientType: this.reportForm.get('clientType')?.value || "",
-      //     Client: this.landlordCode || "",
-      //     summary: this.reportForm.get('summary')?.value || false,
-      //     item: this.reportForm.get('chargeType')?.value || "",
-      //   }
-      //   try{
-      //     this.subsink.sink =this.utlService.GetReportCashflowStatement(body).subscribe((res: any) => {
-      //       // console.log(res);
-      //       if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
-      //         this.rowData = this.processRowPostCreate(res['data']);
-      //         this.displayMessage("Success: Statement retrived successfully", "green");
-      //       }
-      //       else {
-      //         this.displayMessage("Error: " + res.message, "red");
-      //       }
-      //     });
-      //   }
-      //   catch(ex:any){
-      //     this.displayMessage("Exception: "+ex.message,"red");
-      //   }
-
-      // }
       else {
         return;
       }
@@ -1815,14 +1573,12 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       this.totalProperty = propdep;
       this.totalLandLord = landdep;
       processedData.push({
-        tenantName: 'Total',  // Displaying 'Total' in the date column
+        tenantName: 'Total',
         unitDepositAmount: totDep,
         tenantAmount: paidDep,
         balAmountField: balDep,
         landlordAmount: landdep,
         propertyAmount: propdep,
-
-        // detail: 'Summary'
       });
 
       return processedData;
@@ -1862,14 +1618,14 @@ export class ReprotsComponent implements OnInit, OnDestroy {
         let credit = 0;
         let debit = 0;
         if (this.reportForm.get('clientType')!.value.toUpperCase() === 'TENANT') {
-          if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" || row.tranType.toUpperCase() != "OPENING" || row.tranType.toUpperCase() == "RECEIPT"  || row.tranType.toUpperCase() == "OPENING" )) {
-            credit = row.amount; // Positive amounts are now considered as credit
+          if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" || row.tranType.toUpperCase() != "OPENING" || row.tranType.toUpperCase() == "RECEIPT" || row.tranType.toUpperCase() == "OPENING")) {
+            credit = row.amount;
             balance += credit;
             totalCredit += credit;
           }
-           else if (row.amount < 0 && (row.tranNo.toUpperCase() != "CLOSING" || row.tranType.toUpperCase() != "OPENING" || row.tranType.toUpperCase() == "PAYMENT" || row.tranType.toUpperCase() == "OPENING")) {
-            debit = -row.amount; // Negative amounts are now considered as debit
-            balance -= debit; // Subtract debit from balance
+          else if (row.amount < 0 && (row.tranNo.toUpperCase() != "CLOSING" || row.tranType.toUpperCase() != "OPENING" || row.tranType.toUpperCase() == "PAYMENT" || row.tranType.toUpperCase() == "OPENING")) {
+            debit = -row.amount;
+            balance -= debit;
             totalDebit += debit;
           }
           return {
@@ -1881,27 +1637,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
           };
 
         }
-        // else if(this.reportForm.get('clientType')!.value.toUpperCase() === 'STAFF') {
-        //   if (row.amount < 0 && (row.tranNo.toUpperCase() == "CLOSING" && row.tranNo.toUpperCase() != "OPENING" && row.tranType.toUpperCase() == "PAYMENT"  || row.tranType.toUpperCase() == "OPENING" )) {
-        //      debit = row.amount; // Positive amounts are now considered as credit
-        //     balance += debit;
-        //     totalDebit += debit;
-        //   }
-        //    else if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranNo.toUpperCase() == "OPENING" && row.tranType.toUpperCase() == "RECEIPT" || row.tranType.toUpperCase() == "OPENING")) {
-        //     credit = -row.amount; // Negative amounts are now considered as debit
-        //     balance -= credit; // Subtract debit from balance
-        //      totalCredit += credit;
-        //   }
-
-        //   return {
-        //     ...row,
-        //     credit,
-        //     debit,
-        //     balance,
-        //     detail: 'Details'
-        //   };
-
-        // }
         else {
           if (row.amount > 0 && (row.tranNo.toUpperCase() != "CLOSING" && row.tranNo.toUpperCase() != "OPENING")) {
             debit = -row.amount;
@@ -1923,11 +1658,10 @@ export class ReprotsComponent implements OnInit, OnDestroy {
 
       });
       processedData.push({
-        partyName: 'Total',  // Displaying 'Total' in the date column
+        partyName: 'Total',
         credit: totalCredit,
         debit: totalDebit,
         balance: balance,
-        // detail: 'Summary'
       });
 
       this.debitAmount = totalDebit;
@@ -1938,7 +1672,6 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     }
     else {
       this.totals = "";
-      // let total = 0;
       let credit = 0;
       let debit = 0;
       rowData.sort((a, b) => new Date(a.tranDate).getTime() - new Date(b.tranDate).getTime());
@@ -1955,13 +1688,11 @@ export class ReprotsComponent implements OnInit, OnDestroy {
       });
       this.creditAmount = credit;
       this.debitAmount = debit;
-      // console.log(this.totalAmount);
       this.getTotalRevenue();
       return processedData
     }
 
   }
-  // Inside your component class
   shouldShowSummaryCheckbox(): boolean {
     const reportType = this.reportForm.get('reportType')!.value;
     const clientType = this.reportForm.get('clientType')!.value;
