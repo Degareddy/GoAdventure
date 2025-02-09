@@ -196,7 +196,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
 
   calculateTotal(data: any) {
     this.totalAmount = data.reduce((sum: number, item: any) => {
-      return sum + (item?.totalAmount || 0);
+      return sum + (item?.tranAmount || 0);
     }, 0);
   }
   ngOnDestroy(): void {

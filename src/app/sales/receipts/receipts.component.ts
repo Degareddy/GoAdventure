@@ -1103,22 +1103,26 @@ isPayment: boolean=false;
         );
         return;
       }
-
-      if (
-        this.receiptsForm.controls['rctBank'].value.toUpperCase() == 'CASHBOOK'
-      ) {
-        this.recptCls.rctAccount =
-          this.userDataService.userData.userID.toUpperCase();
-      } else {
-        if (this.receiptsForm.controls['rctAccount'].value) {
+      if (!this.recptCls.rctAccount || this.recptCls.rctAccount.length === 0) {
+        if (
+          this.receiptsForm.controls['rctBank'].value.toUpperCase() == 'CASH'
+        ) {
           this.recptCls.rctAccount =
-            this.receiptsForm.controls['rctAccount'].value;
+            this.userDataService.userData.userID.toUpperCase();
         } else {
-          this.displayMessage('Error: Select Valid Account!', 'red');
-          return;
+          if (this.receiptsForm.controls['rctAccount'].value) {
+            this.recptCls.rctAccount =
+              this.receiptsForm.controls['rctAccount'].value;
+          } else {
+            this.displayMessage('Error: Select Valid Account!', 'red');
+            return;
+          }
         }
-      }
-      const recpynt = this.receiptsForm.controls.rctType.value.toLowerCase();
+    }
+    
+    
+    
+           const recpynt = this.receiptsForm.controls.rctType.value.toLowerCase();
       if (rctAmountValue <= 0 || isNaN(rctAmountValue)) {
         this.displayMessage(
           'Error: Transaction amount should be greater than Zero(0)!',
@@ -1370,13 +1374,14 @@ isPayment: boolean=false;
 
 
   bindDataToForm(res: any) {
+    this.recptCls.rctAccount='';
     this.filteredpayMode = this.payMode;
     this.filteredStatusList = this.StatusList;
     this.filteredbank = this.bank;
     this.payStatus = res['data'].tranStatus;
     this.allocStatus = res['data'].allocStatus;
     this.supCode = res['data'].customer;
-
+    this.recptCls.rctAccount= res['data'].rctAccount
     // console.log(res.data);
     this.receiptsForm.get('receiptmode')?.patchValue(this.receiptmodes[3].itemCode);
     this.receiptsForm.patchValue({
@@ -1865,9 +1870,10 @@ isPayment: boolean=false;
             { header: 'Being Payment of ', data: `${beignPaymentOf}` },
             { header: 'Balance', data: 0 },
             { header: 'Mode of Payment', data: `${paymentMode}` },
-            // { header: 'Name Of the Tenant & ID', data: `Taha Hasen Genemo & 823111742692` },
-            // { header: 'Name Of the Tenant & ID', data: `Rahima Deffi Ibrahim & A13911727` },
-
+            { header: 'Name Of the Tenant & ID', data: `Taha Hasen Genemo & 823111742692` },
+            { header: 'Name Of the Tenant & ID', data: `Rahima Deffi Ibrahim & A13911727` },
+            { header: 'Check In Date : ', data: `16-01-2025` },
+            { header: 'Check Out Date : ', data: `16-02-2025` },
           ];
           const data = headers.map(item => item.data);
           pdf = pdfgeneratorWithTable(headers, data, pdf);

@@ -148,6 +148,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
   newMsg!: string;
   newTranMsg: string = "";
   isMenuOpen = false;
+  joinDate:String="join Date"
   selMode!: string;
   flatCode!: string;
   currencyList: Item[] = [];
@@ -594,7 +595,20 @@ export class FlatsComponent implements OnInit, OnDestroy {
         this.unitDetForm.get('property')!.patchValue(this.props[0].itemCode);
         this.onSelectedPropertyChanged();
       }
-    } else {
+    } 
+    else if (event.toUpperCase() === Mode.Allocate) {
+      this.joinDate="Allocate Date";
+      const firstDateOfCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 2);
+      this.unitDetForm.get('joinDate')!.patchValue(firstDateOfCurrentMonth.toISOString().split('T')[0]);
+  }
+  
+    else if (event.toUpperCase() === Mode.Vacate) {
+      this.joinDate="Vacate Date";
+      const lastDateOfPreviousMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      this.unitDetForm.get('joinDate')!.patchValue(lastDateOfPreviousMonth.toISOString().split('T')[0]);
+    }
+    
+    else {
       this.isDisabled = true;
       this.unitDetForm.controls.mode.patchValue(event, { emitEvent: false });
       this.unitDetForm.controls.unitID.disable();

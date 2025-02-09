@@ -232,6 +232,7 @@ checkAllocatedAmount(_t152: any) {
     }
 
   }
+  
     isDis(element:any):boolean{
     if(element.allocatedAmount >0){
       element.checked=true;
@@ -372,7 +373,7 @@ checkAllocatedAmount(_t152: any) {
   isAllSelected(): boolean {
     return this.dataSource.every((item: { checked: any; }) => item.checked);
   }
-
+  
   onSubmit(): void {
     // Create an array of bodies to loop through
     this.loader.start();
@@ -453,5 +454,9 @@ checkAllocatedAmount(_t152: any) {
   onRowSelected(event: any) {
     this.dialogRef.close(event.data.tranNo);
   }
-
+  toggleAllDeselection() {
+    this.dataSource.forEach((element: { checked: boolean; }) => {
+      element.checked = false;
+    });
+  }
 }

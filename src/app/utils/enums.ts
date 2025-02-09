@@ -65,7 +65,9 @@ export enum Mode {
   Modify = 'MODIFY',
   Delete = 'DELETE',
   Reverse = 'REVERSE',
-  view = "VIEW"
+  view = "VIEW",
+  Allocate = "ALLOCATE",
+  Vacate="VACATE"
 }
 
 export enum TextClr {

@@ -381,7 +381,7 @@ ul {
   touch-action: manipulation !important;
 }
 .dtlrenderer:hover {
-  color: #fcfeff !important;
+  color: #0ff778 !important;
   /* text-decoration: underline !important; */
 }
 
