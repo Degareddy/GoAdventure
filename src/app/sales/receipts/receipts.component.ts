@@ -1068,6 +1068,9 @@ isPayment: boolean=false;
     }
   }
   onSubmit() {
+    if (this.receiptsForm.controls['mode'].value === 'Add') {
+      this.recptCls.rctAccount='';
+    }
     this.isApplied=true;
     if (this.receiptsForm.valid) {
       if (this.supCode) {
@@ -1182,6 +1185,7 @@ isPayment: boolean=false;
     }
   }
   async submitWithData() {
+
     this.prepareRecieptCls();
     try {
       this.loader.start();
