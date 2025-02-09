@@ -4,21 +4,11 @@
       <mat-icon class="mr-1">request_quote</mat-icon>
       <b>Dairy</b>
     </div>
-    <!-- <div class="flex items-end space-x-1 mb-2.5">
-    </div> -->
   </div>
 </div>
 <div class="p-2 bg-zinc-100 container rounded-sm">
   <form [formGroup]="dairyForm" (ngSubmit)="onSubmit()" class="space-y-1">
     <div class="row justify-content-center">
-      <!-- <div class="col-md-3 offset-md-1">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Mode</mat-label>
-          <mat-select formControlName="mode" (selectionChange)="modeChange(dairyForm.controls['mode'].value)">
-            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div> -->
       <div class="col-md-3 offset-md-1">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Name</mat-label>

@@ -18,6 +18,8 @@ import { getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/ad
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { ConfirmDialogComponent, ConfirmDialogModel } from 'src/app/general/confirm-dialog/confirm-dialog.component';
+import { ChargeType, displayMsg, Items, Mode, Role, ScreenId, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 interface UnitCharge {
   company: string;
@@ -38,7 +40,7 @@ interface UnitCharge {
   blockCode: string
   propCode: string
   notes: string;
-  plexType:string
+  plexType: string
 }
 
 @Component({
@@ -177,7 +179,7 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
- async chargeSearch() {
+  async chargeSearch() {
     this.clearMsgs();
     this.rowData = [];
     if (this.unitDetForm.controls['propCode'].value === "") {
@@ -196,44 +198,44 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
       PropCode: this.unitDetForm.controls['propCode'].value,
       BlockCode: this.unitDetForm.controls['blockCode'].value,
       BedroomCount: this.unitDetForm.controls['bedroomCount'].value,
-      plexType:this.unitDetForm.controls['plexType'].value,
+      plexType: this.unitDetForm.controls['plexType'].value,
     }
     try {
       this.loader.start();
-      this.subSink.sink =await this.projService.GetUnitRecurringChargesForAll(body).subscribe((res: any) => {
+      this.subSink.sink = await this.projService.GetUnitRecurringChargesForAll(body).subscribe((res: any) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res['data'];
         }
         else {
           this.rowData = [];
-          this.handelError(res);
+        	this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
-      this.handelError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
 
-  handelError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'red';
-  }
+  // handelError(res: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = 'red';
+  // }
 
-  handelSuccess(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'green';
-  }
+  // handelSuccess(res: any) {
+  //   this.retMessage = res.message;
+  //   this.textMessageClass = 'green';
+  // }
   refreshData() {
     this.unitDetForm.controls.blockCode.valueChanges.subscribe((data) => {
       this.unitDetForm.controls['bedroomCount'].patchValue('');
       this.rowData = [];
     });
   }
- async onSelectedPropertyChanged() {
+  async onSelectedPropertyChanged() {
     this.blocksList = [];
     this.clearMsgs();
     this.unitDetForm.controls['bedroomCount'].patchValue('');
@@ -241,12 +243,12 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
     this.masterParams.item = this.unitDetForm.controls['propCode'].value;
     try {
       if (this.masterParams.item != 'All' && this.unitDetForm.controls['propCode'].value != '') {
-        this.subSink.sink =await this.masterService.GetCascadingMasterItemsList(this.masterParams)
+        this.subSink.sink = await this.masterService.GetCascadingMasterItemsList(this.masterParams)
           .pipe(
             debounceTime(300) // Adjust the debounce time as needed (in milliseconds)
           )
           .subscribe((result: getResponse) => {
-            if (result.status.toUpperCase() === "SUCCESS") {
+            if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
               this.blocksList = result['data'];
               if (this.blocksList.length === 1) {
                 this.unitDetForm.get('blockCode')!.patchValue(this.blocksList[0].itemCode);
@@ -255,30 +257,29 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
                   LangId: this.userDataService.userData.langId,
                   PropCode: this.unitDetForm.controls['propCode'].value,
                   BlockCode: this.unitDetForm.controls['blockCode'].value,
-                  BedroomCount:"All"
+                  BedroomCount: "All"
                 }
                 try {
                   this.loader.start();
                   this.subSink.sink = this.projService.GetUnitRecurringChargesForAll(body).subscribe((res: any) => {
                     this.loader.stop();
-                    if (res.status.toUpperCase() === "SUCCESS") {
+                    if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
                       this.rowData = res['data'];
                     }
                     else {
                       this.rowData = [];
-                      this.handelError(res);
+                      this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
                     }
                   });
                 }
                 catch (ex: any) {
                   this.loader.stop();
-                  this.handelError(ex);
+                  this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
                 }
               }
             }
             else {
-              this.retMessage = "Block list empty!";
-              this.textMessageClass = 'red';
+              this.displayMessage(displayMsg.ERROR + "Block list empty!", TextClr.red);
               return;
             }
           });
@@ -286,72 +287,77 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
     }
     catch (ex: any) {
       this.loader.stop();
-      this.handelError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
 
   handleloadRes(vatRes: getResponse, chargeRes: getResponse, propertyRes: getResponse, bedRes: getResponse) {
-    if (propertyRes.status.toUpperCase() === "SUCCESS") {
+    if (propertyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.properytList = propertyRes['data'];
       if (this.properytList.length === 1) {
         this.unitDetForm.get('propCode')!.patchValue(this.properytList[0].itemCode);
         this.onSelectedPropertyChanged();
       }
     } else {
-      this.retMessage = "Property list empty!";
-      this.textMessageClass = "red";
-
+      this.displayMessage(displayMsg.ERROR + "Property list empty!", TextClr.red);
+      return;
     }
-    if (vatRes.status.toUpperCase() === "SUCCESS") {
+    if (vatRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.vatList = vatRes['data'];
       if (this.vatList.length === 1) {
         this.unitDetForm.get('vatRate')!.patchValue(this.vatList[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Vat list empty!";
-      this.textMessageClass = "red";
-
+      this.displayMessage(displayMsg.ERROR + "Vat list empty!", TextClr.red);
+      return;
     }
-    if (chargeRes.status.toUpperCase() === "SUCCESS") {
+    if (chargeRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.serviceList = chargeRes['data'];
       if (this.serviceList.length === 1) {
         this.unitDetForm.get('chargeType')!.patchValue(this.serviceList[0].itemCode);
       }
     }
     else {
-      this.retMessage = "Service list empty!";
-      this.textMessageClass = "red";
-
+      this.displayMessage(displayMsg.ERROR + "Service list empty!", TextClr.red);
+      return;
     }
 
-    if (bedRes.status.toUpperCase() === "SUCCESS") {
+    if (bedRes.status.toUpperCase() === AccessSettings.SUCCESS) {
       this.bedRoomList = bedRes['data'];
       if (this.bedRoomList.length === 1) {
         this.unitDetForm.get('bedroomCount')!.patchValue(this.bedRoomList[0].itemCode);
       }
     } else {
-      this.retMessage = "Bedroom list empty!";
-      this.textMessageClass = "red";
-
+      this.displayMessage(displayMsg.ERROR + "Bedroom list empty!", TextClr.red);
+      return;
     }
   }
 
- async loadData() {
-    const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'VATRATE' });
-    const cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'RENTCHARGE' });
-    const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'PROPERTY' });
-    const bedroom$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: 'BEDROOM' });
-    this.subSink.sink =await forkJoin([vbody$, cbody$, property$, bedroom$]).subscribe(
-      ([vatRes, chargeRes, propertyRes, bedRes]: any) => {
-        this.handleloadRes(vatRes, chargeRes, propertyRes, bedRes);
-      },
-      error => {
-        this.handelError(error);
-      }
-    );    
-  }
+  async loadData() {
+    try{
+      const vbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.VATRATE });
+      const cbody$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.RENTCHARGE });
+      const property$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.PROPERTY });
+      const bedroom$ = this.masterService.GetMasterItemsList({ ...this.commonParams(), item: Items.BEDROOM });
+      this.subSink.sink = await forkJoin([vbody$, cbody$, property$, bedroom$]).subscribe(
+        ([vatRes, chargeRes, propertyRes, bedRes]: any) => {
+          this.handleloadRes(vatRes, chargeRes, propertyRes, bedRes);
+        },
+        error => {
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
+        }
+      );
+    }
+    catch(ex:any){
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
 
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+    }
   ngOnInit(): void {
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -362,8 +368,7 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
   }
 
   clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
   }
 
   formatDate(unitDateValue: string): string {
@@ -404,34 +409,33 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
     this.unitCls.block = formValues.blockCode;
     this.unitCls.notes = formValues.notes;
     this.unitCls.reviewedOn = reviewDate;
-    this.unitCls.plexType=formValues.plexType;
+    this.unitCls.plexType = formValues.plexType;
     this.unitCls.nextReviewOn = nextReviewDate;
   }
- async apply(mode: string) {
+  async apply(mode: string) {
     this.prepareUnitCls(mode);
     this.loader.start()
     try {
-      this.subSink.sink =await this.projService.UpdateUnitRecurringChargesForAll(this.unitCls).subscribe((res: SaveApiResponse) => {
+      this.subSink.sink = await this.projService.UpdateUnitRecurringChargesForAll(this.unitCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.chargeSearch();
-          this.handelSuccess(res);
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
 
         }
         else {
-          this.handelError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
       this.loader.stop();
-      this.handelError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   onUpdate() {
     this.clearMsgs();
     if (this.unitDetForm.valid) {
-      // const mode = "Modify"
       this.apply("Modify");
 
     }
@@ -461,8 +465,8 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
       reviewedOn: event.data.reviewedOn,
       nextReviewOn: event.data.nextReviewOn,
       applyForAll: event.data.applyForAll,
-      plexType:event.data.plexType
-    });
+      plexType: event.data.plexType
+    }, { emitEvent: false });
   }
 
   onGridReady(params: any) {
@@ -491,7 +495,7 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
       isRecurring: [false],
       isRefundable: [false],
       notes: [''],
-      plexType:['',[Validators.required]],
+      plexType: ['', [Validators.required]],
       chargeType: ['', [Validators.required]],
       revenueTo: ['', [Validators.required]],
       propCode: [this.unitDetForm ? this.unitDetForm.value.propCode : '', [Validators.required]],
@@ -537,7 +541,7 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "SM807",
+        ScrId: ScreenId.PROPERTY_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -546,17 +550,17 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  // SM807
   NotesDetails(tranNo: any) {
     const dialogRef: MatDialogRef<NotesComponent> = this.dialog.open(NotesComponent, {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': 'modify',
-        'note': this.unitDetForm.controls['notes'].value,
-        'TranType': "UNITCHARGE",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Unit Charges Notes"
+        tranNo: tranNo,
+        mode: Mode.Modify,
+        note: this.unitDetForm.controls['notes'].value,
+        TranType: TranType.UNITCHARGE,
+        search: "Unit Charges Notes"
       }
     });
 
@@ -566,18 +570,18 @@ export class UnitChargesComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "UNITCHARGE",
-        'tranNo': tranNo,
-        'search': 'Unit Charges Log Details'
+        tranType: TranType.UNITCHARGE,
+        tranNo: tranNo,
+        search: 'Unit Charges Log Details'
       }
     });
   }
-  serviceChange(){
-    if(this.unitDetForm.get('chargeType')?.value === 'SERVICE' || this.unitDetForm.get('chargeType')?.value === 'DEPOSIT'){
-      this.unitDetForm.get('revenueTo')?.patchValue('PROPERTY');
+  serviceChange() {
+    if (this.unitDetForm.get('chargeType')?.value === ChargeType.SERVICE || this.unitDetForm.get('chargeType')?.value === ChargeType.DEPOSIT) {
+      this.unitDetForm.get('revenueTo')?.patchValue(Items.PROPERTY, { emitEvent: false });
     }
-    else if(this.unitDetForm.get('chargeType')?.value === 'RENT'){
-      this.unitDetForm.get('revenueTo')?.patchValue('LANDLORD');
+    else if (this.unitDetForm.get('chargeType')?.value === ChargeType.RENT) {
+      this.unitDetForm.get('revenueTo')?.patchValue(Role.LANDLORD, { emitEvent: false });
     }
   }
 

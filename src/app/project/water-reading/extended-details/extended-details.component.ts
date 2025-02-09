@@ -11,6 +11,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { TransactionDetails } from '../../Project.class';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Company, displayMsg, ExpenseType, Items, TextClr, TranType } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-extended-details',
@@ -24,7 +26,6 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
   ]
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
   { field: "serviceTypeDesc", headerName: "Service Type", sortable: true, filter: true, resizable: true, flex: 1 },
-  // { field: "expenseType", headerName: "Expense Type", sortable: true, filter: true, resizable: true, flex: 1, hide: true },
   { field: "prevRdg", headerName: "Prev Reading", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "currRdg", headerName: "Current Reading", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "unitCount", headerName: "Unit Count", sortable: true, filter: true, resizable: true, flex: 1 },
@@ -93,7 +94,6 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
-    // throw new Error('Method not implemented.');
   }
   private createRequestData(item: string): getPayload {
     return {
@@ -135,17 +135,15 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     });
   }
   expenseChange(event: any) {
-    console.log(event);
-    if (event.value === 'WM') {
-      this.updateBillsForm.get('expenseType')?.patchValue('WATEXP');
+    if (event.value === ExpenseType.WM) {
+      this.updateBillsForm.get('expenseType')?.patchValue(ExpenseType.WATEXP, { emitEvent: false });
     }
-    else if (event.value === 'ESN') {
-      this.updateBillsForm.get('expenseType')?.patchValue('ELECEXP');
+    else if (event.value === ExpenseType.ESN) {
+      this.updateBillsForm.get('expenseType')?.patchValue(ExpenseType.ELECEXP, { emitEvent: false });
     }
     this.serviceChange(event.value);
   }
   serviceChange(event: any) {
-    // console.log(event.value);
     const body = {
       company: this.userDataService.userData.company,
       location: this.userDataService.userData.location,
@@ -158,66 +156,55 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.projService.GetUnitWaterMeterRdg(body).subscribe((res: any) => {
-        // console.log(res);
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.previousReading = res.data.prevRdg;
           this.updateBillsForm.get('prevReading')?.patchValue(res.data.prevRdg);
           this.updateBillsForm.get('rate')?.patchValue(res.data.unitRate);
           this.tenantName = res.data.tenant;
           this.lastReading = res.data.prevRdgDate
           this.updateBillsForm.get('expenseType')?.disable();
-          if(this.userDataService.userData.company.toUpperCase() === 'SADASA'){
-            this.updateBillsForm.get('reading')?.patchValue(this.lastReading + 1); 
+          if (this.userDataService.userData.company.toUpperCase() === Company.SADASA) {
+            this.updateBillsForm.get('reading')?.patchValue(this.lastReading + 1);
           }
         }
         else {
-          this.displayMessage(res.message, "red")
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
   loadData() {
-    const servBill = this.createRequestData('EXTDBILL');
-    const expenseList = this.createRequestData('SERNUMBER');
+    const servBill = this.createRequestData(TranType.EXTDBILL);
+    const expenseList = this.createRequestData(Items.SERNUMBER);
     try {
       const property$ = this.masterService.GetMasterItemsList(servBill);
       const expenses$ = this.masterService.GetMasterItemsList(expenseList);
       this.subSink.sink = forkJoin([property$, expenses$]).subscribe(
         ([serRes, expRes]: any) => {
-          if (serRes.status.toUpperCase() === "SUCCESS") {
+          if (serRes.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.serviceTypes = serRes.data;
-            // console.log(this.serviceTypes);
-            // if (this.serviceTypes.length === 1) {
-
-            // }
           }
           else {
-            this.displayMessage("Error:Service list empty!", "red");
-
+            this.displayMessage(displayMsg.ERROR + "Service list empty!", TextClr.red);
           }
-          if (expRes.status.toUpperCase() === "SUCCESS") {
+          if (expRes.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.expenseTypes = expRes.data;
-            // console.log(this.serviceTypes);
-            // if (this.serviceTypes.length === 1) {
-
-            // }
           }
           else {
-            this.displayMessage("Error:Expense types list empty! ", "red");
-
+            this.displayMessage(displayMsg.ERROR + "Expense types list empty!", TextClr.red);
           }
         },
         error => {
-          this.displayMessage("Error: " + error.message, "red");
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     } catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
-   
+
   }
   getExtendedDet() {
     const body = {
@@ -229,17 +216,17 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     }
     try {
       this.subSink.sink = this.projService.GetExtendedBillsDetInfo(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === "SUCCESS") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res.data;
-          this.displayMessage("Success: " + res.message, "green");
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.displayMessage("Error: " + res.message, "red");
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       });
     }
     catch (ex: any) {
-      this.displayMessage("Exception: " + ex.message, "red");
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
@@ -266,7 +253,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     this.tranCls.tranNo = this.data.tranNo;
     this.tranCls.slNo = this.slNo;
     this.tranCls.serviceType = this.updateBillsForm.get('serviceType')?.value;
-    this.tranCls.expenseType = "WATERM";
+    this.tranCls.expenseType = ExpenseType.WATERM;
     this.tranCls.PrevRdg = parseFloat(this.updateBillsForm.get('prevReading')?.value);
     this.tranCls.CurrRdg = parseFloat(this.updateBillsForm.get('reading')?.value.replace(/,/g, ''));
     this.tranCls.unitCount = parseFloat(this.updateBillsForm.get('unit')?.value.replace(/,/g, ''));
@@ -284,24 +271,22 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.projService.UpdateExtendedBillsDetInfo(this.tranCls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
-          // console.log(res);
-          if (res.status.toUpperCase() === "SUCCESS") {
-            this.displayMessage("Success: " + res.message, "green");
-            this.isAltered= true;
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            this.isAltered = true;
             this.getExtendedDet();
           }
           else {
-            this.displayMessage("Error: " + res.message, "red");
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
   }
   onRowSelected(event: any) {
-    console.log(event.data);
     this.slNo = event.data.slNo;
     this.previousReading = event.data.prevRdg;
     this.updateBillsForm.patchValue({
@@ -312,12 +297,12 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
       unit: event.data.unitCount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       rate: event.data.rate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       amount: event.data.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    })
+    }, { emitEvent: false });
   }
   onCurrentReadingChanged() {
     this.validateReading();
     if (this.updateBillsForm.controls['reading'].hasError('incorrect')) {
-      return; // Do not proceed with calculation if current reading is incorrect
+      return;
     }
 
     let numUnitRate: number;
@@ -351,8 +336,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
 
 
   validateReading() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("","");
     const currentReadingValue = this.updateBillsForm.controls['reading'].value
       .toString()
       .replace(/,/g, '')
@@ -363,12 +347,10 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
       .replace(/,/g, '')
       .replace(/\./g, '');
 
-    // Compare the sanitized values
     if (Number(currentReadingValue) < Number(previousReadingValue)) {
       this.retMessage = "Current reading should be greater than previous reading!";
       this.textMessageClass = "red";
       this.updateBillsForm.controls['reading'].setErrors({ 'incorrect': true });
-      // this.cdr.detectChanges();
       return;
     }
   }

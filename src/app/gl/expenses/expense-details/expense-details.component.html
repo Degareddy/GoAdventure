@@ -82,7 +82,7 @@
         Link Unit
       </button> -->
       <button mat-raised-button color="primary" type="submit" class="btnUp" (click)="onUpdate()"
-        [disabled]="data.mode ==='View'">
+        [disabled]="data.mode ==='View' || data.status.toUpperCase() ==='AUTHORIZED'">
         <mat-icon>done</mat-icon>Apply
       </button>
       <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="newExepnse()">

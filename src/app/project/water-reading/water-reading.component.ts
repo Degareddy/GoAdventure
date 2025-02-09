@@ -338,6 +338,8 @@ import { DatePipe } from '@angular/common';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { ExtendedDetailsComponent } from './extended-details/extended-details.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranType, Type } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-water-reading',
@@ -390,28 +392,31 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
 
   onDocsCilcked() {
     const dialogRef: MatDialogRef<FileUploadComponent> = this.dialog.open(FileUploadComponent, {
-      width: '90%', // Set the width of the dialog
+      width: '90%',
       disableClose: true,
-      data: { mode: this.waterReadingForm.controls['mode'].value, tranNo: this.waterReadingForm.controls['tranNo'].value, search: 'Extend Docs', tranType: "EXTDBILL" }
+      data: {
+        mode: this.waterReadingForm.controls['mode'].value,
+        tranNo: this.waterReadingForm.controls['tranNo'].value, search: 'Extend Docs',
+        tranType: TranType.EXTDBILL
+      }
     });
 
   }
   loadData() {
-    const modeBody = this.createRequestData('ST915');
-    const propertyBody ={...this.createRequestData('PROPERTY'),mode:this.waterReadingForm.get('mode')?.value};
+    const modeBody = this.createRequestData(ScreenId.WATER_READING_SCRID);
+    const propertyBody = { ...this.createRequestData(Items.PROPERTY), mode: this.waterReadingForm.get('mode')?.value };
     try {
       const modes$ = this.masterService.getModesList(modeBody);
       const property$ = this.masterService.GetMasterItemsList(propertyBody);
 
       this.subSink.sink = forkJoin([modes$, property$]).subscribe(
         ([modesRes, propertyRes]: any) => {
-          if (modesRes.status.toUpperCase() === "SUCCESS") {
+          if (modesRes.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.modes = modesRes.data;
           } else {
-            this.retMessage = "Modes list Empty!";
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
           }
-          if (propertyRes.status.toUpperCase() === "SUCCESS") {
+          if (propertyRes.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.props = propertyRes.data;
             if (this.props.length === 1) {
               this.waterReadingForm.controls['property'].patchValue(this.props[0].itemCode);
@@ -419,21 +424,21 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            this.retMessage = "Properties list empty!";
-            this.textMessageClass = "red";
+            this.displayMessage(displayMsg.ERROR + "Properties list empty!", TextClr.red);
           }
         },
         error => {
-          this.handleError(error.message);
+          this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
         }
       );
     } catch (ex: any) {
-      this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-  handleError(res: any) {
-    this.retMessage = res.message;
-    this.textMessageClass = 'red';
+
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
   private createRequestData(item: string): getPayload {
     return {
@@ -445,17 +450,15 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     };
   }
   onSubmit() {
-    this.textMessageClass = "";
-    this.retMessage = "";
+    this.displayMessage("", "");
     if (this.waterReadingForm.valid) {
       this.populateWaterReadingCls();
       this.loader.start();
       this.subSink.sink = this.projService.UpdateExtendedBillsHdr(this.waterCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
-        if (res.status.toUpperCase() === "SUCCESS") {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
-          if (this.waterReadingForm.controls['mode'].value === "Add") {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          if (this.waterReadingForm.controls['mode'].value.toUpperCase() === Mode.Add) {
             this.waterReadingForm.controls['tranNo'].patchValue(res.tranNoNew);
             this.waterReadingForm.controls['mode'].patchValue('Modify', { emitEvent: false });
 
@@ -463,7 +466,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
           this.GetExtendedBillsHdr(res.tranNoNew);
         }
         else {
-          this.handleError(res);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         }
       })
     }
@@ -503,10 +506,6 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       tranNo: ['']
     });
   }
-  clearMsgs() {
-    this.retMessage = "";
-    this.textMessageClass = "";
-  }
 
   onSelectedPropertyChanged(): void {
     this.blocks = [];
@@ -521,12 +520,12 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
               this.waterReadingForm.controls['block'].patchValue(this.blocks[0].itemCode);
             }
           } else {
-            this.handleError(result);
+            this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
           }
         });
       }
       catch (ex: any) {
-        this.handleError(ex.message);
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
 
     }
@@ -536,7 +535,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
   onFlatSearch() {
     const body = {
       ...this.commonParams(),
-      Type: 'FLAT',
+      Type: Type.FLAT,
       Item: this.waterReadingForm.controls['flat'].value || '',
       ItemFirstLevel: "",
       ItemSecondLevel: ""
@@ -549,47 +548,48 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
             this.masterParams.item = res.data.selCode;
             this.flatCode = res.data.selCode;
             this.onFlatChanged();
-            this.retMessage=res.message;
-            this.textMessageClass='green';
+            this.retMessage = res.message;
+            this.textMessageClass = 'green';
           }
           else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<FlatSearchComponent> = this.dialog.open(FlatSearchComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  'flat': this.waterReadingForm.controls['flat'].value, 'type': 'FLAT',
-                  'search': 'Flat Search', property: this.waterReadingForm.controls['property'].value, block: this.waterReadingForm.controls['block'].value,
-                }
-              });
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                this.dialogOpen = false;
-                if (result != true) {
-                  this.waterReadingForm.controls['flat'].patchValue(result.unitName);
-                  this.masterParams.item = result.unitId;
-                  this.flatCode = result.unitId;
-                  try {
-                    this.onFlatChanged();
-                    this.retMessage=res.message;
-                    this.textMessageClass='green';
-                  }
-                  catch (ex: any) {
-                    this.retMessage = ex;
-                    this.textMessageClass = 'red';
-                  }
-                }
-              });
-            }
+            this.openFlatSearch();
           }
         }
         else {
-          this.handleError(res);
+          this.openFlatSearch();
         }
       });
     }
     catch (ex: any) {
-      this.handleError(ex);
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+  }
+  openFlatSearch() {
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<FlatSearchComponent> = this.dialog.open(FlatSearchComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          flat: this.waterReadingForm.controls['flat'].value, type: Type.FLAT,
+          search: 'Flat Search', property: this.waterReadingForm.controls['property'].value,
+          block: this.waterReadingForm.controls['block'].value,
+        }
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true && result != undefined) {
+          this.waterReadingForm.controls['flat'].patchValue(result.unitName);
+          this.masterParams.item = result.unitId;
+          this.flatCode = result.unitId;
+          try {
+            this.onFlatChanged();
+          }
+          catch (ex: any) {
+            this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+          }
+        }
+      });
     }
   }
 
@@ -600,93 +600,99 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       blockCode: this.waterReadingForm.controls['block'].value,
       unitCode: this.flatCode
     }
-    this.subSink.sink = this.projService.GetUnitWaterMeterRdg(body).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.tenantCode = res.data.tenant;
-        this.previousReading = res.data.prevRdg;
-        this.previousRdgDate = res.data.prevRdgDate;
+    try {
+      this.subSink.sink = this.projService.GetUnitWaterMeterRdg(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.tenantCode = res.data.tenant;
+          this.previousReading = res.data.prevRdg;
+          this.previousRdgDate = res.data.prevRdgDate;
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
 
-      }
-      else {
-        this.handleError(res);
-      }
-    });
   }
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
-  onTranSearch() {
+  onTranSearch(tranNo: string) {
     const currentDate = new Date();
-    // const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1);
     let firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-    if (currentDate.getMonth() === 0) {  // If current month is January (0)
-      firstDayOfMonth = new Date(currentDate.getFullYear() - 1, 11, 1); // Set to Dec 1 of the previous year
+    if (currentDate.getMonth() === 0) {
+      firstDayOfMonth = new Date(currentDate.getFullYear() - 1, 11, 1);
     }
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
     const formattedCurrentDate = this.formatDate(currentDate);
     const body = {
       ...this.commonParams(),
-      tranType: 'EXTDBILL',
-      TranNo: this.waterReadingForm.controls['tranNo'].value || '',
+      tranType: TranType.EXTDBILL,
+      TranNo: tranNo || '',
       ItemFirstLevel: "",
       ItemSecondLevel: "",
-      FromDate:formattedFirstDayOfMonth,
+      FromDate: formattedFirstDayOfMonth,
       ToDate: formattedCurrentDate
 
     }
     try {
+      this.loader.start();
       this.subSink.sink = this.masterService.GetTranCount(body).subscribe((res: any) => {
+        this.loader.stop();
         if (res.retVal === 0) {
-          if (res && res.data && res.data.tranCount === 1) {
+          if (res && res.data && res.data.selTranNo != '') {
             this.waterReadingForm.controls['tranNo'].patchValue(res.data.selTranNo);
             this.GetExtendedBillsHdr(res.data.selTranNo);
           }
           else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  'tranNum': this.waterReadingForm.controls['tranNo'].value, 'TranType': 'EXTDBILL',
-                  'search': 'Bill Search'
-                }
-              });
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                this.dialogOpen = false;
-                if (result != true && result != undefined) {
-                  this.waterReadingForm.controls['tranNo'].patchValue(result);
-                  try {
-                    this.GetExtendedBillsHdr(result);
-                  }
-                  catch (ex: any) {
-                    this.retMessage = ex.message;
-                    this.textMessageClass = 'red';
-                  }
-                }
-              });
-            }
+            this.openTranSearch();
           }
         }
         else {
-          this.retMessage = res.message;
-          this.textMessageClass = 'red';
+          this.openTranSearch();
         }
       });
     }
     catch (ex: any) {
-      this.retMessage = "Exception " + ex.message;
-      this.textMessageClass = 'red';
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
   }
-  onDetCilcked() {
+  openTranSearch() {
+    if (!this.dialogOpen) {
+      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+        width: '90%',
+        disableClose: true,
+        data: {
+          tranNum: this.waterReadingForm.controls['tranNo'].value, TranType: TranType.EXTDBILL,
+          search: 'Bill Search'
+        }
+      });
+      this.dialogOpen = true;
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+        if (result != true && result != undefined) {
+          this.waterReadingForm.controls['tranNo'].patchValue(result);
+          try {
+            this.GetExtendedBillsHdr(result);
+          }
+          catch (ex: any) {
+            this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+          }
+        }
+      });
+    }
+  }
+  onDetCilcked(tranNo: string) {
     const dialogRef = this.dialog.open(ExtendedDetailsComponent, {
       width: '90%',
       disableClose: true,
       data: {
         mode: this.waterReadingForm.get('mode')?.value,
-        tranNo: this.waterReadingForm.get('tranNo')?.value,
+        tranNo: tranNo,
         property: this.waterReadingForm.controls.property.value,
         block: this.waterReadingForm.controls.block.value,
         unit: this.flatCode
@@ -694,8 +700,9 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result.isAltered){
-        this.onTranSearch();
+      console.log(result);
+      if (result.isAltered === true) {
+        this.onTranSearch(tranNo);
       }
     });
 
@@ -707,16 +714,15 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     this.waterReadingForm = this.formInit();
     this.tenantCode = "";
     this.totalAmount = 0;
-    // this.previousRdgDate = new Date();
+    this.displayMessage("", "");
     this.status = "";
-    this.clearMsgs();
   }
 
 
   onCurrentReadingChanged() {
     this.validateReading();
     if (this.waterReadingForm.controls['currentReading'].hasError('incorrect')) {
-      return; // Do not proceed with calculation if current reading is incorrect
+      return;
     }
 
     let numUnitRate: number;
@@ -750,8 +756,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
 
 
   validateReading() {
-    this.retMessage = "";
-    this.textMessageClass = "";
+    this.displayMessage("", "");
     const currentReadingValue = this.waterReadingForm.controls['currentReading'].value
       .toString()
       .replace(/,/g, '')
@@ -767,7 +772,6 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       this.retMessage = "Current reading should be greater than previous reading!";
       this.textMessageClass = "red";
       this.waterReadingForm.controls['currentReading'].setErrors({ 'incorrect': true });
-      // this.cdr.detectChanges();
       return;
     }
   }
@@ -805,9 +809,8 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
   }
 
   modeChanged(event: any) {
-    if (event === 'Add') {
+    if (event.toUpperCase() === Mode.Add) {
       this.Clear();
-      // this.clearMsgs();
       this.waterReadingForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.waterReadingForm.get('tranNo')!.disable();
       this.loadData();
@@ -834,7 +837,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
         }, 500);
       }
       else {
-        this.handleError(res);
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
       }
     })
   }
@@ -869,7 +872,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
       disableClose: true,
       data: {
-        ScrId: "ST915",
+        ScrId: ScreenId.WATER_READING_SCRID,
         SlNo: 0,
         IsPrevious: false,
         IsNext: false,
@@ -885,11 +888,11 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       width: '90%',
       disableClose: true,
       data: {
-        'tranNo': tranNo,
-        'mode': this.waterReadingForm.controls['mode'].value,
-        'note': this.waterReadingForm.controls['notes'].value,
-        'TranType': "EXTDBILL",  // Pass any data you want to send to CustomerDetailsComponent
-        'search': "Extended Bill Notes"
+        tranNo: tranNo,
+        mode: this.waterReadingForm.controls['mode'].value,
+        note: this.waterReadingForm.controls['notes'].value,
+        TranType: TranType.EXTDBILL,
+        search: "Extended Bill Notes"
       }
     });
   }
@@ -898,9 +901,9 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       width: '60%',
       disableClose: true,
       data: {
-        'tranType': "EXTDBILL",
-        'tranNo': tranNo,
-        'search': 'Extended Bill Log'
+        tranType: TranType.EXTDBILL,
+        tranNo: tranNo,
+        search: 'Extended Bill Log'
       }
     });
   }

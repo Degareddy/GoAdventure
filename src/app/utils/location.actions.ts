@@ -7,7 +7,7 @@ export const updateLocation = createAction(
 );
 
 
-
+//NGRX actions to save
 export const saveReportState = createAction(
   '[Report] Save State',
   props<{ state: ReportState }>()

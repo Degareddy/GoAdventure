@@ -80,9 +80,6 @@ export const locationReducer = createReducer(
   on(updateLocation, (state: LocationState, { location, company }: { location: string, company: string }) => ({ ...state, location, company }))
 );
 
-
-
-
 export const initialState1: ReportState = {
   reportType: '',
   client: '',

@@ -40,16 +40,31 @@ export class DairyComponent implements OnInit, OnDestroy {
     { itemCode: "CONFIRM", itemName: "Confirm" }
   ];
   columnDefs1: any = [{ field: "slNo", headerName: "S.No", flex: 1 },
-  { field: "product", headerName: "Product", sortable: true, filter: true, resizable: true, width: 220 },
-  { field: "uom", headerName: "UOM", sortable: true, filter: true, resizable: true, width: 220 },
-  { field: "supplier", headerName: "Supplier", sortable: true, filter: true, resizable: true, width: 220 },
-  { field: "warehouse", headerName: "Warehouse", sortable: true, filter: true, resizable: true, width: 220 },
+  { field: "activityDescription", headerName: "Activity", sortable: true, filter: true, resizable: true, width: 220 },
+  { field: "activityStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 220 },
+  { field: "fromTime", headerName: "From Time", sortable: true, filter: true, resizable: true, width: 220 },
+  { field: "toTime", headerName: "To Time", sortable: true, filter: true, resizable: true, width: 220 },
+  { field: "selfRating", headerName: "Self Rating", sortable: true, filter: true, resizable: true, width: 220 },
+  { field: "evalRating", headerName: "Eval Rating", sortable: true, filter: true, resizable: true, width: 220 },
+  {
+    field: "diaryDate", headerName: "Date", sortable: true, filter: true, resizable: true, width: 220, valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
   ];
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   empCode!: string;
   dialogOpen: boolean = false;
-  constructor(private fb: FormBuilder, protected router: Router, private loader: NgxUiLoaderService, private dialog: MatDialog,
+  constructor(private fb: FormBuilder, protected router: Router,
+    private loader: NgxUiLoaderService, private dialog: MatDialog,
     private userDataService: UserDataService, private datePipe: DatePipe,
     private masterService: MastersService, private utilService: UtilitiesService) {
     this.dairyForm = this.formInit();
@@ -68,7 +83,6 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.dairyForm.get('fromTime')?.patchValue(currentTime);
     this.dairyForm.get('toTime')?.patchValue(currentTime);
     // this.loadData();
-    this.getActivity();
   }
   private createRequestDataForSearch(item: string, type: string) {
     return {
@@ -89,8 +103,9 @@ export class DairyComponent implements OnInit, OnDestroy {
       this.subsink.sink = await this.utilService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
         if (res.retVal === 0) {
           if (res && res.data && res.data.nameCount === 1) {
-            this.dairyForm.get('name')!.patchValue(res.data.selName);
+            this.dairyForm.get('name')!.patchValue(res.data.selName,{emitEvent: false});
             this.empCode = res.data.selCode;
+            this.getActivity(this.empCode);
 
           }
           else {
@@ -106,8 +121,10 @@ export class DairyComponent implements OnInit, OnDestroy {
               this.dialogOpen = true;
               dialogRef.afterClosed().subscribe(result => {
                 if (result != true && result != undefined) {
-                  this.dairyForm.get('name')!.patchValue(result.partyName);
+                  this.dairyForm.get('name')!.patchValue(result.partyName,{emitEvent: false});
                   this.empCode = result.code;
+                  this.getActivity(this.empCode);
+
                 }
                 this.dialogOpen = false;
               });
@@ -125,49 +142,29 @@ export class DairyComponent implements OnInit, OnDestroy {
     }
   }
   prepareCls() {
-
     let asDate: any;
     const formControls = this.dairyForm.controls;
     asDate = this.formatDate(formControls.date.value);
-
     this.actCls.company = this.userDataService.userData.company;
     this.actCls.location = this.userDataService.userData.location;
     this.actCls.user = this.userDataService.userData.userID;
     this.actCls.refNo = this.userDataService.userData.sessionID;
     this.actCls.mode = Mode.Modify;
-
     this.actCls.activityDescription = this.dairyForm.controls.activity.value;
-
     this.actCls.activityStatus = this.dairyForm.controls.status.value;
     this.actCls.diaryDate = asDate;
     this.actCls.evalRating = this.dairyForm.controls.rating.value;
-
     const fromTimeValue = this.dairyForm.controls.fromTime.value;
     const toTimeValue = this.dairyForm.controls.toTime.value;
-
     if (fromTimeValue) {
       this.actCls.fromTime = this.datePipe.transform(`1970-01-01T${fromTimeValue}:00`, 'HH:mm:ss') || '';
     }
-
     if (toTimeValue) {
       this.actCls.toTime = this.datePipe.transform(`1970-01-01T${toTimeValue}:00`, 'HH:mm:ss') || '';
     }
-
-    // const fromTimeValue = this.dairyForm.controls.fromTime.value;
-    // const toTimeValue = this.dairyForm.controls.toTime.value;
-
-    // this.actCls.fromTime = this.datePipe.transform(fromTimeValue, 'HH:mm:ss') || '';
-    // this.actCls.toTime = this.datePipe.transform(toTimeValue, 'HH:mm:ss') || '';
-
-    // this.actCls.fromTime = this.dairyForm.controls.fromTime.value;
-    // this.actCls.toTime = this.dairyForm.controls.toTime.value;
     this.actCls.remarks = this.dairyForm.controls.remarks.value;
-
     this.actCls.empCode = this.empCode;
     this.actCls.slNo = this.slNum;
-
-    // console.log(this.actCls);
-
   }
   formatDate(unitDateValue: string): string {
     const unitDateObject = new Date(unitDateValue);
@@ -182,16 +179,15 @@ export class DairyComponent implements OnInit, OnDestroy {
     }
   }
 
-  getActivity() {
+  getActivity(tranNo: string) {
     let asDate: any;
     const formControls = this.dairyForm.controls;
     asDate = this.formatDate(formControls.date.value);
     const body = {
       ...this.commonParams(),
-      client: this.empCode || '',
+      client: tranNo || '',
       asOnDate: asDate
     }
-
     try {
       this.subsink.sink = this.utilService.GetDiaryDetails(body).subscribe((res: any) => {
         if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
@@ -203,7 +199,6 @@ export class DairyComponent implements OnInit, OnDestroy {
       })
     }
     catch (ex: any) {
-      debugger;
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
@@ -222,18 +217,16 @@ export class DairyComponent implements OnInit, OnDestroy {
           this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            this.getActivity(res.tranNoNew);
           }
           else {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
           }
-
         })
       }
       catch (ex: any) {
         this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
-
-
     }
 
   }
@@ -282,11 +275,11 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.retMessage = message;
     this.textMessageClass = cssClass;
   }
-  modeChange(event: string) {
 
-  }
   clear() {
-
+    this.dairyForm = this.formInit();
+    this.slNum = 0;
+    this.displayMessage("", "");
   }
   close() {
     this.router.navigateByUrl('/home');
@@ -304,6 +297,5 @@ export class DairyComponent implements OnInit, OnDestroy {
     }
   }
   onRowSelected(event: any) {
-    // this.onRowClick(event);
   }
 }
