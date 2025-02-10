@@ -706,21 +706,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
       }
       if (this.PandLForm.controls.reportType.dirty) {
         if (this.PandLForm.controls.reportType.value.toUpperCase() === Type.COMPANY) {
-          if (this.userDataService.userData.company === Company.NPML) {
-            this.branchList = [{ itemCode: "All", itemName: "All" },
-            { itemCode: "NPML", itemName: "NPML" },
-            ];
-          } else {
-            this.branchList = [{ itemCode: "All", itemName: "All" }
-            ];
-          }
-          this.PandLForm.controls.branch.patchValue("All", { emitEvent: false });
+          const branchControl = this.PandLForm.get('branch');
+          branchControl?.clearValidators();
+          this.PandLForm.controls.reportType.markAsPristine();
+          this.PandLForm.controls.reportType.markAsUntouched();
+          // branchControl?.updateValueAndValidity();
+
         }
         else {
           this.branchList = [];
           this.loadData("branch");
+          this.PandLForm.controls.reportType.markAsPristine();
+          this.PandLForm.controls.reportType.markAsUntouched();
         }
         this.PandLForm.controls.reportType.markAsPristine();
+        this.PandLForm.controls.reportType.markAsUntouched();
       }
       this.rowData = [];
       this.clearMsg();
@@ -900,12 +900,14 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           const res2 = results[0];
           if (res2 && res2.data) {
             this.branchList = res2.data;
-            if (branch != "branch") {
-              this.branchList.unshift({ itemCode: "All", itemName: "All" });
-            }
-            else {
-              this.PandLForm.get('branch')?.patchValue("", { emitEvent: false });
-            }
+            this.branchList.unshift({ itemCode: "All", itemName: "All" });
+            // if (branch != "branch") {
+            //   this.branchList.unshift({ itemCode: "All", itemName: "All" });
+            // }
+            // else {
+            //   this.PandLForm.get('branch')?.patchValue("", { emitEvent: false });
+            //   this.branchList.unshift({ itemCode: "All", itemName: "All" });
+            // }
 
           }
           else {
