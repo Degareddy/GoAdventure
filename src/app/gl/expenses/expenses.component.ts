@@ -307,7 +307,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.displayMessage("", "");
     this.expensesForm = this.formInit();
     this.tranAmount = 0;
-    this.balanceAmount = 0;
+    // this.balanceAmount = 0;
     this.tranStatus = "";
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
