@@ -45,15 +45,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   selMode!: string;
   detdialogOpen = false;
   balanceAmount: number = 0;
-  // userData: any;
   masterParams!: MasterParams;
   modes!: any[];
   tranStatus!: string;
-  tranAmount!: number;
+  tranAmount: number =0;
   clientCode!: string;
   private subSink!: SubSink;
   clientTypeList: Item[] = [
-    // {itemCode:'',itemName:'Select'},
     { itemCode: 'TENANT', itemName: 'Tenant' },
     { itemCode: 'STAFF', itemName: 'Staff' },
     { itemCode: 'LANDLORD', itemName: 'Landlord' },
@@ -63,8 +61,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     { itemCode: 'EMPLOYEE', itemName: 'Employee' },
 
   ];
-
-  // @ViewChild('frmClear') public expenfrm !: NgForm;
 
   constructor(protected route: ActivatedRoute, private saleService: SalesService, private utlService: UtilitiesService,
     protected router: Router, private userDataService: UserDataService,
@@ -97,8 +93,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result.isAltered === true) {
         this.getExpenseData(this.masterParams, this.expensesForm.controls['mode'].value);
-        // this.searchData();
-        // this.getCashBalace();
       }
     });
   }
@@ -178,8 +172,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.displayMessage("","");
     this.clientCode = '';
     if (this.expensesForm.controls.clientType.value === "" || this.expensesForm.controls.clientType.value === null || this.expensesForm.controls.clientType.value === undefined) {
-      this.retMessage = "Please Select Client Type";
-      this.textMessageClass = "red";
+      this.displayMessage(displayMsg.ERROR + "Please Select Client Type", TextClr.red);
       return;
     }
     else {
