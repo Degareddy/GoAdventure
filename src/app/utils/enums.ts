@@ -325,5 +325,6 @@ export enum displayMsg {
 export enum Company {
   DEGANIUM = "DEGANIUM",
   SADASA = "SADASA",
-  NPML = "NPML"
+  NPML = "NPML",
+  TAKOW="TAKOW"
 }

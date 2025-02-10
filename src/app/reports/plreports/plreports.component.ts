@@ -40,7 +40,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
   reportList: any = [
     { itemCode: "COMPANY", itemName: "Company" },
     { itemCode: "BRANCH", itemName: "Branch" },
-    { itemCode: "NPML", itemName: "NPML" },
+    // { itemCode: "NPML", itemName: "NPML" },
   ];
   incomeData: ProfitLossItem[] = [];
   expenseData: ProfitLossItem[] = [];
@@ -706,14 +706,15 @@ export class PlreportsComponent implements OnInit, OnDestroy {
       }
       if (this.PandLForm.controls.reportType.dirty) {
         if (this.PandLForm.controls.reportType.value.toUpperCase() === Type.COMPANY) {
-          this.branchList = [{ itemCode: "All", itemName: "All" }];
+          if (this.userDataService.userData.company === Company.NPML) {
+            this.branchList = [{ itemCode: "All", itemName: "All" },
+            { itemCode: "NPML", itemName: "NPML" },
+            ];
+          } else {
+            this.branchList = [{ itemCode: "All", itemName: "All" }
+            ];
+          }
           this.PandLForm.controls.branch.patchValue("All", { emitEvent: false });
-          return;
-        }
-        if (this.PandLForm.controls.reportType.value.toUpperCase() === Company.NPML) {
-          this.branchList = [{ itemCode: "NPML", itemName: "NPML" }];
-          this.PandLForm.controls.branch.patchValue("NPML", { emitEvent: false });
-          return;
         }
         else {
           this.branchList = [];
@@ -899,12 +900,11 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           const res2 = results[0];
           if (res2 && res2.data) {
             this.branchList = res2.data;
-            if(branch != "branch") {
+            if (branch != "branch") {
               this.branchList.unshift({ itemCode: "All", itemName: "All" });
-              this.branchList.unshift({ itemCode: "NPML", itemName: "NPML" });
             }
             else {
-              this.PandLForm.get('branch')?.patchValue("",{emitEvent: false});
+              this.PandLForm.get('branch')?.patchValue("", { emitEvent: false });
             }
 
           }
