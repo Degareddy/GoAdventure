@@ -119,9 +119,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
   }
   refreshData() {
     this.expDetForm.get('expTo')?.valueChanges.subscribe(value => {
-      if(value === 'Management'){
         this.updatePropertyValidation(value);
-      }
     });
   }
   updatePropertyValidation(expenseItem: string) {
