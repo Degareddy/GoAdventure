@@ -115,8 +115,25 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadData();
     this.getExpenseDetails(this.selTranNo);
+    this.refreshData();
   }
+  refreshData() {
+    this.expDetForm.get('expTo')?.valueChanges.subscribe(value => {
+      if(value === 'Management'){
+        this.updatePropertyValidation(value);
+      }
+    });
+  }
+  updatePropertyValidation(expenseItem: string) {
+    const propertyControl = this.expDetForm.get('property');
 
+    if (expenseItem === 'Management') {
+      propertyControl?.clearValidators();
+    } else {
+      propertyControl?.setValidators([Validators.required, Validators.maxLength(50)]);
+    }
+    propertyControl?.updateValueAndValidity();
+  }
   loadData() {
 
     this.masterParams.company = this.userDataService.userData.company;
@@ -246,6 +263,7 @@ export class ExpenseDetailsComponent implements OnInit, OnDestroy {
   reset() {
     this.expDetForm.reset();
     this.slno = 0;
+    this.refreshData();
 
   }
   Close() {
