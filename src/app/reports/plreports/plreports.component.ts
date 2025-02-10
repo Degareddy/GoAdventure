@@ -18,7 +18,7 @@ import { PLReportState } from 'src/app/utils/location.reducer';
 import { clearPLReportState, loadPLReportState, savePLReportState } from 'src/app/utils/location.actions';
 import { selectPLReportData } from 'src/app/utils/location.selectors';
 import { Item } from 'src/app/general/Interface/interface';
-import { Items, TranType, Type } from 'src/app/utils/enums';
+import { Company, Items, TranType, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
 interface ProfitLossItem {
   company: string;
@@ -40,6 +40,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
   reportList: any = [
     { itemCode: "COMPANY", itemName: "Company" },
     { itemCode: "BRANCH", itemName: "Branch" },
+    { itemCode: "NPML", itemName: "NPML" },
   ];
   incomeData: ProfitLossItem[] = [];
   expenseData: ProfitLossItem[] = [];
@@ -222,7 +223,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadData("");
     this.refreshData();
     this.setColumnDefs();
     this.subscriptions.add(
@@ -570,7 +571,7 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           }
         },
         {
-          headerName: 'Tran No', field: 'tranNo', width:330, sortable: true, resizable: true, cellRenderer: 'agLnkRenderer', cellStyle: function (params: any) {
+          headerName: 'Tran No', field: 'tranNo', width: 330, sortable: true, resizable: true, cellRenderer: 'agLnkRenderer', cellStyle: function (params: any) {
             if (params.data.mainHeader === Type.INCOME_TOTAL) {
               return {
                 backgroundColor: 'lightyellow',
@@ -705,14 +706,21 @@ export class PlreportsComponent implements OnInit, OnDestroy {
       }
       if (this.PandLForm.controls.reportType.dirty) {
         if (this.PandLForm.controls.reportType.value.toUpperCase() === Type.COMPANY) {
-          this.branchList = [];
+          this.branchList = [{ itemCode: "All", itemName: "All" }];
           this.PandLForm.controls.branch.patchValue("All", { emitEvent: false });
-        } else {
-          this.loadData();
+          return;
+        }
+        if (this.PandLForm.controls.reportType.value.toUpperCase() === Company.NPML) {
+          this.branchList = [{ itemCode: "NPML", itemName: "NPML" }];
+          this.PandLForm.controls.branch.patchValue("NPML", { emitEvent: false });
+          return;
+        }
+        else {
+          this.branchList = [];
+          this.loadData("branch");
         }
         this.PandLForm.controls.reportType.markAsPristine();
       }
-
       this.rowData = [];
       this.clearMsg();
     });
@@ -875,11 +883,11 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     this.expenseData = this.profitLossData.filter((item: any) => item.mainHeader === Type.EXPENSES);
 
     this.totalIncome = this.incomeData.reduce((acc, item) => acc + item.tranAmount, 0);
-    this.totalExpenses = Math.abs(this.expenseData.reduce((acc, item) => acc + item.tranAmount, 0)); // Expenses are negative
+    this.totalExpenses = Math.abs(this.expenseData.reduce((acc, item) => acc + item.tranAmount, 0));
     this.totalProfit = this.totalIncome - this.totalExpenses;
   }
 
-  loadData() {
+  loadData(branch: string) {
     const branchbody: getPayload = {
       ...this.commonParams(),
       item: Items.BRANCHES
@@ -891,6 +899,14 @@ export class PlreportsComponent implements OnInit, OnDestroy {
           const res2 = results[0];
           if (res2 && res2.data) {
             this.branchList = res2.data;
+            if(branch != "branch") {
+              this.branchList.unshift({ itemCode: "All", itemName: "All" });
+              this.branchList.unshift({ itemCode: "NPML", itemName: "NPML" });
+            }
+            else {
+              this.PandLForm.get('branch')?.patchValue("",{emitEvent: false});
+            }
+
           }
           else {
             this.displayMessage("Error: Branch list not found.", "red");
@@ -927,6 +943,8 @@ export class PlreportsComponent implements OnInit, OnDestroy {
     this.displayMessage("", "");
     this.rowData = [];
     this.refreshData();
+    this.branchList.unshift({ itemCode: "All", itemName: "All" });
+    this.branchList.unshift({ itemCode: "NPML", itemName: "NPML" });
   }
 
   prepareChartData() {

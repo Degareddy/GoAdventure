@@ -23,7 +23,8 @@
           <mat-label class="mat-label-class">Branch</mat-label>
           <mat-select id="Branch" formControlName="branch" placeholder="Select Branch">
             <mat-option value="">--Select--</mat-option>
-            <mat-option value="All">All</mat-option>
+            <!-- <mat-option value="All">All</mat-option>
+            <mat-option value="NPML">NPML</mat-option> -->
             <mat-option *ngFor="let x of branchList" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
