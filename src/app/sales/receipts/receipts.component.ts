@@ -321,9 +321,34 @@ isPayment: boolean=false;
       this.filteredItemsTranFor = this.overHeadsLsit;
     }
   }
+  clearForreceiptTypeChange(){
+    this.allocStatus='';
+    this.payStatus='';
+
+    this.receiptsForm.get('receiptNo')?.patchValue('');
+    this.receiptsForm.get('customer')?.patchValue('');
+    this.receiptsForm.get('rctMode')?.patchValue('');  
+
+    this.receiptsForm.get('customerBank')?.patchValue('');
+    this.receiptsForm.get('custAccount')?.patchValue('');
+    this.receiptsForm.get('accname')?.patchValue('');
+
+    this.receiptsForm.get('instrumentNo')?.patchValue('');
+    this.receiptsForm.get('currency')?.patchValue('');
+    this.receiptsForm.get('instrumentStatus')?.patchValue('');
+
+    this.receiptsForm.get('rctAmount')?.patchValue('0');
+    this.receiptsForm.get('rctAccount')?.patchValue('');
+    this.receiptsForm.get('rctStatus')?.patchValue('');
+
+    this.receiptsForm.get('paidCurrency')?.patchValue('');
+  
+  }
   receiptTypeChange(event: string) {
     // console.log(event);
     if (event.toUpperCase() === 'RECEIVERENT') {
+      this.clearForreceiptTypeChange()
+
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -342,6 +367,8 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event.toUpperCase() === 'PAYRENT') {
+      this.clearForreceiptTypeChange()
+
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -361,6 +388,7 @@ isPayment: boolean=false;
     }
 
     else if (event.toUpperCase() === 'UTILITYRECEIPT') {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -382,6 +410,7 @@ isPayment: boolean=false;
     }
 
     else if (event === 'internalTransfer') {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -400,7 +429,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event.toUpperCase() === 'PAYEXPENSE') {
-
+      this.clearForreceiptTypeChange()
       // this.clear();
       this.receiptsForm.controls['clientType'].enable();
       this.filteredpayMode = "";
@@ -420,6 +449,7 @@ isPayment: boolean=false;
       this.loadData();
     }
     else if (event === 'receiveDeposit') {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -439,6 +469,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event === 'payDeposit') {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -458,6 +489,7 @@ isPayment: boolean=false;
      this.receiptsForm.controls['clientType'].disable();
     }
     else if (event === 'landlordRefund') {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -478,6 +510,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else if (event === 'tenantRefund') {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
@@ -498,6 +531,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].disable();
     }
     else {
+      this.clearForreceiptTypeChange()
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.receiptsForm.controls['mode'].patchValue('View', {
