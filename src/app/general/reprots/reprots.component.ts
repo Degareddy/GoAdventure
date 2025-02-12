@@ -46,7 +46,8 @@ export class ReprotsComponent implements OnInit, OnDestroy {
     { itemCode: 'MANAGEMENT', itemName: 'Management' },
     { itemCode: 'PROPERTY', itemName: 'Property' },
     { itemCode: 'TENANT', itemName: 'Tenant' },
-    { itemCode: 'STAFF', itemName: 'Staff' }
+    { itemCode: 'STAFF', itemName: 'Staff' },
+    { itemCode: 'VENDOR', itemName: 'Vendor' },
 
   ];
   reportTypeTemp: Item[] = [];
