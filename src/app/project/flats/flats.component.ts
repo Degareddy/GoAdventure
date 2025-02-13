@@ -21,6 +21,10 @@ import { FlatSearchComponent } from 'src/app/general/flat-search/flat-search.com
 import { PreBookingComponent } from './pre-booking/pre-booking.component';
 import { CustomerDetailsComponent } from 'src/app/sales/customer/customer-details/customer-details.component';
 import { SendsmsComponent } from 'src/app/general/sendsms/sendsms.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogModel,
+} from 'src/app/general/confirm-dialog/confirm-dialog.component';
 import { PdfReportsService } from 'src/app/FileGenerator/pdf-reports.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Item } from 'src/app/general/Interface/interface';
@@ -597,6 +601,7 @@ export class FlatsComponent implements OnInit, OnDestroy {
       }
     } 
     else if (event.toUpperCase() === Mode.Allocate) {
+
       this.joinDate="Allocate Date";
       const firstDateOfCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 2);
       this.unitDetForm.get('joinDate')!.patchValue(firstDateOfCurrentMonth.toISOString().split('T')[0]);
@@ -893,7 +898,106 @@ export class FlatsComponent implements OnInit, OnDestroy {
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+  beforeonUpdate(){
 
+    if (this.unitDetForm.get('mode')?.value.toUpperCase() === Mode.Allocate) {
+      if(this.flatStatus.toUpperCase() === 'ALLOCATED'){
+        const dialogData = new ConfirmDialogModel(
+          `Unit ${this.unitDetForm.get('unitName')?.value} is already allocated to ${this.unitDetForm.get('tenantName')?.value} , so you cannot allocate it again. Please check once more.`,
+          '',
+         );
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          maxWidth: '400px',
+          height: '210px',
+          data: dialogData,
+          disableClose: true,
+          // confirm:'Info!'
+        });
+
+    
+      dialogRef.afterClosed().subscribe((dialogResult) => {
+        if (dialogResult != true && dialogResult === 'YES') {
+          return;
+          } else {
+          return;
+        }
+      })
+      }
+      else{
+        const dialogData = new ConfirmDialogModel(
+          `You are about to allocate unit ${this.unitDetForm.get('unitName')?.value} to ${this.unitDetForm.get('tenantName')?.value} on ${this.formatDate(this.unitDetForm.get('joinDate')?.value)}. Are you sure you want to Allocate?`,
+          '',
+         );
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          maxWidth: '400px',
+          height: '210px',
+          data: dialogData,
+          disableClose: true,
+          // title:'Info!'
+        });
+
+    
+      dialogRef.afterClosed().subscribe((dialogResult) => {
+        if (dialogResult != true && dialogResult === 'YES') {
+          this.onUpdate();
+        } else {
+          return;
+        }
+      })
+      }
+      
+  }
+  
+    else if (this.unitDetForm.get('mode')?.value.toUpperCase() === Mode.Vacate) {
+      if(this.flatStatus.toUpperCase() === 'VACANT'){
+        const dialogData = new ConfirmDialogModel(
+          `Unit ${this.unitDetForm.get('unitName')?.value} is already Vacated , so you cannot Vacate it again. Please check once more.`,
+          '',
+         );
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          maxWidth: '400px',
+          height: '210px',
+          data: dialogData,
+          disableClose: true,
+        });
+
+    
+      dialogRef.afterClosed().subscribe((dialogResult) => {
+        if (dialogResult != true && dialogResult === 'YES') {
+          return;
+          } else {
+          return;
+        }
+      })
+      }
+      else{
+        const dialogData = new ConfirmDialogModel(
+          `You are about to vacate unit ${this.unitDetForm.get('unitName')?.value} from ${this.unitDetForm.get('tenantName')?.value} on ${this.formatDate(this.unitDetForm.get('joinDate')?.value)}. Are you sure you want to vacate?`,
+          '',
+         );
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          maxWidth: '400px',
+          height: '210px',
+          data: dialogData,
+          disableClose: true,
+        });
+  
+    
+      dialogRef.afterClosed().subscribe((dialogResult) => {
+        if (dialogResult != true && dialogResult === 'YES') {
+          this.onUpdate();
+        } else {
+          return;
+        }
+      })
+      }
+      }
+      
+    else{
+      this.onUpdate();
+    }
+
+  }
 
   async onUpdate() {
 
