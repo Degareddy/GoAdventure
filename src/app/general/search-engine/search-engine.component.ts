@@ -106,6 +106,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
 
     this.searchName = this.data.search;
+    this.tranSearchForm.get('tranNo')!.patchValue(this.data.tranNum);
     if (this.data.tranNum) {
       this.tranSearchForm.get('tranNo')!.patchValue(this.data.tranNum);
     }

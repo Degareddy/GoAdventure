@@ -298,7 +298,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   searchData() {
     this.displayMessage("", "");
-    this.expensesForm = this.formInit();
+    // this.expensesForm = this.formInit();
     this.tranAmount = 0;
     // this.balanceAmount = 0;
     this.tranStatus = "";
@@ -339,7 +339,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         width: '90%',
         disableClose: true,
         data: {
-          tranNum: this.expensesForm.controls['tranNo'].value,
+          tranNum: this.expensesForm.get('tranNo')?.value,
           search: 'Expenses Search', TranType: Type.EXPENSES
         }
       });

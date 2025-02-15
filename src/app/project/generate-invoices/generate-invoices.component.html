@@ -42,6 +42,7 @@
           <div class="col-md-3">
             <mat-checkbox
               [labelPosition]="labelPosition"
+              [disabled]=" autoGenForm.get('IncludeUtility')!.value || autoGenForm.get('includeExpenses')!.value"
               formControlName="rentInvoice"
               (change)="onCheckboxChange('rentInvoice')">
               Rent Invoice
@@ -50,6 +51,7 @@
           <div class="col-md-3">
             <mat-checkbox
               [labelPosition]="labelPosition"
+              [disabled]=" autoGenForm.get('IncludeUtility')!.value || autoGenForm.get('rentInvoice')!.value"
               formControlName="includeExpenses"
               (change)="onCheckboxChange('includeExpenses')">
               Include Expenses
@@ -63,6 +65,7 @@
           <div class="col-md-3">
             <mat-checkbox
               [labelPosition]="labelPosition"
+              [disabled]=" autoGenForm.get('rentInvoice')!.value || autoGenForm.get('includeExpenses')!.value"
               formControlName="IncludeUtility"
               (change)="onCheckboxChange('IncludeUtility')">
               Utility
