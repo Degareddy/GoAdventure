@@ -83,6 +83,8 @@ export class DairyComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.setMaxTime();
+    this.dairyForm.get('Evalname')?.patchValue(this.userDataService.userData.userName);
+    this.admCode = this.userDataService.userData.userID;
     const currentTime = this.getCurrentTime();
     this.dairyForm.get('fromTime')?.patchValue(currentTime);
     this.dairyForm.get('toTime')?.patchValue(currentTime);
@@ -104,9 +106,16 @@ export class DairyComponent implements OnInit, OnDestroy {
     if(this.empCode === this.admCode){
       this.dairyForm.get('Evalrating')!.patchValue('0');
       this.dairyForm.get('Evalrating')?.disable();
+      this.dairyForm.get('date')?.enable();
+      this.dairyForm.get('fromTime')?.enable();
+      this.dairyForm.get('activity')?.enable();
+      this.dairyForm.get('toTime')?.enable();
+      this.dairyForm.get('status')?.enable();
+      this.dairyForm.get('rating')?.enable();
+      // this.dairyForm.get('Evalrating')?.enable();
     }
     else{
-      this.dairyForm.get('name')?.disable();
+      // this.dairyForm.get('name')?.disable();
       this.dairyForm.get('date')?.disable();
       this.dairyForm.get('fromTime')?.disable();
       this.dairyForm.get('activity')?.disable();
@@ -116,48 +125,52 @@ export class DairyComponent implements OnInit, OnDestroy {
       this.dairyForm.get('Evalrating')?.enable();
     }
   }
-  async onAdminSearch() {
-    const body = this.createRequestDataForSearch(this.dairyForm.get('Evalname')!.value || "", Type.EMPLOYEE);
-    try {
-      this.subsink.sink = await this.utilService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
-        if (res.retVal === 0) {
-          if (res && res.data && res.data.nameCount === 1) {
-            this.dairyForm.get('Evalname')!.patchValue(res.data.selName,{emitEvent: false});
-            this.admCode = res.data.selCode;
-            this.checkIsSame();
-          }
-          else {
-            if (!this.dialogOpen) {
-              const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
-                width: '90%',
-                disableClose: true,
-                data: {
-                  PartyName: this.dairyForm.get('Evalname')!.value, PartyType: Type.EMPLOYEE,
-                  search: searchType.EMPLOYEE
-                }
-              });
-              this.dialogOpen = true;
-              dialogRef.afterClosed().subscribe(result => {
-                if (result != true && result != undefined) {
-                  this.dairyForm.get('Evalname')!.patchValue(result.partyName,{emitEvent: false});
-                  this.admCode = result.code;
+  // async onAdminSearch() {
+  //   const body = this.createRequestDataForSearch(this.dairyForm.get('Evalname')!.value || "", Type.EMPLOYEE);
+  //   try {
+  //     this.subsink.sink = await this.utilService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+  //       if (res.retVal === 0) {
+  //         if (res && res.data && res.data.nameCount === 1) {
+  //           this.dairyForm.get('Evalname')!.patchValue(res.data.selName,{emitEvent: false});
+  //           this.admCode = res.data.selCode;
+  //           this.checkIsSame();
+  //         }
+  //         else {
+  //           if (!this.dialogOpen) {
+  //             const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+  //               width: '90%',
+  //               disableClose: true,
+  //               data: {
+  //                 PartyName: this.dairyForm.get('Evalname')!.value, PartyType: Type.EMPLOYEE,
+  //                 search: searchType.EMPLOYEE
+  //               }
+  //             });
+  //             this.dialogOpen = true;
+  //             dialogRef.afterClosed().subscribe(result => {
+  //               if (result != true && result != undefined) {
+  //                 this.dairyForm.get('Evalname')!.patchValue(result.partyName,{emitEvent: false});
+  //                 this.admCode = result.code;
                   
-                }
-                this.dialogOpen = false;
-                this.checkIsSame()
-              });
-            }
+  //               }
+  //               this.dialogOpen = false;
+  //               this.checkIsSame()
+  //             });
+  //           }
 
-          }
-        }
-        else {
-          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
-        }
-      });
-    }
-    catch (ex: any) {
-      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
-    }
+  //         }
+  //       }
+  //       else {
+  //         this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+  //       }
+  //     });
+  //   }
+  //   catch (ex: any) {
+  //     this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+  //   }
+  // }
+  onEmpClear(){
+    this.dairyForm.get('name')!.setValue('');
+    this.rowData=[];
   }
   async onEmployeeSearch() {
     const body = this.createRequestDataForSearch(this.dairyForm.get('name')!.value || "", Type.EMPLOYEE);
@@ -168,6 +181,8 @@ export class DairyComponent implements OnInit, OnDestroy {
             this.dairyForm.get('name')!.patchValue(res.data.selName,{emitEvent: false});
             this.empCode = res.data.selCode;
             this.getActivity(this.empCode);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            this.checkIsSame()
 
           }
           else {
@@ -186,16 +201,19 @@ export class DairyComponent implements OnInit, OnDestroy {
                   this.dairyForm.get('name')!.patchValue(result.partyName,{emitEvent: false});
                   this.empCode = result.code;
                   this.getActivity(this.empCode);
+                  this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
 
                 }
                 this.dialogOpen = false;
+                this.checkIsSame()
+
               });
             }
 
           }
         }
         else {
-          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.green);
         }
       });
     }
@@ -216,14 +234,16 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.actCls.activityStatus = this.dairyForm.controls.status.value;
     this.actCls.diaryDate = asDate;
     this.actCls.selfRating= this.dairyForm.controls.rating.value;
+    this.actCls.evalRating= this.dairyForm.controls.Evalrating.value;
     const fromTimeValue = this.dairyForm.controls.fromTime.value;
     const toTimeValue = this.dairyForm.controls.toTime.value;
-    if (fromTimeValue) {
-      this.actCls.fromTime = this.datePipe.transform(`1970-01-01T${fromTimeValue}:00`, 'HH:mm:ss') || '';
-    }
-    if (toTimeValue) {
-      this.actCls.toTime = this.datePipe.transform(`1970-01-01T${toTimeValue}:00`, 'HH:mm:ss') || '';
-    }
+      if (fromTimeValue) {
+        this.actCls.fromTime = fromTimeValue.endsWith(':00') ? fromTimeValue : `${fromTimeValue}:00`;
+      }
+        // Ensures 'HH:mm:ss' format
+        if (toTimeValue) {
+          this.actCls.toTime = toTimeValue.endsWith(':00') ? toTimeValue : `${toTimeValue}:00`;
+        }
     this.actCls.remarks = this.dairyForm.controls.remarks.value;
     this.actCls.empCode = this.empCode;
     this.actCls.slNo = this.slNum;
@@ -272,9 +292,10 @@ export class DairyComponent implements OnInit, OnDestroy {
       this.subsink.sink = this.utilService.GetDiaryDetails(body).subscribe((res: any) => {
         if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.rowData = res.data;
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
         else {
-          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          this.displayMessage(displayMsg.SUCCESS + res.message +' OR No Work is Done yet', TextClr.green);
         }
       })
     }
@@ -347,7 +368,7 @@ export class DairyComponent implements OnInit, OnDestroy {
       status: ['', Validators.required],
       remarks: ['', Validators.required],
       rating: ['0'],
-      Evalrating:['0,'],
+      Evalrating:['0'],
       Evalname:['']
     });
   }
@@ -361,7 +382,7 @@ export class DairyComponent implements OnInit, OnDestroy {
       status: ['', Validators.required],
       remarks: ['', Validators.required],
       rating: ['0'],
-      Evalrating:['0,'],
+      Evalrating:['0'],
       Evalname:['']
     });
 
@@ -393,5 +414,22 @@ export class DairyComponent implements OnInit, OnDestroy {
     }
   }
   onRowSelected(event: any) {
+    console.log(event.data)
+    this.dairyForm.get('name')?.patchValue(event.data.empName);
+    this.empCode=event.data.empCode;
+    this.dairyForm.get('date')?.patchValue(this.formatDate(event.data.diaryDate));
+    this.dairyForm.get('date')?.patchValue(this.formatDate(event.data.diaryDate));
+    this.dairyForm.get('fromTime')?.patchValue(event.data.fromTime);
+    this.dairyForm.get('toTime')?.patchValue(event.data.toTime);
+    this.slNum=event.data.slNo;
+    this.dairyForm.get('activity')?.patchValue(event.data.activityDescription);
+    this.dairyForm.get('status')?.patchValue(event.data.activityStatus);
+    this.dairyForm.get('rating')?.patchValue(event.data.selfRating);
+    this.dairyForm.get('remarks')?.patchValue(event.data.remarks);
+    this.dairyForm.get('Evalrating')?.patchValue(event.data.evalRating);
+    // this.dairyForm.get('rating')?.patchValue(event.data.activityStatus);
+  }
+  formatDates(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
 }

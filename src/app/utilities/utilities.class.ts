@@ -120,6 +120,7 @@ export class ActivityDiary {
   activityStatus!: string;
   selfRating!: number;
   evalRating!: number | null;
+  
   remarks!: string | null;
   user!: string;
   refNo!: string;

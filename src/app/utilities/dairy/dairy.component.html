@@ -14,7 +14,7 @@
           <mat-label>Name</mat-label>
           <input matInput placeholder="Name" formControlName="name" type="text">
           <button mat-button *ngIf="dairyForm.get('name')!.value" type="button" matSuffix mat-icon-button
-            aria-label="Clear" (click)="dairyForm.get('name')!.setValue('')">
+            aria-label="Clear" (click)="onEmpClear()">
             <mat-icon>cancel</mat-icon>
           </button>
           <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onEmployeeSearch()"
@@ -84,25 +84,24 @@
     </div>
     <div class="row justify-content-center">
       <div class="col-md-3 offset-md-1">
-        <mat-form-field appearance="outline" class="w-full" >
-          <mat-label>Name</mat-label>
-          <input matInput placeholder="Name" formControlName="Evalname" type="text" [disabled]="isAdmin()">
-          <button mat-button *ngIf="dairyForm.get('Evalname')!.value" type="button" matSuffix mat-icon-button
-            aria-label="Clear" (click)="dairyForm.get('Evalname')!.setValue('')">
-            <mat-icon>cancel</mat-icon>
-          </button>
-          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onAdminSearch()"
-            >
-            <mat-icon class="mat-search-icon">search</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label>Eval Rating</mat-label>
           <input type="number" matInput placeholder="(0-10)" formControlName="Evalrating" min="0" max="10" [disabled]="isAdmin()">
         </mat-form-field>
+        <!-- <mat-form-field appearance="outline" class="w-full" >
+          <mat-label>Name</mat-label>
+          <input matInput placeholder="Name" formControlName="Evalname" type="text" [disabled]=true> -->
+          <!-- <button mat-button *ngIf="dairyForm.get('Evalname')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="dairyForm.get('Evalname')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onAdminSearch()"
+            >f
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button> -->
+        <!-- </mat-form-field> -->
       </div>
+      
       <!-- <div class="col-md-3 ">
         <mat-label>S.No:</mat-label>&nbsp;&nbsp;<b class="data">{{slNum}}</b>
       </div> -->
