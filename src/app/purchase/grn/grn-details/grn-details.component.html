@@ -120,10 +120,10 @@
             [disabled]="data.mode === 'View' || grnDetailsForm.invalid || data.status !='Open'">
             <mat-icon>done</mat-icon><b>Apply</b>
           </button>
-          <button mat-raised-button color="accent" type="button" (click)="newGRN()" class=btnUp>
+          <button mat-raised-button color="accent" type="button"  [disabled]="data.mode === 'View' || grnDetailsForm.invalid || data.status !='Open'" (click)="newGRN()" class=btnUp>
             <mat-icon>add</mat-icon><b>New</b>
           </button>
-          <button mat-raised-button color="primary" type="button" (click)="Delete()" class=btnUp>
+          <button mat-raised-button color="primary" type="button"  [disabled]="data.mode === 'View' || grnDetailsForm.invalid || data.status !='Open'" (click)="Delete()" class=btnUp>
             <mat-icon>delete</mat-icon><b>Delete</b>
           </button>
           <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{ isAltered: dataFlag}">

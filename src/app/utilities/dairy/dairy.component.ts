@@ -22,10 +22,12 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./dairy.component.css']
 })
 export class DairyComponent implements OnInit, OnDestroy {
+
   dairyForm!: FormGroup;
   private subsink: SubSink = new SubSink();
   modes: Item[] = [];
   retMessage: string = "";
+  maxTime: string = '';
   textMessageClass: string = "";
   tomorrow: Date = new Date();
   slNum: number = 0;
@@ -62,6 +64,7 @@ export class DairyComponent implements OnInit, OnDestroy {
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   empCode!: string;
+  admCode:string='';
   dialogOpen: boolean = false;
   constructor(private fb: FormBuilder, protected router: Router,
     private loader: NgxUiLoaderService, private dialog: MatDialog,
@@ -79,6 +82,7 @@ export class DairyComponent implements OnInit, OnDestroy {
     return `${hours}:${minutes}`;
   }
   ngOnInit(): void {
+    this.setMaxTime();
     const currentTime = this.getCurrentTime();
     this.dairyForm.get('fromTime')?.patchValue(currentTime);
     this.dairyForm.get('toTime')?.patchValue(currentTime);
@@ -96,7 +100,65 @@ export class DairyComponent implements OnInit, OnDestroy {
       itemSecondLevel: "",
     };
   }
+  checkIsSame(){
+    if(this.empCode === this.admCode){
+      this.dairyForm.get('Evalrating')!.patchValue('0');
+      this.dairyForm.get('Evalrating')?.disable();
+    }
+    else{
+      this.dairyForm.get('name')?.disable();
+      this.dairyForm.get('date')?.disable();
+      this.dairyForm.get('fromTime')?.disable();
+      this.dairyForm.get('activity')?.disable();
+      this.dairyForm.get('toTime')?.disable();
+      this.dairyForm.get('status')?.disable();
+      this.dairyForm.get('rating')?.disable();
+      this.dairyForm.get('Evalrating')?.enable();
+    }
+  }
+  async onAdminSearch() {
+    const body = this.createRequestDataForSearch(this.dairyForm.get('Evalname')!.value || "", Type.EMPLOYEE);
+    try {
+      this.subsink.sink = await this.utilService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+        if (res.retVal === 0) {
+          if (res && res.data && res.data.nameCount === 1) {
+            this.dairyForm.get('Evalname')!.patchValue(res.data.selName,{emitEvent: false});
+            this.admCode = res.data.selCode;
+            this.checkIsSame();
+          }
+          else {
+            if (!this.dialogOpen) {
+              const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+                width: '90%',
+                disableClose: true,
+                data: {
+                  PartyName: this.dairyForm.get('Evalname')!.value, PartyType: Type.EMPLOYEE,
+                  search: searchType.EMPLOYEE
+                }
+              });
+              this.dialogOpen = true;
+              dialogRef.afterClosed().subscribe(result => {
+                if (result != true && result != undefined) {
+                  this.dairyForm.get('Evalname')!.patchValue(result.partyName,{emitEvent: false});
+                  this.admCode = result.code;
+                  
+                }
+                this.dialogOpen = false;
+                this.checkIsSame()
+              });
+            }
 
+          }
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+  }
   async onEmployeeSearch() {
     const body = this.createRequestDataForSearch(this.dairyForm.get('name')!.value || "", Type.EMPLOYEE);
     try {
@@ -153,7 +215,7 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.actCls.activityDescription = this.dairyForm.controls.activity.value;
     this.actCls.activityStatus = this.dairyForm.controls.status.value;
     this.actCls.diaryDate = asDate;
-    this.actCls.evalRating = this.dairyForm.controls.rating.value;
+    this.actCls.selfRating= this.dairyForm.controls.rating.value;
     const fromTimeValue = this.dairyForm.controls.fromTime.value;
     const toTimeValue = this.dairyForm.controls.toTime.value;
     if (fromTimeValue) {
@@ -178,7 +240,25 @@ export class DairyComponent implements OnInit, OnDestroy {
       return '';
     }
   }
-
+  isAdmin():boolean{
+    if(this.userDataService.userData.userProfile.toUpperCase() !== 'CMPADMIN'){
+      return true;
+    }
+    return false
+  }
+  setMaxTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    this.maxTime = `${hours}:${minutes}`; 
+  }
+  validateTime() {
+    const selectedTime = this.dairyForm.controls['toTime'].value;
+    if (selectedTime && selectedTime > this.maxTime) {
+      alert('Future time selection is not allowed!');
+      this.dairyForm.controls['toTime'].setValue(this.maxTime);
+    }
+  }
   getActivity(tranNo: string) {
     let asDate: any;
     const formControls = this.dairyForm.controls;
@@ -257,6 +337,20 @@ export class DairyComponent implements OnInit, OnDestroy {
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+  formInItS(){
+    return this.fb.group({
+      // name: ['', [Validators.required]],
+      date: [new Date(), [Validators.required]],
+      fromTime: ['', Validators.required],
+      toTime: ['', Validators.required],
+      activity: ['', Validators.required],
+      status: ['', Validators.required],
+      remarks: ['', Validators.required],
+      rating: ['0'],
+      Evalrating:['0,'],
+      Evalname:['']
+    });
+  }
   formInit() {
     return this.fb.group({
       name: ['', [Validators.required]],
@@ -266,7 +360,9 @@ export class DairyComponent implements OnInit, OnDestroy {
       activity: ['', Validators.required],
       status: ['', Validators.required],
       remarks: ['', Validators.required],
-      rating: ['0']
+      rating: ['0'],
+      Evalrating:['0,'],
+      Evalname:['']
     });
 
 
@@ -277,7 +373,7 @@ export class DairyComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    this.dairyForm = this.formInit();
+    this.dairyForm = this.formInItS();
     this.slNum = 0;
     this.displayMessage("", "");
   }

@@ -47,8 +47,8 @@
       <div class="col-md-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label>To Time</mat-label>
-          <input matInput type="time" formControlName="toTime">
-        </mat-form-field>
+          <input matInput type="time" formControlName="toTime" [attr.max]="maxTime" (change)="validateTime()">
+          </mat-form-field>
 
       </div>
       <div class="col-md-3">
@@ -71,7 +71,7 @@
       </div>
       <div class="col-md-3">
         <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label>Rating</mat-label>
+          <mat-label>Self Rating</mat-label>
           <input type="number" matInput placeholder="(0-10)" formControlName="rating" min="0" max="10">
         </mat-form-field>
       </div>
@@ -81,6 +81,31 @@
           <textarea formControlName="remarks" matInput placeholder="Remarks"></textarea>
         </mat-form-field>
       </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-3 offset-md-1">
+        <mat-form-field appearance="outline" class="w-full" >
+          <mat-label>Name</mat-label>
+          <input matInput placeholder="Name" formControlName="Evalname" type="text" [disabled]="isAdmin()">
+          <button mat-button *ngIf="dairyForm.get('Evalname')!.value" type="button" matSuffix mat-icon-button
+            aria-label="Clear" (click)="dairyForm.get('Evalname')!.setValue('')">
+            <mat-icon>cancel</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onAdminSearch()"
+            >
+            <mat-icon class="mat-search-icon">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Eval Rating</mat-label>
+          <input type="number" matInput placeholder="(0-10)" formControlName="Evalrating" min="0" max="10" [disabled]="isAdmin()">
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-md-3 ">
+        <mat-label>S.No:</mat-label>&nbsp;&nbsp;<b class="data">{{slNum}}</b>
+      </div> -->
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="flex justify-center gap-1 btnAlignment">
