@@ -237,13 +237,14 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.actCls.evalRating= this.dairyForm.controls.Evalrating.value;
     const fromTimeValue = this.dairyForm.controls.fromTime.value;
     const toTimeValue = this.dairyForm.controls.toTime.value;
-      if (fromTimeValue) {
-        this.actCls.fromTime = fromTimeValue.endsWith(':00') ? fromTimeValue : `${fromTimeValue}:00`;
-      }
-        // Ensures 'HH:mm:ss' format
-        if (toTimeValue) {
-          this.actCls.toTime = toTimeValue.endsWith(':00') ? toTimeValue : `${toTimeValue}:00`;
-        }
+    if (fromTimeValue) {
+      this.actCls.fromTime = fromTimeValue.length === 5 ? `${fromTimeValue}:00` : fromTimeValue;
+    }
+    
+    if (toTimeValue) {
+      this.actCls.toTime = toTimeValue.length === 5 ? `${toTimeValue}:00` : toTimeValue;
+    }
+    
     this.actCls.remarks = this.dairyForm.controls.remarks.value;
     this.actCls.empCode = this.empCode;
     this.actCls.slNo = this.slNum;
