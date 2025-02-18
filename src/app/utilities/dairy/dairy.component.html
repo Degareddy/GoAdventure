@@ -9,7 +9,7 @@
 <div class="p-2 bg-zinc-100 container rounded-sm">
   <form [formGroup]="dairyForm" (ngSubmit)="onSubmit()" class="space-y-1">
     <div class="row justify-content-center">
-      <div class="col-md-3 offset-md-1">
+      <div class="col-md-2 offset-md-1">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Name</mat-label>
           <input matInput placeholder="Name" formControlName="name" type="text">
@@ -23,7 +23,7 @@
           </button>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label>Date</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="date" [max]="tomorrow" />
@@ -31,27 +31,31 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
-      <div class="col-md-3 ">
+      <!-- <div class="col-md-2 ">
         <mat-label>S.No:</mat-label>&nbsp;&nbsp;<b class="data">{{slNum}}</b>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-
-      <div class="col-md-3 offset-md-1">
+      </div> -->
+      <div class="col-md-2">
         <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label>From Time</mat-label>
+          <mat-label>From</mat-label>
           <input matInput type="time" formControlName="fromTime">
         </mat-form-field>
 
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label>To Time</mat-label>
+          <mat-label>To</mat-label>
           <input matInput type="time" formControlName="toTime" [attr.max]="maxTime" (change)="validateTime()">
           </mat-form-field>
-
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Reamarks</mat-label>
+          <textarea formControlName="remarks" matInput placeholder="Remarks"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row justify-content-center">      
+      <div class="col-md-12">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Activity</mat-label>
           <textarea formControlName="activity" matInput placeholder="Activity"></textarea>
@@ -70,25 +74,48 @@
         </mat-form-field>
       </div>
       <div class="col-md-3">
-        <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label>Self Rating</mat-label>
-          <input type="number" matInput placeholder="(0-10)" formControlName="rating" min="0" max="10">
-        </mat-form-field>
+        <div class="rating-container self-rating" [ngClass]="{'disabled': isSelfDisabled}">
+          <div class="rating-wrapper">
+            <label class="rating-label">Self Rating:</label>
+            <ng-container *ngFor="let star of stars; let i = index">
+              <mat-icon 
+                (click)="setRating(i + 1)" 
+                (mouseover)="previewRating(i + 1)" 
+                (mouseleave)="resetPreview()" 
+                [ngClass]="{'selected-star': (i + 1) <= ratingValue}">
+                {{ getStarIcon(i + 1, ratingValue) }}
+              </mat-icon>
+            </ng-container>
+          </div>
+        </div>
       </div>
+      
       <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Reamarks</mat-label>
-          <textarea formControlName="remarks" matInput placeholder="Remarks"></textarea>
-        </mat-form-field>
+        <div class="rating-container eval-rating" [ngClass]="{'disabled': isDisabled}">
+          <div class="rating-wrapper">
+            <label class="rating-label">Eval Rating:</label>
+            <ng-container *ngFor="let star of Evalstars; let i = index">
+              <mat-icon 
+                (click)="setEvalRating(i + 1)" 
+                (mouseover)="previewEvalRating(i + 1)" 
+                (mouseleave)="resetEvalPreview()" 
+                [ngClass]="{'selected-star': (i + 1) <= evalRatingValue}">
+                {{ getStarIcon(i + 1, evalRatingValue) }}
+              </mat-icon>
+            </ng-container>
+          </div>
+        </div>
       </div>
+      
+      
     </div>
-    <div class="row justify-content-center">
+    <!-- <div class="row justify-content-center">
       <div class="col-md-3 offset-md-1">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label>Eval Rating</mat-label>
           <input type="number" matInput placeholder="(0-10)" formControlName="Evalrating" min="0" max="10" [disabled]="isAdmin()">
         </mat-form-field>
-        <!-- <mat-form-field appearance="outline" class="w-full" >
+        <mat-form-field appearance="outline" class="w-full" >
           <mat-label>Name</mat-label>
           <input matInput placeholder="Name" formControlName="Evalname" type="text" [disabled]=true> -->
           <!-- <button mat-button *ngIf="dairyForm.get('Evalname')!.value" type="button" matSuffix mat-icon-button
@@ -99,13 +126,13 @@
             >f
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button> -->
-        <!-- </mat-form-field> -->
-      </div>
+        <!-- </mat-form-field>
+      </div> -->
       
       <!-- <div class="col-md-3 ">
         <mat-label>S.No:</mat-label>&nbsp;&nbsp;<b class="data">{{slNum}}</b>
       </div> -->
-    </div>
+    <!-- </div> -->
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="flex justify-center gap-1 btnAlignment">
       <button mat-raised-button color="primary" class="btnUp"
@@ -122,7 +149,7 @@
   </form>
   <div class="grid" style="margin-top:-20px;">
     <app-access-grid [columnDefs]="columnDefs1" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
-      [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)" [gridHeight]="'230px'"
+      [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)" [gridHeight]="'270px'"
       [paginationPageSize]="100" [showToolPanel]="true" [showRecordCount]="true">
     </app-access-grid>
   </div>

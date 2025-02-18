@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 import { getResponse, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
@@ -24,9 +24,16 @@ import { DatePipe } from '@angular/common';
 export class DairyComponent implements OnInit, OnDestroy {
 
   dairyForm!: FormGroup;
+  @Input() ratingControl!: FormControl; // Bind to formControl
+  ratingValue = 0;  // Default rating for Self Rating
+evalRatingValue = 0; // Default rating for Eval Rating
+stars = Array(5).fill(0); 
+Evalstars = Array(5).fill(0); 
   private subsink: SubSink = new SubSink();
   modes: Item[] = [];
   retMessage: string = "";
+  isDisabled:boolean=false;
+  isSelfDisabled:boolean=false;
   maxTime: string = '';
   textMessageClass: string = "";
   tomorrow: Date = new Date();
@@ -82,6 +89,10 @@ export class DairyComponent implements OnInit, OnDestroy {
     return `${hours}:${minutes}`;
   }
   ngOnInit(): void {
+    if(this.dairyForm.get('name')?.value.length===0){
+      this.isDisabled=true;
+      this.isSelfDisabled=true
+    }
     this.setMaxTime();
     this.dairyForm.get('Evalname')?.patchValue(this.userDataService.userData.userName);
     this.admCode = this.userDataService.userData.userID;
@@ -102,10 +113,57 @@ export class DairyComponent implements OnInit, OnDestroy {
       itemSecondLevel: "",
     };
   }
+  setRating(value: number) {
+    // Toggle rating: If the clicked star is already selected, reset to 0.
+    this.ratingValue = this.ratingValue === value ? 0 : value;
+    this.dairyForm.controls['rating'].setValue(this.ratingValue);  // Update FormControl
+  }
+  
+  setEvalRating(value: number) {
+    this.evalRatingValue = this.evalRatingValue === value ? 0 : value;
+    this.dairyForm.controls['Evalrating'].setValue(this.setEvalRating);
+    // this.evalRatingValue = value;
+    // this.dairyForm.controls['Evalrating'].setValue(value);
+  }
+  
+  // Preview stars on hover
+  previewRating(value: number) {
+    this.ratingValue = value;
+  }
+  
+  previewEvalRating(value: number) {
+    this.evalRatingValue = value;
+  }
+  
+  // Reset preview on mouse leave
+  resetPreview() {
+    this.ratingValue = this.dairyForm.controls['rating'].value || 0;
+  }
+  
+  resetEvalPreview() {
+    this.evalRatingValue = this.dairyForm.controls['Evalrating'].value || 0;
+  }
+  
+  // Function to return star or half-star icon
+  getStarIcon(index: number, rating: number): string {
+    if (rating >= index) return 'star'; // Full star
+    if (rating >= index - 0.5) return 'star_half'; // Half star
+    return 'star_border'; // Empty star
+  }
+  get rating() {
+    return this.ratingControl?.value || 0;
+  }
+
+  // setRating(value: number) {
+  //   this.ratingControl.setValue(value);
+  // }
   checkIsSame(){
     if(this.empCode === this.admCode){
-      this.dairyForm.get('Evalrating')!.patchValue('0');
-      this.dairyForm.get('Evalrating')?.disable();
+      this.isDisabled=true;
+      this.isSelfDisabled=false;
+      this.setRating(0);
+      // this.dairyForm.get('Evalrating')!.patchValue('0');
+      // this.dairyForm.get('Evalrating')?.disable();
       this.dairyForm.get('date')?.enable();
       this.dairyForm.get('fromTime')?.enable();
       this.dairyForm.get('activity')?.enable();
@@ -115,14 +173,17 @@ export class DairyComponent implements OnInit, OnDestroy {
       // this.dairyForm.get('Evalrating')?.enable();
     }
     else{
+      this.isDisabled=false;
+      this.isSelfDisabled=true;
+      this.setEvalRating(0);
       // this.dairyForm.get('name')?.disable();
-      this.dairyForm.get('date')?.disable();
+      this.dairyForm.get('date')?.enable();
       this.dairyForm.get('fromTime')?.disable();
       this.dairyForm.get('activity')?.disable();
       this.dairyForm.get('toTime')?.disable();
       this.dairyForm.get('status')?.disable();
       this.dairyForm.get('rating')?.disable();
-      this.dairyForm.get('Evalrating')?.enable();
+      // this.dairyForm.get('Evalrating')?.enable();
     }
   }
   // async onAdminSearch() {
@@ -171,6 +232,9 @@ export class DairyComponent implements OnInit, OnDestroy {
   onEmpClear(){
     this.dairyForm.get('name')!.setValue('');
     this.rowData=[];
+    this.slNum=0;
+    this.dairyForm.controls['rating'].setValue(0);
+    this.dairyForm.controls['Evalrating'].setValue(0);
   }
   async onEmployeeSearch() {
     const body = this.createRequestDataForSearch(this.dairyForm.get('name')!.value || "", Type.EMPLOYEE);
@@ -233,8 +297,15 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.actCls.activityDescription = this.dairyForm.controls.activity.value;
     this.actCls.activityStatus = this.dairyForm.controls.status.value;
     this.actCls.diaryDate = asDate;
-    this.actCls.selfRating= this.dairyForm.controls.rating.value;
-    this.actCls.evalRating= this.dairyForm.controls.Evalrating.value;
+    if(this.isDisabled){
+      this.evalRatingValue=0;
+      
+    }
+    if(this.isSelfDisabled){
+      this.ratingValue=0;
+    }
+    this.actCls.selfRating= this.ratingValue;
+    this.actCls.evalRating= this.evalRatingValue;
     const fromTimeValue = this.dairyForm.controls.fromTime.value;
     const toTimeValue = this.dairyForm.controls.toTime.value;
     if (fromTimeValue) {
@@ -368,13 +439,12 @@ export class DairyComponent implements OnInit, OnDestroy {
       activity: ['', Validators.required],
       status: ['', Validators.required],
       remarks: ['', Validators.required],
-      rating: ['0'],
-      Evalrating:['0'],
-      Evalname:['']
+      
     });
   }
   formInit() {
     return this.fb.group({
+      
       name: ['', [Validators.required]],
       date: [new Date(), [Validators.required]],
       fromTime: ['', Validators.required],
@@ -382,13 +452,12 @@ export class DairyComponent implements OnInit, OnDestroy {
       activity: ['', Validators.required],
       status: ['', Validators.required],
       remarks: ['', Validators.required],
-      rating: ['0'],
-      Evalrating:['0'],
-      Evalname:['']
+      
     });
 
 
   }
+  
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
     this.textMessageClass = cssClass;
@@ -398,6 +467,11 @@ export class DairyComponent implements OnInit, OnDestroy {
     this.dairyForm = this.formInItS();
     this.slNum = 0;
     this.displayMessage("", "");
+    this.dairyForm.get('name')!.setValue('');
+    this.rowData=[];
+    this.slNum=0;
+    this.setRating(0);
+    this.setEvalRating(0);
   }
   close() {
     this.router.navigateByUrl('/home');
@@ -418,16 +492,19 @@ export class DairyComponent implements OnInit, OnDestroy {
     console.log(event.data)
     this.dairyForm.get('name')?.patchValue(event.data.empName);
     this.empCode=event.data.empCode;
-    this.dairyForm.get('date')?.patchValue(this.formatDate(event.data.diaryDate));
-    this.dairyForm.get('date')?.patchValue(this.formatDate(event.data.diaryDate));
+    this.dairyForm.get('date')?.patchValue(this.formatDate(event.data.actEntryTime));
+    // this.dairyForm.get('date')?.patchValue(this.formatDate(event.data.diaryDate));
     this.dairyForm.get('fromTime')?.patchValue(event.data.fromTime);
     this.dairyForm.get('toTime')?.patchValue(event.data.toTime);
     this.slNum=event.data.slNo;
     this.dairyForm.get('activity')?.patchValue(event.data.activityDescription);
     this.dairyForm.get('status')?.patchValue(event.data.activityStatus);
-    this.dairyForm.get('rating')?.patchValue(event.data.selfRating);
+    // this.dairyForm.get('rating')?.patchValue(event.data.selfRating);
     this.dairyForm.get('remarks')?.patchValue(event.data.remarks);
-    this.dairyForm.get('Evalrating')?.patchValue(event.data.evalRating);
+    // this.dairyForm.controls['Evalrating'].setValue(event.data.evalRating)
+    this.setEvalRating(event.data.evalRating);
+    this.setRating(event.data.selfRating);
+    // this.dairyForm.get('Evalrating')?.patchValue(event.data.evalRating);
     // this.dairyForm.get('rating')?.patchValue(event.data.activityStatus);
   }
   formatDates(date: Date): string {

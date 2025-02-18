@@ -108,3 +108,110 @@
 .custom-menu .data {
   font-size: 12px; /* Adjust label font size */
 }
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+mat-icon {
+  font-size: 28px;
+  /* color: #b0b0b0;  */
+  transition: color 0.3s ease-in-out, transform 0.2s;
+}
+
+mat-icon:hover {
+  transform: scale(1.2);
+}
+
+mat-icon.selected {
+  color: #ffd700; 
+}
+.star-rating-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rating-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+}
+
+mat-icon {
+  cursor: pointer;
+  font-size: 24px;
+  /* color: bla; Default star color */
+  transition: color 0.3s ease-in-out;
+}
+
+mat-icon.selected {
+  color: gold !important; /* Highlight selected stars */
+}
+.disabled mat-icon {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.disabled-star {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.rating-wrapper {
+  display: flex;
+  align-items: center; /* ✅ Aligns label and stars in the same row */
+  /* gap: 8px; ✅ Adds space between label and stars */
+}
+
+.rating-label {
+  font-weight: bold;
+  white-space: nowrap; /* ✅ Prevents label from breaking into multiple lines */
+  line-height: 1; /* ✅ Ensures vertical alignment */
+}
+
+.mat-icon {
+  /* font-size: 24px; ✅ Adjust size as needed */
+  cursor: pointer;
+}
+/* ⭐ Targeting Only Stars Inside .rating-container */
+.rating-container mat-icon {
+  /* font-size: 32px; Uber-style large stars */
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+  color: #ccc; /* Default gray color */
+}
+
+/* 🌟 Hover Effect for Better UX */
+.rating-container mat-icon:hover {
+  transform: scale(1.2);
+}
+
+/* 🏆 Selected Stars - Bright Orange Like Uber */
+.rating-container mat-icon.selected-star {
+  color: #ff9800 !important;
+  text-shadow: 0px 0px 8px rgba(255, 152, 0, 0.6);
+}
+
+/* 🚫 Disabled State - No Clicks */
+.rating-container.disabled mat-icon {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* 🎯 Self Rating - Green Theme */
+.self-rating mat-icon.selected-star {
+  color: #4caf50 !important; /* Green for Self Rating */
+}
+
+/* 🎯 Eval Rating - Red Theme */
+.eval-rating mat-icon.selected-star {
+  color: #f44336 !important; /* Red for Eval Rating */
+}
