@@ -56,8 +56,27 @@ Evalstars = Array(5).fill(0);
   { field: "selfRating", headerName: "Self Rating", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "evalRating", headerName: "Eval Rating", sortable: true, filter: true, resizable: true, width: 220 },
   {
-    field: "actEntryTime", headerName: "Actual Entry", sortable: true, filter: true, resizable: true, width: 220, 
-  },
+    field: "actEntryTime",
+    headerName: "Actual Entry",
+    sortable: true,
+    filter: true,
+    resizable: true,
+    width: 220,
+    valueFormatter: (params: { value: string | number | Date; }) => {
+      if (!params.value) return '';
+  
+      const date = new Date(params.value);
+      
+      return date.getFullYear() + '-' +
+             String(date.getMonth() + 1).padStart(2, '0') + '-' +
+             String(date.getDate()).padStart(2, '0') + ' ' +
+             String(date.getHours()).padStart(2, '0') + ':' +
+             String(date.getMinutes()).padStart(2, '0') + ':' +
+             String(date.getSeconds()).padStart(2, '0');
+    }
+  }
+  
+  
   ];
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
