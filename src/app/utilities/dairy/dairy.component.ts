@@ -125,36 +125,43 @@ Evalstars = Array(5).fill(0);
   }
   
   setRating(value: number,from?:string) {
-    this.ratingValue = this.ratingValue === value ? 0 : value;
-    this.dairyForm.get('rating')?.patchValue(value);     
+    
+      this.ratingValue =value
+      this.dairyForm.controls['rating']?.patchValue(this.ratingValue);     
+    
+   
   }
   
   setEvalRating(value: number,from?:string) {
+   
+    
+      this.evalRatingValue = value;
+    this.dairyForm.controls['Evalrating']?.patchValue(this.evalRatingValue);
     
     
-    this.evalRatingValue = this.evalRatingValue === value ? 0 : value;
-    this.dairyForm.get('Evalrating')?.patchValue(value);
     
   }
  
   
   // Preview stars on hover
   previewRating(value: number) {
-    this.ratingValue = value;
+    this.ratingValue = this.ratingValue === value ? 0 : value;
+    this.dairyForm.controls['rating']?.patchValue(value);
   }
   
   previewEvalRating(value: number) {
-    this.evalRatingValue = value;
+    this.evalRatingValue = this.evalRatingValue === value ? 0 : value;
+    this.dairyForm.controls['Evalrating']?.patchValue(value);
   }
   
   // Reset preview on mouse leave
-  resetPreview() {
-    this.ratingValue = this.dairyForm.get('rating')?.value || 0;
-  }
+  // resetPreview() {
+  //   this.ratingValue = this.dairyForm.get('rating')?.value || 0;
+  // }
   
-  resetEvalPreview() {
-    this.evalRatingValue = this.dairyForm.get('Evalrating')?.value || 0;
-  }
+  // resetEvalPreview() {
+  //   this.evalRatingValue = this.dairyForm.get('Evalrating')?.value || 0;
+  // }
   
   // Function to return star or half-star icon
   getStarIcon(index: number, rating: number): string {

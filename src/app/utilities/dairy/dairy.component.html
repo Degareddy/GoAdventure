@@ -81,7 +81,6 @@
               <mat-icon 
                 (click)="setRating(i + 1)" 
                 (mouseover)="previewRating(i + 1)" 
-                (mouseleave)="resetPreview()" 
                 [ngClass]="{'selected-star': (i + 1) <= ratingValue}">
                 {{ getStarIcon(i + 1, ratingValue) }}
               </mat-icon>
@@ -98,7 +97,7 @@
               <mat-icon 
                 (click)="setEvalRating(i + 1)" 
                 (mouseover)="previewEvalRating(i + 1)" 
-                (mouseleave)="resetEvalPreview()" 
+                
                 [ngClass]="{'selected-star': (i + 1) <= evalRatingValue}">
                 {{ getStarIcon(i + 1, evalRatingValue) }}
               </mat-icon>
