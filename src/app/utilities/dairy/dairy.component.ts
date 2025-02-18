@@ -56,7 +56,7 @@ Evalstars = Array(5).fill(0);
   { field: "selfRating", headerName: "Self Rating", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "evalRating", headerName: "Eval Rating", sortable: true, filter: true, resizable: true, width: 220 },
   {
-    field: "diaryDate", headerName: "Date", sortable: true, filter: true, resizable: true, width: 220, valueFormatter: function (params: any) {
+    field: "actEntryTime", headerName: "Date", sortable: true, filter: true, resizable: true, width: 220, valueFormatter: function (params: any) {
       if (params.value) {
         const date = new Date(params.value);
         const day = date.getDate().toString().padStart(2, '0');
@@ -115,13 +115,8 @@ Evalstars = Array(5).fill(0);
   }
   
   setRating(value: number,from?:string) {
-    
-    
-    
     this.ratingValue = this.ratingValue === value ? 0 : value;
-    this.dairyForm.get('rating')?.patchValue(value);  
-    
-   
+    this.dairyForm.get('rating')?.patchValue(value);     
   }
   
   setEvalRating(value: number,from?:string) {

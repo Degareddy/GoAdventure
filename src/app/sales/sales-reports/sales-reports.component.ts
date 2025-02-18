@@ -64,6 +64,7 @@ export class SalesReportsComponent implements OnInit, OnDestroy {
     { itemCode: 'PROPERTY', itemName: 'Property' },
     { itemCode: 'TENANT', itemName: 'Tenant' },
     { itemCode: 'VENDOR', itemName: 'Vendor' },
+    { itemCode: 'MANAGEMENT', itemName: 'Managment' },
 
   ];
   columnDefs: any = [
