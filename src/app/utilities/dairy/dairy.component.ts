@@ -56,16 +56,7 @@ Evalstars = Array(5).fill(0);
   { field: "selfRating", headerName: "Self Rating", sortable: true, filter: true, resizable: true, width: 220 },
   { field: "evalRating", headerName: "Eval Rating", sortable: true, filter: true, resizable: true, width: 220 },
   {
-    field: "actEntryTime", headerName: "Date", sortable: true, filter: true, resizable: true, width: 220, valueFormatter: function (params: any) {
-      if (params.value) {
-        const date = new Date(params.value);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-      }
-      return null;
-    },
+    field: "actEntryTime", headerName: "Actual Entry", sortable: true, filter: true, resizable: true, width: 220, 
   },
   ];
   rowData: any = [];
