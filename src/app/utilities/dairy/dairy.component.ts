@@ -113,18 +113,25 @@ Evalstars = Array(5).fill(0);
       itemSecondLevel: "",
     };
   }
-  setRating(value: number) {
-    // Toggle rating: If the clicked star is already selected, reset to 0.
+  
+  setRating(value: number,from?:string) {
+    
+    
+    
     this.ratingValue = this.ratingValue === value ? 0 : value;
-    this.dairyForm.controls['rating'].setValue(this.ratingValue);  // Update FormControl
+    this.dairyForm.get('rating')?.patchValue(value);  
+    
+   
   }
   
-  setEvalRating(value: number) {
+  setEvalRating(value: number,from?:string) {
+    
+    
     this.evalRatingValue = this.evalRatingValue === value ? 0 : value;
-    this.dairyForm.controls['Evalrating'].setValue(this.setEvalRating);
-    // this.evalRatingValue = value;
-    // this.dairyForm.controls['Evalrating'].setValue(value);
+    this.dairyForm.get('Evalrating')?.patchValue(value);
+    
   }
+ 
   
   // Preview stars on hover
   previewRating(value: number) {
@@ -137,11 +144,11 @@ Evalstars = Array(5).fill(0);
   
   // Reset preview on mouse leave
   resetPreview() {
-    this.ratingValue = this.dairyForm.controls['rating'].value || 0;
+    this.ratingValue = this.dairyForm.get('rating')?.value || 0;
   }
   
   resetEvalPreview() {
-    this.evalRatingValue = this.dairyForm.controls['Evalrating'].value || 0;
+    this.evalRatingValue = this.dairyForm.get('Evalrating')?.value || 0;
   }
   
   // Function to return star or half-star icon
@@ -233,8 +240,8 @@ Evalstars = Array(5).fill(0);
     this.dairyForm.get('name')!.setValue('');
     this.rowData=[];
     this.slNum=0;
-    this.dairyForm.controls['rating'].setValue(0);
-    this.dairyForm.controls['Evalrating'].setValue(0);
+    this.setEvalRating(0);
+    this.setRating(0);
   }
   async onEmployeeSearch() {
     const body = this.createRequestDataForSearch(this.dairyForm.get('name')!.value || "", Type.EMPLOYEE);
@@ -299,7 +306,7 @@ Evalstars = Array(5).fill(0);
     this.actCls.diaryDate = asDate;
     if(this.isDisabled){
       this.evalRatingValue=0;
-      
+
     }
     if(this.isSelfDisabled){
       this.ratingValue=0;
@@ -430,18 +437,18 @@ Evalstars = Array(5).fill(0);
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
-  formInItS(){
-    return this.fb.group({
-      // name: ['', [Validators.required]],
-      date: [new Date(), [Validators.required]],
-      fromTime: ['', Validators.required],
-      toTime: ['', Validators.required],
-      activity: ['', Validators.required],
-      status: ['', Validators.required],
-      remarks: ['', Validators.required],
+  // formInItS(){
+  //   return this.fb.group({
+  //     name: ['', [Validators.required]],
+  //     date: [new Date(), [Validators.required]],
+  //     fromTime: ['', Validators.required],
+  //     toTime: ['', Validators.required],
+  //     activity: ['', Validators.required],
+  //     status: ['', Validators.required],
+  //     remarks: ['', Validators.required],
       
-    });
-  }
+  //   });
+  // }
   formInit() {
     return this.fb.group({
       
@@ -464,14 +471,14 @@ Evalstars = Array(5).fill(0);
   }
 
   clear() {
-    this.dairyForm = this.formInItS();
+    // this.dairyForm = this.formInItS();
     this.slNum = 0;
     this.displayMessage("", "");
     this.dairyForm.get('name')!.setValue('');
     this.rowData=[];
     this.slNum=0;
-    this.setRating(0);
     this.setEvalRating(0);
+    this.setRating(0);
   }
   close() {
     this.router.navigateByUrl('/home');
@@ -502,8 +509,8 @@ Evalstars = Array(5).fill(0);
     // this.dairyForm.get('rating')?.patchValue(event.data.selfRating);
     this.dairyForm.get('remarks')?.patchValue(event.data.remarks);
     // this.dairyForm.controls['Evalrating'].setValue(event.data.evalRating)
-    this.setEvalRating(event.data.evalRating);
-    this.setRating(event.data.selfRating);
+    this.setRating(event.data.selfRating,'row');
+    this.setEvalRating(event.data.evalRating,'row');
     // this.dairyForm.get('Evalrating')?.patchValue(event.data.evalRating);
     // this.dairyForm.get('rating')?.patchValue(event.data.activityStatus);
   }
