@@ -278,9 +278,9 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
-  prepareCls() {
+  prepareCls(mode:string) {
     const formValues = this.supInvDetForm.value;
-    this.supInvoiceDetCls.mode = this.data.mode;
+    this.supInvoiceDetCls.mode = mode;
     this.supInvoiceDetCls.company = this.userDataService.userData.company;
     this.supInvoiceDetCls.location = this.userDataService.userData.location;
     this.supInvoiceDetCls.langID = this.userDataService.userData.langId;
@@ -302,7 +302,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
     this.supInvoiceDetCls.grnAmt = parseFloat(formValues.grnAmt ? formValues.grnAmt.replace(/,/g, '') : '0');
     this.supInvoiceDetCls.vatAmt = parseFloat(formValues.vatAmt ? formValues.vatAmt.replace(/,/g, '') : '0');
   }
-  onSubmit() {
+  onSubmit(mode:string) {
     this.displayMessage("","");
     if (this.supInvDetForm.invalid) {
       this.retMessage = "Form invalid enter all required fields!";
@@ -310,7 +310,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       return;
     }
     else {
-      this.prepareCls();
+      this.prepareCls(mode);
       try {
         this.loader.start();
         this.subSink.sink = this.suppInvoiceService.UpdateSuppInvoiceDetails(this.supInvoiceDetCls).subscribe((res: SaveApiResponse) => {

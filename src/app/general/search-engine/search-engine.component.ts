@@ -38,6 +38,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   pageSizes = [100, 250, 500];
   pageSize = 100;
   totalAmount: number = 0;
+  afterDisc:number=0;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
   { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 90, hide: true },
   { field: "unitName", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
@@ -198,6 +199,9 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   calculateTotal(data: any) {
     this.totalAmount = data.reduce((sum: number, item: any) => {
       return sum + (item?.tranAmount || 0);
+    }, 0);
+    this.afterDisc = data.reduce((sum: number, item: any) => {
+      return sum + (item?.totalAmount || 0);
     }, 0);
   }
   ngOnDestroy(): void {

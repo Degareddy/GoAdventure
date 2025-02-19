@@ -6,7 +6,7 @@
   Supplier Invoice Details:&nbsp;<b class="data">{{data.tranNo}}</b>
 </div>
 <div class="p-4 bg-zinc-100 container rounded-sm">
-  <form [formGroup]="supInvDetForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="supInvDetForm" >
     <div class="row  justify-content-center">
       <div class="col-1">
         <mat-label class="myCustomClass">S.No:&nbsp;<b class="data">{{slNum}}</b></mat-label>
@@ -72,17 +72,20 @@
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
-      <button mat-raised-button color="primary" class="btnUp" type="submit"
+      <button mat-raised-button color="primary" class="btnUp" (click)="onSubmit('ADD')"
         [disabled]="data.mode !='Modify' || data.status=='Closed' || supInvDetForm.invalid">
         <mat-icon>done</mat-icon><b>Apply</b>
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="addNew()" class="btnUp">
         <mat-icon>add</mat-icon><b>New</b></button>
-
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onSubmit('DELETE')">
+          <mat-icon>delete</mat-icon><b>Delete</b>
+        </button>
+  
       <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
         <mat-icon>cancel</mat-icon><b>Close</b>
       </button>
-
+      
     </div>
   </form>
 </div>
