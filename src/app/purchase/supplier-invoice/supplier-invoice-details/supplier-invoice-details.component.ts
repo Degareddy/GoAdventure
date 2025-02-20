@@ -25,6 +25,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
   textMessageClass!: string;
   supInvDetForm!: FormGroup;
   slNum: number = 0;
+  isAltered:boolean=false;
   dataFlag: boolean = false;
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
@@ -318,6 +319,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             this.get(res.tranNoNew);
+            this.isAltered=true
           }
           else {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);

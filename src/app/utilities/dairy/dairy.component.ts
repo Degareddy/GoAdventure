@@ -371,6 +371,7 @@ Evalstars = Array(5).fill(0);
     }
   }
   getActivity(tranNo: string) {
+    this.rowData=[]
     let asDate: any;
     const formControls = this.dairyForm.controls;
     asDate = this.formatDate(formControls.date.value);
@@ -470,7 +471,7 @@ Evalstars = Array(5).fill(0);
       toTime: ['', Validators.required],
       activity: ['', Validators.required],
       status: ['', Validators.required],
-      remarks: ['', Validators.required],
+      remarks: [''],
       
     });
 
