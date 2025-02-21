@@ -28,6 +28,11 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
   isAltered:boolean=false;
   dataFlag: boolean = false;
   rowData: any = [];
+  modes: Item[] = [
+    {itemCode:'Modify',itemName:'Modify'},
+    {itemCode:'View',itemName:'View'},
+    {itemCode:'Delete',itemName:'Delete'}
+  ];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   private columnApi!: ColumnApi;
   private gridApi!: GridApi;
@@ -205,6 +210,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       grnAmt: ['0.00', [Validators.required]],
       vatAmt: ['0.00', [Validators.required]],
       amount: ['0.00', [Validators.required]],
+      mode:[this.data.mode]
     });
   }
 
@@ -279,9 +285,9 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
-  prepareCls(mode:string) {
+  prepareCls() {
     const formValues = this.supInvDetForm.value;
-    this.supInvoiceDetCls.mode = mode;
+    this.supInvoiceDetCls.mode = this.supInvDetForm.get('mode')?.value;
     this.supInvoiceDetCls.company = this.userDataService.userData.company;
     this.supInvoiceDetCls.location = this.userDataService.userData.location;
     this.supInvoiceDetCls.langID = this.userDataService.userData.langId;
@@ -303,7 +309,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
     this.supInvoiceDetCls.grnAmt = parseFloat(formValues.grnAmt ? formValues.grnAmt.replace(/,/g, '') : '0');
     this.supInvoiceDetCls.vatAmt = parseFloat(formValues.vatAmt ? formValues.vatAmt.replace(/,/g, '') : '0');
   }
-  onSubmit(mode:string) {
+  onSubmit() {
     this.displayMessage("","");
     if (this.supInvDetForm.invalid) {
       this.retMessage = "Form invalid enter all required fields!";
@@ -311,7 +317,7 @@ export class SupplierInvoiceDetailsComponent implements OnInit, OnDestroy {
       return;
     }
     else {
-      this.prepareCls(mode);
+      this.prepareCls();
       try {
         this.loader.start();
         this.subSink.sink = this.suppInvoiceService.UpdateSuppInvoiceDetails(this.supInvoiceDetCls).subscribe((res: SaveApiResponse) => {

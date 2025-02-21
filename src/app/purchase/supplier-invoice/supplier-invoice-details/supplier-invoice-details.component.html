@@ -8,8 +8,17 @@
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="supInvDetForm" >
     <div class="row  justify-content-center">
-      <div class="col-1">
+      <!-- <div class="col-1">
         <mat-label class="myCustomClass">S.No:&nbsp;<b class="data">{{slNum}}</b></mat-label>
+      </div> -->
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Modes</mat-label>
+          <mat-select formControlName="mode" >
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
@@ -72,15 +81,15 @@
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
-      <button mat-raised-button color="primary" class="btnUp" (click)="onSubmit('ADD')"
+      <button mat-raised-button color="primary" class="btnUp" (click)="onSubmit()"
         [disabled]="data.mode !='Modify' || data.status=='Closed' || supInvDetForm.invalid">
         <mat-icon>done</mat-icon><b>Apply</b>
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="addNew()" class="btnUp">
         <mat-icon>add</mat-icon><b>New</b></button>
-        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onSubmit('DELETE')">
+        <!-- <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onSubmit('DELETE')">
           <mat-icon>delete</mat-icon><b>Delete</b>
-        </button>
+        </button> -->
   
       <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{ isAltered: isAltered}">
         <mat-icon>cancel</mat-icon><b>Close</b>
