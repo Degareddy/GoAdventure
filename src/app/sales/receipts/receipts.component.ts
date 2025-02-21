@@ -2146,24 +2146,49 @@ isPayment: boolean=false;
 
     // if (this.receiptsForm.controls['mode'].value.toUpperCase() == 'ADD') {
     if (this.receiptsForm.controls['rctMode'].value.toUpperCase() == 'CASH') {
-      this.receiptsForm.controls['custAccount'].patchValue('CASH');
-      this.receiptsForm.controls['instrumentNo'].patchValue('NA');
-      this.receiptsForm.controls['rctBank'].patchValue('CASHBOOK');
-      this.receiptsForm.controls['rctAccount'].patchValue(
-        this.userDataService.userData.userID
-      );
-      this.receiptsForm.controls['customerBank'].patchValue('CASH', {
-        emitEvent: false,
-      });
-      this.receiptsForm.controls['customerBank'].disable();
-      this.filteredbank = '';
-      this.filteredbank = this.bank.filter(item => item.itemCode === "CASH");
-      this.filteredStatusList = "";
-      this.filteredStatusList = this.StatusList.filter(item => item.itemCode === "Paid");
-      this.receiptsForm.controls['instrumentStatus'].patchValue('Paid');
-      // this.receiptsForm.controls['instrumentStatus'].disable();
-      this.receiptsForm.controls['rctStatus'].patchValue('Paid');
-      // this.receiptsForm.controls['rctStatus'].disable();
+      if(this.receiptsForm.get('receiptmode')?.value === 'payexpense'){
+        this.receiptsForm.controls['custAccount'].patchValue('CASH');
+        // this.receiptsForm.controls['customerBank'].patchValue('CASH');
+        // this.receiptsForm.controls['customerBank'].disable();
+        // this.receiptsForm.controls['rctBank'].patchValue('CASHBOOK');
+        this.receiptsForm.controls['customerBank'].patchValue('CASH', {
+          emitEvent: false,
+        });
+        this.receiptsForm.controls['customerBank'].disable();
+        this.filteredbank = '';
+        this.filteredbank = this.bank.filter(item => item.itemCode === "CASH");
+        this.filteredStatusList = "";
+        this.filteredStatusList = this.StatusList.filter(item => item.itemCode === "Paid");
+        this.receiptsForm.controls['instrumentStatus'].patchValue('Paid');
+        // this.receiptsForm.controls['instrumentStatus'].disable();
+        this.receiptsForm.controls['rctStatus'].patchValue('Paid');
+        this.receiptsForm.controls['rctBank'].enable();
+        this.receiptsForm.controls['rctAccount'].patchValue(
+          this.userDataService.userData.userID
+        );
+        this.receiptsForm.controls['instrumentNo'].patchValue('NA');
+      }
+      else{
+        this.receiptsForm.controls['custAccount'].patchValue('CASH');
+        this.receiptsForm.controls['instrumentNo'].patchValue('NA');
+        this.receiptsForm.controls['rctBank'].patchValue('CASHBOOK');
+        this.receiptsForm.controls['rctAccount'].patchValue(
+          this.userDataService.userData.userID
+        );
+        this.receiptsForm.controls['customerBank'].patchValue('CASH', {
+          emitEvent: false,
+        });
+        this.receiptsForm.controls['customerBank'].disable();
+        this.filteredbank = '';
+        this.filteredbank = this.bank.filter(item => item.itemCode === "CASH");
+        this.filteredStatusList = "";
+        this.filteredStatusList = this.StatusList.filter(item => item.itemCode === "Paid");
+        this.receiptsForm.controls['instrumentStatus'].patchValue('Paid');
+        // this.receiptsForm.controls['instrumentStatus'].disable();
+        this.receiptsForm.controls['rctStatus'].patchValue('Paid');
+        // this.receiptsForm.controls['rctStatus'].disable();
+      }
+     
     }
     else if (this.receiptsForm.controls['rctMode'].value.toUpperCase() == 'DEDUCTION') {
       this.receiptsForm.controls['customerBank'].patchValue('LOAN');
