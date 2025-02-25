@@ -142,7 +142,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   pageSize = 25;
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
-  constructor(public dialog: MatDialog, private fb: FormBuilder,
+  constructor(public dialog: MatDialog, private fb: FormBuilder,private projService: ProjectsService,
     private masterService: MastersService,
     private projectService: ProjectsService, private loader: NgxUiLoaderService, private userDataService: UserDataService,
     @Inject(MAT_DIALOG_DATA) public data: {
@@ -182,7 +182,8 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       discType: [''],
       discRate: ['0.00'],
       discAmount: [{ value: 0.00, disabled: true }],
-      isRepeat: [false]
+      isRepeat: [false],
+      // isPer:[false]
     }, { validator: this.discRateRequired });
 
   }
@@ -264,6 +265,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
           }
         });
       }
+
       else {
         this.submit()
       }
@@ -330,6 +332,9 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
           this.dataFlag = true;
           this.getTenantInvoiceDetails(res.tranNoNew);
           this.displayMessage("Success: " + res.message, "green");
+          // if(this.invDetForm.get('isPer')?.value){
+          //     this.changrPerm();
+          // }
         }
         else {
           this.displayMessage("Error: " + res.message, "red");
@@ -340,6 +345,87 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       this.displayMessage("Exception: " + ex.message, "red");
     }
   }
+  // changrPerm(){
+  //     // this.clearMsgs();
+  //     // if (this.financeForm1.invalid) {
+  //     //   return;
+  //     // } else 
+  //     // {
+  //     let revenueTo:string='';
+  //     let isRecurring:boolean=false;
+  //     let isRefundable:boolean=false;
+  //     let tranStatus:string='CURRENT';
+  //     // if(this.invDetForm.get('mode')?.value === 'Modify'){
+  //     //   tranStatus='CURRENT'
+  //     // }
+  //     // else if(this.invDetForm.get('mode')?.value === 'Delete'){
+  //     //   tranStatus='CURRENT'
+  //     // }
+  //     if(this.invDetForm.get('itemType')?.value.toUpperCase() === 'RENT'){
+  //       revenueTo='LANDLORD'
+  //       isRecurring=true;
+  //       isRefundable=false;
+  //     }
+  //     if(this.invDetForm.get('itemType')?.value.toUpperCase() === 'DEPOSIT'){
+  //       revenueTo='LIABILITY'
+  //       isRecurring=false;
+  //       isRefundable=true;
+  //     }
+  //     else{
+  //       revenueTo='PROPERTTY'
+  //       isRecurring=true;
+  //       isRefundable=false;
+  //     }
+      
+  //       const updateData = {
+  //         blockCode: this.data.block,
+  //         charge: this.invDetForm.get('itemType')?.value,
+  //         company: this.userDataService.userData.company,
+  //         location: this.userDataService.userData.location,
+  //         nextReviewOn: new Date(),
+  //         notes: "",
+  //         propCode: this.data.property,
+  //         revenueTo: revenueTo,
+  //         reviewedOn: new Date(),
+  //         slNo: this.slNum,
+  //         tranStatus: tranStatus,
+  //         unitCode: this.data.unit,
+  //         amount: Number(this.invDetForm.controls['amount'].value.toString().replace(',', '')),
+  //         discType: this.invDetForm.value.discType,
+  //         discRate: Number(this.invDetForm.controls['discRate'].value.toString().replace(',', '')),
+  //         discAmount: Number(this.invDetForm.controls['discAmount'].value.toString().replace(',', '')),
+  //         vatRate:0.0,
+  //         vatAmount: Number(this.invDetForm.controls['vatAmount'].value.toString().replace(',', '')),
+  //         netAmount: Number(this.invDetForm.controls['net'].value.toString().replace(',', '')),
+  
+  //         isRecurring: isRecurring,
+  //         isRefundable: isRefundable,
+  
+  //         mode: this.data.mode,
+  //         user: this.userDataService.userData.userID,
+  //         refNo: this.userDataService.userData.sessionID
+  //       };
+  //       try {
+  //         this.loader.start();
+  //         this.subSink.sink = this.projService.UpdateUnitCharges(updateData).subscribe((res: SaveApiResponse) => {
+  //           this.loader.stop();
+  //           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+  //             this.displayMessage(displayMsg.EXCEPTION + res.message, TextClr.green);
+  //           } else {
+  //             this.displayMessage(displayMsg.EXCEPTION + res.message, TextClr.red);
+  //           }
+  //         },
+  //           // error => {
+  //           //   this.loader.stop();
+  //           //   this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+  //           // }
+  //         );
+  //       } catch (ex: any) {
+  //         this.retMessage = ex.message;
+  //         this.textMessageClass = "red";
+  //       }
+  //     // }
+  // }
   add() {
     this.slNum = 0;
     this.invDetForm = this.formInit();

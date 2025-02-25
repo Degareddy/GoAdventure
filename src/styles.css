@@ -565,6 +565,15 @@ small-close-icon{
   color: #000;
   font-weight: 600;
 }
+.balance-labels {
+  font-size: 14px;
+  color: #000;
+  font-weight: 600;
+  text-align: left; 
+  display: block; /* Ensures it's not affected by flex or grid */
+}
+
+
 
 .balance-amount {
   font-size: 14px;

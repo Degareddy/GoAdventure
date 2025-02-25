@@ -123,9 +123,11 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
       this.gridApi.paginationSetPageSize(this.pageSize);
     }
   }
-
   onRowSelected(event: any) {
-    this.dialogRef.close(event.data.tranNo);
+    if (event.colDef.field === "tranNo") {
+      this.dialogRef.close(event.data.tranNo);
+    }
+  
   }
 
   onGridReady(params: any) {
