@@ -183,7 +183,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       discRate: ['0.00'],
       discAmount: [{ value: 0.00, disabled: true }],
       isRepeat: [false],
-      // isPer:[false]
+      isPer:[false]
     }, { validator: this.discRateRequired });
 
   }
@@ -322,6 +322,159 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
   }
+  getUnitCharges() {
+    const body = {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      item: '',
+      refNo: this.userDataService.userData.sessionID,
+      PropCode: this.data.property,
+      BlockCode: this.data.block,
+      UnitCode: this.data.unit,
+      itemType: Items.LANDLORD,
+      ItemType: Items.CHARGE
+    };
+
+    this.subSink.sink = this.projService.GetUnitChargeDetails(body).subscribe((res: any) => {
+      if (res.message.toUpperCase() === 'SUCCESS') {
+        this.displayMessage(res.message, 'green');
+        this.takeActionInUnitCharges(res);
+      } else {
+        this.displayMessage(res.message,'red');
+      }
+    },
+      error => {
+        // this.loader.stop();
+        this.displayMessage(error.message,'red');
+      }
+    );
+  }
+  takeActionInUnitCharges(res:any){
+    
+
+    for (let i = 0; i < res.data.length; i++) {
+      if(res.data[i].charge.toUpperCase() === this.invDetForm.get('itemType')?.value.toUpperCase()){
+        if(this.invDetForm.get('mode')?.value.toUpperCase() === 'MODIFY' || this.invDetForm.get('mode')?.value.toUpperCase() === 'DELETE'){
+          const updateData = {
+            blockCode: this.data.block,
+            charge: res.data[i].charge,
+            company: this.userDataService.userData.company,
+            location: this.userDataService.userData.location,
+            nextReviewOn: res.data[i].nextReviewOn,
+            notes: "",
+            propCode: this.data.property,
+            revenueTo: res.data[i].revenueTo,
+            reviewedOn: res.data[i].reviewedOn,
+            slNo: res.data[i].slNo,
+            tranStatus: res.data[i].tranStatus,
+            unitCode: this.data.unit,
+            amount: Number(this.invDetForm.controls['amount'].value.toString().replace(',', '')),
+            discType: this.invDetForm.value.discType,
+            discRate: Number(this.invDetForm.controls['discRate'].value.toString().replace(',', '')),
+            discAmount: Number(this.invDetForm.controls['discAmount'].value.toString().replace(',', '')),
+            vatRate: Number(this.invDetForm.controls['vatType'].value.toString().replace(',', '')),
+            vatAmount: Number(this.invDetForm.controls['vatAmount'].value.toString().replace(',', '')),
+            netAmount: Number(this.invDetForm.controls['net'].value.toString().replace(',', '')),
+    
+            isRecurring: res.data[i].isRecurring,
+            isRefundable: res.data[i].isRefundable,
+    
+            mode: this.invDetForm.get('mode')?.value,
+            user: this.userDataService.userData.userID,
+            refNo: this.userDataService.userData.sessionID
+          };
+          try {
+            this.loader.start();
+            this.subSink.sink = this.projService.UpdateUnitCharges(updateData).subscribe((res: SaveApiResponse) => {
+              this.loader.stop();
+              if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.displayMessage(res.message, 'green');
+              } else {
+                this.displayMessage(res.message,'red');
+              }
+            },
+              error => {
+                this.loader.stop();
+                this.displayMessage(error.message,'red');
+              }
+            );
+          } catch (ex: any) {
+            this.retMessage = ex.message;
+            this.textMessageClass = "red";
+          }
+          return;
+        }
+        }
+       
+      }
+      let revenueTo:string=''
+      let isRecurring:boolean=false
+      let isRefundable:boolean=false
+      if(this.invDetForm.get('itemType')?.value.toUpperCase()==='RENT'){
+        isRecurring=true;
+        revenueTo='LANDLORD'
+        isRefundable=false
+      }
+      else if(this.invDetForm.get('itemType')?.value.toUpperCase()==='DEPOSIT'){
+        isRecurring=false;
+        revenueTo='Liability'
+        isRefundable=true
+      }
+      else{
+        isRecurring=true;
+        revenueTo='Property'
+        isRefundable=false
+      }
+      const updateData = {
+        blockCode: this.data.block,
+        charge: this.invDetForm.get('itemType')?.value,
+        company: this.userDataService.userData.company,
+        location: this.userDataService.userData.location,
+        nextReviewOn: new Date(),
+        notes: "",
+        propCode: this.data.property,
+        revenueTo: revenueTo,
+        reviewedOn: new Date(),
+        slNo: 0,
+        tranStatus: 'CURRENT',
+        unitCode: this.data.unit,
+        amount: Number(this.invDetForm.controls['amount'].value.toString().replace(',', '')),
+        discType: this.invDetForm.value.discType,
+        discRate: Number(this.invDetForm.controls['discRate'].value.toString().replace(',', '')),
+        discAmount: Number(this.invDetForm.controls['discAmount'].value.toString().replace(',', '')),
+        vatRate: Number(this.invDetForm.controls['vatType'].value.toString().replace(',', '')),
+        vatAmount: Number(this.invDetForm.controls['vatAmount'].value.toString().replace(',', '')),
+        netAmount: Number(this.invDetForm.controls['net'].value.toString().replace(',', '')),
+
+        isRecurring:isRecurring,
+        isRefundable: isRefundable,
+
+        mode: this.invDetForm.get('mode')?.value,
+        user: this.userDataService.userData.userID,
+        refNo: this.userDataService.userData.sessionID
+      };
+      try {
+        this.loader.start();
+        this.subSink.sink = this.projService.UpdateUnitCharges(updateData).subscribe((res: SaveApiResponse) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(res.message, 'green');
+          } else {
+            this.displayMessage(res.message,'red');
+          }
+        },
+          error => {
+            this.loader.stop();
+            this.displayMessage(error.message,'red');
+          }
+        );
+      } catch (ex: any) {
+        this.retMessage = ex.message;
+        this.textMessageClass = "red";
+      }
+      
+  }
   submit() {
     this.prepareCls();
     try {
@@ -332,9 +485,12 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
           this.dataFlag = true;
           this.getTenantInvoiceDetails(res.tranNoNew);
           this.displayMessage("Success: " + res.message, "green");
-          // if(this.invDetForm.get('isPer')?.value){
-          //     this.changrPerm();
-          // }
+          if(this.invDetForm.get('isPer')?.value){
+            
+
+              // this.changrPerm();
+              this.getUnitCharges();
+          }
         }
         else {
           this.displayMessage("Error: " + res.message, "red");
@@ -459,6 +615,7 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
+    this.invDetForm.get('isPer')?.patchValue(false)
     this.slNum = event.data.slNo;
     this.vatAmount = event.data.vatAmount;
     this.invDetForm.patchValue(

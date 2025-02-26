@@ -1908,10 +1908,8 @@ isPayment: boolean=false;
             { header: 'Being Payment of ', data: `${beignPaymentOf}` },
             { header: 'Balance', data: 0 },
             { header: 'Mode of Payment', data: `${paymentMode}` },
-            // { header: 'Name Of the Tenant & ID', data: `Taha Hasen Genemo & 823111742692` },
-            // { header: 'Name Of the Tenant & ID', data: `Rahima Deffi Ibrahim & A13911727` },
-            // { header: 'Check In Date : ', data: `16-01-2025` },
-            // { header: 'Check Out Date : ', data: `16-02-2025` },
+            // { header: 'Check In Date : ', data: `29-01-2025` },
+            // { header: 'Check Out Date : ', data: `29-04-2025` },
           ];
           const data = headers.map(item => item.data);
           pdf = pdfgeneratorWithTable(headers, data, pdf);
