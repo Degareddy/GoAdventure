@@ -37,12 +37,14 @@ export class SendsmsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log(this.data.from)
     this.loadData();
     this.refreshData();
     this.smsForm.get('message')?.patchValue(this.data.message);
 
   }
   refreshData() {
+    console.log("DEGA")
     if (this.data.from.toUpperCase() === "UNIT") {
       this.smsForm.get('tenant')?.disable({ emitEvent: false });
       this.smsForm.get('landlord')?.disable({ emitEvent: false });
@@ -180,7 +182,7 @@ export class SendsmsComponent implements OnInit, OnDestroy {
     }
     return null;
   }
-  onSubmit() {
+  async onSubmit() {
     this.clearMsg();
     if (this.smsForm.valid) {
 
@@ -196,9 +198,26 @@ export class SendsmsComponent implements OnInit, OnDestroy {
         }
       }
       else if (this.data.from.toUpperCase() === "PROPERTY") {
+        
+
+        let count=1
         if (this.respData) {
-          this.sendBulkSMS(this.respData);
+          const message = this.smsForm.get('message')?.value.trim() + "\n" + this.userDataService.userData.defaultCompanyName;
+          for(let i=0;i<this.respData.length;i++) {
+            
+
+            count++;
+            if(count==5){
+              return;
+            }
+            try {
+              await this.sendSMSForProp(message, this.respData[i].mobile);
+            } catch (error) {
+              console.error("Failed to send SMS to:", this.respData[i].mobile, error);
+            }
+        
         }
+      }
         else {
           this.retMessage = "Mobile numbers are not found for this property!";
           this.textMessageClass = "red";
@@ -211,6 +230,47 @@ export class SendsmsComponent implements OnInit, OnDestroy {
       this.textMessageClass = "red";
     }
   }
+  async sendSMSForProp(message: string, mobile: string): Promise<void> {
+    
+
+    return new Promise((resolve, reject) => {
+      try {
+        if (mobile) {
+          const body = {
+            ...this.commonParams(),
+            message: message,
+            mobile: mobile,
+            serviceType: "SMS",
+            MsgType: "SMS"
+          };
+          this.subSink.sink = this.smsService.SendSingleSMS(body).subscribe(
+            (res: any) => {
+              console.log(res);
+              if (res.status.toUpperCase() === "SUCCESS") {
+                this.toaster.success(res.message, "SUCCESS");
+                resolve(); // Resolve the promise when SMS is sent successfully
+              } else {
+                this.toaster.error('Invalid response format ', "ERROR");
+                reject(new Error("Invalid response format"));
+              }
+            },
+            (error) => {
+              reject(error); // Reject if there is an error
+            }
+          );
+        } else {
+          this.retMessage = "SMS credentials are not found!";
+          this.textMessageClass = "red";
+          reject(new Error("SMS credentials are not found!"));
+        }
+      } catch (ex: any) {
+        this.textMessageClass = "red";
+        this.retMessage = ex.message;
+        reject(ex);
+      }
+    });
+  }
+  
   sendSMS(message: string, mobile: string) {
     // console.log(this.smsUrl);
     try {
@@ -256,7 +316,7 @@ export class SendsmsComponent implements OnInit, OnDestroy {
             partnerID: this.PARTNER_ID,
             apikey: this.API_KEY,
             pass_type: "plain",
-            mobile: item.mobile.replace(/[\s+]/g, ''),
+            mobile: '+254794465654',
             message: message,
             shortcode: this.SHORTCODE
           };
