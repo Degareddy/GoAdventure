@@ -732,7 +732,13 @@ export class PdfReportsService {
     const pdf = new jsPDF();
     pdf.setFontSize(14);
     const rightImage = new Image();
-    rightImage.src = "assets/img/TKGlogo.jpg";
+    if(this.userService.userData.company.toUpperCase() === 'SADASA'){
+      rightImage.src = "assets/img/sadaslogo.png";
+    }
+    else{
+
+      rightImage.src = "assets/img/TKGlogo.jpg";
+    }
     const rightImageWidth = 30;
     const rightImageHeight = 20;
     pdf.addImage(rightImage, 'PNG', pdf.internal.pageSize.width - rightImageWidth - 10, 10, rightImageWidth, rightImageHeight)
