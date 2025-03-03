@@ -163,9 +163,9 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
           this.tenantName = res.data.tenant;
           this.lastReading = res.data.prevRdgDate
           this.updateBillsForm.get('expenseType')?.disable();
-          if (this.userDataService.userData.company.toUpperCase() === Company.SADASA) {
-            this.updateBillsForm.get('reading')?.patchValue(this.lastReading + 1);
-          }
+          // if (this.userDataService.userData.company.toUpperCase() === Company.SADASA) {
+          //   this.updateBillsForm.get('reading')?.patchValue(this.lastReading + 1);
+          // }
         }
         else {
           this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
