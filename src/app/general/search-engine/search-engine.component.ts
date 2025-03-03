@@ -224,5 +224,6 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   onFilterData(event: any) {
     this.calculateTotal(event);
+    // console.log(event)
   }
 }

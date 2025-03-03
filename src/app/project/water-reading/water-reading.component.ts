@@ -362,6 +362,8 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
   status!: string;
   dialogOpen: boolean = false;
   props: Item[] = [];
+   lastDateOfPreviousMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  
   blocks: Item[] = [];
   modes: Item[] = [];
   totalAmount: number = 0;
@@ -388,6 +390,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
     this.waterReadingForm.get('property')!.valueChanges.subscribe(property => {
       this.onSelectedPropertyChanged();
     });
+    this.waterReadingForm.get('tranDate')!.patchValue(this.lastDateOfPreviousMonth.toISOString().split('T')[0]);
   }
 
   onDocsCilcked() {
@@ -500,7 +503,7 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       property: ['', Validators.required],
       block: ['', Validators.required],
       flat: ['', Validators.required],
-      tranDate: ["2025-01-31", Validators.required],
+      tranDate: [this.lastDateOfPreviousMonth, Validators.required],
       notes: [''],
       mode: ['View'],
       tranNo: ['']
