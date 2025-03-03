@@ -130,7 +130,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
       reading: ['0', Validators.required],
       unit: [{ value: '0', disabled: true }],
       rate: ['0.00', Validators.required],
-      amount: [{ value: '0.00', disabled: true }],
+      amount: [{ value: '0.00', disabled: false }],
       prevReading: [{ value: '', disabled: true }]
     });
   }
