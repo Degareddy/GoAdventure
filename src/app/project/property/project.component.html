@@ -191,9 +191,9 @@
         <mat-checkbox formControlName="waterDiscount">Water Discount</mat-checkbox>
       </div>
       <div class="col-2">
-        <mat-form-field appearance="outline" class="mat-mode">
+        <mat-form-field appearance="outline" class="mat-mode" >
           <mat-label for="discType">Discount Type</mat-label>
-          <mat-select formControlName="discType" id="discType">
+          <mat-select formControlName="discType" id="discType" >
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of discTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
@@ -202,7 +202,7 @@
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label for="discRate">Disc Rate</mat-label>
-          <input matInput placeholder="Rate" formControlName="discRate" separator id="discRate" class="right-align-input"
+          <input matInput placeholder="Rate" formControlName="discRate" separator id="discRate" class="right-align-input" [disabled]="propForm.get('waterDiscount')?.value"
             type="text">
         </mat-form-field>
       </div>

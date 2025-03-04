@@ -66,6 +66,11 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
     },
   },
   ];
+  modes: Item[] = [
+    {itemCode:'View',itemName:'View'},
+    {itemCode:'Modify',itemName:'Modify'},
+    {itemCode:'Delete',itemName:'Delete'}
+  ];
   rowData: any = [];
   isAltered: boolean = false;
   expenseTypes: any = [];
@@ -118,6 +123,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit(): void {
+    this.updateBillsForm.get('mode')?.patchValue(this.data.mode)
     this.loadData();
     if (this.data.tranNo) {
       this.getExtendedDet();
@@ -126,6 +132,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
   formInit() {
     this.updateBillsForm = this.fb.group({
       serviceType: ['', Validators.required],
+      mode:[''],
       expenseType: ['', Validators.required],
       reading: ['0', Validators.required],
       unit: [{ value: '0', disabled: true }],
@@ -245,7 +252,7 @@ export class ExtendedDetailsComponent implements OnInit, OnDestroy {
 
   }
   prepareCls() {
-    this.tranCls.mode = this.data.mode;
+    this.tranCls.mode = this.updateBillsForm.get('mode')?.value;
     this.tranCls.company = this.userDataService.userData.company;
     this.tranCls.location = this.userDataService.userData.location;
     this.tranCls.user = this.userDataService.userData.userID;

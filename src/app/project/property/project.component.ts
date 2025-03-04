@@ -126,8 +126,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
       lrNo: [''],
       notes: [''],
       waterDiscount: [false],
-      discType: [{ value: '', disabled: true }],
-      discRate: [{ value: 0.00, disabled: true }, this.discRateValidator()],
+      discType: [{ value: '', }],
+      discRate: [{ value: 0.00,  }, this.discRateValidator()],
       unitRate: [0.00]
     })
   }
@@ -149,6 +149,14 @@ export class ProjectComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadData();
     this.waterDisc();
+   
+      this.propForm.get('waterDiscount')?.valueChanges.subscribe(value => {
+        if (value) {
+          this.propForm.get('discType')?.disable();
+        } else {
+          this.propForm.get('discType')?.enable();
+        }
+      });
   }
 
   formatDate(date: Date): string {
@@ -266,6 +274,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   async loadData() {
+    this.propertySearch();
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
