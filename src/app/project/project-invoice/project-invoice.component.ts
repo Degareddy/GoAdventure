@@ -611,6 +611,7 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
   }
 
   async searchData() {
+    
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
@@ -625,14 +626,18 @@ export class ProjectInvoiceComponent implements OnInit, OnDestroy {
       TranStatus: TranStatus.OPEN
     }
     try {
+      
       this.loader.start();
       this.subSink.sink = await this.masterService.GetTranCount(body).subscribe((res: any) => {
         this.loader.stop()
         if (res.retVal === 0) {
-          if (res && res.data && res.data.tranCount === 1) {
+          
+          
+           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
             this.getInvoiceData(this.masterParams, this.saleForm.controls.mode.value);
           }
+          
           else {
             if (!this.dialogOpen) {
               const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {

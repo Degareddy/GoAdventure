@@ -93,6 +93,8 @@ isPayment: boolean=false;
   modes: Item[] = [];
   Report!: string;
   message:string='';
+  utilityreceipt:string='Utility Receipt'
+ 
   mobileNo:string='';
   receiptmodes: Item[] = [
     { itemCode: 'receiveRent', itemName: 'Receive Rent' },
@@ -675,6 +677,9 @@ isPayment: boolean=false;
     }
   }
   async ngOnInit() {
+    if(this.userDataService.userData.company.toUpperCase() === 'SADSA'){
+      this.utilityreceipt='Water Bill'
+    }
     this.refreshData();
     this.getCashBalace();
     const logoFileName = sessionStorage.getItem('logo') as string;

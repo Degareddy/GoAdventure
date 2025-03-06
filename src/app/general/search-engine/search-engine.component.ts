@@ -184,6 +184,9 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];
           }
+          else if(res.data.length === 1){
+            this.dialogRef.close(res.data[0].tranNo)
+          }
           else {
             this.rowData = res['data'];
             this.calculateTotal(this.rowData);

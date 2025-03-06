@@ -169,7 +169,11 @@ export class SearchCashTransferComponent implements OnInit, OnDestroy {
             this.rowData = [];
           }
           else {
-            this.rowData = res['data'];
+            if(res.data.length === 1){
+              this.dialogRef.close(res.data[0].tranNo);
+            }
+            else{
+              this.rowData = res['data'];
             const totalsByTranType = this.calculateTotalByTranType(this.rowData);
             // console.log(totalsByTranType);
             this.receivedAmount = totalsByTranType.RECEIPT || 0;
@@ -180,6 +184,8 @@ export class SearchCashTransferComponent implements OnInit, OnDestroy {
               this.dialogRef.close(this.rowData[0].tranNo);
               // this.onRowSelected(this.rowData[0].tranNo);
             }
+            }
+            
           }
         });
       }
