@@ -98,7 +98,7 @@
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
       <button mat-raised-button color="primary" class="btnUp" type="button" (click)="apply()"
-        [disabled]="data.mode !='Modify' || data.status=='Closed' || invDetForm.invalid">
+        [disabled]="invDetForm.get('mode')?.value ==='View' || data.status=='Closed' || invDetForm.invalid">
         <mat-icon>done</mat-icon><b>Apply</b>
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="add()">
