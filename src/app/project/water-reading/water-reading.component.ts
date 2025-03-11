@@ -646,13 +646,13 @@ export class WaterReadingComponent implements OnInit, OnDestroy {
       this.subSink.sink = this.masterService.GetTranCount(body).subscribe((res: any) => {
         this.loader.stop();
         if (res.retVal === 0) {
-          if (res && res.data && res.data.selTranNo != '') {
-            this.waterReadingForm.controls['tranNo'].patchValue(res.data.selTranNo);
-            this.GetExtendedBillsHdr(res.data.selTranNo);
-          }
-          else {
+          // if (res && res.data && res.data.selTranNo != '') {
+          //   this.waterReadingForm.controls['tranNo'].patchValue(res.data.selTranNo);
+          //   this.GetExtendedBillsHdr(res.data.selTranNo);
+          // }
+          // else {
             this.openTranSearch();
-          }
+          // }
         }
         else {
           this.openTranSearch();
