@@ -126,12 +126,6 @@ export class MastersService {
     return this.http.post<any>(environment.Url + 'MasterItems/GetRctPmtTranSearchList/', body)
   }
 
-
-
-  GetMyCashTransfers(body: any): Observable<any> {
-    return this.http.post<any>(environment.Url + 'sales/GetMyCashTransfers/', body)
-  }
-
   UpdateMyCashTransfers(body: any): Observable<any> {
     return this.http.post<any>(environment.Url + 'sales/UpdateMyCashTransfers/', body)
   }

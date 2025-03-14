@@ -140,16 +140,16 @@ export class AuthService implements OnDestroy {
               user: this.userDataService.userData.userID,
               refNo: this.userDataService.userData.sessionID,
             };
-            this.subsink.sink = this.msService.GetMyCashTransfers(body).subscribe((res: any) => {
-              if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
-                const dialogRef: MatDialogRef<CashTransfersComponent> = this.dialog.open(CashTransfersComponent, {
-                  width: '70%',
-                  // height:'65%',// Set the width of the dialog
-                  disableClose: true,
-                  data: res.data
-                });
-              }
-            });
+            // this.subsink.sink = this.msService.GetMyCashTransfers(body).subscribe((res: any) => {
+            //   if (res && res.data && res.status.toUpperCase() === "SUCCESS") {
+            //     const dialogRef: MatDialogRef<CashTransfersComponent> = this.dialog.open(CashTransfersComponent, {
+            //       width: '70%',
+            //       // height:'65%',// Set the width of the dialog
+            //       disableClose: true,
+            //       data: res.data
+            //     });
+            //   }
+            // });
 
           }
         }

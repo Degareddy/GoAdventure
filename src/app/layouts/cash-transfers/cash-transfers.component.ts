@@ -116,20 +116,20 @@ export class CashTransfersComponent implements OnInit, OnDestroy {
             }
             this.rowData = [];
             this.data = [];
-            this.subSink.sink = this.msService.GetMyCashTransfers(cashbody).subscribe((res: any) => {
-              if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
-                this.rowData = res.data;
-                if (this.rowData.length >= 1) {
-                  for (let i = 0; i < this.rowData.length; i++) {
-                    this.rowData[i].confirm = "Confirm";
-                    this.rowData[i].reject = "Reject";
-                  }
-                }
-              }
-              else {
-                this.rowData = [];
-              }
-            })
+            // this.subSink.sink = this.msService.GetMyCashTransfers(cashbody).subscribe((res: any) => {
+            //   if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            //     this.rowData = res.data;
+            //     if (this.rowData.length >= 1) {
+            //       for (let i = 0; i < this.rowData.length; i++) {
+            //         this.rowData[i].confirm = "Confirm";
+            //         this.rowData[i].reject = "Reject";
+            //       }
+            //     }
+            //   }
+            //   else {
+            //     this.rowData = [];
+            //   }
+            // })
           }
           else {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
