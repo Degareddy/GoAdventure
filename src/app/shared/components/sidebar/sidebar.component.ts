@@ -21,7 +21,7 @@ type MenuMap = Record<string, MenuEntry>;
 export class SidebarComponent implements OnInit, OnDestroy {
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
-      map(result => result.matches),
+      map((result: { matches: any; }) => result.matches),
       shareReplay()
     );
   masterParams!: MasterParams;
@@ -31,6 +31,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public lnlrdMenu: any = [];
   public salesMenu: any = [];
   public purchaseMenu: any = [];
+  public skinMenu: any = [];
   public invMenu: any = [];
   public glMenu: any = [];
   public utilMenu: any = [];
@@ -45,6 +46,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public isLandlord:boolean =false;
   public isSale: boolean = false;
   public isPurchase: boolean = false;
+  public isSkin: boolean = false;
   public isInvent: boolean = false;
   public isGl: boolean = false;
   public isPay: boolean = false;
@@ -89,7 +91,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         }
       });
     }
-    this.themeService.isDarkTheme$.subscribe((isDark) => {
+    this.themeService.isDarkTheme$.subscribe((isDark: boolean) => {
       this.isDarkTheme = isDark;
     });
   }
@@ -101,6 +103,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       'Administration': { menu: this.adminMenu, sessionKey: 'admin', flag: 'isAdmin' },
       'Sales': { menu: this.salesMenu, sessionKey: 'sales', flag: 'isSale' },
       'Purchase': { menu: this.purchaseMenu, sessionKey: 'purchase', flag: 'isPurchase' },
+      'Skins': { menu: this.skinMenu, sessionKey: 'skins', flag: 'isSkin' },
       'Inventory': { menu: this.invMenu, sessionKey: 'inventory', flag: 'isInvent' },
       'General Ledger': { menu: this.glMenu, sessionKey: 'gl', flag: 'isGl' },
       'Utilities': { menu: this.utilMenu, sessionKey: 'utilities', flag: 'isUtil' },

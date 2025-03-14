@@ -40,10 +40,10 @@ export class MastersService {
   }
 
   getsideMenu(masParams: MasterParams): Observable<string[]> {
-    return this.http.post<string[]>(environment.Url + 'SideMenu/GetUserMenu/', masParams)
+    return this.http.post<string[]>(environment.Url + 'admin/GetUserMenu/', masParams)
   }
   login(masParams: MasterParams): Observable<loginResponse> {
-    return this.http.post<loginResponse>(environment.Url + 'MasterItems/Login/', masParams)
+    return this.http.post<loginResponse>(environment.Url + 'admin/Login/', masParams)
 
   }
   getCountryDetails(body: any): Observable<getResponse> {

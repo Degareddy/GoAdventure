@@ -93,7 +93,7 @@
 
 
         <!-- Project Menu -->
-        <mat-expansion-panel *ngIf="isPay" [expanded]="isRouteActive('/projects')">
+        <!-- <mat-expansion-panel *ngIf="isPay" [expanded]="isRouteActive('/projects')">
           <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/projects') }">
             <mat-panel-title>
               <mat-icon>engineering</mat-icon>Construction
@@ -104,7 +104,7 @@
             <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
               <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
           </mat-nav-list>
-        </mat-expansion-panel>
+        </mat-expansion-panel> -->
         <!-- Purchase pannel -->
         <mat-expansion-panel *ngIf="isPurchase" [expanded]="isRouteActive('/purchase')">
           <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/purchase') }">
@@ -113,6 +113,20 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <mat-nav-list class="mat-list" *ngFor="let x of purchaseMenu">
+            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
+              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
+          </mat-nav-list>
+        </mat-expansion-panel>
+
+
+
+        <mat-expansion-panel *ngIf="isSkin" [expanded]="isRouteActive('/skins')">
+          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/skins') }">
+            <mat-panel-title>
+              <mat-icon>shopping_cart</mat-icon>Skins
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list class="mat-list" *ngFor="let x of skinsMenu">
             <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
               <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
           </mat-nav-list>

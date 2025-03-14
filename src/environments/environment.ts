@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   envName: 'local',
-   Url: 'https://degatech.in/dme/api/',
+   Url: 'https://degatech.in/tansavvy/api/',
   //Url: 'http://183.83.32.116:5000/api/'
 
    //Url:'https://localhost:5000/api/'
