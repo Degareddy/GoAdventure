@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, NgModule, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -9,7 +9,10 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { SubSink } from 'subsink';
+
 
 @Component({
   selector: 'app-stock-openings',

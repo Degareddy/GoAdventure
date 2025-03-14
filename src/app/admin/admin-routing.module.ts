@@ -7,10 +7,12 @@ import { ReportRightsComponent } from './report-rights/report-rights.component';
 import { ChangeLocationComponent } from './change-location/change-location.component';
 import { GroupCompanyComponent } from './group-company/group-company.component';
 import { AdminGuard } from './_guard/admin.guard';
+import { ChangePasswordComponent } from '../utilities/change-password/change-password.component';
 
 const routes: Routes = [
   { path: 'company', component: CompanyComponent, canActivate: [AdminGuard] },
   { path: 'groupcompany', component: GroupCompanyComponent, canActivate: [AdminGuard] },
+  { path: 'change-password', component: ChangePasswordComponent, canActivate: [AdminGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AdminGuard] },
   { path: 'access-rights', component: AccessRightsComponent, canActivate: [AdminGuard] },
   { path: 'report-rights', component: ReportRightsComponent, canActivate: [AdminGuard] },
