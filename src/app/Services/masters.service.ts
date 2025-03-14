@@ -36,7 +36,7 @@ export class MastersService {
   }
 
   getLoggerInfo(masParams: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'MasterItems/GetLoggerInformation/', masParams)
+    return this.http.post(environment.Url + 'admin/GetLoggerInformation/', masParams)
   }
 
   getsideMenu(masParams: MasterParams): Observable<string[]> {
@@ -124,12 +124,6 @@ export class MastersService {
 
   GetRctPmtTranSearchList(body: any): Observable<any> {
     return this.http.post<any>(environment.Url + 'MasterItems/GetRctPmtTranSearchList/', body)
-  }
-
-
-
-  GetMyCashTransfers(body: any): Observable<any> {
-    return this.http.post<any>(environment.Url + 'sales/GetMyCashTransfers/', body)
   }
 
   UpdateMyCashTransfers(body: any): Observable<any> {
