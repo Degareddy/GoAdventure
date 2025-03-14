@@ -11,7 +11,7 @@ export class AdminService {
   private readonly baseUrl = environment.Url;
   constructor(private http: HttpClient) { }
   getCompanyData(company: CompanyClass): Observable<CompanyResponse>  {
-    return this.http.post<CompanyResponse>(`${this.baseUrl}Company/GetCompanyDetails/`, company)
+    return this.http.post<CompanyResponse>(`${this.baseUrl}admin/GetCompanyDetails/`, company)
   }
 
 

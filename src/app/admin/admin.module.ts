@@ -33,7 +33,7 @@ import { CompaniesComponent } from './users/companies/companies.component';
     CommonModule,
     AdminRoutingModule,
     NgMultiSelectDropDownModule.forRoot(),
-    GeneralModule
+    GeneralModule,
   ],
   schemas: [NO_ERRORS_SCHEMA],
   providers: [

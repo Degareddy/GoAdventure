@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { AdminService } from 'src/app/Services/admin.service';
 import { CompanyClass } from '../admin.class';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { MatIcon } from '@angular/material/icon';
+
 import { MastersService } from 'src/app/Services/masters.service';
 import { SubSink } from 'subsink';
 import { BranchesComponent } from './branches/branches.component';

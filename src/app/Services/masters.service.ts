@@ -36,7 +36,7 @@ export class MastersService {
   }
 
   getLoggerInfo(masParams: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'MasterItems/GetLoggerInformation/', masParams)
+    return this.http.post(environment.Url + 'admin/GetLoggerInformation/', masParams)
   }
 
   getsideMenu(masParams: MasterParams): Observable<string[]> {
