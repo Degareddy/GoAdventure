@@ -1,0 +1,36 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <mat-icon class="mr-1">account_balance_wallet</mat-icon>
+      <b>Cash Balances</b>
+    </div>
+    <div class="flex items-end space-x-1 mb-2.5">
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="getTransactions()">
+        <mat-icon>refresh</mat-icon>Refresh
+      </button>
+
+      <button mat-raised-button color="primary" class="btnUp" type="button" (click)="onPending()">
+        <mat-icon>info</mat-icon>Confirm Pending Transactions
+      </button>
+    </div>
+  </div>
+</div>
+<div class="p-2 bg-zinc-100 container rounded-sm">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+      (filterChanges)="onFilterData($event)" [paginationPageSize]="500" [gridHeight]="'320px'" [totals]="totals"
+      [paginationPageSize]="25" [globalSearch]="true" [showToolPanel]="true" [showRecordCount]="true"></app-access-grid>
+    <div class="balance-container">
+      <span class="balance-label">&nbsp;Actual Amount:&nbsp;</span>
+      <span class="balance-credit">{{ actualAmount | number: '1.2-2' }}</span>
+
+      <span class="balance-label">&nbsp;Pending Amount:&nbsp;</span>
+      <span class="balance-credit">{{ pendingAmount | number: '1.2-2' }}</span>
+
+      <span class="balance-label">&nbsp;Total Amount:&nbsp;</span>
+      <span class="balance-credit">{{ totalAmount | number: '1.2-2' }}</span>
+    </div>
+  <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+</div>

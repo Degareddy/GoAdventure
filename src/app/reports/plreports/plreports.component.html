@@ -1,0 +1,101 @@
+<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+  <div class="flex justify-between items-center mb-0.1 h-8">
+    <div class="flex items-center text-white">
+      <!-- <mat-icon class="mr-1">show_chart</mat-icon> -->
+      <b>Profit & Loss Reports</b>
+    </div>
+  </div>
+</div>
+<div class="p-4 bg-zinc-100 container rounded-sm">
+  <form  (ngSubmit)="onSubmit()">
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <!-- <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Report Type:</mat-label>
+          <mat-select id="Item" formControlName="reportType" placeholder="Select Item">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of reportList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field> -->
+      </div>
+      <div class="col-2">
+        <!-- <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Branch</mat-label>
+          <mat-select id="Branch" formControlName="branch" placeholder="Select Branch">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option value="All">All</mat-option>
+            <mat-option *ngFor="let x of branchList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field> -->
+      </div>
+      <div class="col-md-2">
+        <mat-checkbox [labelPosition]="labelPosition" formControlName="summary">Summary</mat-checkbox>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">From Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fromDate" [max]="today">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">To Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="toDate" [max]="today">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+    <div class="btnAlignment">
+      <button mat-raised-button color="primary" type="submit" class="btnUp" [disabled]="PandLForm.invalid">
+        <mat-icon>download</mat-icon>Fetch
+      </button>
+      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <mat-icon>clear_all</mat-icon>Clear
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
+      <button mat-raised-button color="warning" [disabled]="rowData.length <= 0" class="btnUp" type="button"
+        (click)="downloadPDF()">
+        <mat-icon>picture_as_pdf</mat-icon>PDF
+      </button>
+      <mat-slide-toggle
+      class="ml-2"
+      [(ngModel)]="checked"  color="primary"  [ngModelOptions]="{standalone: true}"
+      (change)="onToggleChange($event)">
+      View Chart
+    </mat-slide-toggle>
+
+    </div>
+    <div *ngIf="!checked">
+      <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [paginationPageSize]="500" [exportPDF]="true" [exportExcel]="true"
+        (linkClicked)="onLnkClicked($event)" [gridHeight]="'320px'" [showRecordCount]="true"></app-access-grid>
+    </div>
+
+  </form>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4  mx-auto p-0.1 bg-gray-100 shadow rounded"  *ngIf="checked">
+  <div class="col-span-1">
+    <p-card header="Income" class="shadow-lg rounded-lg border border-gray-200">
+      <p-chart [type]="'line'" [data]="incomeChartData"></p-chart>
+    </p-card>
+  </div>
+
+  <div class="col-span-1">
+    <p-card header="Expenses" class="shadow-lg rounded-lg border border-gray-200">
+      <p-chart [type]="'line'" [data]="expenseChartData"></p-chart>
+    </p-card>
+  </div>
+
+  <div class="col-span-1">
+    <p-card header="P&L Report" class="shadow-lg rounded-lg border border-gray-200">
+      <p-chart [type]="'line'" [data]="combinedChartData"></p-chart>
+    </p-card>
+  </div>
+</div>
+
