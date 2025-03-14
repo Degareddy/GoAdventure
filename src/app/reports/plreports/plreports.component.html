@@ -7,26 +7,26 @@
   </div>
 </div>
 <div class="p-4 bg-zinc-100 container rounded-sm">
-  <form  (ngSubmit)="onSubmit()">
+  <form [formGroup]="PandLForm" (ngSubmit)="onSubmit()">
     <div class="row justify-content-center">
       <div class="col-2">
-        <!-- <mat-form-field appearance="outline" class="mat-mode">
+        <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Report Type:</mat-label>
           <mat-select id="Item" formControlName="reportType" placeholder="Select Item">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of reportList" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
-        </mat-form-field> -->
+        </mat-form-field>
       </div>
       <div class="col-2">
-        <!-- <mat-form-field appearance="outline" class="mat-mode">
+        <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Branch</mat-label>
           <mat-select id="Branch" formControlName="branch" placeholder="Select Branch">
             <mat-option value="">--Select--</mat-option>
             <mat-option value="All">All</mat-option>
             <mat-option *ngFor="let x of branchList" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
-        </mat-form-field> -->
+        </mat-form-field>
       </div>
       <div class="col-md-2">
         <mat-checkbox [labelPosition]="labelPosition" formControlName="summary">Summary</mat-checkbox>
