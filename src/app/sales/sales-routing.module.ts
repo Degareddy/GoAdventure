@@ -24,6 +24,7 @@ import { ReprotsComponent } from '../general/reprots/reprots.component';
 import { DeliveryComponent } from './delivery/delivery.component';
 import { SaleOrderComponent } from './sale-order/sale-order.component';
 import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-credit-note.component';
+import { OpeningBalancesComponent } from '../purchase/opening-balances/opening-balances.component';
 
 
 const routes: Routes = [
@@ -33,6 +34,8 @@ const routes: Routes = [
   { path: 'customer-contacts/:code/:slno', component: CustomerContactsComponent, canActivate: [SaleGuard] },
   { path: 'customer', component: CustomerComponent, canActivate: [SaleGuard] },
   { path: 'customer-opening', component: CustomerOpeningComponent, canActivate: [SaleGuard] },
+    { path: 'party-opbalances', component: OpeningBalancesComponent, canActivate: [SaleGuard] },
+
   { path: 'quotation', component: QuotationComponent, canActivate: [SaleGuard] },
   { path: 'order-invoice', component: OrderInvoiceComponent, canActivate: [SaleGuard] },
   { path: 'direct-invoice', component: DirectInvoiceComponent, canActivate: [SaleGuard] },
