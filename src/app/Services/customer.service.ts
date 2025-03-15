@@ -11,7 +11,7 @@ import { custApiResponse } from '../sales/customer/customer.component';
 export class CustomerService {
   constructor(private http: HttpClient) { }
   getCustomerData(cust: Customer): Observable<custApiResponse> {
-    return this.http.post<custApiResponse>(environment.Url + 'Party/GetPartyData/', cust)
+    return this.http.post<custApiResponse>(environment.Url + 'common/GetPartyData/', cust)
   }
 
   getCustomerDet(cust: Customer): Observable<any> {
