@@ -94,6 +94,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     // this.initializeWidgetPositions();
     // this.startRandomMovement();
   }
+
   async loadData() {
     this.dashboardData = [];
     const unitbody = {
@@ -101,11 +102,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       item: "All",
       reportType: 'UNITSTATUS'
     }
-    this.subsink.sink = await this.projectService.GetDashUnitStatus(unitbody).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.dashboardData = res.data;
-      }
-    });
+    // this.subsink.sink = await this.projectService.GetDashUnitStatus(unitbody).subscribe((res: any) => {
+    //   if (res.status.toUpperCase() === "SUCCESS") {
+    //     this.dashboardData = res.data;
+    //   }
+    // });
   }
   initializeWidgetPositions() {
     this.widgetPositions = this.dashboardData.map(() => ({

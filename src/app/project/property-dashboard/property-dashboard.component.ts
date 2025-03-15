@@ -54,11 +54,11 @@ export class PropertyDashboardComponent implements OnInit,OnDestroy {
       item: "All",
       reportType: 'UNITSTATUS'
     }
-    this.subsink.sink = this.projectService.GetDashUnitStatus(unitbody).subscribe((res: any) => {
-      if (res.status.toUpperCase() === "SUCCESS") {
-        this.unitStatus = res.data;
-      }
-    });
+    // this.subsink.sink = this.projectService.GetDashUnitStatus(unitbody).subscribe((res: any) => {
+    //   if (res.status.toUpperCase() === "SUCCESS") {
+    //     this.unitStatus = res.data;
+    //   }
+    // });
     this.loader.start();
     this.subsink.sink = this.projectService.GetDashRevenue(revbody).subscribe((res: any) => {
       this.loader.stop();

@@ -92,11 +92,11 @@ export class AdminService {
     return this.http.post<SaveApiResponse>(environment.Url + 'Users/UpdateAllowedIps', body)
   }
   ManageAccessModesMapping(body: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Users/ManageAccessModesMapping', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'admin/ManageAccessModesMapping', body)
   }
 
   GetAccessModesMapping(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Users/GetAccessModesMapping', body)
+    return this.http.post(environment.Url + 'admin/GetAccessModesMapping', body)
   }
 
   GetUserMappedCompanies(body: any): Observable<any> {
