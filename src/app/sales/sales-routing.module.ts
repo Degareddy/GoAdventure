@@ -35,7 +35,7 @@ const routes: Routes = [
   { path: 'customer', component: CustomerComponent, canActivate: [SaleGuard] },
   { path: 'customer-opening', component: CustomerOpeningComponent, canActivate: [SaleGuard] },
     { path: 'party-opbalances', component: OpeningBalancesComponent, canActivate: [SaleGuard] },
-
+    { path: 'party-opbalances', component: OpeningBalancesComponent, canActivate: [SaleGuard] },
   { path: 'quotation', component: QuotationComponent, canActivate: [SaleGuard] },
   { path: 'order-invoice', component: OrderInvoiceComponent, canActivate: [SaleGuard] },
   { path: 'direct-invoice', component: DirectInvoiceComponent, canActivate: [SaleGuard] },

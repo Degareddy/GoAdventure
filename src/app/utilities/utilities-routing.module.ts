@@ -13,6 +13,7 @@ import { DairyComponent } from './dairy/dairy.component';
 const routes: Routes = [
   { path: 'master-items', component: MasterItemsComponent, canActivate: [DocGuard] },
   { path: 'document-numbers', component: DocumentNumbersComponent, canActivate: [DocGuard] },
+    { path: 'change-password', component: ChangePasswordComponent, canActivate: [DocGuard] },
   
    { path: 'grievances', component: GrievancesComponent, canActivate: [DocGuard] },
   // { path: 'grievance-service', component: GrievanceServiceComponent, canActivate: [DocGuard] },
