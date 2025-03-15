@@ -15,11 +15,11 @@ export class CustomerService {
   }
 
   getCustomerDet(cust: Customer): Observable<any> {
-    return this.http.post(environment.Url + 'Party/GetPartyDetails/', cust)
+    return this.http.post(environment.Url + 'common/GetPartyDetails/', cust)
   }
 
   updateCustomer(customer: Customer): Observable<any> {
-    return this.http.post(environment.Url + 'Party/UpdatePartyDetails/', customer)
+    return this.http.post(environment.Url + 'common/UpdatePartyDetails/', customer)
   }
 
   UpdateSupplierProducts(prodclass: vendorProducts): Observable<any> {
@@ -32,32 +32,28 @@ export class CustomerService {
     return this.http.post(environment.Url + 'Products/GetProductSuppliers/', prodclass)
   }
 
-  getUnitDetailsForClient(custParas: CustomerParam): Observable<any> {
-    return this.http.post(environment.Url + 'property/GetClientUnitDetails', custParas)
-  }
-
   getCustomerAddressesData(custParas: CustomerParams): Observable<any> {
-    return this.http.post(environment.Url + 'Party/GetPartyAddresses/', custParas)
+    return this.http.post(environment.Url + 'common/GetPartyAddresses/', custParas)
   }
 
   getCustomerAddressDetails(custParas: CustomerParams): Observable<any> {
-    return this.http.post(environment.Url + 'party/GetPartyAddressDetails/', custParas)
+    return this.http.post(environment.Url + 'common/GetPartyAddressDetails/', custParas)
   }
 
   updateCustomerAddress(address: Address): Observable<any> {
-    return this.http.post(environment.Url + 'party/UpdateAddresses/', address)
+    return this.http.post(environment.Url + 'common/UpdateAddresses/', address)
   }
 
   getCustomerContactsData(custParas: CustomerParams): Observable<any> {
-    return this.http.post(environment.Url + 'party/GetPartyContacts/', custParas)
+    return this.http.post(environment.Url + 'common/GetPartyContacts/', custParas)
   }
 
   getCustomerContactsDetails(custParas: CustomerParams): Observable<any> {
-    return this.http.post(environment.Url + 'party/GetPartyContactsDetails/', custParas)
+    return this.http.post(environment.Url + 'common/GetPartyContactsDetails/', custParas)
   }
 
   updateCustomerContact(contact: Contact): Observable<any> {
-    return this.http.post(environment.Url + 'party/UpdatePartyContacts/', contact)
+    return this.http.post(environment.Url + 'common/UpdatePartyContacts/', contact)
   }
   
 }

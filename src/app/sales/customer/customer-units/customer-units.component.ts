@@ -183,62 +183,62 @@ export class CustomerUnitsComponent implements OnInit, OnDestroy, AfterViewInit 
   }
   loadData() {
 
-    if (this.custID) {
-      this.CustomerParam.Code = this.custID;
-      this.CustomerParam.refNo = this.userDataService.userData.sessionID;
-      this.CustomerParam.user = this.userDataService.userData.userID;
-      this.CustomerParam.company = this.userDataService.userData.company;
-      this.CustomerParam.location = this.userDataService.userData.location;
-      try {
-        this.loader.start();
-        this.subsink.sink = this.customerService.getUnitDetailsForClient(this.CustomerParam).subscribe((res: any) => {
-          this.loader.stop();
-          if (res.status.toUpperCase() === "SUCCESS") {
-            if(this.type  === "*Tenants"){
-              this.filteredData = res['data'].filter((item : any) => this.type === "*Tenants" && item.clientType === "Tenant");
-              this.rowData = this.processRowPostCreate(this.filteredData);
-            }
-            else if(this.type === "*Landlords"){
-              this.filteredData = res['data'].filter((item : any) => this.type === "*Landlords" && item.clientType === "Landlord");
-              this.rowData = this.processRowPostCreate(this.filteredData);
-            }
-            else if(this.type === "CareTaker"){
-              this.filteredData = res['data'].filter((item : any) => this.type === "CareTaker" && item.clientType === "Caretaker");
-              this.rowData = this.processRowPostCreate(this.filteredData);
-            }
+    // if (this.custID) {
+    //   this.CustomerParam.Code = this.custID;
+    //   this.CustomerParam.refNo = this.userDataService.userData.sessionID;
+    //   this.CustomerParam.user = this.userDataService.userData.userID;
+    //   this.CustomerParam.company = this.userDataService.userData.company;
+    //   this.CustomerParam.location = this.userDataService.userData.location;
+    //   try {
+    //     this.loader.start();
+    //     this.subsink.sink = this.customerService.getUnitDetailsForClient(this.CustomerParam).subscribe((res: any) => {
+    //       this.loader.stop();
+    //       if (res.status.toUpperCase() === "SUCCESS") {
+    //         if(this.type  === "*Tenants"){
+    //           this.filteredData = res['data'].filter((item : any) => this.type === "*Tenants" && item.clientType === "Tenant");
+    //           this.rowData = this.processRowPostCreate(this.filteredData);
+    //         }
+    //         else if(this.type === "*Landlords"){
+    //           this.filteredData = res['data'].filter((item : any) => this.type === "*Landlords" && item.clientType === "Landlord");
+    //           this.rowData = this.processRowPostCreate(this.filteredData);
+    //         }
+    //         else if(this.type === "CareTaker"){
+    //           this.filteredData = res['data'].filter((item : any) => this.type === "CareTaker" && item.clientType === "Caretaker");
+    //           this.rowData = this.processRowPostCreate(this.filteredData);
+    //         }
             
-            else{
-              this.rowData = this.processRowPostCreate(res['data']);
-            }
+    //         else{
+    //           this.rowData = this.processRowPostCreate(res['data']);
+    //         }
             
 
-            // for(let i=0;i<res['data'].length;i++){
-            //   if(this.type === "*Tenant"){
-            //     if(res['data'][i].clientType === "Tenant"){
-            //       this.filteredData.push(res['data'][i]);
-            //     }
-            //   }
-            // }
-            // this.rowData = this.processRowPostCreate(this.filteredData);
-            // this.rowData = this.filteredData;
-            this.noOfUnits=this.rowData.length;
-            --this.noOfUnits;
-            this.displayMessage("Success: " + res.message, "green");
-          }
-          else {
-            this.displayMessage("Error: " + res.message, "red");
-          }
-        });
-      }
-      catch (ex: any) {
-        this.displayMessage("Exception: " + ex.message, "red");
-      }
+    //         // for(let i=0;i<res['data'].length;i++){
+    //         //   if(this.type === "Customers"){
+    //         //     if(res['data'][i].clientType === "Tenant"){
+    //         //       this.filteredData.push(res['data'][i]);
+    //         //     }
+    //         //   }
+    //         // }
+    //         // this.rowData = this.processRowPostCreate(this.filteredData);
+    //         // this.rowData = this.filteredData;
+    //         this.noOfUnits=this.rowData.length;
+    //         --this.noOfUnits;
+    //         this.displayMessage("Success: " + res.message, "green");
+    //       }
+    //       else {
+    //         this.displayMessage("Error: " + res.message, "red");
+    //       }
+    //     });
+    //   }
+    //   catch (ex: any) {
+    //     this.displayMessage("Exception: " + ex.message, "red");
+    //   }
 
-    }
-    else {
-      this.displayMessage("No Customer ID", "red");
-      return;
-    }
+    // }
+    // else {
+    //   this.displayMessage("No Customer ID", "red");
+    //   return;
+    // }
 
 
 

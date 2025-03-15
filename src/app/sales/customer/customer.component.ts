@@ -80,12 +80,6 @@ export class CustomerComponent implements OnInit, OnDestroy {
   public gridOptions!: GridOptions;
   public filteredPartyTypeList: Item[] = [];
   public partyTypeList: Item[] = [
-    { itemCode: '*Tenants', itemName: "*Tenants (Allocated)" },
-    { itemCode: '*Landlords', itemName: "*Landlords (Allocated)" },
-    { itemCode: 'Tenants', itemName: "Tenants" },
-    // { itemCode: '*CareTaker', itemName: "*CareTaker (Allocated)" },
-    { itemCode: 'CareTaker', itemName: "CareTaker" },
-    { itemCode: 'Landlords', itemName: "Landlords (Owners)" },
     { itemCode: 'Customers', itemName: "Customers" },
     { itemCode: 'Vendors', itemName: "Vendors" },
     { itemCode: 'Employees', itemName: "Staff" },
@@ -158,7 +152,7 @@ export class CustomerComponent implements OnInit, OnDestroy {
     this.userProfile = this.userDataService.userData.userProfile;
     if (this.userProfile.toUpperCase() === 'CMPUSER') {
       this.filteredPartyTypeList = this.partyTypeList.filter(item =>
-        ['*Tenants', '*Landlords', 'Tenants', 'Landlords', 'All','CareTaker'].includes(item.itemCode)
+        ['Customers', 'Vendors', 'Employees',  'All'].includes(item.itemCode)
       );
     } else {
       this.filteredPartyTypeList = this.partyTypeList;
@@ -225,8 +219,8 @@ export class CustomerComponent implements OnInit, OnDestroy {
             if (this.custData.Type === "*Landlords") {
               this.displayMessage("Landlords not allocated to any unit in this property yet", "red");
             }
-            else if (this.custData.Type === "*Tenants") {
-              this.displayMessage("Tenants not allocated to any unit in this property yet", "red");
+            else if (this.custData.Type === "Customers") {
+              this.displayMessage("Customers not allocated to any unit in this property yet", "red");
             }
             else {
               this.displayMessage("Error: " + this.custForm.controls.type.value + " data not loaded yet.", "red");
