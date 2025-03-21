@@ -12,7 +12,7 @@
   </button>
   <div class="flex justify-between items-center h-8 p-1 bg-blue-400 text-white shadow-md">
     <div class="text-sm font-bold text-white">
-      Property:&nbsp;<b class="data">{{data.title | titlecase}}</b>
+      Branch:&nbsp;<b class="data">{{data.title | titlecase}}</b>
     </div>
   </div>
   <div class="p-4 bg-zinc-100 container">
@@ -23,7 +23,7 @@
         </div>
         <div class="col-2">
           <mat-form-field appearance="outline" class="mat-mode">
-            <mat-label class="mat-label-class">Property</mat-label>
+            <mat-label class="mat-label-class">Branch</mat-label>
             <mat-select matInput placeholder="Branch" formControlName="branchLocn">
               <mat-option value="">--Select--</mat-option>
               <mat-option *ngFor="let x of locations" [value]="x.itemCode">{{x.itemName}}</mat-option>

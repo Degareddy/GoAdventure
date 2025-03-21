@@ -39,7 +39,7 @@ export class AdminService {
     return this.http.post(environment.Url + 'Users/UpdateUserCompanies/', body)
   }
   GetBranchList(body: any): Observable<BranchLocationsResponse>  {
-    return this.http.post<BranchLocationsResponse>(environment.Url + 'Company/GetBranches/', body)
+    return this.http.post<BranchLocationsResponse>(environment.Url + 'admin/GetBranches/', body)
   }
   searchPopup(body: any): Observable<any>  {
     return this.http.post(environment.Url + 'MasterItems/GetTranSearchList/', body)
