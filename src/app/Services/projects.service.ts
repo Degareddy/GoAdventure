@@ -269,9 +269,9 @@ export class ProjectsService {
     return this.http.post(environment.Url + 'property/GetExtendedBillsHdr/', body)
   }
 
-  GetDashUnitStatus(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'reports/GetDashUnitStatus/', body)
-  }
+  // GetDashUnitStatus(body: any): Observable<any> {
+  //   return this.http.post(environment.Url + 'reports/GetDashUnitStatus/', body)
+  // }
 
   GetDashRevenue(body: any): Observable<any> {
     return this.http.post(environment.Url + 'reports/GetDashRevenue/', body)
