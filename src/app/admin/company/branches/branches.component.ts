@@ -250,6 +250,7 @@ export class BranchesComponent implements OnInit, OnDestroy {
     }
   }
   onRowClick(row: any) {
+    console.log(row);
     this.displayMessage('', '');
     this.bDetForm.patchValue(row);
     this.srNum = row.slNo;

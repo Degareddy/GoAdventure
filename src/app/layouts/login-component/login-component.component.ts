@@ -80,8 +80,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     'assets/img/img05.jpg',
   ];
   mainHeaders: string[] = [
-    "Property Management",
-    "Construction",
+    // "Property Management",
+    // "Construction",
+    "Skins & Hides",
     "Inventory",
     "Asset",
     "Payroll",
@@ -89,8 +90,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   ];
 
   subHeaders: string[] = [
-    "Simplify tenant and lease management for a seamless property experience.",
-    "Track and manage every detail of your construction projects with ease.",
+    // "Simplify tenant and lease management for a seamless property experience.",
+    // "Track and manage every detail of your construction projects with ease.",
+    "The Collection of your skin assets and the management of your skin assets.",
     "Gain visibility and control over your inventory to avoid stock shortages.",
     "Keep track of your assets effortlessly, from acquisition to disposal.",
     "Process payroll efficiently and accurately, every single time.",
