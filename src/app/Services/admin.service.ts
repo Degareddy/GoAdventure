@@ -16,27 +16,27 @@ export class AdminService {
 
 
   saveCompanyData(company: CompanyClass): Observable<SaveApiResponse>  {
-    return this.http.post<SaveApiResponse>(`${this.baseUrl}Company/InsertCompanyDetails/`, company)
+    return this.http.post<SaveApiResponse>(`${this.baseUrl}admin/InsertCompanyDetails/`, company)
   }
 
   GetUsersList(body: any) : Observable<any> {
-    return this.http.post(`${this.baseUrl}Users/GetUsersData/`, body)
+    return this.http.post(`${this.baseUrl}admin/GetUsersData/`, body)
   }
   getUserDataByName(body: getPayload): Observable<userResponse>  {
-    return this.http.post<userResponse>(`${this.baseUrl}Users/GetUserDetails/`, body)
+    return this.http.post<userResponse>(`${this.baseUrl}admin/GetUserDetails/`, body)
   }
 
   saveUserData(userData: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(`${this.baseUrl}Users/UpdateUsers/`, userData,);
+    return this.http.post<SaveApiResponse>(`${this.baseUrl}admin/UpdateUsers/`, userData,);
   }
   GetMasterItemsList(body: getPayload): Observable<getResponse>  {
     return this.http.post<getResponse>(environment.Url + 'MasterItems/GetMasterItemsList/', body)
   }
   GetGCMappings(body: any): Observable<any>  {
-    return this.http.post(environment.Url + 'Company/GetGCMappings/', body)
+    return this.http.post(environment.Url + 'admin/GetGCMappings/', body)
   }
   UpdateUserCompanies(body: any): Observable<any>  {
-    return this.http.post(environment.Url + 'Users/UpdateUserCompanies/', body)
+    return this.http.post(environment.Url + 'admin/UpdateUserCompanies/', body)
   }
   GetBranchList(body: any): Observable<BranchLocationsResponse>  {
     return this.http.post<BranchLocationsResponse>(environment.Url + 'admin/GetBranches/', body)
@@ -45,10 +45,10 @@ export class AdminService {
     return this.http.post(environment.Url + 'MasterItems/GetTranSearchList/', body)
   }
   UpdateGCMappings(body: any): Observable<SaveApiResponse>  {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Company/UpdateGCMappings/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'admin/UpdateGCMappings/', body)
   }
   UpdateBranchDetails(body: BranchClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Company/UpdateBranchDetails/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'admin/UpdateBranchDetails/', body)
   }
 
   getIPAddress() {
@@ -56,10 +56,10 @@ export class AdminService {
   }
 
   GetUserBranches(body: getPayload): Observable<BranchMappingResponse> {
-    return this.http.post<BranchMappingResponse>(environment.Url + 'Users/GetUserBranches', body)
+    return this.http.post<BranchMappingResponse>(environment.Url + 'admin/GetUserBranches', body)
   }
   UpdateUserBranches(body: userBranchClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Users/UpdateUserBranches', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'admin/UpdateUserBranches', body)
   }
   GetTransactionRecipt(doc: any): Observable<any> {
     return this.http.post(environment.Url + 'reports/GetReportTransactionRegister', doc)
@@ -82,14 +82,14 @@ export class AdminService {
   }
 
   getUserIpsList(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Users/GetUserIpsList', body)
+    return this.http.post(environment.Url + 'admin/GetUserIpsList', body)
   }
 
   getTransactionLog(body: any): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/GetTransactionLog', body)
   }
   UpdateAllowedIps(body: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Users/UpdateAllowedIps', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'admin/UpdateAllowedIps', body)
   }
   ManageAccessModesMapping(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'admin/ManageAccessModesMapping', body)
@@ -100,7 +100,7 @@ export class AdminService {
   }
 
   GetUserMappedCompanies(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Users/GetUserMappedCompanies', body)
+    return this.http.post(environment.Url + 'admin/GetUserMappedCompanies', body)
   }
 }
 
