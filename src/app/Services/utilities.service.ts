@@ -47,7 +47,7 @@ export class UtilitiesService {
   }
 
   UpdatePassword(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'MasterItems/UpdatePassword', body)
+    return this.http.post(environment.Url + 'admin/UpdatePassword', body)
   }
 
   GetSelectedGrievancesList(grParams: GrievanceParams): Observable<any> {

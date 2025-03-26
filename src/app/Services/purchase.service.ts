@@ -71,20 +71,20 @@ export class PurchaseService {
   // }
 
   insertPurchaseDetails(body: purchaseRequestDetailsClass): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseRequest/InsertPurchaseRequestDet', body)
+    return this.http.post(environment.Url + 'purchase/InsertPurchaseRequestDet', body)
   }
 
   updateSupplierQuotation(body: supplierQuotation): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierQuotation/UpdateSupplierQuotationDetails', body)
+    return this.http.post(environment.Url + 'purchase/UpdateSupplierQuotationDetails', body)
   }
 
   // SupplierQuotation/GetSuppQuotationItems MasterItems/GetTranCount
   GetSuppQuotationItems(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierQuotation/GetSuppQuotationItems', body)
+    return this.http.post(environment.Url + 'purchase/GetSuppQuotationItems', body)
   }
 
   GetSupplierInvoice(suppINV: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'payinvoice/GetPayInvoice', suppINV)
+    return this.http.post(environment.Url + 'purchase/GetPayInvoice', suppINV)
   }
 
   GetTranCount(body: any): Observable<any> {
@@ -96,43 +96,43 @@ export class PurchaseService {
   }
 
   UpdateSupplierQtnItems(body: supplierQuotationItems): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierQuotation/UpdateSupplierQtnItems', body)
+    return this.http.post(environment.Url + 'purchase/UpdateSupplierQtnItems', body)
   }
 
   getsupplierQuotationData(suppQt: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierQuotation/GetSupplierQuotationHeader', suppQt)
+    return this.http.post(environment.Url + 'purchase/GetSupplierQuotationHeader', suppQt)
   }
 
   updatesupplierQuotation(suppQt: supplierQuotation): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierQuotation/InsertSupplierQuotationDetails', suppQt)
+    return this.http.post(environment.Url + 'purchase/InsertSupplierQuotationDetails', suppQt)
   }
 
   getSupplierInvoiceData(supp: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'payinvoice/GetPayInvoice', supp)
+    return this.http.post(environment.Url + 'purchase/GetPayInvoice', supp)
   }
 
   updateSupplierInvoice(supp: supplierInvoice): Observable<any> {
-    return this.http.post(environment.Url + 'payinvoice/UpdatePayInvoice', supp)
+    return this.http.post(environment.Url + 'purchase/UpdatePayInvoice', supp)
   }
 
   GetClietBalanceSummary(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierInvoice/GetClietBalanceSummary', body)
+    return this.http.post(environment.Url + 'purchase/GetClietBalanceSummary', body)
   }
 
   GetPayInvoiceDetails(supp: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'payinvoice/GetPayInvoiceDetails', supp)
+    return this.http.post(environment.Url + 'purchase/GetPayInvoiceDetails', supp)
   }
 
   GetSuppInvoiceDetails(supp: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierInvoice/GetSuppInvoiceDetails', supp)
+    return this.http.post(environment.Url + 'purchase/GetSuppInvoiceDetails', supp)
   }
 
   UpdateSuppInvoiceDetails(supp: supInvoiceDet): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'SupplierInvoice/UpdateSuppInvoiceDetails', supp)
+    return this.http.post<SaveApiResponse>(environment.Url + 'purchase/UpdateSuppInvoiceDetails', supp)
   }
 
   UpdatePayInvoiceDetails(supp: supplierInvoice): Observable<any> {
-    return this.http.post(environment.Url + 'payinvoice/UpdatePayInvoiceDetails', supp)
+    return this.http.post(environment.Url + 'purchase/UpdatePayInvoiceDetails', supp)
   }
 
   //   getSupplierData(supp: MasterParams) {
@@ -144,23 +144,23 @@ export class PurchaseService {
   }
 
   getGrnData(grnParams: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'grn/GetGrnHeader', grnParams)
+    return this.http.post(environment.Url + 'purchase/GetGrnHeader', grnParams)
   }
 
   updateGrn(grnHdr: grn): Observable<any> {
-    return this.http.post(environment.Url + 'grn/InsertGRNDetails', grnHdr)
+    return this.http.post(environment.Url + 'purchase/InsertGRNDetails', grnHdr)
   }
 
   getGrnDetails(goodsReceipt: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'grn/GetGrnItems', goodsReceipt)
+    return this.http.post(environment.Url + 'purchase/GetGrnItems', goodsReceipt)
   }
 
   updateGrnDetails(grnDet: grnDetails): Observable<any> {
-    return this.http.post(environment.Url + 'grn/UpdateGRNItems', grnDet)
+    return this.http.post(environment.Url + 'purchase/UpdateGRNItems', grnDet)
   }
 
   getPaymentsData(pmtParams: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'payments/GetPayments', pmtParams)
+    return this.http.post(environment.Url + 'purchase/GetPayments', pmtParams)
   }
 
   GetNameSearchCount(doc: any): Observable<any> {
@@ -172,18 +172,18 @@ export class PurchaseService {
   }
 
   GetGrnItemSpecificCharges(specificCharge: any): Observable<any> {
-    return this.http.post(environment.Url + 'grn/GetGrnItemSpecificCharges', specificCharge)
+    return this.http.post(environment.Url + 'purchase/GetGrnItemSpecificCharges', specificCharge)
   }
   UpdateGRNProductSpecificCharges(specificCharge: itemCharges): Observable<any> {
-    return this.http.post(environment.Url + 'grn/UpdateGRNProductSpecificCharges', specificCharge)
+    return this.http.post(environment.Url + 'purchase/UpdateGRNProductSpecificCharges', specificCharge)
   }
 
   GetGrnCommonCharges(commonCharge: any): Observable<any> {
-    return this.http.post(environment.Url + 'grn/GetGrnCommonCharges', commonCharge)
+    return this.http.post(environment.Url + 'purchase/GetGrnCommonCharges', commonCharge)
   }
 
   UpdateGRNCommonCharges(commonCharge: commonCharges): Observable<any> {
-    return this.http.post(environment.Url + 'grn/UpdateGRNCommonCharges', commonCharge)
+    return this.http.post(environment.Url + 'purchase/UpdateGRNCommonCharges', commonCharge)
   }
 
   GetTranItemsList(body: any): Observable<any> {
@@ -195,7 +195,7 @@ export class PurchaseService {
   }
 
   GetSupplierPendingGRNs(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'SupplierInvoice/GetSupplierPendingGRNs', body)
+    return this.http.post(environment.Url + 'purchase/GetSupplierPendingGRNs', body)
   }
 
   UpdatePartyOpeningBalancesHeader(opBalances: OpeningBalancesClass): Observable<SaveApiResponse> {
