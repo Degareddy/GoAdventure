@@ -20,6 +20,7 @@ import { PropertyGuard } from './project/_guard/property.guard';
 import { ForgotPasswordComponent } from './utilities/forgot-password/forgot-password.component';
 import { TenantGuard } from './tenant/_guard/tenant.guard';
 import { LandlordGuard } from './landlord/_guard/landlord.guard';
+import { SkinsGuard } from './skins/skins.guard';
 
 const routes: Routes = [
   {
@@ -44,6 +45,10 @@ const routes: Routes = [
       {
         path: 'master',
         loadChildren: () => import('src/app/Masters/master.module').then(m => m.MasterModule), canActivate: [MasterGuard]
+      },
+      {
+        path:'skins',
+        loadChildren: () => import('src/app/skins/skins.module').then(m => m.SkinsModule)
       },
       {
         path: 'admin',

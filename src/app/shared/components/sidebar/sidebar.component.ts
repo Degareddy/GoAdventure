@@ -45,6 +45,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public isTenant: boolean = false;
   public isLandlord:boolean =false;
   public isSale: boolean = false;
+  public isSkins: boolean = false;
   public isPurchase: boolean = false;
   public isSkin: boolean = false;
   public isInvent: boolean = false;
@@ -111,7 +112,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       'Assets': { menu: this.assetsMenu, sessionKey: 'assets', flag: 'isAsset' },
       'Projects': { menu: this.projectsMenu, sessionKey: 'project', flag: 'isProject' },
       'Property': { menu: this.propertyMenu, sessionKey: 'property', flag: 'isProperty' },
-      'Reports': { menu: this.reportMenu, sessionKey: 'Reports', flag: 'isReport' }
+      'Reports': { menu: this.reportMenu, sessionKey: 'Reports', flag: 'isReport' },
+      // 'Skins':{menu: this.skinMenu, sessionKey: 'skins', flag: 'isSkin'}
     };
 
     for (const item of menuData) {

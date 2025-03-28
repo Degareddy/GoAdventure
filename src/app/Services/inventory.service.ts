@@ -18,6 +18,21 @@ export class InventoryService {
   GetMasterItemsList(body: any): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/GetMasterItemsList/', body)
   }
+  updateSkinsTypes(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'skins/UpdateSkinTypes/', body)
+  }
+  getSkinsTypes(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'skins/GetSkinTypesList/', body)
+  }
+  getSkinsSubTypes(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'skins/GetSkinSubTypesList/', body)
+  }
+  GetSelSkinSubTypeDetails(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'skins/GetSelSkinSubTypeDetails/', body)
+  }
+  UpdateSkinSubTypes(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'skins/UpdateSkinSubTypes/', body)
+  }
   GetProductDetails(body: any): Observable<any> {
     return this.http.post(environment.Url + 'Products/GetProductDetails?', body)
   }
