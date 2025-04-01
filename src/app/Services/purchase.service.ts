@@ -31,39 +31,39 @@ export class PurchaseService {
   }
 
   getPurchaseHeaderData(purchOrd: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseOrder/GetPurchaseOrderHeader', purchOrd)
+    return this.http.post(environment.Url + 'purchase/GetPurchaseOrderHeader', purchOrd)
   }
 
   updatePurchaseOrder(purhdr: PurchaseOrder): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseOrder/InsertPurchaseOrderHdr', purhdr)
+    return this.http.post(environment.Url + 'purchase/InsertPurchaseOrderHdr', purhdr)
   }
 
   getPurchaseDetailsData(purchOrd: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseOrder/GetPurchaseOrderDetails', purchOrd)
+    return this.http.post(environment.Url + 'purchase/GetPurchaseOrderDetails', purchOrd)
   }
 
   updatePurchaseOrderDetails(purOrdDet: PurchaseOrderDetails): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseOrder/UpdatePurchaseDetails', purOrdDet)
+    return this.http.post(environment.Url + 'purchase/UpdatePurchaseDetails', purOrdDet)
   }
 
   getPurchaseReqData(purReq: any): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseRequest/GetPurchaseRequestHeader', purReq)
+    return this.http.post(environment.Url + 'purchase/GetPurchaseRequestHeader', purReq)
   }
 
   InsertPurchaseRequestHdr(purReq: purchaseRequestHeader): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseRequest/InsertPurchaseRequestHdr', purReq)
+    return this.http.post(environment.Url + 'purchase/InsertPurchaseRequestHdr', purReq)
   }
 
   getSupplierDetails(purReq: supplier): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseRequest/GetSupplierDetails', purReq)
+    return this.http.post(environment.Url + 'purchase/GetSupplierDetails', purReq)
   }
 
   getSupplierData(supp: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'Suppliers/GetSupplierDetails', supp)
+    return this.http.post(environment.Url + 'purchase/GetSupplierDetails', supp)
   }
 
   GetPurRequestDetails(purReq: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'PurchaseRequest/GetPurRequestDetails', purReq)
+    return this.http.post(environment.Url + 'purchase/GetPurRequestDetails', purReq)
   }
 
   // updateSupplier(supp :supplier){

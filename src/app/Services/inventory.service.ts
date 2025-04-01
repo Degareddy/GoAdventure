@@ -34,67 +34,67 @@ export class InventoryService {
     return this.http.post(environment.Url + 'skins/UpdateSkinSubTypes/', body)
   }
   GetProductDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Products/GetProductDetails?', body)
+    return this.http.post(environment.Url + 'inventory/GetProductDetails?', body)
   }
   saveUpdateProducts(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Products/UpdateProducts?', body)
+    return this.http.post(environment.Url + 'inventory/UpdateProducts?', body)
   }
   GetWarehouseDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Warehouse/GetWarehouseDetails/', body)
+    return this.http.post(environment.Url + 'inventory/GetWarehouseDetails/', body)
   }
   saveWarehouse(body: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Warehouse/UpdateWarehouse/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateWarehouse/', body)
   }
   GetStockTransfer(body: any): Observable<getTransactionDetailsResp> {
-    return this.http.post<getTransactionDetailsResp>(environment.Url + 'stocktrans/GetStockTransfer/', body)
+    return this.http.post<getTransactionDetailsResp>(environment.Url + 'inventory/GetStockTransfer/', body)
   }
   GetStockTransferReceipt(body: any): Observable<getTransactionDetailsResp> {
-    return this.http.post<getTransactionDetailsResp>(environment.Url + 'stocktrans/GetStockTransferReceipt/', body)
+    return this.http.post<getTransactionDetailsResp>(environment.Url + 'inventory/GetStockTransferReceipt/', body)
   }
   UpdateStockTransfer(body: StockTransfer): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdateStockTransferHdr/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateStockTransferHdr/', body)
   }
   UpdateStockTransferReceiptHdr(body: stockTransferReceiptHeader): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdateStockTransferReceiptHdr/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateStockTransferReceiptHdr/', body)
   }
   GetMasterItemsListSelLocation(body: any): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/GetMasterItemsListLocnSpecific/', body)
   }
   GetStockTransferDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetStockTransferDetails/', body)
+    return this.http.post(environment.Url + 'inventory/GetStockTransferDetails/', body)
   }
   GetTransferReceiptDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetTransferReceiptDetails/', body)
+    return this.http.post(environment.Url + 'inventory/GetTransferReceiptDetails/', body)
   }
   UpdateStockTransferDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/UpdateStockTransferDet/', body)
+    return this.http.post(environment.Url + 'inventory/UpdateStockTransferDet/', body)
   }
   GetMaterialRequest(mtr: materialRequestHdr): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetMaterialRequest/', mtr)
+    return this.http.post(environment.Url + 'inventory/GetMaterialRequest/', mtr)
   }
   GetMaterialRequestDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetMaterialRequestDetails/', body)
+    return this.http.post(environment.Url + 'inventory/GetMaterialRequestDetails/', body)
   }
   UpdateMaterialRequestDetails(materialRequestDetails: materialRequestDetails): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/UpdateMaterialRequestDetails/', materialRequestDetails)
+    return this.http.post(environment.Url + 'inventory/UpdateMaterialRequestDetails/', materialRequestDetails)
   }
   GetTranCount(body: any): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/GetTranCount', body)
   }
 
   GetStockAdjustment(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stockadjustments/GetStockAdjustment/', body)
+    return this.http.post(environment.Url + 'inventory/GetStockAdjustment/', body)
   }
   GetStockAdjustmentDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stockadjustments/GetStockTransferDetails/', body)
+    return this.http.post(environment.Url + 'stockadjuinventorystments/GetStockTransferDetails/', body)
   }
 
   GetPhysicalStock(phyCls: PhysicalDeails): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetPhysicalStock/', phyCls)
+    return this.http.post(environment.Url + 'inventory/GetPhysicalStock/', phyCls)
   }
 
   UpdatePhysicalStock(body: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdatePhysicalStock/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdatePhysicalStock/', body)
   }
 
 
@@ -102,10 +102,10 @@ export class InventoryService {
     return this.http.post(environment.Url + 'property/GetPropertyDetails', bcls)
   }
   getProductGroupDetails(prodcls: any): Observable<any> {
-    return this.http.post(environment.Url + 'Products/GetProductGroupDetails', prodcls)
+    return this.http.post(environment.Url + 'inventory/GetProductGroupDetails', prodcls)
   }
   UpdateProductGroups(prodcls: ProductGroup): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Products/UpdateProductGroups', prodcls)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateProductGroups', prodcls)
   }
 
   //#region Consumption
@@ -124,11 +124,11 @@ export class InventoryService {
   }
 
   getProductAliasDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Products/GetProductAliasNames/', body)
+    return this.http.post(environment.Url + 'inventory/GetProductAliasNames/', body)
   }
 
   updateProductAliasDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Products/UpdateProductAliasNames/', body)
+    return this.http.post(environment.Url + 'inventory/UpdateProductAliasNames/', body)
   }
   //#endregion
 
@@ -138,44 +138,44 @@ export class InventoryService {
   }
 
   updatematerialRequest(matReqHdr: materialRequestHdr): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/UpdateMaterialRequest', matReqHdr)
+    return this.http.post(environment.Url + 'inventory/UpdateMaterialRequest', matReqHdr)
   }
 
   GetAuthorizedTransactions(body: any): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/GetAuthorizedTransactions', body)
   }
   getStockConsumptionHeader(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetStockConsumptionHeader', body)
+    return this.http.post(environment.Url + 'inventory/GetStockConsumptionHeader', body)
   }
 
 
   GetStockConsumptionDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetStockConsumptionDetails', body)
+    return this.http.post(environment.Url + 'inventory/GetStockConsumptionDetails', body)
   }
 
   GetStockAdj(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetStockAdjustment', body)
+    return this.http.post(environment.Url + 'inventory/GetStockAdjustment', body)
   }
 
   UpdateStockConsumptionHdr(stkConHdr: StockIssueHdr): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdateStockConsumptionHeader', stkConHdr)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateStockConsumptionHeader', stkConHdr)
   }
 
   UpdateStockConsDetails(stkConDet: stockConsumptionDetails): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdateStockConsumptionDetails', stkConDet)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateStockConsumptionDetails', stkConDet)
   }
 
   UpdateStockAdjustment(stkAdjCls: stockAdjustmenthdrClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdateStockAdjustment', stkAdjCls)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateStockAdjustment', stkAdjCls)
   }
 
 
   GetStockAdjDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'stocktrans/GetStockAdjustmentDetails', body)
+    return this.http.post(environment.Url + 'inventory/GetStockAdjustmentDetails', body)
   }
 
 
   UpdateStockAdjDetails(stkAdjdetCls: stockAdjDetailsClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'stocktrans/UpdateStockAdjustmentDetails', stkAdjdetCls)
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateStockAdjustmentDetails', stkAdjdetCls)
   }
 }

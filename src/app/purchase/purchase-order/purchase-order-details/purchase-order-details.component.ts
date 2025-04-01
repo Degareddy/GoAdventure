@@ -12,7 +12,8 @@ import { PurchaseOrderDetails } from 'src/app/purchase/purchase.class';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { AccessSettings } from 'src/app/utils/access';
-import { displayMsg, TextClr, Type } from 'src/app/utils/enums';
+import { displayMsg, TextClr, TranStatus, Type } from 'src/app/utils/enums';
+import { productSearchClass } from 'src/app/layouts/productSearch';
 
 @Component({
   selector: 'app-purchasedetails',
@@ -33,6 +34,7 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   rowValue!: number;
   private subSink!: SubSink;
   mode!: string;
+
   status!: string;
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
@@ -46,7 +48,7 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
   public excelName: string = "";
   selectedRowIndex: number = -1;
   returnMsg!: string;
-
+  productCls!: productSearchClass;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 70 },
   { field: "prodName", headerName: "Product", sortable: true, filter: true, resizable: true, width: 180, },
   { field: "uom", headerName: "UOM", resizable: true, flex: 1 },
@@ -154,6 +156,7 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
     this.purDetForm = this.formInit();
     this.subSink = new SubSink();
     this.purDet = new PurchaseOrderDetails();
+    this.productCls=new productSearchClass()
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -264,6 +267,9 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
     }
   }
   searchProduct() {
+    this.displayMessage('','')
+
+    
     const body = {
       ...this.commonParams(),
       Type: Type.PRODUCT,
@@ -271,11 +277,39 @@ export class PurchaseorderdetailsComponent implements OnInit, OnDestroy {
       ItemFirstLevel: "",
       ItemSecondLevel: "",
     }
-    this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+    this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe(async (res: nameCountResponse) => {
+      
+
       if (res.status.toUpperCase() != AccessSettings.FAIL && res.status.toUpperCase() != AccessSettings.ERROR) {
         if (res && res.data && res.data.nameCount === 1) {
+          this.displayMessage('','')
           this.purDetForm.controls['prodName'].patchValue(res.data.selName);
           this.prodCode = res.data.selCode;
+          this.productCls.Company = this.userDataService.userData.company;
+                this.productCls.Location = this.userDataService.userData.location;
+                this.productCls.GroupCode = '';
+                this.productCls.ProdName = this.purDetForm.controls['prodName'].value;
+                this.productCls.ProdStatus = TranStatus.ANY;
+                this.productCls.ProdType = 'ANY';
+                this.productCls.UOM = '';
+                this.productCls.RefNo = this.userDataService.userData.sessionID;
+                this.productCls.User = this.userDataService.userData.userID;
+                try {
+                  this.subSink.sink = await this.utlService.GetProductSearchList(this.productCls).subscribe((res: any) => {
+                    if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+                      this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+                      this.rowData = [];
+                    }
+                    else {
+                      this.rowData = res['data'];
+                      this.exportTmp = false;
+                      this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+                    }
+                  });
+                }
+                catch (ex: any) {
+                  this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+                }
         }
         else {
           const dialogRef: MatDialogRef<SearchProductComponent> = this.dialog.open(SearchProductComponent, {
