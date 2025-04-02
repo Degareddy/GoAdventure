@@ -410,6 +410,10 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
           this.supinvForm.get('invoiceAmt')?.patchValue(res.data.tranAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           this.supinvForm.get('supplierAmt')?.disable();
           this.supinvForm.get('currency')?.patchValue((res.data.currency));
+          if(res.data.isVatable){
+            this.supinvForm.get('inclusiveVAT')?.patchValue(res.data.isVatable);
+            this.supinvForm.get('inclusiveVAT')?.disable()
+          }
           this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
 
         }
