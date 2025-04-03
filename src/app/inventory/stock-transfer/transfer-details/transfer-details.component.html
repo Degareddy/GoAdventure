@@ -59,7 +59,7 @@
         <mat-form-field aria-colspan="2" appearance="outline" class="mat-date">
           <mat-label class="mat-label-class">Quantity</mat-label>
           <input matInput placeholder="Quantity" appNumberFormat class="right-align-input" formControlName="quantity"
-            type="text">
+            type="text" (input)="onQuantityChange($event)">
         </mat-form-field>
       </div>
       <div class="col-2">

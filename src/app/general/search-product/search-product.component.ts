@@ -196,6 +196,7 @@ export class SearchProductComponent implements OnInit, OnDestroy {
 
   onRowClick(row: any) {
     this.dialogRef.close(row);
+    console.log(row)
   }
   clear() {
     this.SearchProductForm.reset()

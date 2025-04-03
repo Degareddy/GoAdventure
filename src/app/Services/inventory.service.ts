@@ -134,7 +134,7 @@ export class InventoryService {
 
 
   getWareHouseLotStock(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'MasterItems/GetProductWarehouseLotStock', body)
+    return this.http.post(environment.Url + 'inventory/GetProductWarehouseLotStock', body)
   }
 
   updatematerialRequest(matReqHdr: materialRequestHdr): Observable<any> {

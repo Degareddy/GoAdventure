@@ -115,7 +115,7 @@ export class TransferDetailsComponent implements OnInit, OnDestroy {
       uom: [{ value: '', disabled: true }],
       lotNo: [{ value: '0', disabled: true }],
       unitRate: [{ value: '0.00', disabled: true }],
-      quantity: [{ value: '1', disabled: true }],
+      quantity: ['1'],
       warehouse: ['', [Validators.required, Validators.maxLength(50)]],
       rowValue: [{ value: '0.00', disabled: true }]
     })
@@ -238,12 +238,21 @@ export class TransferDetailsComponent implements OnInit, OnDestroy {
             this.trfDetForm.controls['prodCode'].patchValue(result.prodName);
             this.trfDetForm.controls['uom'].patchValue(result.uom);
             this.stkTrfDtCls.product = result.prodCode;
+            this.trfDetForm.get('lotNo')?.patchValue('')
+            this.trfDetForm.get('unitRate')?.patchValue(result.stdSalesRate);
+            this.trfDetForm.get('rowValue')?.patchValue(result.stdSalesRate);
+
           }
         });
       }
     });
   }
-
+  onQuantityChange(event:any){
+    let quantity = parseInt(this.trfDetForm.get('quantity')?.value, 10) || 0;
+    let unitRate = parseInt(this.trfDetForm.get('unitRate')?.value, 10) || 0;
+    let totAmt = quantity * unitRate;
+    this.trfDetForm.get('rowValue')?.patchValue(totAmt)
+  }
   searchWarehouse() {
     const dialogRef: MatDialogRef<WareHouseSearchComponent> = this.dialog.open(WareHouseSearchComponent, {
       width: '90%',
