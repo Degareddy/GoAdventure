@@ -93,8 +93,8 @@ export class ConsumptionComponent implements OnInit, OnDestroy {
       tranDate: [new Date()],
       remarks: [''],
       purpose: ['', Validators.required],
-      block: ['', Validators.required],
-      propertyName: ['', Validators.required]
+      // block: ['', Validators.required],
+      // propertyName: ['', Validators.required]
     })
   }
 
