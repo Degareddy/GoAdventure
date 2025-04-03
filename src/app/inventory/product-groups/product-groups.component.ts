@@ -140,22 +140,35 @@ private displayMessage(message: string, cssClass: string) {
       this.loader.start();
       this.subSink.sink = this.invService.UpdateProductGroups(this.prodGroupCls).subscribe((result: SaveApiResponse) => {
         this.loader.stop();
-        if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
-          this.newMsg = result.message;
-          if (this.productGroupForm.get('mode')?.value.toUpperCase() === Mode.Add) {
-            this.typeNamesList.push({ itemCode: this.productGroupForm.get('groupCode')?.value, itemName: this.productGroupForm.get('groupName')?.value })
-            this.modeChanged('Modify');
+
+        // if (result.status.toUpperCase() === AccessSettings.SUCCESS) {
+        //   this.newMsg = result.message;
+        //   if (this.productGroupForm.get('mode')?.value.toUpperCase() === Mode.Add) {
+        //     this.typeNamesList.push({ itemCode: this.productGroupForm.get('groupCode')?.value, itemName: this.productGroupForm.get('groupName')?.value })
+        //     this.modeChanged('Modify');
+        //   }
+        //   this.onSelectedTypeChanged(result.tranNoNew, this.productGroupForm.get('mode')?.value);
+        // }
+
+        if (result.retVal > 100 && result.retVal < 200) {
+          this.typeNamesList.push({ itemCode: result.tranNoNew, itemName: this.productGroupForm.get('groupCode')!.value })
+          if (this.productGroupForm.controls['mode'].value.toUpperCase() == Mode.Add) {
+            this.productGroupForm.controls['mode'].patchValue('Modify');
+            this.displayMessage(displayMsg.SUCCESS+result.message,TextClr.green)
           }
-          this.onSelectedTypeChanged(result.tranNoNew, this.productGroupForm.get('mode')?.value);
+          this.newMsg = result.message;
+          if (result.tranNoNew) {
+            this.onSelectedTypeChanged(result.tranNoNew, this.productGroupForm.controls['mode'].value)
+          }
         }
-
-
+        else {
+          this.displayMessage(displayMsg.ERROR + result.message, TextClr.red);
+        }
       });
     }
     else {
       this.displayMessage(displayMsg.ERROR + "Form Invalid", TextClr.red);
     }
-
   }
   Clear() {
     this.productGroupForm = this.formInit();
@@ -221,7 +234,4 @@ private displayMessage(message: string, cssClass: string) {
       }
     });
   }
-
-
-
 }

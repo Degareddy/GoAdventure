@@ -346,7 +346,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     this.suppInvCls.invoiceAmt = parseFloat(value.invoiceAmt ? value.invoiceAmt.replace(/,/g, '') : '0');
     this.suppInvCls.paidAmt = parseFloat(value.paidAmt ? value.paidAmt.replace(/,/g, '') : '0');
     this.suppInvCls.payableAmt = parseFloat(value.payableAmt ? value.payableAmt.replace(/,/g, '') : '0');
-    this.suppInvCls.supplierAmt = parseFloat(this.supinvForm.get('supplierAmt')?.value ? this.supinvForm.get('supplierAmt')?.value.replace(/,/g, '') : '5');
+    this.suppInvCls.supplierAmt = parseFloat(this.supinvForm.get('supplierAmt')?.value);
     console.log(this.suppInvCls.supplierAmt)
 
     if (value.tranNo) {
@@ -410,6 +410,9 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
           this.supinvForm.get('invoiceAmt')?.patchValue(res.data.tranAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
           this.supinvForm.get('supplierAmt')?.disable();
           this.supinvForm.get('currency')?.patchValue((res.data.currency));
+          this.supinvForm.get('grnAmt')?.patchValue((res.data.grnAmount));
+          this.supinvForm.get('vatAmt')?.patchValue((res.data.vatAmount));
+          this.supinvForm.get('supplierAmt')?.patchValue((res.data.tranAmount));
           if(res.data.isVatable){
             this.supinvForm.get('inclusiveVAT')?.patchValue(res.data.isVatable);
             this.supinvForm.get('inclusiveVAT')?.disable()

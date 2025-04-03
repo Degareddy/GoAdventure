@@ -23,13 +23,13 @@ export class CustomerService {
   }
 
   UpdateSupplierProducts(prodclass: vendorProducts): Observable<any> {
-    return this.http.post(environment.Url + 'property/UpdateSupplierProducts/', prodclass)
+    return this.http.post(environment.Url + 'inventory/UpdateSupplierProducts/', prodclass)
   }
   GetSupplierProducts(prodclass: any): Observable<any> {
-    return this.http.post(environment.Url + 'property/GetSupplierProducts/', prodclass)
+    return this.http.post(environment.Url + 'inventory/GetSupplierProducts/', prodclass)
   }
   GetProductSuppliers(prodclass: any): Observable<any> {
-    return this.http.post(environment.Url + 'Products/GetProductSuppliers/', prodclass)
+    return this.http.post(environment.Url + 'inventory/GetProductSuppliers/', prodclass)
   }
 
   getCustomerAddressesData(custParas: CustomerParams): Observable<any> {

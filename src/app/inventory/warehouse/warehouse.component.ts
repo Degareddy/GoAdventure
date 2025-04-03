@@ -114,6 +114,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
         this.subSink.sink = this.invService.GetWarehouseDetails(body).subscribe((res: any) => {
           this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             this.warehouseForm.get('list')?.patchValue(res.data.whid, { emitEvent: false });
             this.warehouseForm.patchValue({
               whid: res.data.whid,
@@ -126,7 +127,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
             this.whousecls.whStatus = this.whStatus;
             if (mode.toUpperCase() != Mode.view) {
 
-              this.displayMessage(displayMsg.SUCCESS + this.retMessage, TextClr.green);
+              this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
             }
             else {
               this.displayMessage(displayMsg.SUCCESS + "Retrived " + res.message, TextClr.green);
@@ -240,6 +241,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
             this.wareHouseList.push({ itemCode: res.tranNoNew, itemName: this.warehouseForm.get('whName')!.value })
             if (this.warehouseForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.warehouseForm.controls['mode'].patchValue('Modify');
+              this.displayMessage(displayMsg.SUCCESS+res.message,TextClr.green)
             }
             this.newTranMsg = res.message;
             if (res.tranNoNew) {
@@ -315,8 +317,5 @@ export class WarehouseComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-
-
 }
 
