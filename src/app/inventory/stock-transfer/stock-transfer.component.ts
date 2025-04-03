@@ -353,6 +353,7 @@ export class StockTransferComponent implements OnInit, OnDestroy {
   }
 
   searchData() {
+    
     try {
       const currentDate = new Date();
       const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -373,26 +374,27 @@ export class StockTransferComponent implements OnInit, OnDestroy {
             this.masterParams.tranNo = res.data.selTranNo;
             this.stockTranferData(this.masterParams, this.stockTransferForm.get('mode')?.value);
           }
-          else {
-            this.tranStatus = '';
-            this.retMessage = '';
-            const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
-              width: '90%',
-              disableClose: true,
-              data: {
-                'tranNum': this.stockTransferForm.controls['tranNo'].value, 'TranType': "STOCKTRF",
-                'search': 'Stock-Transfer Search'
-              }
-            });
-            this.dialogOpen = true;
-            dialogRef.afterClosed().subscribe(result => {
-              this.dialogOpen = false;
-              if (result != true) {
-                this.masterParams.tranNo = result;
-                this.stockTranferData(this.masterParams, this.stockTransferForm.get('mode')?.value);
-              }
-            });
-          }
+          
+        }
+        else if(res.retVal === 0) {
+          this.tranStatus = '';
+          this.retMessage = '';
+          const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+            width: '90%',
+            disableClose: true,
+            data: {
+              'tranNum': this.stockTransferForm.controls['tranNo'].value, 'TranType': "STOCKTRF",
+              'search': 'Stock-Transfer Search'
+            }
+          });
+          this.dialogOpen = true;
+          dialogRef.afterClosed().subscribe(result => {
+            this.dialogOpen = false;
+            if (result != true) {
+              this.masterParams.tranNo = result;
+              this.stockTranferData(this.masterParams, this.stockTransferForm.get('mode')?.value);
+            }
+          });
         }
         else {
           this.retMessage = res.message;

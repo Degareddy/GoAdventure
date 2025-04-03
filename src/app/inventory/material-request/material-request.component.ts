@@ -136,6 +136,7 @@ export class MaterialRequestComponent implements OnInit, OnDestroy {
   }
 
   searchData() {
+    debugger;
     try {
       const currentDate = new Date();
       const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
