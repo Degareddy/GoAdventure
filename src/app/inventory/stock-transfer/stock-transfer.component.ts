@@ -19,6 +19,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
+import { displayMsg, TextClr, TranType } from 'src/app/utils/enums';
 export interface TransactionDetails {
   company: string;
   location: string;
@@ -351,6 +352,10 @@ export class StockTransferComponent implements OnInit, OnDestroy {
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
+  displayMessage(meg:string,color:string){
+    this.retMessage=meg;
+    this.textMessageClass=color
+  }
 
   searchData() {
     try {
@@ -373,6 +378,7 @@ export class StockTransferComponent implements OnInit, OnDestroy {
             this.masterParams.tranNo = res.data.selTranNo;
             this.stockTranferData(this.masterParams, this.stockTransferForm.get('mode')?.value);
           }
+          
           else {
             this.tranStatus = '';
             this.retMessage = '';
