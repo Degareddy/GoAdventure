@@ -212,6 +212,7 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   }
 
   getOrderInvoiceData(masterparm: MasterParams, mode: string) {
+    this.masterParams.tranType='ORDINV'
     try {
       this.loader.start();
       this.subSink.sink = this.salesService.getOrderInvoiceHdr(masterparm).subscribe((res: any) => {
