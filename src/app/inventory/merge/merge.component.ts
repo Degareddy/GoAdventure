@@ -19,6 +19,7 @@ import { SubSink } from 'subsink';
 import { mergingStock, PhysicalDeails } from '../inventory.class';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { AccessSettings } from 'src/app/utils/access';
+import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
 @Component({
   selector: 'app-merge',
@@ -92,8 +93,50 @@ export class MergeComponent implements OnInit {
       // this.mrhForm.controls['mode'].setValue(this.modes[this.modeIndex].itemCode);
     });
   }
+  modeChange(event: string) {
+    if (event.toUpperCase() === Mode.Add) {
+      this.clear();
+      this.mergingForm.controls['mode'].setValue(event, { emitEvent: false });
+      this.mergingForm.get('tranNo')!.disable();
+      this.mergingForm.get('tranNo')!.clearValidators();
+      this.mergingForm.get('tranNo')!.updateValueAndValidity();
+      // this.loadData();
+    }
+    else {
+      this.mergingForm.controls['mode'].setValue(event, { emitEvent: false });
+      this.mergingForm.get('tranNo')!.enable();
+    }
+  }
   onSubmit() {
-
+    this.displayMessage("", "");
+        if (this.mergingForm.invalid) {
+          return;
+        }
+        else {
+          const body = {
+            ...this.commonParams(),
+            tranNo: this.mergingForm.get('tranNo')?.value,
+            tranDate: this.mergingForm.get('tranDate')?.value,
+            tranStatus: this.tranStatus,
+            notes: this.mergingForm.get('notes')?.value,
+            mode: this.mergingForm.get('mode')?.value,
+            langId: this.userDataService.userData.langId,
+          }
+          this.subSink.sink = this.invService.UpdatePhysicalStock(body).subscribe((res: SaveApiResponse) => {
+            if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+              this.newMsg = res.message;
+              if (this.mergingForm.get('mode')?.value.toUpperCase() === Mode.Add) {
+                this.modeChange("Modify");
+              }
+              this.mergingForm.get('tranNo')?.patchValue(res.tranNoNew);
+              this.mergingStock.tranNo = res.tranNoNew
+              this.getMergingTranData(this.mergingStock, this.mergingForm.get('mode')?.value)
+            }
+            else {
+              this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            }
+          });
+        }
   }
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
