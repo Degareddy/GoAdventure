@@ -96,6 +96,12 @@ export class InventoryService {
   UpdatePhysicalStock(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdatePhysicalStock/', body)
   }
+  UpdatePhysicalStockDetails(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdatePhysicalStockDetails/', body)
+  }
+  GetPhysicalStockDetails(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/GetPhysicalStockDetails/', body)
+  }
 
 
   getPropertyDetails(bcls: MasterParams): Observable<any> {

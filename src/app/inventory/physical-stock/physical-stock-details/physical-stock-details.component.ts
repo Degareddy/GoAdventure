@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
-import { nameCountResponse } from 'src/app/general/Interface/admin/admin';
+import { nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { Item } from 'src/app/general/Interface/interface';
 import { SearchProductComponent } from 'src/app/general/search-product/search-product.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -12,6 +12,8 @@ import { SubSink } from 'subsink';
 import { physicalStockDetailsClass } from '../../inventory.class';
 import * as XLSX from 'xlsx';
 import { Type } from 'src/app/utils/enums';
+import { InventoryService } from 'src/app/Services/inventory.service';
+import { AccessSettings } from 'src/app/utils/access';
 @Component({
   selector: 'app-physical-stock-details',
   templateUrl: './physical-stock-details.component.html',
@@ -32,29 +34,38 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
   dataFlag: boolean = false;
   public exportTmp: boolean = true;
   public excelName: string = "";
+  SlNo:number=0
   // rowData: any = [];
+  selProd:string=''
   slNum: number = 0;
   physicalStcokCls: physicalStockDetailsClass;
   public rowSelection: 'single' | 'multiple' = 'multiple';
   rowData: any[] = [];
   acceptedFileTypes = ['.csv', '.xlsx'];
-
-  columnDefs: any[] = [];
+  columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
+    { field: "slNo", headerName: "Sl No", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    { field: "product", headerName: "Prod Code", sortable: true, filter: true, resizable: true, width: 190 },
+    { field: "productName", headerName: "Product Name", sortable: true, filter: true, resizable: true, width: 190 },
+    { field: "uom", headerName: "UOM", sortable: true, filter: true, resizable: true, width: 190, hide: true },
+    { field: "quantity", headerName: "Quantity", sortable: true, filter: true, resizable: true, width: 190 },
+    { field: "physicalStock", headerName: "Physical Stock", sortable: true, filter: true, resizable: true, width: 190 },]
   constructor(private fb: FormBuilder, protected router: Router, protected utlService: UtilitiesService,
-    private userDataService: UserDataService, public dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { tranNo: string, mode: string }) {
+    private userDataService: UserDataService, public dialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data: { tranNo: string, mode: string },private invService:InventoryService) {
     this.phyDetForm = this.formInit();
     this.physicalStcokCls = new physicalStockDetailsClass();
 
   }
   onRowClick(row: any) {
-    // this.phyDetForm.patchValue({
-    //   prodCode: row.product,
-    //   uom: row.uom,
-    //   quantity: row.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-    //   warehouse: row.whCode
-    // });
-    // this.slNum = row.slNo;
-    // this.prodCode = row.prodCode;
+    console.log(row)
+    this.phyDetForm.patchValue({
+      prodCode: row.product,
+      uom: row.uom,
+      quantity: row.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+      warehouse: row.whCode,
+      stock:row.physicalStock
+    });
+    this.slNum = row.slNo;
+    this.selProd = row.prodCode;
     // this.stkTrfDtCls.product = row.prodCode;
   }
   onSubmit() {
@@ -62,22 +73,28 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
       return;
     }
     else {
-      const formValues = this.phyDetForm.value;
-      this.physicalStcokCls.company = this.userDataService.userData.company;
-      this.physicalStcokCls.location = this.userDataService.userData.location;
-      this.physicalStcokCls.langID = this.userDataService.userData.langId;
-      this.physicalStcokCls.user = this.userDataService.userData.userID;
-      this.physicalStcokCls.refNo = this.userDataService.userData.sessionID;
-
-      this.physicalStcokCls.product = formValues.item;
-      this.physicalStcokCls.uom = formValues.uom;
-      this.physicalStcokCls.quantity = formValues.quantity;
-
-      this.physicalStcokCls.warehouse = "WR003";
-      this.physicalStcokCls.mode = this.data.mode;
-      this.physicalStcokCls.tranNo = this.data.tranNo;
-
-      this.physicalStcokCls.remarks = "";
+      const body = {
+              ...this.commonParams(),
+              tranNo: this.data.tranNo,
+              Product:this.selProd,
+              mode: this.data.mode,
+              UOM: this.phyDetForm.get('uom')?.value,
+              PhysicalStock:this.phyDetForm.get('stock')?.value,
+              Quantity:this.phyDetForm.get('quantity')?.value,
+              langId: this.userDataService.userData.langId,
+             
+              SlNo:this.SlNo
+            }
+            this.subSink.sink = this.invService.UpdatePhysicalStockDetails(body).subscribe((res: SaveApiResponse) => {
+              if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.retMessage =  res.message;
+                this.textMessageClass = "green";
+              }
+              else {
+                this.retMessage =  res.message;
+                this.textMessageClass = "red";
+              }
+            });
 
     }
   }
@@ -119,6 +136,31 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
       }
     };
     reader.readAsArrayBuffer(file);
+  }
+  loadData(){
+    const body = {
+      ...this.commonParams(),
+      tranNo: this.data.tranNo,
+      Product:this.selProd,
+      mode: this.data.mode,
+      UOM: this.phyDetForm.get('uom')?.value,
+      PhysicalStock:this.phyDetForm.get('stock')?.value,
+      Quantity:this.phyDetForm.get('quantity')?.value,
+      langId: this.userDataService.userData.langId,
+     
+      SlNo:this.SlNo
+    }
+    this.subSink.sink = this.invService.GetPhysicalStockDetails(body).subscribe((res: any) => {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+        this.retMessage =  res.message;
+        this.textMessageClass = "green";
+        this.rowData=res.data
+      }
+      else {
+        this.retMessage =  res.message;
+        this.textMessageClass = "red";
+      }
+    });
   }
   // onFileChange(event: any) {
   //   const file = event.target.files[0];
@@ -187,6 +229,7 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
       if (res && res.data && res.data.nameCount === 1) {
         this.phyDetForm.controls['item'].patchValue(res.data.selName);
         this.physicalStcokCls.tranNo = res.data.selCode;
+        this.selProd=res.data.selCode
       }
       else {
         const dialogRef: MatDialogRef<SearchProductComponent> = this.dialog.open(SearchProductComponent, {
@@ -215,10 +258,11 @@ export class PhysicalStockDetailsComponent implements OnInit, OnDestroy {
       item: ['', [Validators.required, Validators.maxLength(50)]],
       uom: [{ value: '', disabled: true }],
       quantity: ['1', Validators.required],
+      stock:['0']
     })
   }
   ngOnInit(): void {
-
+    this.loadData()
   }
   Close() {
     this.router.navigateByUrl('/home');
