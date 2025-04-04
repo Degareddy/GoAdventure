@@ -494,8 +494,8 @@ export class PdfReportsService {
       doc.text(`${item.currencyName}`, leftColumnX + 30, 55);
       doc.text(`${item.validDays}`, leftColumnX + 30, 60);
       doc.text(`${formatDate(item.tranDate)}`, leftColumnX + 30, 65);
-      doc.text(`${item.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 70);
-      doc.text(`${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 75);
+      doc.text(`${item.vatRate}`, leftColumnX + 30, 70);
+      doc.text(`${totalAmount}`, leftColumnX + 30, 75);
       doc.text(`${item.inWords}`, leftColumnX + 30, 80);
       doc.setTextColor(139, 69, 19);
 
@@ -510,22 +510,20 @@ export class PdfReportsService {
         { content: 'S.No', styles: { halign: 'left', lineColor: [0, 0, 0] } },
         { content: 'Product', styles: { halign: 'left', lineColor: [0, 0, 0] } },
         { content: 'UOM', styles: { halign: 'right', lineColor: [0, 0, 0] } },
-        { content: 'Rate', styles: { halign: 'right', lineColor: [0, 0, 0] } },
+        // { content: 'Rate', styles: { halign: 'right', lineColor: [0, 0, 0] } },
         { content: 'Quantity', styles: { halign: 'right', lineColor: [0, 0, 0] } },
-        { content: 'Discount', styles: { halign: 'right', lineColor: [0, 0, 0] } },
-        { content: 'VAT', styles: { halign: 'right', lineColor: [0, 0, 0] } },
-        { content: 'Amount', styles: { halign: 'right', lineColor: [0, 0, 0] } }
+        // { content: 'Discount', styles: { halign: 'right', lineColor: [0, 0, 0] } },
+        // { content: 'VAT', styles: { halign: 'right', lineColor: [0, 0, 0] } },
+        // { content: 'Amount', styles: { halign: 'right', lineColor: [0, 0, 0] } }
       ];
       const data1 = data.map((item: any) => {
         return [
           item.slNo,
-          item.productName,
+          item.itemDesc,
           item.uom,
-          item.unitRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-          item.quantity.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-          item.discount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-          item.vatRate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-          item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          // item.unitRate,
+          item.quantity,
+          
         ];
       });
       const totalRow = [
