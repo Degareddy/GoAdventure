@@ -620,9 +620,10 @@ export class PdfReportsService {
       doc.text('Currency:', leftColumnX + 5, 45);
       doc.text('Payterm:', leftColumnX + 5, 50);
       doc.text('Date:', leftColumnX + 5, 55);
-      doc.text('VAT:', leftColumnX + 5, 60);
-      doc.text('Total:', leftColumnX + 5, 65);
-      doc.text('In Words:', leftColumnX + 5, 70);
+      doc.text('Inv Amt:', leftColumnX + 5, 60);
+      doc.text('Vat:', leftColumnX + 5, 65);
+      doc.text('Total:', leftColumnX + 5, 70);
+      doc.text('In Words:', leftColumnX + 5, 75);
       doc.setTextColor(139, 69, 19);
       doc.text(`${item.customerName}`, leftColumnX + 30, 30);
       doc.text(`${item.shipAdd1}`, leftColumnX + 30, 35);
@@ -630,9 +631,10 @@ export class PdfReportsService {
       doc.text(`${item.currencyName}`, leftColumnX + 30, 45);
       doc.text(`${item.payTermDesc}`, leftColumnX + 30, 50);
       doc.text(`${formatDate(item.tranDate)}`, leftColumnX + 30, 55);
-      doc.text(`${item.vatAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 60);
-      doc.text(`${item.rowPayAmt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 65);
-      doc.text(`${item.inWords}`, leftColumnX + 30, 70);
+      doc.text(`${item.invAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 60);
+      doc.text(`${item.vatAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 65);
+      doc.text(`${item.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, leftColumnX + 30, 70);
+      doc.text(`${item.inWords}`, leftColumnX + 30, 75);
       doc.setTextColor(139, 69, 19);
 
 

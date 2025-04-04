@@ -102,7 +102,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
     this.subSink.sink = this.saleService.GetInvoiceReport(body).subscribe((res: any) => {
       console.log(res);
       if (res.status.toUpperCase() === "SUCCESS") {
-        this.pdfService.generateInvoicePDF(res.data, "Direct Invoice", new Date(), "PDF")
+        this.pdfService.generateInvoicePDF(res.data, "Cash Sale", new Date(), "PDF")
       }
       else {
         this.retMessage = res.message;
