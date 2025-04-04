@@ -157,6 +157,7 @@ export class QuotationHdrCls {
   public ShipTo!: string;
   public billToDes!: string;
   public shipToDesc!: string;
+  public trantype!: string;
 }
 export class saleQuotationHdrCls {
   ScrId!: string;

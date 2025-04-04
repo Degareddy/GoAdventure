@@ -113,7 +113,7 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
     this.invoiceHdrCls.ApplyVAT = formValues.applyVAT;
     this.invoiceHdrCls.Currency = formValues.currency;
     this.invoiceHdrCls.Customer = this.custCode;
-    this.invoiceHdrCls.InvType = "ORDINV";
+    this.invoiceHdrCls.trantype = "ORDINV";
     this.invoiceHdrCls.ExchRate = formValues.exchangeRate;
     
     this.invoiceHdrCls.Remarks = formValues.notes;
