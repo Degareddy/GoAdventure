@@ -16,6 +16,7 @@ import { OrderInvoiceHeader } from '../sales.class';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order-invoice',
@@ -53,6 +54,7 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
     protected salesService: SalesService,
     private userDataService: UserDataService,
     private loader: NgxUiLoaderService,
+    protected router: Router,
     private utlService: UtilitiesService) {
     this.orderInvoiceForm = this.formInit();
     this.subSink = new SubSink();
@@ -367,6 +369,7 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   }
 
   Close() {
+    this.router.navigateByUrl('/home');
 
   }
   reset() {

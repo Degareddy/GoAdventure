@@ -511,7 +511,9 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     this.amountExclVat = 0;
   }
   Close() {
+    this.router.navigateByUrl('/home');
 
+    
   }
   formInit() {
     return this.fb.group({

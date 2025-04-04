@@ -208,6 +208,7 @@ export class DeliveryComponent implements OnInit, OnDestroy {
     this.tranStatus="";
   }
   Close() {
+    this.router.navigateByUrl('/home');
 
   }
   deliveryReport() {
