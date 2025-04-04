@@ -54,6 +54,12 @@ export class SalesService {
   updateInvoiceHdr(qtnHdr: QuotationHdrCls): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateInvoiceHdr', qtnHdr)
   }
+  GetOrderInvoiceDetails(qtnHdr: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/GetOrderInvoiceDetails', qtnHdr)
+  }
+  UpdateOrderInvoiceDetails(qtnHdr: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateOrderInvoiceDetails', qtnHdr)
+  }
 
   getInvoiceDetailsData(qtnDet: MasterParams): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetDirectInvoiceDet', qtnDet)

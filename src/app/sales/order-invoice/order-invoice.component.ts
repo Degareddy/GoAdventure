@@ -436,13 +436,19 @@ const body = {
 
 
   onDetailsCilcked(invoiceNo: any) {
-    const dialogRef: MatDialogRef<OrderInvoiceDetailsComponent> = this.dialog.open(OrderInvoiceDetailsComponent, {
-      width: '90%',
-      disableClose: true,
-      data: invoiceNo
-    });
-    dialogRef.afterClosed().subscribe(result => {
-    });
+     const dialogRef: MatDialogRef<OrderInvoiceDetailsComponent> = this.dialog.open(OrderInvoiceDetailsComponent, {
+          width: '90%',
+          disableClose: true,
+          data: {
+            'tranType': "DIRINV", 'tranNo': this.orderInvoiceForm.controls['tranNo']?.value, 'search': "Direct Invoice Details",
+            'mode': this.orderInvoiceForm.controls['mode']?.value, 'status': this.tranStatus
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result.isAltered === true) {
+            // this.saleData(this.masterParams, this.saleForm.get('mode')?.value);
+          }
+        });
   }
 
   billToSearch(itemType: string) {

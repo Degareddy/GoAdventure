@@ -46,13 +46,14 @@
         </mat-form-field>
       </div>
     </div>
-    <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
     <div class="btnAlignment">
       <button mat-raised-button color="primary" type="submit" class="btnUp" (click)="onUpdate()" >
         <mat-icon>update</mat-icon><b>Update</b>
       </button>
 
-      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()"mat-dialog-close]="true">
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()" mat-dialog-close ="true">
         <mat-icon>cancel</mat-icon><b>Close</b>
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">
