@@ -21,6 +21,7 @@ import { DirectInvoiceDetailsComponent } from '../direct-invoice/direct-invoice-
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { PdfReportsService } from 'src/app/FileGenerator/pdf-reports.service';
 
 @Component({
   selector: 'app-cash-sale',
@@ -66,7 +67,7 @@ export class CashSaleComponent implements OnInit, OnDestroy {
   public fetchStatus: boolean = true;
   newTranMsg: string = "";
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: FormBuilder,private pdfService: PdfReportsService,
     public dialog: MatDialog, private userDataService: UserDataService, private masterService: MastersService,
     private utlService: UtilitiesService, protected saleService: SalesService, private loader: NgxUiLoaderService,
     protected router: Router, private datePipe: DatePipe) {
@@ -92,7 +93,22 @@ export class CashSaleComponent implements OnInit, OnDestroy {
     });
   }
   invoiceReport() {
-
+    const body = {
+      ...this.commonParams(),
+      langId: this.userDataService.userData.langId,
+      tranNo: this.saleForm.get('tranNo')?.value,
+      tranType: "CASINV"
+    }
+    this.subSink.sink = this.saleService.GetInvoiceReport(body).subscribe((res: any) => {
+      console.log(res);
+      if (res.status.toUpperCase() === "SUCCESS") {
+        this.pdfService.generateInvoicePDF(res.data, "Direct Invoice", new Date(), "PDF")
+      }
+      else {
+        this.retMessage = res.message;
+        this.textMessageClass = "red";
+      }
+    });
   }
   onDetailsCilcked(invoiceNo: any) {
     const dialogRef: MatDialogRef<DirectInvoiceDetailsComponent> = this.dialog.open(DirectInvoiceDetailsComponent, {
