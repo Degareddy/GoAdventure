@@ -23,7 +23,7 @@ export class SalesService {
   }
 
   updateQtnHdr(qtnHdr: QuotationHdrCls): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'quotation/InsertQuotation', qtnHdr)
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/InsertQuotation', qtnHdr)
   }
 
   getQuotationDetails(qtnDet: any): Observable<any> {
@@ -31,7 +31,7 @@ export class SalesService {
   }
 
   GetQuotationReport(qtnDet: any): Observable<any> {
-    return this.http.post(environment.Url + 'Invoice/GetQuotationReport', qtnDet)
+    return this.http.post(environment.Url + 'sales/GetQuotationReport', qtnDet)
   }
   GetDeliveryReport(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetDeliveryReport', qtnDet)
@@ -48,18 +48,18 @@ export class SalesService {
     return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateQuotation', qtnDet)
   }
   getInvoiceHeaderData(qtnHdr: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'Invoice/GetInvoiceHdr', qtnHdr)
+    return this.http.post(environment.Url + 'sales/GetInvoiceHdr', qtnHdr)
   }
 
   updateInvoiceHdr(qtnHdr: QuotationHdrCls): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Invoice/UpdateInvoiceHdr', qtnHdr)
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateInvoiceHdr', qtnHdr)
   }
 
   getInvoiceDetailsData(qtnDet: MasterParams): Observable<any> {
-    return this.http.post(environment.Url + 'Invoice/GetDirectInvoiceDet', qtnDet)
+    return this.http.post(environment.Url + 'sales/GetDirectInvoiceDet', qtnDet)
   }
   updateInvoiceDetails(invDet: InvoiceDetailsClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'Invoice/UpdateInvoiceItemDet', invDet)
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateInvoiceItemDet', invDet)
   }
 
   getTenantInvoiceHeaderData(qtnHdr: MasterParams): Observable<any> {
