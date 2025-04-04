@@ -405,7 +405,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     this.searchData(TranType.QUOTATION, this.saleOrderForm.get('quotationNo')?.value)
   }
   saleNoSearch() {
-    this.searchData('SALE ORDER', this.saleOrderForm.get('saleNo')?.value)
+    this.searchData('SALEORDER', this.saleOrderForm.get('saleNo')?.value)
 
   }
   onCustomerSearch() {
