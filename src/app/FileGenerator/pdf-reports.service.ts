@@ -607,7 +607,7 @@ export class PdfReportsService {
       const options = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
       return number.toLocaleString('en-US', options);
     };
-    const logoImage = this.logoPath;
+    const logoImage = 'assets/img/TKGlogo.jpg';
     doc.addImage(logoImage, 'PNG', rightColumnX + 30, 10, 20, 20);
     data.forEach((item: any, index: number) => {
       doc.setTextColor(52, 152, 219);
