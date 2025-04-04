@@ -64,7 +64,7 @@
             <mat-icon>cancel</mat-icon>
           </button>
           <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchSaleNo()"
-            [disabled]="orderInvoiceForm.get('mode')!.value == 'Add'">
+            [disabled]="orderInvoiceForm.get('mode')!.value != 'Add'">
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button>
         </mat-form-field>
