@@ -103,12 +103,38 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    if (this.orderInvoiceForm.invalid) {
-      return;
-    }
-    else {
+    // this.clearMsg();
+        // if (this.orderInvoiceForm.invalid) {
+        //   this.retMessage = "Enter all mandatory fields";
+        //   this.textMessageClass = "red";
+        //   return;
+        // }
+        // else {
+        //   if (this.custCode === "") {
+        //     this.retMessage = "Select Valid Customer!";
+        //     this.textMessageClass = "red";
+        //     return;
+        //   }
+        //   const body=[
 
-    }
+        //   ]
+        //   this.loader.start();
+        //   this.subSink.sink = this.saleService.UpdateDeliveryHdr(body).subscribe((res: SaveApiResponse) => {
+        //     this.loader.stop();
+        //     if (res.status.toUpperCase() === "SUCCESS") {
+        //       this.newTranMsg = res.message;
+        //       if (this.orderInvoiceForm.get('mode')?.value === 'Add') {
+        //         this.modeChange('Modify');
+        //       }
+        //       this.orderInvoiceForm.get('delNo')?.patchValue(res.tranNoNew);
+        //       // this.getDelHeader(res.tranNoNew, this.deliveryForm.get('mode')?.value);
+        //     }
+        //     else {
+        //       this.retMessage = res.message;
+        //       this.textMessageClass = "red";
+        //     }
+        //   });
+        // }
 
   }
 
