@@ -17,6 +17,8 @@ import { SearchEngineComponent } from 'src/app/general/search-engine/search-engi
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Router } from '@angular/router';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Mode, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-order-invoice',
@@ -30,7 +32,10 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   CustLPONo!: number;
   amt: number = 0;
   Currency!: string;
+  CurrencyName!: string;
   payTerms!: string;
+  payTermDesc!: string;
+  billTo!:string
   Charge: number = 0;
   vatAmt: number = 0;
   @Input() max: any;
@@ -48,12 +53,19 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   ordInvHdrCls: OrderInvoiceHeader = new OrderInvoiceHeader();
   modes!: any[];
   custCode: string = "";
+  salesExecCode: string='';
+
+  amountExclVat: string='';
+  vatAmount: string='';
+  totalAmount: string='';
+  itemCount: string='';
   constructor(private fb: FormBuilder, public dialog: MatDialog,
     private masterService: MastersService,
     private datePipe: DatePipe,
     protected salesService: SalesService,
     private userDataService: UserDataService,
     private loader: NgxUiLoaderService,
+    protected saleService: SalesService,
     protected router: Router,
     private utlService: UtilitiesService) {
     this.orderInvoiceForm = this.formInit();
@@ -217,7 +229,7 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() === "SUCCESS") {
           if (res && res.data && res.data.tranCount === 1) {
             this.orderInvoiceForm.get("tranNo")!.patchValue(res.data.selTranNo);
-            // this.getSaleOrderHeader(res.data.selTranNo, this.orderInvoiceForm.get("mode")!.value);
+            this.getSaleOrderHeader(res.data.selTranNo, 'View');
           }
           else {
             if (!this.dialogOpen) {
@@ -232,9 +244,10 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
               dialogRef.afterClosed().subscribe(result => {
                 this.dialogOpen = false;
                 if (result != true) {
-
+                  console.log(result)
                   this.orderInvoiceForm.get("saleNo")!.patchValue(result);
-                  // this.getSaleOrderHeader(result, this.orderInvoiceForm.get("mode")!.value);
+
+                  this.getSaleOrderHeader(result, "View");
                 }
               });
             }
@@ -250,6 +263,57 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
       this.retMessage = "Exception " + ex.message;
       this.textMessageClass = 'red';
     }
+  }
+  getSaleOrderHeader(tranNo:string,mode:string){
+const body = {
+      ...this.commonParams(),
+      langId: this.userDataService.userData.langId,
+      tranNo: tranNo
+    }
+    this.subSink.sink = this.saleService.GetSaleOrderHdr(body).subscribe((res: any) => {
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+        this.orderInvoiceForm.patchValue({
+          quotationNo: res.data.quotationNo,
+          tranDate: res.data.tranDate,
+          customer: res.data.customerName,
+          notes: res.data.remarks,
+          pricing: res.data.pricing,
+          schedule: res.data.scheduleType,
+          payTerm: res.data.payTerm,
+          salesRep: res.data.salesExecName,
+          billTo: res.data.billToDesc,
+          shipTo: res.data.shipToDesc,
+          currency: res.data.currency,
+          exchangeRate: res.data.exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
+          applyVat: res.data.applyVAT,
+        }, { emitEvent: false });
+        this.CurrencyName= res.data.currencyName,
+        this.Currency=res.data.currency;
+        this.salesExecCode = res.data.salesExec;
+        this.custCode = res.data.customer;
+        this.billTo=res.data.billto
+        this.CustLPONo=res.data.custRef
+        this.payTerms=res.data.payTerm
+        this.payTermDesc=res.data.payTermDesc
+        // this.tranStatus = res.data.tranStatus;
+        this.amountExclVat = res.data.tranAmount;
+        this.vatAmount = res.data.vatAmount;
+        this.totalAmount = res.data.totalAmount;
+        this.itemCount = res.data.itemCount;
+        if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
+          this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+      }
+      else {
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+      }
+    })
+  }
+  displayMessage(arg0: string, green: any) {
+    throw new Error('Method not implemented.');
   }
 
   searchData() {

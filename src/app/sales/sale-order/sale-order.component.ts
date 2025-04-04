@@ -363,6 +363,8 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.saleService.GetSaleOrderHdr(body).subscribe((res: any) => {
       if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+        this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+
         this.saleOrderForm.patchValue({
           quotationNo: res.data.quotationNo,
           tranDate: res.data.tranDate,
@@ -387,11 +389,11 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
         this.totalAmount = res.data.totalAmount;
         this.itemCount = res.data.itemCount;
         if (mode.toUpperCase() != Mode.view && this.newTranMsg != "") {
-          this.displayMessage(displayMsg.SUCCESS + this.newTranMsg, TextClr.green);
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
-        else {
-          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
-        }
+        // else {
+        //   this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        // }
       }
       else {
         this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
