@@ -6,13 +6,13 @@ import { SearchPartyComponent } from 'src/app/general/search-party/search-party.
 import { MastersService } from 'src/app/Services/masters.service';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { SubSink } from 'subsink';
-import { getPayload, nameCountResponse } from 'src/app/general/Interface/admin/admin';
+import { getPayload, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { forkJoin } from 'rxjs';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { DatePipe } from '@angular/common';
 import { SalesService } from 'src/app/Services/sales.service';
-import { OrderInvoiceHeader } from '../sales.class';
+import { OrderInvoiceHeader, QuotationHdrCls } from '../sales.class';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
@@ -48,6 +48,8 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   textMessageClass: string = "";
   orderInvoiceForm!: FormGroup;
   modeIndex!: string;
+    invoiceHdrCls: QuotationHdrCls = new QuotationHdrCls();
+  
   dialogOpen = false;
   private subSink!: SubSink;
   ordInvHdrCls: OrderInvoiceHeader = new OrderInvoiceHeader();
@@ -101,41 +103,71 @@ export class OrderInvoiceComponent implements OnInit, OnDestroy {
   modeChange(event: string) {
 
   }
+  prepareHederData() {
+    const formValues = this.orderInvoiceForm.value;
+    this.invoiceHdrCls.Company = this.userDataService.userData.company;
+    this.invoiceHdrCls.Location = this.userDataService.userData.location;
+    this.invoiceHdrCls.LangID = this.userDataService.userData.langId;
+    this.invoiceHdrCls.refNo = this.userDataService.userData.sessionID;
+    this.invoiceHdrCls.user = this.userDataService.userData.userID;
+    this.invoiceHdrCls.ApplyVAT = formValues.applyVAT;
+    this.invoiceHdrCls.Currency = formValues.currency;
+    this.invoiceHdrCls.Customer = this.custCode;
+    this.invoiceHdrCls.InvType = "ORDINV";
+    this.invoiceHdrCls.ExchRate = formValues.exchangeRate;
+    
+    this.invoiceHdrCls.Remarks = formValues.notes;
+    this.invoiceHdrCls.Mode = formValues.mode;
+    this.invoiceHdrCls.LPONo = formValues.lopNo;
+    this.invoiceHdrCls.SalesRep = this.salesExecCode;
+    this.invoiceHdrCls.ScrId = "ST205";
+    this.invoiceHdrCls.DriverID = formValues.driverId;
+    this.invoiceHdrCls.DriverName = formValues.driverName;
+    this.invoiceHdrCls.TruckNo = formValues.truckNo;
+    this.invoiceHdrCls.IssueStock = formValues.issueStcok;
+    this.invoiceHdrCls.Transporter = formValues.transporter;
+    this.invoiceHdrCls.DelMethod = formValues.deliveryMethod;
+    this.invoiceHdrCls.DelNo = formValues.deliveryNo;
+    this.invoiceHdrCls.TranDate = formValues.invoiceDate;
+    // if (transformedDate !== undefined && transformedDate !== null) {
+    //   this.invoiceHdrCls.TranDate = transformedDate.toString();
+    // } else {
+    //   this.invoiceHdrCls.TranDate =new Date().toString(); // or any default value you prefer
+    // }
+    this.invoiceHdrCls.TranNo = formValues.tranNo || "";
+    this.invoiceHdrCls.PayTerm = this.payTerms;
+
+  }
 
   onSubmit() {
     // this.clearMsg();
-        // if (this.orderInvoiceForm.invalid) {
-        //   this.retMessage = "Enter all mandatory fields";
-        //   this.textMessageClass = "red";
-        //   return;
-        // }
-        // else {
-        //   if (this.custCode === "") {
-        //     this.retMessage = "Select Valid Customer!";
-        //     this.textMessageClass = "red";
-        //     return;
-        //   }
-        //   const body=[
-
-        //   ]
-        //   this.loader.start();
-        //   this.subSink.sink = this.saleService.UpdateDeliveryHdr(body).subscribe((res: SaveApiResponse) => {
-        //     this.loader.stop();
-        //     if (res.status.toUpperCase() === "SUCCESS") {
-        //       this.newTranMsg = res.message;
-        //       if (this.orderInvoiceForm.get('mode')?.value === 'Add') {
-        //         this.modeChange('Modify');
-        //       }
-        //       this.orderInvoiceForm.get('delNo')?.patchValue(res.tranNoNew);
-        //       // this.getDelHeader(res.tranNoNew, this.deliveryForm.get('mode')?.value);
-        //     }
-        //     else {
-        //       this.retMessage = res.message;
-        //       this.textMessageClass = "red";
-        //     }
-        //   });
-        // }
-
+        // this.clearMsg();
+            if (this.orderInvoiceForm.invalid) {
+              return;
+            }
+            else {
+              try {
+                this.prepareHederData();
+                this.subSink.sink = this.saleService.updateInvoiceHdr(this.invoiceHdrCls).subscribe((res: SaveApiResponse) => {
+                  if (res.status.toUpperCase() === "SUCCESS") {
+                    this.newTranMsg = res.message;
+                    this.modeChange('Modify');
+                    this.orderInvoiceForm.get('tranNo')!.patchValue(res.tranNoNew);
+                    this.masterParams.tranNo = res.tranNoNew;
+        
+                    this.searchData()
+                  }
+                  else {
+                    this.retMessage = res.message;
+                    this.textMessageClass = 'red';
+                  }
+                })
+              }
+              catch (ex: any) {
+                this.retMessage = ex.message;
+                this.textMessageClass = 'red';
+              }
+            }
   }
 
   loadData() {
