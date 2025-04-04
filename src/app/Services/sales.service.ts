@@ -124,10 +124,10 @@ export class SalesService {
   }
 
   GetInvoiceReport(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Invoice/GetInvoiceReport', body)
+    return this.http.post(environment.Url + 'sales/GetInvoiceReport', body)
   }
   getOrderInvoiceHdr(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'Invoice/GetInvoiceHdr', body)
+    return this.http.post(environment.Url + 'sales/GetInvoiceHdr', body)
   }
   FetchPaymentsReceiptsToAllocate(body: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/FetchPaymentsReceiptsToAllocate', body)
