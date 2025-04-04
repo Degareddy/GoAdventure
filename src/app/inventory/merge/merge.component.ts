@@ -1,14 +1,24 @@
+import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { InventoryService } from 'src/app/Services/inventory.service';
 import { MastersService } from 'src/app/Services/masters.service';
+import { UserDataService } from 'src/app/Services/user-data.service';
 import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/general/date-format';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
+
 import { LogComponent } from 'src/app/general/log/log.component';
 import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { UserData } from 'src/app/payroll/payroll/payroll.module';
+import { displayMsg, Mode, TextClr, TranStatus, TranType } from 'src/app/utils/enums';
+import { SubSink } from 'subsink';
+import { mergingStock, PhysicalDeails } from '../inventory.class';
+import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-merge',
@@ -25,15 +35,24 @@ export class MergeComponent implements OnInit {
   userData: any;
   @Input() max: any;
   tomorrow = new Date();
+  private subSink!: SubSink;
 
   retMessage!: string;
   tranStatus!: string;
   textMessageClass!: string;
+  mergingStock!: mergingStock;
+  newMsg: string = "";
 
-  constructor(private fb: FormBuilder,public dialog: MatDialog,
+
+  constructor(private fb: FormBuilder,public dialog: MatDialog, private datePipe: DatePipe,
+    private userDataService: UserDataService,
     private masterService: MastersService,
+    private invService: InventoryService,
+    private loader: NgxUiLoaderService,
     protected router: Router, ) {
     this.mergingForm = this.formInit();
+    this.subSink = new SubSink();
+    this.mergingStock=new mergingStock()
 
   }
   formInit() {
@@ -76,8 +95,113 @@ export class MergeComponent implements OnInit {
   onSubmit() {
 
   }
-  searchData() {
+  formatDate(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID
+    }
+  }
 
+
+  searchData() {
+    try {
+          const currentDate = new Date();
+          const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
+          const formattedCurrentDate = this.formatDate(currentDate);
+          const body = {
+            ...this.commonParams(),
+            TranType: TranType.PHYSTOCK,
+            TranNo: this.mergingForm.controls['tranNo'].value,
+            Party: "",
+            FromDate: formattedFirstDayOfMonth,
+            ToDate: formattedCurrentDate,
+            TranStatus: TranStatus.ANY
+          }
+          this.subSink.sink = this.invService.GetTranCount(body).subscribe((res: any) => {
+            if (res.retVal === 0) {
+              if (res && res.data && res.data.tranCount === 1) {
+                this.mergingStock.tranNo = res.data.selTranNo;
+                this.getMergingTranData(this.mergingStock, this.mergingForm.get('mode')?.value);
+              }
+              else {
+                const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                      width: '90%',
+                      disableClose: true,
+                      data: {
+                        tranNum: this.mergingForm.controls['tranNo'].value,
+                        TranType: TranType.PHYSTOCK,
+                        search: 'Physical Stcock Search'
+                      }
+                    });
+                    dialogRef.afterClosed().subscribe(result => {
+                      if (result != true && result != undefined) {
+                        this.mergingStock.tranNo = result;
+                        this.getMergingTranData(this.mergingStock, this.mergingForm.get('mode')?.value);
+                      }
+                    });
+              }
+            }
+            else {
+             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                   width: '90%',
+                   disableClose: true,
+                   data: {
+                     tranNum: this.mergingForm.controls['tranNo'].value,
+                     TranType: TranType.PHYSTOCK,
+                     search: 'Physical Stcock Search'
+                   }
+                 });
+                 dialogRef.afterClosed().subscribe(result => {
+                   if (result != true && result != undefined) {
+                     this.mergingStock.tranNo = result;
+                     this.getMergingTranData(this.mergingStock, this.mergingForm.get('mode')?.value);
+                   }
+                 });
+            }
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        }
+  }
+  displayMessage(msg:string,cssClass:string){
+    this.retMessage=msg;
+    this.textMessageClass=cssClass;
+  }
+  getMergingTranData(mrg: mergingStock, mode: string){
+try {
+      this.loader.start();
+      this.subSink.sink = this.invService.GetPhysicalStock(mrg).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
+          this.mergingForm.controls['tranNo'].setValue(res['data'].tranNo);
+          this.mergingForm.controls['tranDate'].setValue(res['data'].tranDate);
+          this.mergingForm.controls['notes'].setValue(res['data'].notes);
+          this.tranStatus = res['data'].tranStatus;
+        
+
+          if (mode.toUpperCase() != Mode.view) {
+            this.displayMessage(displayMsg.SUCCESS + this.newMsg, TextClr.green);
+          }
+          else {
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
   }
   Close() {
 this.router.navigateByUrl('/home');

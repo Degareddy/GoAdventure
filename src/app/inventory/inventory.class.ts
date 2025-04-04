@@ -89,6 +89,21 @@ export class PhysicalDeails {
   public remarks: string = ""
 
 }
+export class mergingStock {
+  public company: string = ""
+  public user: string = ""
+  public location: string = ""
+  public langID: number = 0
+  public tranNo: string = ""
+  public refNo: number = 0
+  public slNo: number = 0
+  public item: string = ""
+  public uOM: string = ""
+  public wHCode: string = ""
+  public quantity: number = 0
+  public remarks: string = ""
+
+}
 
 export class stockAdjClass {
   public company: string = ""
