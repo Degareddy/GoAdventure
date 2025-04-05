@@ -44,16 +44,47 @@
         <div class="col-3">
           <mat-form-field appearance="outline">
             <mat-label>Product</mat-label>
-            <input matInput placeholder="Product" formControlName="productGroup" type="text">
-            <button mat-button *ngIf="productForm.get('productGroup')!.value" type="button" matSuffix mat-icon-button
-              aria-label="Clear" (click)="productForm.get('productGroup')!.setValue('')">
+            <input
+              type="text"
+              matInput
+              placeholder="Product"
+              formControlName="productGroup"
+              [matAutocomplete]="auto"
+              (input)="onProductInput()"
+            />
+            
+            <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onProductSearch()">
+              <mat-option *ngFor="let option of filteredProdList" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          
+            <!-- Clear Button -->
+            <button
+              mat-button
+              *ngIf="productForm.get('productGroup')!.value"
+              type="button"
+              matSuffix
+              mat-icon-button
+              aria-label="Clear"
+              (click)="productForm.get('productGroup')!.setValue('')"
+            >
               <mat-icon>cancel</mat-icon>
             </button>
-            <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onProductSearch()"
-              [disabled]="productForm.get('mode')!.value === 'Add'">
+          
+            <!-- Search Button -->
+            <button
+              matSuffix
+              mat-icon-button
+              aria-label="Search"
+              type="button"
+              (click)="onProductSearch()"
+              [disabled]="productForm.get('mode')!.value === 'Add'"
+            >
               <mat-icon class="mat-search-icon">search</mat-icon>
             </button>
           </mat-form-field>
+          
         </div>
         <div class="col-3">
           <mat-form-field appearance="outline" class="mat-mode">

@@ -39,6 +39,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   modes: Item[] = [];
   newTranMsg!: string;
   productList: any = [];
+  prodList:string[]=[]
   productControl = new FormControl();
   filteredProductList!: Observable<params[]>;
   vatTypes: Item[] = [];
@@ -48,6 +49,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   retMessage!: string;
   textMessageClass!: string;
   prodStatus!: string;
+  filteredProdList: string[] = [];
   @Input() max: any;
   tomorrow = new Date();
   private dialogOpen: boolean = false;
@@ -65,13 +67,38 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadProducts()
+    this.productForm.get('productGroup')!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value || ''))
+      )
+      .subscribe(filtered => {
+        this.filteredProdList = filtered;
+      });
+  
   }
+  
+  onProductInput(){
 
+  }
+  onProductSelected(){
+    this.onProductSearch()
+  }
   filterProducts(value: any) {
     const filterValue = value.toLowerCase();
     return this.productList.filter((product: params) => product.itemName.toLowerCase().includes(filterValue));
   }
+  
 
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.prodList.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  
+
+ 
   displayProduct(item: any): string {
     return item ? item.itemName : '';
   }
@@ -212,6 +239,38 @@ export class ProductsComponent implements OnInit, OnDestroy {
         this.openSearch();
       }
     });
+  }
+  loadProducts(){
+    const body={
+          "Company"     : this.userDataService.userData.company,
+          "Location"    : this.userDataService.userData.location,
+          "GroupCode"   : "ANY",
+          "ProdName"    : '',
+          "ProdStatus"  : "ANY",
+          "ProdType"    : "ANY",
+          "UOM"         : "",
+          "RefNo"       : this.userDataService.userData.sessionID,
+          "User"        : this.userDataService.userData.userID,
+    }
+    try {
+      this.subSink.sink =  this.utlService.GetProductSearchList(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          // this.rowData = [];
+          
+        }
+        else {
+          this.prodList = res.data.map((item: any) => item.prodName);
+          console.log(this.prodList)
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+
+          
   }
   openSearch() {
     if (!this.dialogOpen) {

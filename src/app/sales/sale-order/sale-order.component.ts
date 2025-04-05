@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map, startWith } from 'rxjs';
 import { getPayload, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { Item } from 'src/app/general/Interface/interface';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
@@ -22,6 +22,11 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
 
+interface params {
+  itemCode: string
+  itemName: string
+
+}
 @Component({
   selector: 'app-sale-order',
   templateUrl: './sale-order.component.html',
@@ -45,6 +50,8 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   modes: Item[] = [];
   payTermList: Item[] = [];
   currencyList: Item[] = [];
+  filteredCustomer: any[] = [];
+  customerList:any[]=[]
   pricingList: Item[] = [];
   scheduleList: Item[] = [
     { itemCode: 'single', itemName: 'Single' },
@@ -78,6 +85,15 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.loadData();
+    this.saleOrderForm.get('customer')!.valueChanges
+              .pipe(
+                startWith(''),
+                map(value => this._filter(value || ''))
+              )
+              .subscribe(filtered => {
+                this.filteredCustomer = filtered;
+              });
+              this.loadCust()
 
   }
   commonParams() {
@@ -87,6 +103,14 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID
     }
+  }
+  filerCutomers(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter(option => option.toLowerCase().includes(filterValue));
   }
   loadData() {
     const modebody: getPayload = {
@@ -400,6 +424,41 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
       }
     })
   }
+  loadCust(){
+      const body={
+        "Company": this.userDataService.userData.company,
+        "Location" : this.userDataService.userData.location,
+        "City" : "",
+        "Email" : "",
+        "FullAddress":  "",
+        "Phones"   :  "",
+        "PartyName"  : "",
+        "PartyStatus"  : TranStatus.OPEN,
+        "RefNo"   :this.userDataService.userData.sessionID,
+        "User"   :this.userDataService.userData.userID,
+        "PartyType"     : "CUSTOMER",
+        
+      }
+      try {
+        
+          this.subSink.sink = this.utlService.GetPartySearchList(body).subscribe((res: any) => {
+            if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+              this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+             
+            }
+            else {
+             this.customerList=res.data.map((item: any) => item.partyName);
+             this.filerCutomers
+  =res.data.map((item: any) => item.partyName)
+             console.log(this.customerList)
+              this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+            }
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        }
+    }
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }

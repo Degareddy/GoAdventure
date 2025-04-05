@@ -8,7 +8,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { DatePipe } from '@angular/common';
 import { SubSink } from 'subsink';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map, startWith } from 'rxjs';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SalesService } from 'src/app/Services/sales.service';
 import { saleQuotationHdrCls } from '../sales.class';
@@ -24,11 +24,18 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
 
+
+interface params {
+  itemCode: string
+  itemName: string
+
+}
 @Component({
   selector: 'app-quotation',
   templateUrl: './quotation.component.html',
   styleUrls: ['./quotation.component.css']
 })
+
 export class QuotationComponent implements OnInit, OnDestroy {
   quotationForm!: FormGroup;
   title: string = "Quotation";
@@ -57,6 +64,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
   salesExecCode: string = "";
   custCode: string = "";
   newTranMsg: string = "";
+  filteredCustomer: any[] = [];
+  customerList:any[]=[]
 
   constructor(private fb: FormBuilder,
     public dialog: MatDialog, protected purchreqservice: PurchaseService, private userDataService: UserDataService,
@@ -220,8 +229,64 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this.subSink.unsubscribe();
   }
   ngOnInit() {
+    this.loadCust()
     this.loadData();
+    this.quotationForm.get('customer')!.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => this._filter(value || ''))
+          )
+          .subscribe(filtered => {
+            this.filteredCustomer = filtered;
+          });
+
   }
+
+ 
+  filerCutomers(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter(option => option.toLowerCase().includes(filterValue));
+  }
+  loadCust(){
+    const body={
+      "Company": this.userDataService.userData.company,
+      "Location" : this.userDataService.userData.location,
+      "City" : "",
+      "Email" : "",
+      "FullAddress":  "",
+      "Phones"   :  "",
+      "PartyName"  : "",
+      "PartyStatus"  : TranStatus.OPEN,
+      "RefNo"   :this.userDataService.userData.sessionID,
+      "User"   :this.userDataService.userData.userID,
+      "PartyType"     : "CUSTOMER",
+      
+    }
+    try {
+      
+        this.subSink.sink = this.utlService.GetPartySearchList(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+           
+          }
+          else {
+           this.customerList=res.data.map((item: any) => item.partyName);
+           this.filerCutomers
+=res.data.map((item: any) => item.partyName)
+           console.log(this.customerList)
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
+  }
+
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }

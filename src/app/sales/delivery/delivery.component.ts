@@ -11,7 +11,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { deliveryHeader, MasterParams } from '../sales.class';
 import { SubSink } from 'subsink';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map, startWith } from 'rxjs';
 import { getPayload, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
@@ -19,7 +19,14 @@ import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.com
 import { DeliveryDetailsComponent } from './delivery-details/delivery-details.component';
 import { PdfReportsService } from 'src/app/FileGenerator/pdf-reports.service';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { displayMsg, TextClr, TranStatus } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
+interface params {
+  itemCode: string
+  itemName: string
+
+}
 @Component({
   selector: 'app-delivery',
   templateUrl: './delivery.component.html',
@@ -27,7 +34,8 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 })
 export class DeliveryComponent implements OnInit, OnDestroy {
   deliveryForm!: FormGroup;
-
+  filteredCustomer: any[] = [];
+  customerList:any[]=[]
   tomorrow = new Date();
   title: string = "Delivery";
   modes: Item[] = [];
@@ -60,6 +68,62 @@ export class DeliveryComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     // this.masterParams.tranType = "DIRINV";
     this.loadData();
+    this.deliveryForm.get('customer')!.valueChanges
+                  .pipe(
+                    startWith(''),
+                    map(value => this._filter(value || ''))
+                  )
+                  .subscribe(filtered => {
+                    this.filteredCustomer = filtered;
+                  });
+                  this.loadCust()
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
+  loadCust(){
+        const body={
+          "Company": this.userDataService.userData.company,
+          "Location" : this.userDataService.userData.location,
+          "City" : "",
+          "Email" : "",
+          "FullAddress":  "",
+          "Phones"   :  "",
+          "PartyName"  : "",
+          "PartyStatus"  : TranStatus.OPEN,
+          "RefNo"   :this.userDataService.userData.sessionID,
+          "User"   :this.userDataService.userData.userID,
+          "PartyType"     : "CUSTOMER",
+          
+        }
+        try {
+          
+            this.subSink.sink = this.utlService.GetPartySearchList(body).subscribe((res: any) => {
+              if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+                this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+               
+              }
+              else {
+               this.customerList=res.data.map((item: any) => item.partyName);
+               this.filerCutomers
+    =res.data.map((item: any) => item.partyName)
+               console.log(this.customerList)
+                this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+              }
+            });
+          }
+          catch (ex: any) {
+            this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+          }
+      }
+  filerCutomers(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter(option => option.toLowerCase().includes(filterValue));
   }
   commonParams() {
     return {

@@ -26,7 +26,7 @@ export class UtilitiesService {
   GetNameSearchCount(doc: any): Observable<nameCountResponse> {
     return this.http.post<nameCountResponse>(environment.Url + 'MasterItems/GetNameSearchCount', doc)
   }
-  GetPartySearchList(doc: partySearchClass): Observable<any> {
+  GetPartySearchList(doc: any): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/GetPartySearchList', doc)
   }
   GetProductSearchList(doc: productSearchClass): Observable<any> {

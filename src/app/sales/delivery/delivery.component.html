@@ -67,13 +67,18 @@
       <div class="col-3">
         <mat-form-field appearance="outline" style="width: 95%;">
           <mat-label class="mat-label-class">Customer</mat-label>
-          <input matInput placeholder="Customer" formControlName="customer" type="text">
+          <input matInput placeholder="Customer" formControlName="customer" type="text"   [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onCustomerSearch()">
+            <mat-option *ngFor="let option of filteredCustomer" [value]="option">
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
           <button mat-button *ngIf="deliveryForm.get('customer')!.value" type="button" matSuffix mat-icon-button
             aria-label="Clear" (click)="deliveryForm.get('customer')!.setValue('')">
             <mat-icon>cancel</mat-icon>
           </button>
           <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="onCustomerSearch()"
-            [disabled]="deliveryForm.get('mode')!.value === 'View'">
+            [disabled]="deliveryForm.get('mode')!.value == 'View'">
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button>
         </mat-form-field>
