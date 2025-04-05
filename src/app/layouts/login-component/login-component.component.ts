@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   mainHeaders: string[] = [
     // "Property Management",
     // "Construction",
-    "Skins & Hides",
+    "Sales",
     "Inventory",
     "Asset",
     "Payroll",
@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   subHeaders: string[] = [
     // "Simplify tenant and lease management for a seamless property experience.",
     // "Track and manage every detail of your construction projects with ease.",
-    "The Collection of your skin assets and the management of your skin assets.",
+    "Managing your sales assets efficiently — from leads to deals — for better performance and growth.",
     "Gain visibility and control over your inventory to avoid stock shortages.",
     "Keep track of your assets effortlessly, from acquisition to disposal.",
     "Process payroll efficiently and accurately, every single time.",
