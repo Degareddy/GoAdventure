@@ -30,6 +30,12 @@ interface params {
   itemName: string
 
 }
+interface autoComplete {
+  itemCode: string
+  itemName: string
+  itemDetails:string
+
+}
 @Component({
   selector: 'app-quotation',
   templateUrl: './quotation.component.html',
@@ -65,7 +71,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
   custCode: string = "";
   newTranMsg: string = "";
   filteredCustomer: any[] = [];
-  customerList:any[]=[]
+  autoFilteredCustomer: autoComplete[] = [];
+  customerList:autoComplete[]=[]
 
   constructor(private fb: FormBuilder,
     public dialog: MatDialog, protected purchreqservice: PurchaseService, private userDataService: UserDataService,
@@ -232,25 +239,36 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this.loadCust()
     this.loadData();
     this.quotationForm.get('customer')!.valueChanges
-          .pipe(
-            startWith(''),
-            map(value => this._filter(value || ''))
-          )
-          .subscribe(filtered => {
-            this.filteredCustomer = filtered;
-          });
+  .pipe(
+    startWith(''),
+    map(value => typeof value === 'string' ? value : value?.itemName || ''),
+    map(name => this._filter(name))
+  )
+  .subscribe(filtered => {
+    this.autoFilteredCustomer = filtered;
+  });
+
 
   }
 
- 
+  displayCustomer(item: autoComplete): string {
+    return item && item.itemName ? item.itemName : '';
+  }
+  
   filerCutomers(value: any) {
     const filterValue = value.toLowerCase();
     return this.customerList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
   }
-  private _filter(value: string): string[] {
+  private _filter(value: string): autoComplete[] {
     const filterValue = value.toLowerCase();
-    return this.customerList.filter(option => option.toLowerCase().includes(filterValue));
+  
+    return this.customerList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
   }
+  
   loadCust(){
     const body={
       "Company": this.userDataService.userData.company,
@@ -274,9 +292,18 @@ export class QuotationComponent implements OnInit, OnDestroy {
            
           }
           else {
-           this.customerList=res.data.map((item: any) => item.partyName);
-           this.filerCutomers
-=res.data.map((item: any) => item.partyName)
+          //  this.customerList=res.data.map((item: any) => item.partyName);
+
+           this.customerList = res.data.map((item: any) => ({
+            itemCode: item.code,
+            itemName: item.partyName,
+            itemDetails: item.phones || item.email || 'No Email Or Phone number'  // Adjust as needed
+          }));
+           this.autoFilteredCustomer = res.data.map((item: any) => ({
+            itemCode: item.code,
+            itemName: item.partyName,
+            itemDetails: item.phones || item.email || 'No Email Or Phone number'  // Adjust as needed
+          }));
            console.log(this.customerList)
             this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
           }

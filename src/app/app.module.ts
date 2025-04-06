@@ -62,6 +62,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   declarations: [AppComponent, HomeComponent,
     AppHelpComponent,LoaderComponent,ForgotPasswordComponent],
   imports: [
+    
     DefaultModule,
     BrowserModule,
     AppRoutingModule,
@@ -75,7 +76,8 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
       closeButton: true,
       disableTimeOut: false,
       timeOut: 1000,
-      tapToDismiss: true
+      tapToDismiss: true,
+      
     }),
     JwtModule.forRoot({
       jwtOptionsProvider: {

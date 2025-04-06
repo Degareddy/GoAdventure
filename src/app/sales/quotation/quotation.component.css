@@ -95,3 +95,33 @@
   }
 
 }
+.autocomplete-row {
+  display: flex;
+  min-width: 600px; 
+  padding: 4px 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.col-code {
+  font-weight: bold;
+  color: #333;
+  min-width: 100px;
+}
+
+.col-name {
+  min-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.col-details {
+  min-width: 200px;
+  text-align: right;
+}
+
+::ng-deep .mat-autocomplete-panel {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  white-space: nowrap !important;
+}

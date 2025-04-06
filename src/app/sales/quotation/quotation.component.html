@@ -40,7 +40,7 @@
           <div class="col-4">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Quotation No</mat-label>
-              <input matInput placeholder="Quotation No" formControlName="tranNo" type="text">
+              <input matInput placeholder="Quotation No" formControlName="tranNo" type="text" >
               <button mat-button *ngIf="quotationForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
                 aria-label="Clear" (click)="quotationForm.get('tranNo')!.setValue('')">
                 <mat-icon>cancel</mat-icon>
@@ -54,10 +54,14 @@
           <div class="col-4">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label class="mat-label-class">Customer</mat-label>
-              <input matInput placeholder="Customer" formControlName="customer" type="text"   [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onCustomerSearch()">
-                <mat-option *ngFor="let option of filteredCustomer" [value]="option">
-                  {{ option }}
+              <input matInput placeholder="Customer" formControlName="customer" type="text"    [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="onCustomerSearch()">
+                <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemName">
+                  <div class="autocomplete-row">
+                    <div class="col-code">{{ option.itemCode }}</div>
+                    <div class="col-name">{{ option.itemName }}</div>
+                    <div class="col-phone">{{ option.itemDetails }}</div>
+                  </div>
                 </mat-option>
               </mat-autocomplete>
               <button mat-button *ngIf="quotationForm.get('customer')!.value" type="button" matSuffix mat-icon-button
