@@ -42,7 +42,7 @@
 
       <div class="col-3">
         <mat-form-field appearance="outline">
-          <mat-label>Deposite Type</mat-label>
+          <mat-label>Deposit Type</mat-label>
           <mat-select formControlName="depositeType" placeholder="DepositeType">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of depositsTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
@@ -55,7 +55,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Bank</mat-label>
-          <mat-select formControlName="bank" placeholder="Bank">
+          <mat-select formControlName="bank" placeholder="Bank" (selectionChange)="onBankChange()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of banksList" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
@@ -65,19 +65,26 @@
       <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Bank Account</mat-label>
-          <mat-select formControlName="bankAccount" placeholder="BankAccount">
-            <!-- <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{
+          <mat-select formControlName="bankAccount" placeholder="BankAccount" (selectionChange)="onBankAccountChange()">
+            <mat-option  value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of bankAccounts" [value]="x.itemCode">{{
                 x.itemName
-                }}</mat-option> -->
+                }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <div class="col-3">
-        <mat-form-field appearance="outline" >
+        <mat-form-field appearance="outline">
           <mat-label>Currency</mat-label>
-          <input matInput placeholder="Currency" formControlName="currency" type="text" />
+          <mat-select formControlName="currency" placeholder="Currency" >
+            <mat-option  value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of CurrencyList" [value]="x.itemCode">{{
+                x.itemName
+                }}</mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
+      
       <div class="row justify-content-center">
         <div class="col-3">
           <mat-form-field appearance="outline" class="mat-date">
@@ -113,6 +120,7 @@
         </div>
       </div>
     </div>
+    <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
       <button mat-raised-button color="primary" type="submit" class="btnUp">
         <mat-icon>apply</mat-icon>Apply

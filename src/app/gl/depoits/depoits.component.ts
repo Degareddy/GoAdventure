@@ -15,7 +15,9 @@ import { BankDepositsHeader } from '../gl.class';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
-import { getPayload } from 'src/app/general/Interface/admin/admin';
+import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { AccessSettings } from 'src/app/utils/access';
+import { displayMsg, Mode, TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-depoits',
@@ -32,11 +34,13 @@ export class DepoitsComponent implements OnInit, OnDestroy {
   modes: Item[] = [];
   banksList: Item[] = [];
   currencyList: Item[] = [];
+  bankAccounts:Item[]=[]
   masterParams!: MasterParams;
   retMessage: string = "";
   textMessageClass: string = "";
   dialogOpen = false;
   newTranMsg: string = "";
+  CurrencyList:Item[]=[]
   bankCode!: string;
   private bankHdrCls: BankDepositsHeader;
 
@@ -128,6 +132,70 @@ export class DepoitsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onBankChange(){
+    this.displayMessage('','')
+
+    if(this.bankDeptForm.get('bank')?.value === ''){
+      return
+    }
+    const curbody: any = {
+      ...this.commonParams(),
+      item: "CURRENCY",
+      mode:this.bankDeptForm.get('mode')?.value,
+      Type : "BANKACCT",
+      Item:this.bankDeptForm.get('bank')?.value,
+    };
+     this.loader.start();
+     this.subSink.sink=this.masterService.GetCascadingMasterItemsList(curbody).subscribe((res:any)=>{
+      this.loader.stop()
+      if (res.status.toUpperCase() === AccessSettings.FAIL) {
+        this.displayMessage("No Bank Accounts Found","red")
+        this.bankAccounts=[]
+        // this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+        
+      }
+      else {
+        this.newTranMsg = res.message;
+        this.bankAccounts=res.data
+      }
+     })
+         
+  }
+  onBankAccountChange(){
+
+    this.displayMessage('','')
+    if(this.bankDeptForm.get('bank')?.value === '' || this.bankDeptForm.get('bankAccount')?.value === ''){
+      return
+    }
+    const curbody: any = {
+      ...this.commonParams(),
+      mode:this.bankDeptForm.get('mode')?.value,
+      Type : "ACCCURRENCY",
+      Item:this.bankDeptForm.get('bank')?.value,
+      ItemFirstLevel:this.bankDeptForm.get('bankAccount')?.value
+    };
+     this.loader.start();
+     this.subSink.sink=this.masterService.GetCascadingMasterItemsList(curbody).subscribe((res:any)=>{
+      this.loader.stop()
+      if (res.status.toUpperCase() === AccessSettings.FAIL) {
+        this.displayMessage("No Currency found for selected Bank","red")
+        
+        this.CurrencyList=[]
+        // this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+        
+      }
+      else {
+        this.CurrencyList=res.data
+
+        this.displayMessage(displayMsg.SUCCESS+ res.message, TextClr.green);
+        this.newTranMsg = res.message;
+      }
+     })
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   formInit() {
     return this.fb.group({
       mode: ['View'],
@@ -143,11 +211,62 @@ export class DepoitsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    const transformedDate = this.datePipe.transform(this.bankDeptForm.controls['tranDate'].value, 'yyyy-MM-dd');
+    let tranDate=''
+    if (transformedDate !== undefined && transformedDate !== null) {
+      tranDate = transformedDate.toString();
+    } else {
+      tranDate= '';
+    }
+    const body={
+      "Mode":this.bankDeptForm.get('mode')?.value,
+      "Company":this.userDataService.userData.company,
+      "Location":this.userDataService.userData.location,
+      "TranNo":this.bankDeptForm.get('tranNo')?.value,
+      "TranDate":tranDate,
+      "DeppsitType":this.bankDeptForm.get('depositeType')?.value,
+      "BankCode":this.bankDeptForm.get('bank')?.value,
+      "AccountNo":this.bankDeptForm.get('bankAccount')?.value,
+      "Currency":this.bankDeptForm.get('currency')?.value,
+      "Remarks":this.bankDeptForm.get('notes')?.value,
+      "User":this.userDataService.userData.userID,
+      "RefNo":this.userDataService.userData.sessionID,
+    }
+    this.loader.start();
+    this.glService.UpdateBankDeposits(body).subscribe((res: any) => {
+      this.loader.stop();
+      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+                if (this.bankDeptForm.get('mode')?.value.toUpperCase() === Mode.Add) {
+                  this.modeChange('Modify');
+      
+                }
+                this.bankDeptForm.get('tranNo')?.patchValue(res.tranNoNew);
+                this.newTranMsg = res.message;
+                this.masterParams.tranNo = res.tranNoNew;
+      
+                this.searchData()
+              }
+              else {
+                this.displayMessage(displayMsg.ERROR+ res.message, TextClr.red);
+              }
 
+    });
   }
-
+modeChange(event: string) {
+    if (event.toUpperCase() === Mode.view) {
+      this.displayMessage('','');
+      this.bankDeptForm.get('mode')!.patchValue(event, { emitEvent: false });
+      this.bankDeptForm.get('tranNo')!.patchValue('');
+      this.bankDeptForm.get('tranNo')!.disable();
+      this.loadData();
+    }
+    else {
+      this.bankDeptForm.get('mode')!.patchValue(event, { emitEvent: false });
+      this.bankDeptForm.get('tranNo')!.enable();
+    }
+  }
   Close() {
-
+    this.router.navigateByUrl('/home');
   }
 
   Reset() {

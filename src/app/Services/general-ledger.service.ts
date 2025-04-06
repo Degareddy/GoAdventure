@@ -74,6 +74,9 @@ export class GeneralLedgerService {
   getBankDepositsHdr(body: any): Observable<any> {
     return this.http.post(environment.Url + 'ledger/GetBankDeposits/', body)
   }
+  UpdateBankDeposits(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'ledger/UpdateBankDeposits', body)
+  }
 
   UpdateBankDepositsHdr(bdHdr: BankDepositsHeader): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'ledger/UpdateBankDeposits/', bdHdr)

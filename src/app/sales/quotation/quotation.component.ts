@@ -8,7 +8,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { DatePipe } from '@angular/common';
 import { SubSink } from 'subsink';
-import { forkJoin, map, startWith } from 'rxjs';
+import { firstValueFrom, forkJoin, map, startWith } from 'rxjs';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SalesService } from 'src/app/Services/sales.service';
 import { saleQuotationHdrCls } from '../sales.class';
@@ -71,8 +71,11 @@ export class QuotationComponent implements OnInit, OnDestroy {
   custCode: string = "";
   newTranMsg: string = "";
   filteredCustomer: any[] = [];
+  filteredEmployee: any[] = [];
   autoFilteredCustomer: autoComplete[] = [];
   customerList:autoComplete[]=[]
+  autoFilteredEmployee: autoComplete[] = [];
+  employeeList:autoComplete[]=[]
 
   constructor(private fb: FormBuilder,
     public dialog: MatDialog, protected purchreqservice: PurchaseService, private userDataService: UserDataService,
@@ -235,8 +238,11 @@ export class QuotationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
-  ngOnInit() {
-    this.loadCust()
+  async ngOnInit() {
+    this.customerList=await this.loadCust("CUSTOMER");
+    this.filteredCustomer=this.customerList
+    this.employeeList=await  this.loadCust("EMPLOYEE");
+    this.filteredEmployee=this.employeeList
     this.loadData();
     this.quotationForm.get('customer')!.valueChanges
   .pipe(
@@ -246,6 +252,15 @@ export class QuotationComponent implements OnInit, OnDestroy {
   )
   .subscribe(filtered => {
     this.autoFilteredCustomer = filtered;
+  });
+  this.quotationForm.get('salesExec')!.valueChanges
+  .pipe(
+    startWith(''),
+    map(value => typeof value === 'string' ? value : value?.itemName || ''),
+    map(name => this._filterEmployee(name))
+  )
+  .subscribe(filtered => {
+    this.autoFilteredEmployee = filtered;
   });
 
 
@@ -268,51 +283,64 @@ export class QuotationComponent implements OnInit, OnDestroy {
       option.itemDetails.toLowerCase().includes(filterValue)
     );
   }
-  
-  loadCust(){
-    const body={
-      "Company": this.userDataService.userData.company,
-      "Location" : this.userDataService.userData.location,
-      "City" : "",
-      "Email" : "",
-      "FullAddress":  "",
-      "Phones"   :  "",
-      "PartyName"  : "",
-      "PartyStatus"  : TranStatus.OPEN,
-      "RefNo"   :this.userDataService.userData.sessionID,
-      "User"   :this.userDataService.userData.userID,
-      "PartyType"     : "CUSTOMER",
-      
-    }
-    try {
-      
-        this.subSink.sink = this.utlService.GetPartySearchList(body).subscribe((res: any) => {
-          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
-            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
-           
-          }
-          else {
-          //  this.customerList=res.data.map((item: any) => item.partyName);
-
-           this.customerList = res.data.map((item: any) => ({
-            itemCode: item.code,
-            itemName: item.partyName,
-            itemDetails: item.phones || item.email || 'No Email Or Phone number'  // Adjust as needed
-          }));
-           this.autoFilteredCustomer = res.data.map((item: any) => ({
-            itemCode: item.code,
-            itemName: item.partyName,
-            itemDetails: item.phones || item.email || 'No Email Or Phone number'  // Adjust as needed
-          }));
-           console.log(this.customerList)
-            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
-          }
-        });
-      }
-      catch (ex: any) {
-        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
-      }
+  displayEmployee(item: autoComplete): string {
+    return item && item.itemName ? item.itemName : '';
   }
+  
+  filerEmployee(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.employeeList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filterEmployee(value: string): autoComplete[] {
+    const filterValue = value.toLowerCase();
+  
+    return this.employeeList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
+  }
+  
+
+  async loadCust(partyType: string): Promise<autoComplete[]> {
+    debugger
+    let resList:autoComplete[]=[]
+    const body = {
+      Company: this.userDataService.userData.company,
+      Location: this.userDataService.userData.location,
+      City: "",
+      Email: "",
+      FullAddress: "",
+      Phones: "",
+      PartyName: "",
+      PartyStatus: TranStatus.OPEN,
+      RefNo: this.userDataService.userData.sessionID,
+      User: this.userDataService.userData.userID,
+      PartyType: partyType,
+    };
+  
+    try {
+      const res: any = await firstValueFrom(this.utlService.GetPartySearchList(body));
+      debugger
+      if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+        this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        return [];
+      }
+  
+      this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+      resList=res.data.map((item: any) => ({
+        itemCode: item.code,
+        itemName: item.partyName,
+        itemDetails: item.phones || item.email || 'No Email Or Phone number'
+      }));
+      return resList
+    } catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      return [];
+    }
+  }
+  
+  
 
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
