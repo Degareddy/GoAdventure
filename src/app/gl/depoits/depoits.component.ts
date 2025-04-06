@@ -224,7 +224,7 @@ export class DepoitsComponent implements OnInit, OnDestroy {
       "Location":this.userDataService.userData.location,
       "TranNo":this.bankDeptForm.get('tranNo')?.value,
       "TranDate":tranDate,
-      "DeppsitType":this.bankDeptForm.get('depositeType')?.value,
+      "DepositType":this.bankDeptForm.get('depositeType')?.value,
       "BankCode":this.bankDeptForm.get('bank')?.value,
       "AccountNo":this.bankDeptForm.get('bankAccount')?.value,
       "Currency":this.bankDeptForm.get('currency')?.value,

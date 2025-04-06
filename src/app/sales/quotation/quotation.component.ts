@@ -303,7 +303,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
   
 
   async loadCust(partyType: string): Promise<autoComplete[]> {
-    debugger
+    
     let resList:autoComplete[]=[]
     const body = {
       Company: this.userDataService.userData.company,
@@ -321,7 +321,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
   
     try {
       const res: any = await firstValueFrom(this.utlService.GetPartySearchList(body));
-      debugger
+      
       if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
         this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
         return [];

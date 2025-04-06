@@ -89,8 +89,8 @@
           <div class="col-4">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label class="mat-label-class">Executive</mat-label>
-              <input matInput placeholder="Executive" formControlName="salesExec" type="text" [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="onEmployeeSearch()">
+              <input matInput placeholder="Executive" formControlName="salesExec" type="text" [matAutocomplete]="autoEmployee">
+              <mat-autocomplete #autoEmployee="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="onEmployeeSearch()">
   
                 <!-- Static header -->
                 <div class="autocomplete-header">
