@@ -9,6 +9,7 @@ import { financialPerioddetails } from '../../gl.class';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { DatePipe } from '@angular/common';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Item } from 'src/app/general/Interface/interface';
 
 @Component({
   selector: 'app-financial-details',
@@ -26,6 +27,20 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
   private gridApi!: GridApi;
   public gridOptions!: GridOptions;
   pageSizes = [25, 50, 100, 250, 500];
+  periods:Item[]=[
+    {
+      itemCode:'',itemName:'--Select--'
+    },
+    {
+      itemCode:'Open',itemName:'Open'
+    },
+    {
+      itemCode:'Authorised',itemName:'Authorised'
+    },
+    {
+      itemCode:'Closed',itemName:'Closed'
+    },
+  ]
   pageSize = 25;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
   { field: "finYrCode", headerName: "Code", sortable: true, filter: true, resizable: true, flex: 1 },
@@ -108,7 +123,7 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
     this.finDetCls.location = this.userDataService.userData.location;
     this.finDetCls.user = this.userDataService.userData.userID;
     this.finDetCls.refNo = this.userDataService.userData.sessionID;
-
+    this.finDetCls.prdStatus=this.finaDetForm.get('finPeriod')?.value;
     this.finDetCls.mode = this.data.mode;
     this.finDetCls.slNo = this.slNum;
 
@@ -161,7 +176,7 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
       periodFrom: [new Date(), Validators.required],
       periodTo: [new Date(), Validators.required],
       remarks: [''],
-
+      finPeriod:['']
     })
   }
 
@@ -187,6 +202,7 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
   New() {
     this.clearMsg();
     this.slNum = 0;
+    this.formInit();
   }
   onPageSizeChanged() {
     if (this.gridApi) {
