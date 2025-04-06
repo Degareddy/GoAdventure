@@ -4,6 +4,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { forkJoin } from 'rxjs';
+import { DatePipe } from '@angular/common';
 import { GeneralLedgerService } from 'src/app/Services/general-ledger.service';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -35,7 +36,9 @@ export class FinPeriodsComponent implements OnInit, OnDestroy {
   tranNewMessage: string = "";
   private finCls: financialPeriod = new financialPeriod();
   constructor(private fb: FormBuilder,
-    private loader: NgxUiLoaderService, private glService: GeneralLedgerService,
+    private loader: NgxUiLoaderService, 
+    private datePipe: DatePipe,
+    private glService: GeneralLedgerService,
     private masterService: MastersService, public dialog: MatDialog, private userDataService: UserDataService,
     protected router: Router) {
     this.finPeriodsForm = this.formInit();
@@ -163,8 +166,23 @@ export class FinPeriodsComponent implements OnInit, OnDestroy {
     this.finCls.mode = this.finPeriodsForm.get('mode')?.value;
     this.finCls.finYrCode = this.finPeriodsForm.get('yearCode')?.value;
     this.finCls.finYrDesc = this.finPeriodsForm.get('description')?.value;
-    this.finCls.fromDate = this.finPeriodsForm.get('From')?.value;
-    this.finCls.toDate = this.finPeriodsForm.get('To')?.value;
+    // this.finCls.fromDate = this.finPeriodsForm.get('From')?.value;
+
+    const transformedFromDate = this.datePipe.transform(this.finPeriodsForm.controls['From'].value, 'yyyy-MM-dd');
+    if (transformedFromDate !== undefined && transformedFromDate !== null) {
+      this.finCls.fromDate = transformedFromDate.toString();
+    } else {
+      this.finCls.fromDate = '';
+    }
+
+    // this.finCls.toDate = this.finPeriodsForm.get('To')?.value;
+    const transformedToDate = this.datePipe.transform(this.finPeriodsForm.controls['To'].value, 'yyyy-MM-dd');
+    if (transformedToDate !== undefined && transformedToDate !== null) {
+      this.finCls.toDate = transformedToDate.toString();
+    } else {
+      this.finCls.toDate = '';
+    }
+    
     this.finCls.notes = this.finPeriodsForm.get('notes')?.value;
   }
   onSubmit() {
