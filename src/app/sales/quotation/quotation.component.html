@@ -177,12 +177,30 @@
           <div class="col-4">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">Bill To</mat-label>
-              <input matInput placeholder="Address No" formControlName="addressNo" type="text">
+              <input matInput placeholder="Address No" formControlName="addressNo" type="text" [matAutocomplete]="autoBillTo">
+              <mat-autocomplete #autoBillTo="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="billToSearch()">
+  
+                <!-- Static header -->
+                <div class="autocomplete-header">
+                  <div class="col-code">Code</div>
+                  <div class="col-name">Name</div>
+                  <div class="col-phone">Details</div>
+                </div>
+              
+                <!-- Options -->
+                <mat-option *ngFor="let option of autoFilteredBillTo" [value]="option.itemName">
+                  <div class="autocomplete-row">
+                    <div class="col-code">{{ option.itemCode }}</div>
+                    <div class="col-name">{{ option.itemName }}</div>
+                    <div class="col-phone">{{ option.itemDetails }}</div>
+                  </div>
+                </mat-option>
+              </mat-autocomplete>
               <button mat-button [disabled]="quotationForm.get('mode')!.value === 'View'" type="button" matSuffix
                 mat-icon-button aria-label="Clear" (click)="quotationForm.get('addressNo')!.setValue('')">
                 <mat-icon class="mat-search-icon">close</mat-icon>
               </button>
-              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="billToSearch('BILLTO')">
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="billToSearch()">
                 <mat-icon class="mat-search-icon">search</mat-icon>
               </button>
             </mat-form-field>

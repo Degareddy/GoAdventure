@@ -90,9 +90,10 @@
       </button>
     </div>
   </form>
-  <div style="margin-top: -30px;">
-    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
-      (linkClicked)="onLnkClicked($event)" [paginationPageSize]="25" [globalSearch]="true" [showToolPanel]="true"
-      [gridHeight]="'250px'" [showRecordCount]="true"></app-access-grid>
-  </div>
+  <ag-grid-angular class="grid-with-lines" [pagination]="true" class="ag-theme-alpine"
+    style="width: 100%; height:200px;" #agGrid (gridReady)="onGridReady($event)" [columnDefs]="columnDefs"
+    [rowData]="rowData" [paginationPageSize]="25" [rowSelection]="rowSelection" [suppressRowClickSelection]="true"
+    (rowSelected)="onRowSelected($event)" [gridOptions]="gridOptions">
+  </ag-grid-angular>
+  
 </div>

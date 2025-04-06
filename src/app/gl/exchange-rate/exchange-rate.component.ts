@@ -13,6 +13,7 @@ import { SubSink } from 'subsink';
 import { ExcRateClass } from '../gl.class';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { Router } from '@angular/router';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 
 @Component({
   selector: 'app-exchange-rate',
@@ -29,6 +30,12 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
   status: string = "";
   currencyList: Item[] = [];
   rowData: any = [];
+    private gridApi!: GridApi;
+    public rowSelection: 'single' | 'multiple' = 'multiple';
+  public gridOptions!: GridOptions;
+
+    private columnApi!: ColumnApi;
+  
   statusList: Item[] = [
     { itemCode: "Open", itemName: "Open" },
     { itemCode: "Confirmed", itemName: "Confirmed" }
@@ -218,7 +225,6 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
     this.exrtForm = this.formInit();
     this.displayMessage("", "");
     this.refreshData();
-    this.rowData = [];
   }
   reset() {
     // this.exrtForm.reset();
@@ -236,6 +242,25 @@ export class ExchangeRateComponent implements OnInit, OnDestroy {
         RefNo: this.userDataService.userData.sessionID
       }
     });
+  }
+  onRowClick(row: any) {
+    console.log(row);
+    this.displayMessage('', '');
+    this.exrtForm.patchValue(row);
+    this.exrtForm.get('mode')?.patchValue('Modify');
+    this.exrtForm.get('Date')?.patchValue(row.convDate)
+    this.exrtForm.get('conversionCurrency')?.patchValue(row.convCurrency);
+    this.exrtForm.get('rate')?.patchValue(row.rate)
+    this.exrtForm.get('status')?.patchValue(row.convStatus);
+    // this.srNum = row.slNo;
+  }
+  onRowSelected(event: any) {
+    this.onRowClick(event.data);
+  }
+  onGridReady(params: any) {
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
 
 }

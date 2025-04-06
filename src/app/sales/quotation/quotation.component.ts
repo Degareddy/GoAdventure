@@ -72,10 +72,13 @@ export class QuotationComponent implements OnInit, OnDestroy {
   newTranMsg: string = "";
   filteredCustomer: any[] = [];
   filteredEmployee: any[] = [];
+  filteredBillTo: any[] = [];
   autoFilteredCustomer: autoComplete[] = [];
   customerList:autoComplete[]=[]
   autoFilteredEmployee: autoComplete[] = [];
   employeeList:autoComplete[]=[]
+  BillToList:autoComplete[]=[]
+  autoFilteredBillTo:autoComplete[]=[]
 
   constructor(private fb: FormBuilder,
     public dialog: MatDialog, protected purchreqservice: PurchaseService, private userDataService: UserDataService,
@@ -121,12 +124,12 @@ export class QuotationComponent implements OnInit, OnDestroy {
       }
     });
   }
-  billToSearch(itemType: string) {
+  billToSearch() {
     let controlValue: string;
     controlValue = this.quotationForm.get('addressNo')!.value
     const body = {
       ...this.commonParams(),
-      Type: itemType,
+      Type: "BILLTO",
       Item: this.quotationForm.get('customer')!.value,
       ItemFirstLevel: controlValue,
       ItemSecondLevel: ""
@@ -144,8 +147,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  tranNum: this.quotationForm.controls['customer'].value, PartyType: itemType,
-                  search: itemType + ' Search', PartyName: ""
+                  tranNum: this.quotationForm.controls['customer'].value, PartyType: "BILLTO",
+                  search: "BILLTO" + ' Search', PartyName: ""
                 }
               });
               this.dialogOpen = true;
@@ -243,6 +246,8 @@ export class QuotationComponent implements OnInit, OnDestroy {
     this.filteredCustomer=this.customerList
     this.employeeList=await  this.loadCust("EMPLOYEE");
     this.filteredEmployee=this.employeeList
+    this.BillToList=await  this.loadCust("BILLTO");
+    this.filteredBillTo=this.BillToList
     this.loadData();
     this.quotationForm.get('customer')!.valueChanges
   .pipe(
@@ -262,10 +267,35 @@ export class QuotationComponent implements OnInit, OnDestroy {
   .subscribe(filtered => {
     this.autoFilteredEmployee = filtered;
   });
+  this.quotationForm.get('addressNo')!.valueChanges
+  .pipe(
+    startWith(''),
+    map(value => typeof value === 'string' ? value : value?.itemName || ''),
+    map(name => this._filterBillTo(name))
+  )
+  .subscribe(filtered => {
+    this.autoFilteredCustomer = filtered;
+  });
 
 
   }
-
+  displayBillTo(item: autoComplete): string {
+    return item && item.itemName ? item.itemName : '';
+  }
+  
+  filterBillTo(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.BillToList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filterBillTo(value: string): autoComplete[] {
+    const filterValue = value.toLowerCase();
+  
+    return this.BillToList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
+  }
   displayCustomer(item: autoComplete): string {
     return item && item.itemName ? item.itemName : '';
   }
