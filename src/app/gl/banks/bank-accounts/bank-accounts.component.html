@@ -100,8 +100,8 @@
       <div class="col-2">
         <mat-form-field appearance="outline">
           <mat-label class="mat-label-class">Sign Authority</mat-label>
-          <input matInput type="text" placeholder="User" formControlName="signAuthority">
-          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bankAccountForm.get('signAuthority')!.value"
+          <input matInput type="text" placeholder="User" formControlName="signerName">
+          <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bankAccountForm.get('signerName')!.value"
                 (click)="onClearClick()" type="button">
                 <mat-icon class="mat-clear-icon">clear</mat-icon>
               </button>
