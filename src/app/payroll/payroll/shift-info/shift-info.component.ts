@@ -113,7 +113,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
       const formattedCurrentDate = this.formatDate(currentDate);
       const body = {
         ...this.commonParams(),
-        TranType: 'TAXTYPE',
+        TranType: 'SHIFTYPES',
         TranNo: this.pstForm.controls['typeCode'].value,
         Party: "",
         FromDate: formattedFirstDayOfMonth,
@@ -132,7 +132,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
               width: '90%',
               disableClose: true,
               data: {
-                'tranNum': this.pstForm.controls['typeCode'].value, 'TranType': "TAXTYPE",
+                'tranNum': this.pstForm.controls['typeCode'].value, 'TranType': "SHIFTYPES",
                 'search': 'Shift Details'
               }
             });
