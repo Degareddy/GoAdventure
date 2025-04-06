@@ -4,10 +4,9 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { FlatClass, ProjectClass, venturnClass, plotClass, BlockClass, plotSaleClass, PropertyCls, BudgetCls, BudgetDetailsCls, finacialsClass, serviceClass, equipmentClass, unitLandLordClass, invoiceClass, invoiceDetailClass, unitCharges, propertyReportData, waterReading, unitSalesClass, unitSalesDetailsClass, workdetails, TransactionDetails, TransferDetails, multiClients, stakeHolder } from '../project/Project.class';
 import { Observable } from 'rxjs';
-import { PropertyDetailsResponse } from '../project/property.interface';
+
 import { getResponse, SaveApiResponse } from '../general/Interface/admin/admin';
-import { flatApiResponse } from '../project/flats/flats.component';
-import { preBooking } from '../project/flats/pre-booking/pre-booking.component';
+
 // import { MasterParams } from '../sales/sales.class';
 
 @Injectable({
@@ -70,8 +69,8 @@ export class ProjectsService {
     return this.http.post<SaveApiResponse>(environment.Url + 'property/UpdateExtendedBillsDet', bill)
   }
 
-  getFlatDetails(pro: MasterParams): Observable<flatApiResponse> {
-    return this.http.post<flatApiResponse>(environment.Url + 'property/GetUnitDetails', pro)
+  getFlatDetails(pro: MasterParams): Observable<any> {
+    return this.http.post<any>(environment.Url + 'property/GetUnitDetails', pro)
   }
 
   UpdateFlatDetails(flatCls: FlatClass): Observable<SaveApiResponse> {
@@ -86,9 +85,7 @@ export class ProjectsService {
     return this.http.post<SaveApiResponse>(environment.Url + 'property/UpdateBlock', bcls)
   }
 
-  getPropertyDetails(bcls: MasterParams): Observable<PropertyDetailsResponse> {
-    return this.http.post<PropertyDetailsResponse>(environment.Url + 'property/GetPropertyDetails', bcls)
-  }
+ 
 
   UpdatePropertyDetails(propCls: PropertyCls): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'property/UpdateProperty', propCls)
@@ -238,9 +235,7 @@ export class ProjectsService {
     return this.http.post(environment.Url + 'property/GetReportTechnicianHistory/', body)
   }
 
-  GetUnitPreBookings(body: any): Observable<preBooking> {
-    return this.http.post<preBooking>(environment.Url + 'property/GetUnitPreBookings/', body)
-  }
+
 
   UpdateUnitPreBooking(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'property/UpdateUnitPreBooking/', body)

@@ -18,7 +18,6 @@ import { MastersService } from 'src/app/Services/masters.service';
 // import { MasterParams } from 'src/app/modals/masters.modal';
 import { ProjectsService } from 'src/app/Services/projects.service';
 import { FlatSearchComponent } from 'src/app/general/flat-search/flat-search.component';
-import { flatApiResponse } from 'src/app/project/flats/flats.component';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { MultiLandLordComponent } from './multi-land-lord/multi-land-lord.component';
 // import { MasterParams } from 'src/app/sales/sales.class';
@@ -358,7 +357,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
 
         this.masterParams.type = 'UNIT';
         this.masterParams.item = unitId;
-        this.subSink.sink = this.projService.getFlatDetails(this.masterParams).subscribe((result: flatApiResponse) => {
+        this.subSink.sink = this.projService.getFlatDetails(this.masterParams).subscribe((result: any) => {
 
           if (result.status.toUpperCase() === 'SUCCESS') {
             // this.populateFlatData(result);

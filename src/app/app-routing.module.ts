@@ -14,13 +14,10 @@ import { SaleGuard } from './sales/_guard/sale.guard';
 import { InventoryGuard } from './inventory/_guard/inventory.guard';
 import { PurchaseGuard } from './purchase/_guard/purchase.guard';
 import { MasterGuard } from './Masters/_guard/master.guard';
-import { ProjectGuard } from './project/_guard/project.guard';
-import { ReportGuard } from './reports/_guard/report.guard';
-import { PropertyGuard } from './project/_guard/property.guard';
 import { ForgotPasswordComponent } from './utilities/forgot-password/forgot-password.component';
 import { TenantGuard } from './tenant/_guard/tenant.guard';
 import { LandlordGuard } from './landlord/_guard/landlord.guard';
-import { SkinsGuard } from './skins/skins.guard';
+import { ReportGuard } from './reports/_guard/report.guard';
 
 const routes: Routes = [
   {
@@ -46,10 +43,7 @@ const routes: Routes = [
         path: 'master',
         loadChildren: () => import('src/app/Masters/master.module').then(m => m.MasterModule), canActivate: [MasterGuard]
       },
-      {
-        path:'skins',
-        loadChildren: () => import('src/app/skins/skins.module').then(m => m.SkinsModule)
-      },
+     
       {
         path: 'admin',
         loadChildren: () => import('src/app/admin/admin.module').then(m => m.AdminModule), canActivate: [AdminGuard]
@@ -83,14 +77,7 @@ const routes: Routes = [
         path: 'assets',
         loadChildren: () => import('src/app/assets/assets.module').then(m => m.AssetsModule), canActivate: [AssetGuard]
       },
-      {
-        path: 'projects',
-        loadChildren: () => import('src/app/project/project.module').then(m => m.ProjectModule), canActivate: [ProjectGuard]
-      },
-      {
-        path: 'property',
-        loadChildren: () => import('src/app/project/project.module').then(m => m.ProjectModule), canActivate: [PropertyGuard]
-      },
+    
       {
         path: 'reports',
         loadChildren: () => import('src/app/reports/reports.module').then(m => m.ReportsModule), canActivate: [ReportGuard]

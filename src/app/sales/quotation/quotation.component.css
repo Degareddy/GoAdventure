@@ -99,35 +99,65 @@
   display: flex;
   position: sticky;
   top: 0;
-  background-color: white;
+  background-color: #ffffff;
   z-index: 2;
   font-weight: bold;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-bottom: 1px solid #ccc;
   white-space: nowrap;
+  font-size: 13px;
 }
 
+/* Option rows */
 .autocomplete-row {
   display: flex;
   white-space: nowrap;
   min-width: 600px;
-  padding: 4px 8px;
-  font-size: 13px;
+  padding: 6px 10px;
+  font-size: 10px;
 }
 
+/* Alternating colors */
+::ng-deep .mat-autocomplete-panel mat-option:nth-child(even) .autocomplete-row {
+  background-color: #f9f9f9;
+}
+
+::ng-deep .mat-autocomplete-panel mat-option:nth-child(odd) .autocomplete-row {
+  background-color: #ffffff;
+}
+
+/* Custom hover & focus background */
+::ng-deep .mat-autocomplete-panel mat-option:hover:not(.mat-selected) .autocomplete-row,
+::ng-deep .mat-autocomplete-panel mat-option.mat-active .autocomplete-row {
+  background-color: #5b6acefe !important; /* Light blue */
+  color: #000;
+}
+
+/* Prevent default dark blue selection */
+::ng-deep .mat-autocomplete-panel mat-option.mat-selected {
+  background-color: #dbeafe !important; /* Light blue selection */
+  color: #000 !important;
+}
+
+/* Column styles */
 .col-code,
 .col-name,
 .col-phone {
   padding-right: 12px;
   flex: 1;
   min-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Panel styling */
 ::ng-deep .mat-autocomplete-panel {
   max-height: 300px;
   overflow-y: auto !important;
   overflow-x: auto !important;
   min-width: 600px;
-  white-space: nowrap;
+  white-space: nowrap !important;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
 }
-
