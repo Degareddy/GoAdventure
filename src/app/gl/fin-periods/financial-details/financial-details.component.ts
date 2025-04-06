@@ -43,7 +43,7 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
   ]
   pageSize = 25;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
-  { field: "finYrCode", headerName: "Code", sortable: true, filter: true, resizable: true, flex: 1 },
+  // { field: "finYrCode", headerName: "Code", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "periodNo", headerName: "Period No", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "periodName", headerName: "Period Name", sortable: true, filter: true, resizable: true, flex: 1 },
   {
@@ -70,6 +70,7 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
       return null;
     },
   },
+  { field: "prdStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
   { field: "remarks", headerName: "Remarks", sortable: true, filter: true, resizable: true, flex: 1 },
 
   ];
@@ -197,6 +198,7 @@ export class FinancialDetailsComponent implements OnInit, OnDestroy {
       periodFrom: event.data.periodFrom,
       periodTo: event.data.periodTo,
       remarks: event.data.remarks,
+      finPeriod:event.data.prdStatus
     });
   }
   New() {
