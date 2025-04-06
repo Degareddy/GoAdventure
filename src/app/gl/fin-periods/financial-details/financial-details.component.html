@@ -59,19 +59,12 @@
       
       
     </div>
-    <div class="row  justify-content-center myCustomClass">
+    <div class="row  justify-content-center ">
       <div class="col-12">
         <mat-form-field appearance="outline">
           <mat-label>Remarks</mat-label>
           <input matInput placeholder="Remarks" formControlName="remarks" type="text">
         </mat-form-field>
-        <!-- <mat-form-field aria-colspan="2" appearance="outline"  >
-          <mat-label class="mat-label-class">Warehouse</mat-label>
-          <mat-select formControlName="warehouse">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option *ngFor="let x of warehouseList" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
-        </mat-form-field> -->
       </div>
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
