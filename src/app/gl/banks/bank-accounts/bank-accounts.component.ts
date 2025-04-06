@@ -53,6 +53,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
   { field: "accNo", headerName: "Account No", sortable: true, filter: true, resizable: true, width: 180 },
   { field: "branchName", headerName: "Branch Name", sortable: true, filter: true, resizable: true, width: 180 },
   { field: "ifscCode", headerName: "IFSC Code", sortable: true, filter: true, resizable: true, width: 130 },
+  { field: "signerName", headerName: "Signer", sortable: true, filter: true, resizable: true, width: 130 },
   { field: "province", headerName: "Province", sortable: true, filter: true, resizable: true, width: 120 },
   { field: "address1", headerName: "Address1", sortable: true, filter: true, resizable: true, width: 180 },
   { field: "address2", headerName: "Address2", sortable: true, filter: true, resizable: true, width: 180 },
@@ -105,7 +106,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
       phone1: ['', [Validators.required, Validators.maxLength(15)]],
       phone2: ['', [Validators.maxLength(15)]],
       email: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(/^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)]],
-      signAuthority:['',[Validators.required, Validators.maxLength(50)]],
+      signerName:['',[Validators.required, Validators.maxLength(50)]],
       notes: ['', [Validators.maxLength(512)]],
     })
   }
@@ -178,7 +179,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
             // this.bankAccountForm.controls['userName'].patchValue(res.data.selName);
             // this.bankAccountForm.controls['userID'].patchValue(res.data.selCode);
             // this.bankAccountForm(res.data.selCode);
-            this.bankAccountForm.controls['signAuthority'].patchValue(res.data.selName);
+            this.bankAccountForm.controls['signerName'].patchValue(res.data.selName);
           }
           else {
             if (!this.dialogOpen) {
@@ -186,7 +187,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum': this.bankAccountForm.controls['signAuthority'].value, 'PartyType': "USER",
+                  'tranNum': this.bankAccountForm.controls['signerName'].value, 'PartyType': "USER",
                   'search': 'User Search'
                 }
               });
@@ -194,7 +195,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
               dialogRef.afterClosed().subscribe(result => {
                 if (result != true) {
                   // this.bankAccountForm.controls['user'].patchValue(result.partyName);
-                  this.bankAccountForm.controls['signAuthority'].patchValue(result.partyName);
+                  this.bankAccountForm.controls['signerName'].patchValue(result.partyName);
                   this.bankAccCls.signAuthority=result.code;
 
                   // this.userForm.controls['userID'].patchValue(result.code);
@@ -243,7 +244,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
     this.bankAccCls.accountStatus = this.accStatus;
     this.bankAccCls.notes = this.bankAccountForm.controls['notes'].value;
     this.bankAccCls.email = this.bankAccountForm.controls['email'].value;
-    // this.bankAccCls.signAuthority=this.bankAccountForm.controls['user'].value;
+    // this.bankAccCls.signerName=this.bankAccountForm.controls['user'].value;
   }
   clearMsg() {
     this.textMessageClass = ""

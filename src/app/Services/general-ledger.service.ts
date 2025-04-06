@@ -20,7 +20,7 @@ export class GeneralLedgerService {
   }
 
   getBankDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'bank/GetBankDetails/', body)
+    return this.http.post(environment.Url + 'ledger/GetBankDetails/', body)
   }
   GetFinancialYearsData(body: any): Observable<any> {
     return this.http.post(environment.Url + 'ledger/GetFinancialYearsData/', body)
@@ -30,15 +30,15 @@ export class GeneralLedgerService {
   }
 
   UpdateBankDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'bank/UpdateBankDetails/', body)
+    return this.http.post(environment.Url + 'ledger/UpdateBankDetails/', body)
   }
 
   GetBankAccountDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'bank/GetBankAccountDetails/', body)
+    return this.http.post(environment.Url + 'ledger/GetBankAccountDetails/', body)
   }
 
   UpdateBankAccountDetails(bankCls: bankAccountDetails): Observable<any> {
-    return this.http.post(environment.Url + 'bank/UpdateBankAccountDetails/', bankCls)
+    return this.http.post(environment.Url + 'ledger/UpdateBankAccountDetails/', bankCls)
   }
 
   /*Expenses service */
@@ -64,11 +64,11 @@ export class GeneralLedgerService {
 
 
   GetBankReconcilliationHeader(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'bank/GetBankReconcilliationHeader', body)
+    return this.http.post(environment.Url + 'ledger/GetBankReconcilliationHeader', body)
   }
 
   UpdateBankReconcilliationHdr(body: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'bank/UpdateBankReconcilliationHdr', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'ledger/UpdateBankReconcilliationHdr', body)
   }
 
   getBankDepositsHdr(body: any): Observable<any> {
@@ -100,7 +100,7 @@ export class GeneralLedgerService {
 
 
   UpdateVATDetails(body: any): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'vat/UpdateVATDetails/', body)
+    return this.http.post<SaveApiResponse>(environment.Url + 'ledger/UpdateVATDetails/', body)
   }
 
 
