@@ -86,7 +86,7 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     };
     const yearBody: getPayload = {
       ...this.commonParams(),
-      item: "ANNUALLEAVES",
+      item: "FINYEAR",
       mode: this.eligibleLeavesForm.get('mode')?.value
     };
 

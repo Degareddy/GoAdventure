@@ -244,8 +244,10 @@ export class QuotationComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.customerList=await this.loadCust("CUSTOMER");
     this.filteredCustomer=this.customerList
+
     this.employeeList=await  this.loadCust("EMPLOYEE");
     this.filteredEmployee=this.employeeList
+    sessionStorage.setItem('employeeList', JSON.stringify(this.employeeList));
     this.BillToList=await  this.loadCust("BILLTO");
     this.filteredBillTo=this.BillToList
     this.loadData();

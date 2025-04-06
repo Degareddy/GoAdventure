@@ -115,7 +115,25 @@
           <div class="col-3">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label class="mat-label-class">Excutive</mat-label>
-              <input matInput placeholder="Excutive" formControlName="salesRep" type="text">
+              <input matInput placeholder="Excutive" formControlName="salesRep" type="text" [matAutocomplete]="autoEmployee">
+              <mat-autocomplete #autoEmployee="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="onEmployeeSearch()">
+  
+                <!-- Static header -->
+                <div class="autocomplete-header">
+                  <div class="col-code">Code</div>
+                  <div class="col-name">Name</div>
+                  <div class="col-phone">Details</div>
+                </div>
+              
+                <!-- Options -->
+                <mat-option *ngFor="let option of autoFilteredEmployee" [value]="option.itemName">
+                  <div class="autocomplete-row">
+                    <div class="col-code">{{ option.itemCode }}</div>
+                    <div class="col-name">{{ option.itemName }}</div>
+                    <div class="col-phone">{{ option.itemDetails }}</div>
+                  </div>
+                </mat-option>
+              </mat-autocomplete>
               <button mat-button *ngIf="saleOrderForm.get('salesRep')!.value" type="button" matSuffix mat-icon-button
                 aria-label="Clear" (click)="saleOrderForm.get('salesRep')!.setValue('')">
                 <mat-icon>cancel</mat-icon>

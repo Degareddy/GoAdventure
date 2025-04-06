@@ -135,9 +135,7 @@ export class DepoitsComponent implements OnInit, OnDestroy {
   onBankChange(){
     this.displayMessage('','')
 
-    if(this.bankDeptForm.get('bank')?.value === ''){
-      return
-    }
+    
     const curbody: any = {
       ...this.commonParams(),
       item: "CURRENCY",
@@ -164,7 +162,7 @@ export class DepoitsComponent implements OnInit, OnDestroy {
   onBankAccountChange(){
 
     this.displayMessage('','')
-    if(this.bankDeptForm.get('bank')?.value === '' || this.bankDeptForm.get('bankAccount')?.value === ''){
+    if(this.bankDeptForm.get('bank')?.value === ''){
       return
     }
     const curbody: any = {
@@ -324,14 +322,19 @@ modeChange(event: string) {
   }
 
   detDepositsData(masterParams: MasterParams) {
+    
     try {
       this.loader.start();
       this.glService.getBankDepositsHdr(masterParams).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
+          
           this.bankDeptForm.controls['tranNo'].setValue(res['data'].tranNo);
           this.bankDeptForm.controls['tranDate'].setValue(res['data'].tranDate);
-          this.bankDeptForm.controls['bankName'].setValue(res['data'].bankName);
+          this.bankDeptForm.controls['bank'].setValue(res['data'].bankCode);
+          this.bankDeptForm.controls['depositeType'].setValue(res['data'].depositType);
+          this.bankDeptForm.controls['bankAccount'].setValue(res['data'].accountNo);
+          this.bankDeptForm.controls['totalAmount'].setValue(res['data'].totalAmount);
           this.bankHdrCls.bankCode = res['data'].tenant;
           this.bankDeptForm.controls['currency'].setValue(res['data'].currency);
           this.bankDeptForm.controls['remarks'].setValue(res['data'].remarks);
@@ -339,12 +342,14 @@ modeChange(event: string) {
           this.totalAmount = res['data'].totalCharges;
           this.textMessageClass = 'green';
           this.retMessage = this.newTranMsg;
-
           // return;
+         
         }
         else {
+          
           this.textMessageClass = 'green';
           this.retMessage = res.message;
+
         }
       });
 
@@ -378,6 +383,9 @@ modeChange(event: string) {
           if (res && res.data && res.data.tranCount === 1) {
             this.masterParams.tranNo = res.data.selTranNo;
             this.detDepositsData(this.masterParams);
+            this.onBankChange();
+            this.onBankAccountChange()
+            
           }
           else {
             if (!this.dialogOpen) {
@@ -398,6 +406,7 @@ modeChange(event: string) {
                   this.masterParams.tranNo = result;
                   try {
                     this.detDepositsData(this.masterParams);
+                    
                   }
                   catch (ex: any) {
                     this.retMessage = "Exception " + ex;

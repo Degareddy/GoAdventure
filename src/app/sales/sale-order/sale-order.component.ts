@@ -25,6 +25,11 @@ import { AccessSettings } from 'src/app/utils/access';
 interface params {
   itemCode: string
   itemName: string
+}
+interface autoComplete {
+  itemCode: string
+  itemName: string
+  itemDetails:string
 
 }
 @Component({
@@ -53,6 +58,10 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
   filteredCustomer: any[] = [];
   customerList:any[]=[]
   pricingList: Item[] = [];
+  autoFilteredEmployee: autoComplete[] = [];
+  employeeList:autoComplete[]=[];
+  filteredEmployee: any[] = [];
+
   scheduleList: Item[] = [
     { itemCode: 'single', itemName: 'Single' },
     { itemCode: 'multiple', itemName: 'Multiple' }
@@ -73,12 +82,20 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     protected router: Router, private datePipe: DatePipe) {
     this.saleOrderForm = this.formInit();
     this.subSink = new SubSink();
+
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
 
   ngOnInit() {
+    const storedList = sessionStorage.getItem('employeeList');
+    if (storedList) {
+    this.employeeList = JSON.parse(storedList) as autoComplete[];
+    this.filteredEmployee=this.employeeList
+    console.log(this.employeeList)
+    console.log(this.filteredEmployee)
+    }
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -94,6 +111,15 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
                 this.filteredCustomer = filtered;
               });
               this.loadCust()
+              this.saleOrderForm.get('salesRep')!.valueChanges
+  .pipe(
+    startWith(''),
+    map(value => typeof value === 'string' ? value : value?.itemName || ''),
+    map(name => this._filterEmployee(name))
+  )
+  .subscribe(filtered => {
+    this.autoFilteredEmployee = filtered;
+  });
 
   }
   commonParams() {
@@ -182,6 +208,23 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     } catch (ex: any) {
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
+  }
+  displayEmployee(item: autoComplete): string {
+    return item && item.itemName ? item.itemName : '';
+  }
+  
+  filerEmployee(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.employeeList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filterEmployee(value: string): autoComplete[] {
+    const filterValue = value.toLowerCase();
+  
+    return this.employeeList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
