@@ -53,11 +53,25 @@
               (input)="onProductInput()"
             />
             
-            <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onProductSearch()">
-              <mat-option *ngFor="let option of filteredProdList" [value]="option">
-                {{ option }}
+            <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="onProductSearch()">
+  
+              <!-- Static header -->
+              <div class="autocomplete-header">
+                <div class="col-code">Code</div>
+                <div class="col-name">Name</div>
+                <div class="col-phone">Details</div>
+              </div>
+            
+              <!-- Options -->
+              <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemName">
+                <div class="autocomplete-row">
+                  <div class="col-code">{{ option.itemCode }}</div>
+                  <div class="col-name">{{ option.itemName }}</div>
+                  <div class="col-phone">{{ option.itemDetails }}</div>
+                </div>
               </mat-option>
             </mat-autocomplete>
+            
           
             <!-- Clear Button -->
             <button

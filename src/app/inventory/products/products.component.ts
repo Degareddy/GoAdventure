@@ -26,6 +26,12 @@ interface params {
   itemName: string
 
 }
+interface autoComplete {
+  itemCode: string
+  itemName: string
+  itemDetails:string
+
+}
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
@@ -38,8 +44,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
   modeIndex!: number;
   modes: Item[] = [];
   newTranMsg!: string;
-  productList: any = [];
-  prodList:string[]=[]
+  productList: any[] = [];
+  prodList:autoComplete[]=[]
   productControl = new FormControl();
   filteredProductList!: Observable<params[]>;
   vatTypes: Item[] = [];
@@ -51,6 +57,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   prodStatus!: string;
   filteredProdList: string[] = [];
   @Input() max: any;
+  autoFilteredCustomer: autoComplete[] = [];
   tomorrow = new Date();
   private dialogOpen: boolean = false;
   @ViewChild('frmClear') public sprFrm!: NgForm;
@@ -69,14 +76,31 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.loadData();
     this.loadProducts()
     this.productForm.get('productGroup')!.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value || ''))
-      )
-      .subscribe(filtered => {
-        this.filteredProdList = filtered;
-      });
+    .pipe(
+      startWith(''),
+      map(value => typeof value === 'string' ? value : value?.itemName || ''),
+      map(name => this._filter(name))
+    )
+    .subscribe(filtered => {
+      this.autoFilteredCustomer = filtered;
+    });
+  }
+  displayCustomer(item: autoComplete): string {
+    return item && item.itemName ? item.itemName : '';
+  }
   
+  filerCutomers(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.prodList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filter(value: string): autoComplete[] {
+    const filterValue = value.toLowerCase();
+  
+    return this.prodList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
   }
   
   onProductInput(){
@@ -87,14 +111,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
   filterProducts(value: any) {
     const filterValue = value.toLowerCase();
-    return this.productList.filter((product: params) => product.itemName.toLowerCase().includes(filterValue));
+    return this.prodList.filter((product: params) => product.itemName.toLowerCase().includes(filterValue));
   }
   
 
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.prodList.filter(option => option.toLowerCase().includes(filterValue));
-  }
+  // private _filter(value: string): string[] {
+  //   const filterValue = value.toLowerCase();
+  //   return this.prodList.filter(option => option.toLowerCase().includes(filterValue));
+  // }
 
   
 
@@ -260,8 +284,16 @@ export class ProductsComponent implements OnInit, OnDestroy {
           
         }
         else {
-          this.prodList = res.data.map((item: any) => item.prodName);
-          console.log(this.prodList)
+          this.prodList = res.data.map((item: any) => ({
+            itemCode: item.prodCode,
+            itemName: item.prodName,
+            itemDetails: item.uom || item.stdSalesRate || 'No UOM Or Standard sale rate'  // Adjust as needed
+          }));
+           this.autoFilteredCustomer = res.data.map((item: any) => ({
+            itemCode: item.prodCode,
+            itemName: item.prodName,
+            itemDetails: item.uom || item.stdSalesRate || 'No UOM Or Standard sale rate'  // Adjust as needed
+          }));
           this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
         }
       });

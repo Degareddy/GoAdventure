@@ -130,3 +130,38 @@
   vertical-align: middle;
 }
 
+.autocomplete-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 2;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-bottom: 1px solid #ccc;
+  white-space: nowrap;
+}
+
+.autocomplete-row {
+  display: flex;
+  white-space: nowrap;
+  min-width: 600px;
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+.col-code,
+.col-name,
+.col-phone {
+  padding-right: 12px;
+  flex: 1;
+  min-width: 100px;
+}
+
+::ng-deep .mat-autocomplete-panel {
+  max-height: 300px;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  min-width: 600px;
+  white-space: nowrap;
+}

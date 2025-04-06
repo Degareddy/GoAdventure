@@ -95,33 +95,39 @@
   }
 
 }
-.autocomplete-row {
+.autocomplete-header {
   display: flex;
-  min-width: 600px; 
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 2;
+  font-weight: bold;
   padding: 4px 8px;
-  font-size: 13px;
+  border-bottom: 1px solid #ccc;
   white-space: nowrap;
 }
 
-.col-code {
-  font-weight: bold;
-  color: #333;
+.autocomplete-row {
+  display: flex;
+  white-space: nowrap;
+  min-width: 600px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.col-code,
+.col-name,
+.col-phone {
+  padding-right: 12px;
+  flex: 1;
   min-width: 100px;
 }
 
-.col-name {
-  min-width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.col-details {
-  min-width: 200px;
-  text-align: right;
-}
-
 ::ng-deep .mat-autocomplete-panel {
-  overflow-x: auto !important;
+  max-height: 300px;
   overflow-y: auto !important;
-  white-space: nowrap !important;
+  overflow-x: auto !important;
+  min-width: 600px;
+  white-space: nowrap;
 }
+
