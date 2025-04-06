@@ -17,7 +17,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label>Mode</mat-label>
-          <mat-select formControlName="mode" placeholder="Mode">
+          <mat-select formControlName="mode" placeholder="Mode" (selectionChange)="modeChange($event.value)">
             <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>

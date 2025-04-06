@@ -260,6 +260,18 @@ modeChange(event: string) {
       this.bankDeptForm.get('tranNo')!.disable();
       this.loadData();
     }
+    if(event.toUpperCase() === Mode.Add){
+     
+      this.bankDeptForm.get('tranNo')?.patchValue('')
+      this.bankDeptForm.get('depositeType')?.patchValue('')
+      this.bankDeptForm.get('bank')?.patchValue('')
+      this.bankDeptForm.get('bankAccount')?.patchValue('')
+      this.bankDeptForm.get('currency')?.patchValue('')
+      this.bankDeptForm.get('tranDate')?.patchValue(new Date())
+      this.bankDeptForm.get('totalAmount')?.patchValue('')
+      this.bankDeptForm.get('notes')?.patchValue('')
+      this.bankDeptForm.get('tranNo')?.disable();
+    }
     else {
       this.bankDeptForm.get('mode')!.patchValue(event, { emitEvent: false });
       this.bankDeptForm.get('tranNo')!.enable();
