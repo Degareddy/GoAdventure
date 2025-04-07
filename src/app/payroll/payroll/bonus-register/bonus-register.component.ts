@@ -48,7 +48,7 @@ export class BonusRegisterComponent implements OnInit, OnDestroy {
       payrollYear: ['', [Validators.required, Validators.maxLength(10)]],
       payrollMonth: ['', [Validators.required, Validators.maxLength(10)]],
       notes: [''],
-      mode: ['view']
+      mode: ['View']
     })
   }
   onHelpCilcked() {

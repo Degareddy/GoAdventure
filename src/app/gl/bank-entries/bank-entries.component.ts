@@ -63,7 +63,7 @@ export class BankEntriesComponent implements OnInit, OnDestroy {
     catch (ex) {
       //console.log(ex);
     }
-    // this.loadData();
+    this.loadData();
   }
 
   loadData() {
@@ -98,7 +98,7 @@ export class BankEntriesComponent implements OnInit, OnDestroy {
 
   formInit() {
     return this.fb.group({
-      mode: [''],
+      mode: ['View'],
       tranNo: [''],
       tranDate: [new Date],
       bank: [''],

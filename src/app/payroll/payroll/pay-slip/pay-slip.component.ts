@@ -4,6 +4,11 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { MasterParams } from 'src/app/modals/masters.modal';
 import { UserData } from '../payroll.module';
+import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
+import { UserDataService } from 'src/app/Services/user-data.service';
+import { SubSink } from 'subsink';
+import { MastersService } from 'src/app/Services/masters.service';
+
 
 @Component({
   selector: 'app-pay-slip',
@@ -21,7 +26,9 @@ export class PaySlipComponent implements OnInit {
   retMessage!: string;
   @Input() max: any;
   tomorrow = new Date();
-  constructor(private fb: FormBuilder,public dialog: MatDialog) {
+    private subSink: SubSink = new SubSink();
+  
+  constructor(private fb: FormBuilder,public dialog: MatDialog,private userDataService:UserDataService,     private masterService: MastersService,) {
     this.psdForm = this.formInit();
   }
   formInit() {
@@ -55,7 +62,33 @@ export class PaySlipComponent implements OnInit {
       mode: ['view']
     })
   }
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID
+    }
+  }
   ngOnInit(): void {
+    const body: getPayload = {
+              ...this.commonParams(),
+              item: 'SM001'
+            };
+            try {
+              this.subSink.sink = this.masterService.getModesList(body).subscribe((res: getResponse) => {
+                if (res.status.toUpperCase() === "SUCCESS") {
+                  this.modes = res['data'];
+                }
+              });
+              // this.masterParams.item = this.ahdForm.controls['bonusCode'].value;
+            }
+        
+            catch (ex: any) {
+              //console.log(ex);
+              this.retMessage = ex.message;
+              this.textMessageClass = "red";
+            }
     const storedUserData = sessionStorage.getItem('userData');
     if (storedUserData) {
       this.userData = JSON.parse(storedUserData) as UserData;

@@ -1,5 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
+import { MastersService } from 'src/app/Services/masters.service';
+import { UserDataService } from 'src/app/Services/user-data.service';
+import { SubSink } from 'subsink';
 
 @Component({
   selector: 'app-pay-particular',
@@ -13,7 +17,11 @@ export class PayParticularComponent implements OnInit {
   retMessage!: string;
   @Input() max: any;
   tomorrow = new Date();
-  constructor(private fb: FormBuilder) {
+      private subSink: SubSink = new SubSink();
+  
+  constructor(private fb: FormBuilder,private userDataService:UserDataService,
+    private masterService:MastersService
+  ) {
     this.ppartForm = this.formInit();
   }
   formInit() {
@@ -35,6 +43,33 @@ export class PayParticularComponent implements OnInit {
     })
   }
   ngOnInit(): void {
+    const body: getPayload = {
+                      ...this.commonParams(),
+                      item: 'SM001'
+                    };
+                    try {
+                      this.subSink.sink = this.masterService.getModesList(body).subscribe((res: getResponse) => {
+                        if (res.status.toUpperCase() === "SUCCESS") {
+                          this.modes = res['data'];
+                        }
+                      });
+                      // this.masterParams.item = this.ahdForm.controls['bonusCode'].value;
+                    }
+                
+                    catch (ex: any) {
+                      //console.log(ex);
+                      this.retMessage = ex.message;
+                      this.textMessageClass = "red";
+                    }
+           
+  }
+  commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID
+    }
   }
 
   onUpdate() {
