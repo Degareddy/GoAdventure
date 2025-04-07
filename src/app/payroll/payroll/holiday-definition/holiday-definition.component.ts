@@ -7,6 +7,7 @@ import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { MastersService } from 'src/app/Services/masters.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-holiday-definition',
@@ -27,8 +28,8 @@ export class HolidayDefinitionComponent implements OnInit {
   userData!:any;
     private subSink: SubSink = new SubSink();
 
-  constructor(private fb: FormBuilder, public dialog:MatDialog,private userDataService:UserDataService 
-    ,private masterService: MastersService
+  constructor(private fb: FormBuilder, public dialog:MatDialog,private userDataService:UserDataService,protected router: Router,
+    private masterService: MastersService
   ) {
     this.phtDetForm = this.formInit();
   }
@@ -87,8 +88,10 @@ export class HolidayDefinitionComponent implements OnInit {
   onUpdate() {
 
   }
-  insert() {
-
+  
+    Close() {
+      this.router.navigateByUrl('/home');
+  
   }
   reset() {
     this.phtDetForm.reset();

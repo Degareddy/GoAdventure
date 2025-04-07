@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { MastersService } from 'src/app/Services/masters.service';
@@ -19,7 +20,7 @@ export class SalaryAdvanceComponent implements OnInit, OnDestroy {
   @Input() max: any;
   tomorrow = new Date();
   private subSink: SubSink = new SubSink();
-  retMessage!: string; constructor(private FormBuilder: FormBuilder, private userDataService: UserDataService,
+  retMessage!: string; constructor(private FormBuilder: FormBuilder, private userDataService: UserDataService, protected router: Router,
      private masterService: MastersService,
     public dialog: MatDialog) {
     this.saHdrForm = this.formInit()
@@ -93,5 +94,7 @@ export class SalaryAdvanceComponent implements OnInit, OnDestroy {
   reset() {
     this.saHdrForm = this.formInit();
   }
-
+  Close() {
+    this.router.navigateByUrl('/home');
+  }
 }

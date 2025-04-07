@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
 import { Item } from 'src/app/general/Interface/interface';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
@@ -22,6 +23,8 @@ export class PromotionsComponent implements OnInit,OnDestroy {
   tomorrow = new Date();
   private subsink: SubSink = new SubSink();
   constructor(private fb: FormBuilder,private userDataService: UserDataService,     private masterService: MastersService,
+        protected router: Router,
+
   
      public dialog: MatDialog) {
     this.prhForm = this.formInit();
@@ -92,6 +95,10 @@ const body: getPayload = {
     dialogRef.afterClosed().subscribe(result => {
 
     });
+  }
+  Close() {
+    this.router.navigateByUrl('/home');
+
   }
 
 }

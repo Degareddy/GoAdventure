@@ -12,6 +12,7 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload } from 'src/app/general/Interface/admin/admin';
 import { Item } from 'src/app/general/Interface/interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ot-register',
@@ -31,6 +32,7 @@ export class OtRegisterComponent implements OnInit, OnDestroy {
   tomorrow = new Date();
   public fetchStatus: boolean = true;
   constructor(private fb: FormBuilder, public dialog: MatDialog, private masterService: MastersService,
+     protected router: Router,
     private loader: NgxUiLoaderService, private payService: PayrollService, private userDataService: UserDataService) {
     this.otrForm = this.formInit();
     this.subSink = new SubSink();
@@ -131,5 +133,8 @@ export class OtRegisterComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
 
     });
+  }
+  Close() {
+    this.router.navigateByUrl('/home');
   }
 }

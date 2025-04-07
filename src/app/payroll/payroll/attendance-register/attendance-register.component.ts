@@ -170,5 +170,8 @@ export class AttendanceRegisterComponent implements OnInit,OnDestroy {
     this.tranStatus = '';
     this.retMessage = '';
   }
+  Close() {
+    this.router.navigateByUrl('/home');
+  }
 
 }

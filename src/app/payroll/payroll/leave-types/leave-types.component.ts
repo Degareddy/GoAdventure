@@ -13,6 +13,7 @@ import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interf
 import { forkJoin } from 'rxjs';
 import { leaveType } from '../payroll.class';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-leave-types',
@@ -32,7 +33,7 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
   @Input() max: any;
   tomorrow = new Date();
   private subsink: SubSink = new SubSink();
-  constructor(private fb: FormBuilder, public dialog: MatDialog, private datePipe: DatePipe,
+  constructor(private fb: FormBuilder, public dialog: MatDialog, private datePipe: DatePipe, protected router: Router,
     private masterService: MastersService, private userDataService: UserDataService,
     private loader: NgxUiLoaderService, private payService: PayrollService) {
     this.ltDetForm = this.formInit();
@@ -251,6 +252,10 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
 
     });
+  }
+  Close(){
+    this.router.navigateByUrl('/home');
+
   }
 
 }

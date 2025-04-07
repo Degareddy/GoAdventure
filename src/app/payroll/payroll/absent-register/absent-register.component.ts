@@ -77,7 +77,7 @@ export class AbsentRegisterComponent implements OnInit, OnDestroy {
 
   }
   Close(){
-
+    this.router.navigateByUrl('/home');
   }
   reset() {
     this.pabrForm = this.formInit();

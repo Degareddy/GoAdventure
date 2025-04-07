@@ -288,6 +288,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     }
 
     Close(){
+      this.router.navigateByUrl('/home');
 
     }
     onHelpCilcked() {

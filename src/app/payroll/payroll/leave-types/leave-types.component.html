@@ -90,7 +90,7 @@
         [disabled]="ltDetForm.get('mode')!.value === 'View' || ltDetForm.invalid">
         <mat-icon>done</mat-icon>Apply
       </button>
-      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="onUpdate()">
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
         <mat-icon>cancel</mat-icon>Close
       </button>
       <button mat-raised-button color="accent" class="btnUp" type="button" (click)="reset()">

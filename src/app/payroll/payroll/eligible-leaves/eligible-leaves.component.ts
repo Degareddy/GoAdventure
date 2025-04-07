@@ -277,4 +277,8 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     });
 
   }
+  Close(){
+    this.router.navigateByUrl('/home');
+
+  }
 }

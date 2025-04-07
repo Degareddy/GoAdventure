@@ -11,6 +11,7 @@ import { Item } from 'src/app/general/Interface/interface';
 import { SubSink } from 'subsink';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bonus-register',
@@ -28,7 +29,7 @@ export class BonusRegisterComponent implements OnInit, OnDestroy {
   @Input() max: any;
   tomorrow = new Date();
   private subsink: SubSink = new SubSink();
-  constructor(private fb: FormBuilder, private masterService: MastersService,
+  constructor(private fb: FormBuilder, private masterService: MastersService,protected router: Router,
     public dialog: MatDialog, private userDataService: UserDataService,
     private loader: NgxUiLoaderService, private payService: PayrollService) {
     this.pbrHdrForm = this.formInit();
@@ -39,7 +40,7 @@ export class BonusRegisterComponent implements OnInit, OnDestroy {
     this.subsink.unsubscribe();
   }
   close() {
-
+    this.router.navigateByUrl('/home');
   }
   formInit() {
     return this.fb.group({

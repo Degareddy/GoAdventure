@@ -11,6 +11,7 @@ import { Item } from 'src/app/general/Interface/interface';
 import { SubSink } from 'subsink';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appraisals',
@@ -30,6 +31,7 @@ export class AppraisalsComponent implements OnInit, OnDestroy {
   private subsink: SubSink = new SubSink();
   AppraisalCls!: AppraisalClass;
   constructor(private fb: FormBuilder, private masterService: MastersService, private userDataService: UserDataService,
+    protected router: Router,
     public dialog: MatDialog, private loader: NgxUiLoaderService, private payService: PayrollService) {
     this.aprForm = this.formInit();
     this.masterParams = new MasterParams();
@@ -112,7 +114,8 @@ export class AppraisalsComponent implements OnInit, OnDestroy {
     }
 
   }
-  onUpdate() {
+  Close() {
+    this.router.navigateByUrl('/home');
 
   }
 

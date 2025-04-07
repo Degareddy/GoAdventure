@@ -15,6 +15,7 @@ import { LoanDetailsComponent } from './loan-details/loan-details.component';
 import { GuranteersComponent } from './guranteers/guranteers.component';
 import { FileUploadComponent } from 'src/app/Masters/file-upload/file-upload.component';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-loan',
@@ -39,7 +40,7 @@ export class LoanComponent implements OnInit,OnDestroy {
   masterParams!: MasterParams;
 
 
-  constructor(private fb: FormBuilder, public dialog: MatDialog, private masterService: MastersService,
+  constructor(private fb: FormBuilder, public dialog: MatDialog, private masterService: MastersService,  protected router: Router,
     private loader: NgxUiLoaderService, private payService: PayrollService, private datePipe: DatePipe, private invService: InventoryService) {
     this.lnHdrForm = this.formInit();
     this.subSink = new SubSink();
@@ -184,7 +185,10 @@ export class LoanComponent implements OnInit,OnDestroy {
   ngOnInit(): void {
     this.loadData();
   }
-  Close() {
+
+    Close() {
+      this.router.navigateByUrl('/home');
+  
 
   }
   onHelpCilcked(){

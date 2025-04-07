@@ -76,7 +76,7 @@ export class HolidayRegisterComponent implements OnInit, OnDestroy {
     }
   }
   reset() {
-    // this.ahdForm.reset();
+    this.ahdForm.reset();
   }
 
   onHelpCilcked() {
@@ -93,5 +93,8 @@ export class HolidayRegisterComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
 
     });
+  }
+  Close() {
+    this.router.navigateByUrl('/home');
   }
 }

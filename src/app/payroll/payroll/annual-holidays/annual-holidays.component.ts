@@ -178,4 +178,7 @@ export class AnnualHolidaysComponent implements OnInit, OnDestroy {
   onUpdate() {
 
   }
+  Close(){
+    this.router.navigateByUrl('/home');
+  }
 }

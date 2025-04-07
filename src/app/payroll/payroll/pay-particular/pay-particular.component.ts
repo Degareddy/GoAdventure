@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -19,7 +20,7 @@ export class PayParticularComponent implements OnInit {
   tomorrow = new Date();
       private subSink: SubSink = new SubSink();
   
-  constructor(private fb: FormBuilder,private userDataService:UserDataService,
+  constructor(private fb: FormBuilder,private userDataService:UserDataService,  protected router: Router,
     private masterService:MastersService
   ) {
     this.ppartForm = this.formInit();
@@ -75,7 +76,8 @@ export class PayParticularComponent implements OnInit {
   onUpdate() {
 
   }
-  insert() {
+  Close() {
+    this.router.navigateByUrl('/home');
 
   }
   reset() {

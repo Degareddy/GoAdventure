@@ -8,6 +8,7 @@ import { getPayload, getResponse } from 'src/app/general/Interface/admin/admin';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { MastersService } from 'src/app/Services/masters.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -28,7 +29,9 @@ export class PaySlipComponent implements OnInit {
   tomorrow = new Date();
     private subSink: SubSink = new SubSink();
   
-  constructor(private fb: FormBuilder,public dialog: MatDialog,private userDataService:UserDataService,     private masterService: MastersService,) {
+  constructor(private fb: FormBuilder,public dialog: MatDialog,private userDataService:UserDataService,     private masterService: MastersService,
+      protected router: Router,
+  ) {
     this.psdForm = this.formInit();
   }
   formInit() {
@@ -116,5 +119,9 @@ export class PaySlipComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
 
     });
+  }
+   Close() {
+    this.router.navigateByUrl('/home');
+
   }
 }
