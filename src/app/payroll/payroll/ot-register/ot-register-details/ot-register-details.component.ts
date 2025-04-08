@@ -4,12 +4,14 @@ import { UserData } from '../../payroll.module';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { PayrollService } from 'src/app/Services/payroll.service';
 import { MastersService } from 'src/app/Services/masters.service';
 import { PurchaseService } from 'src/app/Services/purchase.service';
+import { UserDataService } from 'src/app/Services/user-data.service';
+import { SubSink } from 'subsink';
 
 @Component({
   selector: 'app-ot-register-details',
@@ -19,10 +21,11 @@ import { PurchaseService } from 'src/app/Services/purchase.service';
 export class OtRegisterDetailsComponent implements OnInit {
 
   userData: any;
+  private subSink!: SubSink;
   masterParams!: MasterParams;
   retMessage!: string;
   textMessageClass!: string;
-  purReqHdrForm!: any;
+  purReqHdrForm!: FormGroup;
   slNum!: string;
 
   displayColumns: string[] = [];
@@ -31,12 +34,14 @@ export class OtRegisterDetailsComponent implements OnInit {
   @ViewChild(MatSort) matsort!: MatSort;
   selectedRowIndex: number = -1;
 
-  constructor(protected purchreqservice: PurchaseService, private fb: FormBuilder, private payService: PayrollService,
+  constructor(protected purchreqservice: PurchaseService, private fb: FormBuilder, private payService: PayrollService,private userDataService: UserDataService,
     private loader: NgxUiLoaderService, @Inject(MAT_DIALOG_DATA) public data: any,private masterService: MastersService) {
     this.masterParams = new MasterParams();
     this.purReqHdrForm = this.formInit();
     this.displayColumns = ["slNo", "tranNo", "employee", "fromDateTime", "toDateTime",
       "otHours", "otRate", "otAmount", "remarks"];
+      this.subSink = new SubSink();
+
   }
   formInit() {
     return this.fb.group({
@@ -91,45 +96,46 @@ export class OtRegisterDetailsComponent implements OnInit {
   }
   onSubmit() {
     //console.log(this.purReqHdrForm.value);
-    const sessionData = {
-      company: this.userData.company,
-      location: this.userData.location,
-      langId: 1,
-      tranNo: this.masterParams.tranNo,
-      slNo: this.slNum,
-      mode: "Modify",
-      user: this.userData.userID
-    };
-
-    // Merge session data with form data
-    const requestData = {
-      ...sessionData,
-      ...this.purReqHdrForm.value
-    };
-
-    //console.log(requestData); // This will contain both form and session data
-
-    this.loader.start();
-    try {
-      this.purchreqservice.insertPurchaseDetails(requestData).subscribe((res: any) => {
-        this.loader.stop();
-        //console.log(res);
-        if (res.retVal < 100) {
-          this.retMessage = res.message;
-          this.textMessageClass = "red";
-        }
-        if (res.retVal >= 100 && res.retVal <= 200) {
-          this.retMessage = res.message;
-          this.textMessageClass = "green";
-          this.get(this.masterParams.tranNo);
-        }
-
-      });
-    } catch (ex: any) {
-      //console.log(ex);
-      this.retMessage = ex;
-      this.textMessageClass = "red";
-    }
+    const body={
+      
+      "Company":this.userDataService.userData.company,
+       "Location":this.userDataService.userData.location,
+       "User":this.userDataService.userData.userID,
+       "RefNo":this.userDataService.userData.sessionID,
+       "Mode":this.data.mode,
+       "TranNo":this.data.tranNo,
+       "SlNo":this.slNum,
+       "Employee":this.purReqHdrForm.get('employee')?.value,
+       "ShiftNo":'',
+       "FromDateTime":this.purReqHdrForm.get('fromDateTime')?.value,
+       "ToDateTime":this.purReqHdrForm.get('toDateTime')?.value,
+       "OTHours":this.purReqHdrForm.get('otHours')?.value,
+       "OTRate":this.purReqHdrForm.get('otRate')?.value,
+       "OTAmount":this.purReqHdrForm.get('otAmount')?.value,
+       "Remarks":this.purReqHdrForm.get('remarks')?.value,
+      
+ 
+     }
+    
+     try {
+       this.loader.start();
+       this.subSink.sink = this.payService.UpdateOTRegisterDetails(body).subscribe((res: any) => {
+         this.loader.stop();
+         if (res.status.toUpperCase() === "SUCCESS") {
+           
+             this.textMessageClass = 'green';
+             this.retMessage = res.message;
+         }
+         else {
+           this.textMessageClass = 'red';
+           this.retMessage = res.message;
+         }
+       });
+     }
+     catch (ex: any) {
+       this.textMessageClass = 'red';
+       this.retMessage = ex.message;
+     }
 
   }
   onRowClick(row: any, i: number) {

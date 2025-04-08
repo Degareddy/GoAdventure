@@ -18,7 +18,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Modes</mat-label>
           <mat-select formControlName="mode">
-            <mat-option *ngFor="let x of modes" [value="x.itemCode">{{x.itemName}}</mat-option>
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -100,7 +100,7 @@
     </div>
     <div class="row  justify-content-center" class="container" class={{textMessageClass}}> {{retMessage}} </div>
     <div class="btnAlignment">
-      <button type="button" mat-raised-button color="primary" class="btnUp" (click)="onUpdate()">Update</button>
+      <button type="button" mat-raised-button color="primary" class="btnUp" (click)="onSubmit()">Update</button>
       <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
         <mat-icon>cancel</mat-icon>Close
       </button>

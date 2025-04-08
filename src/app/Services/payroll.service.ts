@@ -24,6 +24,7 @@ export class PayrollService {
   GetBonusTypes(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetBonusTypes', pmt)
   }
+  
   GetTaxTable(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetTaxTable', pmt)
   }
@@ -48,6 +49,9 @@ export class PayrollService {
   UpdateBonusTypes(bonusType: BonusClass): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'payroll/UpdateBonusTypes', bonusType)
   }
+  UpdateOTRegister(bonusType: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'payroll/UpdateOTRegister', bonusType)
+  }
   UpdateTaxTable(taxCls: taxTable): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'payroll/UpdateTaxTable', taxCls)
   }
@@ -66,6 +70,15 @@ export class PayrollService {
 
   GetOTRegister(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetOTRegister', pmt)
+  }
+  UpdateHolidayTypes(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/UpdateHolidayTypes', pmt)
+  }
+  GetHolidayTypes(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetHolidayTypes', pmt)
+  }
+  UpdateOTRegisterDetails(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/UpdateOTRegisterDetails', pmt)
   }
 
   GetOTRegisterDetails(pmt: any): Observable<any> {

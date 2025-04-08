@@ -8,6 +8,9 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { SubSink } from 'subsink';
 import { MastersService } from 'src/app/Services/masters.service';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { PayrollService } from 'src/app/Services/payroll.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-holiday-definition',
@@ -28,15 +31,15 @@ export class HolidayDefinitionComponent implements OnInit {
   userData!:any;
     private subSink: SubSink = new SubSink();
 
-  constructor(private fb: FormBuilder, public dialog:MatDialog,private userDataService:UserDataService,protected router: Router,
+  constructor(private fb: FormBuilder, public dialog:MatDialog,private userDataService:UserDataService 
+    ,private datePipe: DatePipe,protected router: Router,private payService: PayrollService, private loader: NgxUiLoaderService,
     private masterService: MastersService
   ) {
     this.phtDetForm = this.formInit();
   }
   formInit() {
     return this.fb.group({
-      company: ['', [Validators.required, Validators.maxLength(10)]],
-      location: ['', [Validators.required, Validators.maxLength(10)]],
+      
       holidayCode: ['', [Validators.required, Validators.maxLength(10)]],
       holidayDesc: ['', [Validators.required, Validators.maxLength(50)]],
       holidayType: ['', [Validators.required, Validators.maxLength(10)]],
@@ -47,10 +50,11 @@ export class HolidayDefinitionComponent implements OnInit {
       repeats: [''],
       typeStatus: ['', [Validators.required, Validators.maxLength(10)]],
       notes: ['', [Validators.required, Validators.maxLength(512)]],
-      mode: ['view']
+      mode: ['View']
     })
   }
   ngOnInit(): void {
+    this.get();
     const storedUserData = sessionStorage.getItem('userData');
     if (storedUserData) {
       this.userData = JSON.parse(storedUserData) as UserData;
@@ -77,6 +81,25 @@ export class HolidayDefinitionComponent implements OnInit {
                 }
        
   }
+  get() {
+    const body = {
+      ...this.commonParams(),
+     
+    };
+    this.loader.start();
+    this.subSink.sink = this.payService.GetHolidayTypes(body).subscribe((res: any) => {
+      this.loader.stop();
+      if (res.status.toUpperCase() === "SUCCESS") {
+        this.textMessageClass = "green";
+        this.retMessage = res.message;
+        this.phtDetForm.patchValue(res.data);
+      }
+      else{
+        this.textMessageClass = "red";
+        this.retMessage = res.message;
+      }
+    });
+  }
   commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -85,8 +108,48 @@ export class HolidayDefinitionComponent implements OnInit {
       refNo: this.userDataService.userData.sessionID
     }
   }
-  onUpdate() {
-
+  formatDate(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+  onSubmit(){
+    if(this.phtDetForm.invalid){
+      return;
+    }
+    const body={
+      "Mode":this.phtDetForm.get('mode')?.value,
+      "Company":this.userDataService.userData.company,
+      "Location":this.userDataService.userData.company,
+      "HolidayCode":this.phtDetForm.get('holidayCode')?.value,
+      "HolidayDesc":this.phtDetForm.get('holidayDesc')?.value,
+      "HolidayType":this.phtDetForm.get('holidayType')?.value,
+      "TranDate":this.formatDate(this.phtDetForm.get('tranDate')?.value,),
+      "FromDate":this.formatDate(this.phtDetForm.get('fromDate')?.value),
+      "ToDate":this.formatDate(this.phtDetForm.get('toDate')?.value),
+      "DaysCount":this.phtDetForm.get('daysCount')?.value,
+      "Repeats":this.phtDetForm.get('repeats')?.value,
+      "Notes":this.phtDetForm.get('notes')?.value,
+      "User":this.userDataService.userData.userID,
+      "RefNo":this.userDataService.userData.sessionID,
+    }
+    try {
+      this.loader.start();
+      this.subSink.sink = this.payService.UpdateHolidayTypes(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === "SUCCESS") {
+          
+            this.textMessageClass = 'green';
+            this.retMessage = res.message;
+        }
+        else {
+          this.textMessageClass = 'red';
+          this.retMessage = res.message;
+        }
+      });
+    }
+    catch (ex: any) {
+      this.textMessageClass = 'red';
+      this.retMessage = ex.message;
+    }
   }
   
     Close() {

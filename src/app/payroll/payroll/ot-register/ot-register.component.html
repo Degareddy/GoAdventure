@@ -24,7 +24,7 @@
     <div class="flex items-end space-x-1 mb-2.5">
       <button mat-raised-button color="accent" type="button" class="btnUp"
       (click)="onDetailsCilcked(otrForm.get('tranNo')!.value)"
-      [disabled]="otrForm.get('tranNo')!.value === ''">Details</button>
+      >Details</button>
 
     <button mat-raised-button color="primary" type="button" class="btnUp"
       (click)="onDocsCilcked(otrForm.get('tranNo')!.value)"
@@ -50,7 +50,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline" style="width: 95%;">
           <mat-label>Tran No</mat-label>
-          <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
+          <input matInput placeholder="Tran No" formControlName="tranNo" type="text" [disabled]="otrForm.get('mode')!.value === 'Add'">
           <button mat-button *ngIf="otrForm.get('tranNo')!.value" type="button" matSuffix mat-icon-button
             aria-label="Clear" (click)="otrForm.get('tranNo')!.setValue('')">
             <mat-icon>cancel</mat-icon>
