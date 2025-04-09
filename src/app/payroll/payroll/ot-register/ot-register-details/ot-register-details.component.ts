@@ -4,7 +4,7 @@ import { UserData } from '../../payroll.module';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { PayrollService } from 'src/app/Services/payroll.service';
@@ -36,6 +36,7 @@ interface params {
 })
 export class OtRegisterDetailsComponent implements OnInit {
 
+  isAltered: boolean = false;
   userData: any;
   private subSink!: SubSink;
   masterParams!: MasterParams;
@@ -59,7 +60,7 @@ export class OtRegisterDetailsComponent implements OnInit {
   constructor(protected purchreqservice: PurchaseService, private fb: FormBuilder,
     private utlService:UtilitiesService,
     public dialog: MatDialog,  private payService: PayrollService,private userDataService: UserDataService,
-    private loader: NgxUiLoaderService, @Inject(MAT_DIALOG_DATA) public data: any,private masterService: MastersService) {
+    private loader: NgxUiLoaderService, @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string, name: string },private masterService: MastersService) {
     this.masterParams = new MasterParams();
     this.purReqHdrForm = this.formInit();
     this.displayColumns = ["slNo", "tranNo", "employee", "fromDateTime", "toDateTime",
@@ -70,13 +71,14 @@ export class OtRegisterDetailsComponent implements OnInit {
   formInit() {
     return this.fb.group({
       // slNo: [''],
-      employee: [''],
-      fromDateTime: [''],
-      toDateTime: [''],
-      otHours: [''],
-      otRate: [''],
-      otAmount: [''],
-      remarks: ['']
+      employee: ['',Validators.required],
+      fromDateTime: [new Date(),Validators.required],
+      toDateTime: [new Date(),Validators.required],
+      otHours: ['',Validators.required],
+      otRate: ['',Validators.required],
+      otAmount: ['',Validators.required],
+      remarks: [''],
+      
       // pendingQty: [''],
       // orderingQty: [''],
       // amount: [''],
@@ -102,7 +104,7 @@ export class OtRegisterDetailsComponent implements OnInit {
       .subscribe(filtered => {
         this.autoFilteredEmployee = filtered;
       });
-    this.get(this.data);
+    this.get(this.data.tranNo);
   }
   displayEmployee(item: autoComplete): string {
     return item && item.itemName ? item.itemName : '';
@@ -268,7 +270,7 @@ export class OtRegisterDetailsComponent implements OnInit {
        this.subSink.sink = this.payService.UpdateOTRegisterDetails(body).subscribe((res: any) => {
          this.loader.stop();
          if (res.status.toUpperCase() === "SUCCESS") {
-           
+          this.isAltered = true
              this.textMessageClass = 'green';
              this.retMessage = res.message;
          }
@@ -289,5 +291,14 @@ export class OtRegisterDetailsComponent implements OnInit {
     this.selectedRowIndex = i;
     this.slNum = row.slNo;
     this.purReqHdrForm.patchValue(row);
+  }
+  new(){
+    this.purReqHdrForm=this.formInit()
+  }
+  isApply():Boolean{
+    if(this.purReqHdrForm.invalid){
+      return true
+    }
+    return false
   }
 }

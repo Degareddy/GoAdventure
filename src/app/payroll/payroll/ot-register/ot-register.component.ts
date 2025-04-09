@@ -270,7 +270,11 @@ export class OtRegisterComponent implements OnInit, OnDestroy {
     const dialogRef: MatDialogRef<OtRegisterDetailsComponent> = this.dialog.open(OtRegisterDetailsComponent, {
       width: '90%',
       disableClose: true,
-      data: value
+      data: {
+        tranNo: this.otrForm.get('tranNo')!.value,
+        mode: this.otrForm.controls['mode'].value,
+        status: this.tranStatus,
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
     });

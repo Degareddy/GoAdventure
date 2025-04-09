@@ -136,9 +136,17 @@
     <div class="btnAlignment">
       <!-- <button mat-raised-button color="primary" [disabled]="purReqHdrForm.get('mode').value === 'View'"
         class=btnUp>Update</button> -->
-      <button mat-raised-button color="accent" class=btnUp>Apply</button>
+      <button mat-raised-button color="accent" class=btnUp [disabled]="isApply()"><mat-icon>done</mat-icon>Apply</button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="new()">
+        <mat-icon>add</mat-icon>New
+      </button>
+      <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="{ isAltered: isAltered}">
+        <mat-icon>cancel</mat-icon>Close
+      </button>
       <!-- <button mat-raised-button color="warn" type="button" (click)="reset()" class=btnUp>Reset</button> -->
     </div>
+    
+
   </form>
 
 </mat-card>
