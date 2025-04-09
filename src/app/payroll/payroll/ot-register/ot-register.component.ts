@@ -193,6 +193,7 @@ export class OtRegisterComponent implements OnInit, OnDestroy {
           if (res.retVal === 0) {
             if (res && res.data && res.data.tranCount === 1) {
               this.masterParams.tranNo = res.data.selTranNo;
+              this.otrForm.get('tranNo')?.patchValue(this.masterParams.tranNo);
               this.getOtRegData(this.masterParams, this.otrForm.controls['mode'].value);
             }
             else {
@@ -205,9 +206,16 @@ export class OtRegisterComponent implements OnInit, OnDestroy {
         });
   }
   getOtRegData(masterParams: MasterParams, mode: string) {
+    const body={
+      "company":this.userDataService.userData.company,
+      "location":this.userDataService.userData.location,
+      "user":this.userDataService.userData.userID,
+      "refNo":this.userDataService.userData.sessionID,
+      "tranNo":this.otrForm.get('tranNo')?.value
+    }
       this.loader.start();
       try {
-        this.subSink.sink = this.payService.GetOTRegister(masterParams).subscribe((res: any) => {
+        this.subSink.sink = this.payService.GetOTRegister(body).subscribe((res: any) => {
           this.loader.stop();
           if (res.status.toUpperCase() == AccessSettings.SUCCESS) {
             // this.expCls = res['data'];
@@ -247,6 +255,7 @@ export class OtRegisterComponent implements OnInit, OnDestroy {
             if (result != true && result != undefined) {
               // console.log(result);
               this.masterParams.tranNo = result;
+              this.otrForm.get('tranNo')?.patchValue(this.masterParams.tranNo);
               this.getOtRegData(this.masterParams, this.otrForm.controls['mode'].value);
             }
     
