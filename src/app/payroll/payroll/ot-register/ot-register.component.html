@@ -22,7 +22,7 @@
       OT Register
     </div>
     <div class="flex items-end space-x-1 mb-2.5">
-      <button mat-raised-button color="accent" type="button" class="btnUp"
+      <button mat-raised-button color="accent" type="button" class="btnUp" [disabled]="otrForm.get('tranNo')!.value === ''"
       (click)="onDetailsCilcked(otrForm.get('tranNo')!.value)"
       >Details</button>
 
