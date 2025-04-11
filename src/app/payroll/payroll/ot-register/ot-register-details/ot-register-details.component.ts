@@ -18,6 +18,7 @@ import { nameCountResponse } from 'src/app/general/Interface/admin/admin';
 import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
 import { AccessSettings } from 'src/app/utils/access';
 import { firstValueFrom, map, startWith } from 'rxjs';
+import { Item } from 'src/app/general/Interface/interface';
 
 interface autoComplete {
   itemCode: string
@@ -38,6 +39,7 @@ export class OtRegisterDetailsComponent implements OnInit {
 
   isAltered: boolean = false;
   userData: any;
+  shiftNo:Item[]=[]
   private subSink!: SubSink;
   masterParams!: MasterParams;
   retMessage!: string;
@@ -63,7 +65,7 @@ export class OtRegisterDetailsComponent implements OnInit {
     private loader: NgxUiLoaderService, @Inject(MAT_DIALOG_DATA) public data: { mode: string, tranNo: string, status: string, name: string },private masterService: MastersService) {
     this.masterParams = new MasterParams();
     this.purReqHdrForm = this.formInit();
-    this.displayColumns = ["slNo", "tranNo", "employee", "fromDateTime", "toDateTime",
+    this.displayColumns = ["slNo", "shiftNo", "employee", "fromDateTime", "toDateTime",
       "otHours", "otRate", "otAmount", "remarks"];
       this.subSink = new SubSink();
 
@@ -71,6 +73,7 @@ export class OtRegisterDetailsComponent implements OnInit {
   formInit() {
     return this.fb.group({
       // slNo: [''],
+      shiftNo:['',Validators.required],
       employee: ['',Validators.required],
       fromDateTime: [new Date(),Validators.required],
       toDateTime: [new Date(),Validators.required],
@@ -86,6 +89,26 @@ export class OtRegisterDetailsComponent implements OnInit {
     });
   }
   async ngOnInit(): Promise<void> {
+    this.masterParams.company = this.userDataService.userData.company;
+        this.masterParams.location = this.userDataService.userData.location;
+        this.masterParams.langId = this.userDataService.userData.langId;
+        this.masterParams.item = "SHIFTTYPES";
+        this.masterParams.user = this.userDataService.userData.userID;
+        this.masterParams.refNo = this.userDataService.userData.sessionID;
+        
+    
+        this.subSink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.shiftNo = res['data'];
+            if (this.shiftNo.length === 1) {
+              this.purReqHdrForm.get('shiftNo')!.patchValue(this.shiftNo[0].itemCode);
+            }
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
     this.employeeList=await  this.loadCust("EMPLOYEE");
     this.filteredEmployee=this.employeeList
     
@@ -253,15 +276,15 @@ export class OtRegisterDetailsComponent implements OnInit {
        "Mode":this.data.mode,
        "TranNo":this.data.tranNo,
        "SlNo":this.slNum,
-       "Employee":this.purReqHdrForm.get('employee')?.value,
-       "ShiftNo":'',
+       "Employee":this.selEmoCode,
+       "ShiftNo":this.purReqHdrForm.get('shiftNo')?.value,
        "FromDateTime":this.purReqHdrForm.get('fromDateTime')?.value,
        "ToDateTime":this.purReqHdrForm.get('toDateTime')?.value,
        "OTHours":this.purReqHdrForm.get('otHours')?.value,
        "OTRate":this.purReqHdrForm.get('otRate')?.value,
        "OTAmount":this.purReqHdrForm.get('otAmount')?.value,
        "Remarks":this.purReqHdrForm.get('remarks')?.value,
-      
+       
  
      }
     
@@ -273,6 +296,7 @@ export class OtRegisterDetailsComponent implements OnInit {
           this.isAltered = true
              this.textMessageClass = 'green';
              this.retMessage = res.message;
+             this.get(this.data.tranNo);
          }
          else {
            this.textMessageClass = 'red';

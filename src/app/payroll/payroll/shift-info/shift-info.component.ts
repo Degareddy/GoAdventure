@@ -14,9 +14,11 @@ import { PayrollService } from 'src/app/Services/payroll.service';
 import { shiftInfo } from '../payroll.class';
 import { DatePipe } from '@angular/common';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
-import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/general/date-format';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { ScreenId, TextClr } from 'src/app/utils/enums';
+import { AccessSettings } from 'src/app/utils/access';
 
 @Component({
   selector: 'app-shift-info',
@@ -39,11 +41,12 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
   tomorrow = new Date();
   shiftCls: shiftInfo;
   newMessage!: string;
+  shiftCodes:Item[]=[]
   private subsink: SubSink = new SubSink();
 
   constructor(protected route: ActivatedRoute,
     protected router: Router, private userDataService: UserDataService,
-
+   
     private masterService: MastersService, public dialog: MatDialog,
     private loader: NgxUiLoaderService,
     private fb: FormBuilder, private prService: PayrollService,
@@ -99,6 +102,30 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     catch (ex) {
       //console.log(ex);
     }
+    this.masterParams.company = this.userDataService.userData.company;
+        this.masterParams.location = this.userDataService.userData.location;
+        this.masterParams.langId = this.userDataService.userData.langId;
+        this.masterParams.item = "SHIFTTYPES";
+        this.masterParams.user = this.userDataService.userData.userID;
+        this.masterParams.refNo = this.userDataService.userData.sessionID;
+        
+    
+        this.subsink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.shiftCodes = res['data'];
+            if (this.shiftCodes.length === 1) {
+              this.pstForm.get('typeCode')!.patchValue(this.shiftCodes[0].itemCode);
+            }
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
+  }
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
   }
 
   formatDate(date: Date): string {

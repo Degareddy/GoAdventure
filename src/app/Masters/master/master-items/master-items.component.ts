@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MasterItems } from '../../../modals/masters.modal';
 import { FormBuilder, FormGroup, Validator } from '@angular/forms';
-import { MasterParams } from '../../../modals/masters.modal';
 import { MastersService } from 'src/app/Services/masters.service';
 import { UserData } from 'src/app/admin/admin.module';
+import { MasterParams } from '../../Modules/masters.module';
 
 @Component({
   selector: 'app-master-items',

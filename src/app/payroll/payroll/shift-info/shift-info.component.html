@@ -24,18 +24,14 @@
       </div>
 
       <div class="col-3">
-        <mat-form-field appearance="outline">
-          <mat-label>Type Code</mat-label>
-          <input matInput placeholder="Type Code" formControlName="typeCode" type="text">
-          <button mat-button *ngIf="pstForm.get('typeCode')!.value" type="button" matSuffix mat-icon-button
-            aria-label="Clear" (click)="pstForm.get('typeCode')!.setValue('')">
-            <mat-icon>close</mat-icon>
-          </button>
-          <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()"
-            [disabled]="pstForm.get('mode')!.value === 'Add'">
-            <mat-icon class="mat-search-icon">search</mat-icon>
-          </button>
+        <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Shift Code</mat-label>
+          <mat-select formControlName="typeCode">
+            <mat-option *ngFor="let x of shiftCodes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
         </mat-form-field>
+      </div>
 
       </div>
       <div class="col-3">

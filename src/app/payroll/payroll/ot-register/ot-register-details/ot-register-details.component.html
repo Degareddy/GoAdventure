@@ -9,6 +9,8 @@
 </button>
 <div class="mat-card container-fluid">
   <div class="left">OT Register Details</div>
+  <div class="right">        <mat-label style="margin-left: 28px;">SlNo:<b style="padding-left: 10px;">{{slNum}}</b></mat-label>
+  </div>
   <!-- <div class="right">
   <button mat-icon-button mat-dialog-close class="small-button">
     <mat-icon class="small-icon">close</mat-icon>
@@ -18,8 +20,14 @@
 <mat-card>
   <form [formGroup]="purReqHdrForm" (submit)="onSubmit()">
     <div class="row row justify-content-center">
+      
       <div class="col-3">
-        <mat-label style="margin-left: 28px;">SlNo:<b style="padding-left: 10px;">{{slNum}}</b></mat-label>
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Shift Code</mat-label>
+          <mat-select formControlName="shiftNo">
+            <mat-option *ngFor="let x of shiftNo" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
       <div class="col-3">
         <mat-form-field appearance="outline" style="width: 95%;">
@@ -156,9 +164,9 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>S.No</th>
       <td mat-cell *matCellDef="let cust">{{cust.slNo}} </td>
     </ng-container>
-    <ng-container matColumnDef="tranNo">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tran No</th>
-      <td mat-cell *matCellDef="let cust">{{cust.tranNo}} </td>
+    <ng-container matColumnDef="shiftNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Shift Codes</th>
+      <td mat-cell *matCellDef="let cust">{{cust.shiftNo}} </td>
     </ng-container>
     <ng-container matColumnDef="employee">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Employee</th>
