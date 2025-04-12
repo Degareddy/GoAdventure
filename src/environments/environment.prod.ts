@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   envName: 'prod',
-  Url: 'https://degatech.in/api/api/',
+  Url: 'https://degatech.in/tradiumapi/api/',
   // Url: 'http://183.83.32.116:5000/api/',
 
   version: "1.0.0"
