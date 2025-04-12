@@ -385,7 +385,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
   }
   GetClietBalanceSummary(supplierCode: string) {
     let currency: string = '';
-    if (this.userDataService.userData.company === Company.DEGANIUM) {
+    if (this.userDataService.userData.company === Company.TRADIUM) {
       currency = 'INR';
     } else {
       currency = "KES"
