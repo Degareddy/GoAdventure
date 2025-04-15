@@ -184,7 +184,7 @@ export class OtRegisterDetailsComponent implements OnInit {
       const body = {
         ...this.commonParams(),
         Type: Type.EMPLOYEE,
-        PartyName: this.purReqHdrForm.get('employee')!.value
+        Item: this.purReqHdrForm.get('employee')!.value
       }
       try {
         this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {

@@ -132,6 +132,8 @@ export class TablesComponent implements OnInit, OnDestroy {
   }
 
   getTableTypeChange(event: any) {
+    // this.tthForm.
+
     if (this.tthForm.get('mode')?.value != "Add") {
       this.resetMessages();
       this.masterParams.type = 'TAXLIST';
@@ -216,12 +218,12 @@ export class TablesComponent implements OnInit, OnDestroy {
   }
   modeChanged(event: string) {
     if (event.toUpperCase() === "ADD") {
-      this.tthForm.get('taxType')?.disable({ emitEvent: false });
+      // this.tthForm.get('taxType')?.disable({ emitEvent: false });
       this.tthForm.get('mode')?.patchValue(event, { emitEvent: false });
       this.loadData();
     }
     else {
-      this.tthForm.get('taxType')?.enable({ emitEvent: false });
+      // this.tthForm.get('taxType')?.enable({ emitEvent: false });
       this.tthForm.get('mode')?.patchValue(event, { emitEvent: false });
     }
   }

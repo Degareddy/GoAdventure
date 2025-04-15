@@ -41,7 +41,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Year No</mat-label>
-          <mat-select formControlName="yearNo">
+          <mat-select formControlName="yearNo" (selectionChange)="yearChanged($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of yearNum" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
@@ -84,8 +84,8 @@
       </div>
       <div class="col-5">
         <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
-          <mat-label>Remarks</mat-label>
-          <textarea placeholder="Remarks" matInput formControlName="remarks" rows="1"></textarea>
+          <mat-label>Notes</mat-label>
+          <textarea placeholder="Notes" matInput formControlName="notes" rows="1"></textarea>
         </mat-form-field>
       </div>
       <div class="col-2 myCustomClass">

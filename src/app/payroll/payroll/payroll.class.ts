@@ -22,7 +22,7 @@ export class eligibleLeaves {
   public fromDate!: string
   public toDate!: string
   public tranStatus!: string
-  public remarks!: string
+  public notes!: string
   public mode!: string
   public user!: string
   public refNo!: string

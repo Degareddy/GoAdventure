@@ -167,8 +167,6 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
           this.retMessage = res.message;
           this.textMessageClass = 'red';
         }
-
-
       })
 
     } catch (ex: any) {

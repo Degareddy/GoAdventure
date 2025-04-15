@@ -456,7 +456,7 @@ export class DeliveryComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: "CUSTOMER",
-      PartyName: this.deliveryForm.controls['customer'].value || ""
+      Item: this.deliveryForm.controls['customer'].value || ""
 
     }
     try {

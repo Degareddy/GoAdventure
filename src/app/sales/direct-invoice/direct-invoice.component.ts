@@ -417,7 +417,7 @@ export class DirectInvoiceComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: "CUSTOMER",
-      PartyName: this.saleForm.controls['customer'].value || ""
+      Item: this.saleForm.controls['customer'].value || ""
 
     }
     try {
@@ -462,7 +462,7 @@ export class DirectInvoiceComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: "EMPLOYEE",
-      PartyName: this.saleForm.get('salesRep')!.value
+      Item: this.saleForm.get('salesRep')!.value
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {

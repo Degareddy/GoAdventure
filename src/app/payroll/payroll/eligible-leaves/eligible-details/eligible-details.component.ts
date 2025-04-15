@@ -91,6 +91,7 @@ export class EligibleDetailsComponent implements OnInit, OnDestroy {
         this.rowData = res.data;
       }
       else {
+        this.rowData = [];
         this.retMessage = res.message;
         this.textMessageClass = "red";
       }
@@ -115,6 +116,29 @@ export class EligibleDetailsComponent implements OnInit, OnDestroy {
     }
     else {
       this.prepareCls();
+      this.loader.start();
+      this.subSink.sink = this.payService.UpdateEligibleLeaveDetails(this.eligibleCls).subscribe((res: SaveApiResponse) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === "SUCCESS") {
+          this.textMessageClass = 'green';
+          this.retMessage = res.message;
+          this.getData();
+        }
+        else {
+          this.textMessageClass = 'red';
+          this.retMessage = res.message;
+        }
+      })
+    }
+
+  }
+  onDelete() {
+    if (this.eligibleForm.invalid) {
+      return;
+    }
+    else {
+      this.prepareCls();
+      this.eligibleCls.mode = 'Delete';
       this.loader.start();
       this.subSink.sink = this.payService.UpdateEligibleLeaveDetails(this.eligibleCls).subscribe((res: SaveApiResponse) => {
         this.loader.stop();
@@ -169,5 +193,15 @@ export class EligibleDetailsComponent implements OnInit, OnDestroy {
     // this.taxCls.tableType = event.data.tableType;
     // this.slNum = event.data.slNo;
   }
+  
+  clearMsg() {
+    this.retMessage = "";
+    this.textMessageClass = "";
+  }
 
+  New() {
+    this.clearMsg();
+    this.eligibleForm = this.formInit();
+    this.slNum = 0;
+  }
 }

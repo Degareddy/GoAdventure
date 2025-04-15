@@ -28,6 +28,8 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
   eligibleLeavesForm!: FormGroup;
   textMessageClass: string = "";
   retMessage: string = "";
+  newTranMsg: string = "";
+  status: string = ""
   newTranMessage: string = "";
   tranStatus: string = "";
   yearNum: Item[] = []
@@ -55,7 +57,7 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
       yearNo: [''],
       fromDate: [new Date(), Validators.required],
       toDate: [new Date(), Validators.required],
-      remarks: [''],
+      notes: [''],
       mode: ['View'],
       tranDate: [new Date()]
     });
@@ -146,7 +148,7 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     // this.elgCls.tranDate = this.eligibleLeavesForm.get('tranDate')?.value;
 
     this.elgCls.yearNo = this.eligibleLeavesForm.get('yearNo')?.value;
-    this.elgCls.remarks = this.eligibleLeavesForm.get('remarks')?.value;
+    this.elgCls.notes = this.eligibleLeavesForm.get('notes')?.value;
     // this.elgCls.company = this.userDataService.userData.company;
   }
   onSubmit() {
@@ -182,9 +184,8 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
       this.subsink.sink = this.payService.GetEligibleLeaves(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "SUCCESS") {
-          // this.stockTransferForm.setValue(res['data']);
           this.eligibleLeavesForm.controls['tranDate'].setValue(res['data'].tranDate);
-          this.eligibleLeavesForm.controls['remarks'].setValue(res['data'].remarks);
+          this.eligibleLeavesForm.controls['notes'].setValue(res['data'].notes);
           //this.eligibleLeavesForm.controls['department'].setValue(res['data'].department);
           //this.eligibleLeavesForm.controls['tranStatus'].setValue(res['data'].tranStatus);
           this.tranStatus = res['data'].tranStatus;
@@ -259,6 +260,53 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     });
 
   }
+
+  yearChanged(event: any) {
+    this.getEligibleLeaves(event.value, this.eligibleLeavesForm.get('mode')?.value);
+  }
+
+  getEligibleLeaves(leaveCode: string, mode: string) {
+    const body: getPayload = {
+      ...this.commonParams(),
+      item: leaveCode,
+    };
+    try {
+      this.loader.start();
+      this.subsink.sink = this.payService.GetEligibleLeaves(body).subscribe((res: any) => {
+        this.loader.stop();
+        console.log(res.data);
+        if (res.status.toUpperCase() === "SUCCESS") {
+          this.status = res['data'].typeStatus;
+          this.eligibleLeavesForm.patchValue({
+            tranDate: res.data.tranDate,
+            fromDate: res.data.fromDate,
+            toDate: res.data.toDate,
+            notes: res.data.notes
+          });
+          if (mode != 'View' && this.newTranMsg != "") {
+            this.retMessage = this.newTranMsg;
+            this.textMessageClass = 'green';
+          }
+          else {
+            this.retMessage = res.message;
+            this.textMessageClass = 'green';
+          }
+
+        }
+        else {
+          this.retMessage = res.message;
+          this.textMessageClass = 'red';
+        }
+      })
+
+    } catch (ex: any) {
+      //console.log(ex);
+      this.retMessage = ex.message;
+      this.textMessageClass = 'red';
+    }
+
+  }
+
   onDetailsCilcked() {
     const dialogRef: MatDialogRef<EligibleDetailsComponent> = this.dialog.open(EligibleDetailsComponent, {
       width: '90%',

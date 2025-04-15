@@ -387,7 +387,7 @@ export class AmcComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: "SUPPLIER",
-      PartyName: this.amcForm.controls['supplier'].value || ""
+      Item: this.amcForm.controls['supplier'].value || ""
 
     }
     try {

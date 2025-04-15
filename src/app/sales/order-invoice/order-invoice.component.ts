@@ -511,7 +511,7 @@ const body = {
     const body = {
       ...this.commonParams(),
       Type: "CUSTOMER",
-      PartyName: this.orderInvoiceForm.controls['customer'].value || ""
+      Item: this.orderInvoiceForm.controls['customer'].value || ""
 
     }
     try {

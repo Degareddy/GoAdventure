@@ -516,7 +516,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: Type.CUSTOMER,
-      PartyName: this.saleOrderForm.controls['customer'].value || ""
+      Item: this.saleOrderForm.controls['customer'].value || ""
 
     }
     try {
@@ -561,7 +561,7 @@ export class SaleOrderComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: Type.EMPLOYEE,
-      PartyName: this.saleOrderForm.get('salesRep')!.value
+      Item: this.saleOrderForm.get('salesRep')!.value
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {

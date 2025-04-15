@@ -4,26 +4,40 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MastersService } from 'src/app/Services/masters.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { PayrollService } from 'src/app/Services/payroll.service';
-import { forkJoin } from 'rxjs';
+import { firstValueFrom, forkJoin, map, startWith } from 'rxjs';
 import { SubSink } from 'subsink';
 import { LeaveRegister } from '../payroll.class';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
-import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
+import { getPayload, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
+import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
+import { SearchPartyComponent } from 'src/app/general/search-party/search-party.component';
+import { UtilitiesService } from 'src/app/Services/utilities.service';
+import { AccessSettings } from 'src/app/utils/access';
+
 interface params {
   itemCode: string
   itemName: string
 
 }
+
+interface autoComplete {
+  itemCode: string
+  itemName: string
+  itemDetails: string
+
+}
+
 @Component({
   selector: 'app-leave-register',
   templateUrl: './leave-register.component.html',
   styleUrls: ['./leave-register.component.css']
 })
+
 export class LeaveRegisterComponent implements OnInit, OnDestroy {
   plrHdrForm!: FormGroup;
   modes: Item[] = []
@@ -39,9 +53,20 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
   @Input() max: any;
   tomorrow = new Date();
   dialogOpen: boolean = false;
-  constructor(private fb: FormBuilder, public dialog: MatDialog, private router: Router,
-    private masterService: MastersService, private userDataService: UserDataService, private datePipe: DatePipe,
-    private loader: NgxUiLoaderService, private payService: PayrollService) {
+  empCode: string = "";
+  autoFilteredEmployee: autoComplete[] = [];
+  employeeList: autoComplete[] = []
+  filteredEmployee: any[] = [];
+
+  constructor(private fb: FormBuilder,
+    public dialog: MatDialog,
+    private router: Router,
+    private masterService: MastersService,
+    private userDataService: UserDataService,
+    private datePipe: DatePipe,
+    private loader: NgxUiLoaderService,
+    private payService: PayrollService,
+    private utlService: UtilitiesService) {
     this.plrHdrForm = this.formInit();
     this.subSink = new SubSink();
     this.LeaveRegisterCls = new LeaveRegister();
@@ -50,6 +75,7 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
+  
   formInit() {
     return this.fb.group({
       tranNo: [''],
@@ -73,9 +99,20 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
       mode: ['View']
     })
   }
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.loadData();
 
+    this.plrHdrForm.get('employee')!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value?.itemName || ''),
+        map(name => this._filterEmployee(name))
+      )
+      .subscribe(filtered => {
+        this.autoFilteredEmployee = filtered;
+      });
+      this.employeeList=await  this.loadCust("EMPLOYEE");
+      this.filteredEmployee=this.employeeList
   }
   displayEMP(item: params): string {
     return item ? item.itemName : '';
@@ -263,6 +300,60 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
 
+  displayEmployee(item: autoComplete): string {
+    return item && item.itemName ? item.itemName : '';
+  }
+  
+  filerEmployee(value: any) {
+    const filterValue = value.toLowerCase();
+    return this.employeeList.filter((cust: params) => cust.itemName.toLowerCase().includes(filterValue));
+  }
+  private _filterEmployee(value: string): autoComplete[] {
+    const filterValue = value.toLowerCase();
+  
+    return this.employeeList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
+  }
+  async loadCust(partyType: string): Promise<autoComplete[]> {
+      
+      let resList:autoComplete[]=[]
+      const body = {
+        Company: this.userDataService.userData.company,
+        Location: this.userDataService.userData.location,
+        City: "",
+        Email: "",
+        FullAddress: "",
+        Phones: "",
+        PartyName: "",
+        PartyStatus: TranStatus.OPEN,
+        RefNo: this.userDataService.userData.sessionID,
+        User: this.userDataService.userData.userID,
+        PartyType: partyType,
+      };
+    
+      try {
+        const res: any = await firstValueFrom(this.utlService.GetPartySearchList(body));
+        
+        if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          return [];
+        }
+    
+        this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+        resList=res.data.map((item: any) => ({
+          itemCode: item.code,
+          itemName: item.partyName,
+          itemDetails: item.phones || item.email || 'No Email Or Phone number'
+        }));
+        return resList
+      } catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        return [];
+      }
+    }
   searchData() {
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -321,6 +412,71 @@ export class LeaveRegisterComponent implements OnInit, OnDestroy {
     }
   }
 
+  modeChange(event: string) {
+    if (this.plrHdrForm.get('mode')?.value === "Add") {
+      this.clearMsg();
+      this.plrHdrForm = this.formInit();
+      this.plrHdrForm.get('mode')?.patchValue(event, { emitEvent: false });
+      this.plrHdrForm.get('leaveType')?.enable();
+      this.loadData();
+    }
+    else {
+      this.plrHdrForm.get('mode')?.patchValue(event, { emitEvent: false });
+      this.plrHdrForm.get('leaveType')?.disable();
+    }
+  }
+
+  onEmployeeSearch() {
+    const body = {
+      ...this.commonParams(),
+      Type: Type.EMPLOYEE,
+      Item: this.plrHdrForm.get('employee')!.value
+    }
+    try {
+      this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
+        if (res.retVal === 0) {
+          if (res && res.data && res.data.nameCount === 1) {
+            this.plrHdrForm.controls['employee'].patchValue(res.data.selName);
+            this.empCode = res.data.selCode;
+          }
+          else {
+            if (!this.dialogOpen) {
+              const dialogRef: MatDialogRef<SearchPartyComponent> = this.dialog.open(SearchPartyComponent, {
+                width: '90%',
+                disableClose: true,
+                data: {
+                  PartyName: this.plrHdrForm.get('employee')!.value, PartyType: Type.EMPLOYEE,
+                  search: 'Employee Search'
+                }
+              });
+              this.dialogOpen = true;
+              dialogRef.afterClosed().subscribe(result => {
+                if (result != true && result != undefined) {
+                  this.plrHdrForm.controls['employee'].patchValue(result.partyName);
+                  this.empCode = result.code;
+                  if(this.empCode.length !==0){
+                    this.autoFilteredEmployee=[]
+                  }
+                }
+                this.dialogOpen = false;
+              });
+            }
+          }
+        }
+        else {
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+        }
+      });
+    }
+    catch (ex: any) {
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+  }
+
+  private displayMessage(message: string, cssClass: string) {
+    this.retMessage = message;
+    this.textMessageClass = cssClass;
+  }
   onHelpCilcked() {
     const dialogRef: MatDialogRef<AppHelpComponent> = this.dialog.open(AppHelpComponent, {
 

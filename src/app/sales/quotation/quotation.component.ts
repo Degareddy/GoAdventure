@@ -24,7 +24,6 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { displayMsg, Items, Mode, ScreenId, TextClr, TranStatus, TranType, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
 
-
 interface params {
   itemCode: string
   itemName: string
@@ -540,7 +539,7 @@ export class QuotationComponent implements OnInit, OnDestroy {
     const body = {
       ...this.commonParams(),
       Type: Type.EMPLOYEE,
-      PartyName: this.quotationForm.get('salesExec')!.value
+      Item: this.quotationForm.get('salesExec')!.value
     }
     try {
       this.subSink.sink = this.utlService.GetNameSearchCount(body).subscribe((res: nameCountResponse) => {
