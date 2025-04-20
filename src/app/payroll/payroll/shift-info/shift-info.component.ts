@@ -19,6 +19,8 @@ import { APP_DATE_FORMATS, AppDateAdapter } from 'src/app/general/date-format';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { ScreenId, TextClr } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-shift-info',
@@ -44,13 +46,45 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
   shiftCodes:Item[]=[]
   private subsink: SubSink = new SubSink();
 
+  private columnApi!: ColumnApi;
+  private gridApi!: GridApi;
+  public gridOptions!: GridOptions;
+  rowData: any = [];
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  columnDefs: any = [
+      { field: "typeCode", headerName: "Type Code", sortable: true, filter: true, resizable: true, flex: 2},
+      { field: "typeDesc", headerName: "Type Desc", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "fromTime", headerName: "From Time",valueFormatter: (params: any) => {
+        const timeStr = params.value;
+        if (!timeStr) return '';
+    
+        const [hours, minutes, seconds] = timeStr.split(':');
+        const date = new Date();
+        date.setHours(+hours, +minutes, +seconds || 0);
+    
+        return this.datePipe.transform(date, 'hh:mm a');
+      },sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "toTime", headerName: "To Time",valueFormatter: (params: any) => {
+        const timeStr = params.value;
+        if (!timeStr) return '';
+    
+        const [hours, minutes, seconds] = timeStr.split(':');
+        const date = new Date();
+        date.setHours(+hours, +minutes, +seconds || 0);
+    
+        return this.datePipe.transform(date, 'hh:mm a');},sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "typeRate", headerName: "Type Rate", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "tranDate", headerName: "Type Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "typeStatus", headerName: "Type Status", sortable: true, filter: true, resizable: true, flex: 1},
+  ];
+
   constructor(protected route: ActivatedRoute,
     protected router: Router, private userDataService: UserDataService,
    
     private masterService: MastersService, public dialog: MatDialog,
     private loader: NgxUiLoaderService,
     private fb: FormBuilder, private prService: PayrollService,
-    private datePipe: DatePipe) {
+    private datePipe: DatePipe,private payService: PayrollService,) {
     this.masterParams = new MasterParams();
 
     this.pstForm = this.formInit();
@@ -80,8 +114,45 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  onGridReady(params: any) {
+    this.gridApi.sizeColumnsToFit();
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+  onRowSelected(event: any) {
+    this.masterParams.item = "SHIFTTYPES";
+    // this.masterParams.tranNo = this.pstForm.controls['typeCode'].value;
+    this.masterParams.tranNo = event.data.typeCode;
+    this.getShiftData(this.masterParams,"View");
+    this.pstForm.get('mode')?.setValue("View");
+  }
 
   ngOnInit(): void {
+   this.loadData();
+   this.loadGridData();
+  }
+  loadGridData(){
+     const data ={
+          ...this.commonParams(),
+          item:"SHIFTTYPES",
+          mode:this.pstForm.get('mode')?.value
+        }
+        const requests = [
+          this.payService.GetShiftTypesList(data)
+        ];
+         this.subsink.sink = forkJoin(requests).subscribe(
+          (results: any[]) => {
+            this.rowData = results[0]['data'];
+          },
+          (error: any) => {
+            this.textMessageClass = 'red';
+            this.retMessage = error.message;
+    
+          }
+        );  
+  }
+  loadData(){
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
     this.masterParams.location = this.userDataService.userData.location;
@@ -109,7 +180,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
         this.masterParams.user = this.userDataService.userData.userID;
         this.masterParams.refNo = this.userDataService.userData.sessionID;
         
-    
+
         this.subsink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.shiftCodes = res['data'];

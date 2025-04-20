@@ -16,7 +16,7 @@ import { SubSink } from 'subsink';
 import { forkJoin } from 'rxjs';
 import { eligibleLeaves } from '../payroll.class';
 import { EligibleDetailsComponent } from './eligible-details/eligible-details.component';
-
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 @Component({
   selector: 'app-eligible-leaves',
   templateUrl: './eligible-leaves.component.html',
@@ -37,6 +37,19 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
   tomorrow = new Date();
   private elgCls: eligibleLeaves = new eligibleLeaves();
   private subsink: SubSink = new SubSink();
+  private columnApi!: ColumnApi;
+  private gridApi!: GridApi;
+  public gridOptions!: GridOptions;
+  rowData: any = [];
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  columnDefs: any = [
+    // { field: "itemCode", headerName: "Bonus Code", sortable: true, filter: true, resizable: true, flex: 2,autoHeight:true,cellStyle:{whitespace:'normal'},suppressSizeToFit:true},
+    { field: "bonusCode", headerName: "Bonus Code", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "bonusName", headerName: "Bonus Name", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "bonusType", headerName: "Bonus Type", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "tranDate", headerName: "Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "itemStatus", headerName: "Bonus Status", sortable: true, filter: true, resizable: true, flex: 1},
+  ];
 
   constructor(protected route: ActivatedRoute,
     protected router: Router,
@@ -71,9 +84,37 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
-
+  onGridReady(params: any) {
+    this.gridApi.sizeColumnsToFit();
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+  onRowSelected(event: any) {
+    this.getEligibleLeaves(event.data.bonusCode,"View");
+  }
   ngOnInit(): void {
     this.loadData();
+    this.loadGridData();
+  }
+  loadGridData(){
+    const data: getPayload = {
+      ...this.commonParams(),
+      item: "FINYEAR",
+      mode:this.eligibleLeavesForm.get('mode')?.value
+    };
+    const requests = [
+      this.payService.GetEligibleLeaveTypesList(data)
+    ];
+    this.subsink.sink = forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.rowData = results[0]['data'];
+      },
+      (error: any) => {
+        this.textMessageClass = 'red';
+        this.retMessage = error.message;
+      }
+    );
   }
   loadData() {
     this.masterParams.langId = this.userDataService.userData.langId;;

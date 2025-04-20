@@ -15,7 +15,7 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, getResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
-
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 @Component({
   selector: 'app-bonus-types',
   templateUrl: './bonus-types.component.html',
@@ -39,6 +39,19 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
   bonusTypeCode!: string;
   @Input() max: any;
   tomorrow = new Date();
+  private columnApi!: ColumnApi;
+  private gridApi!: GridApi;
+  public gridOptions!: GridOptions;
+  rowData: any = [];
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  columnDefs: any = [
+    // { field: "itemCode", headerName: "Bonus Code", sortable: true, filter: true, resizable: true, flex: 2,autoHeight:true,cellStyle:{whitespace:'normal'},suppressSizeToFit:true},
+    { field: "bonusCode", headerName: "Bonus Code", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "bonusName", headerName: "Bonus Name", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "bonusType", headerName: "Bonus Type", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "tranDate", headerName: "Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "itemStatus", headerName: "Bonus Status", sortable: true, filter: true, resizable: true, flex: 1},
+  ];
 
   constructor(protected route: ActivatedRoute,
     protected router: Router, private userDataService: UserDataService,
@@ -65,6 +78,16 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  onGridReady(params: any) {
+    this.gridApi.sizeColumnsToFit();
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+  onRowSelected(event: any) {
+    this.getBonusData(event.data.bonusCode,"View");
+  }
+
   formInit() {
     return this.fb.group({
       bonusTypes: [''],
@@ -94,7 +117,9 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
     this.subSink.sink = forkJoin(requests).subscribe(
       (results: any[]) => {
         this.bonusTypes = results[0]['data'];
-
+        // this.rowData = results[0]['data'];
+        // console.log(results);
+    
       },
       (error: any) => {
         this.textMessageClass = 'red';
@@ -121,9 +146,29 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
     }
   }
 
+  loadGridData(){
+    const bonusTypes: getPayload = {
+      ...this.commonParams(),
+      item: "BONUSTYPES",
+      mode:this.bonusTypeForm.get('mode')?.value
+    };
+    const requests = [
+      this.payService.getBonusTypesList(bonusTypes)
+    ];
+    this.subSink.sink = forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.rowData = results[0]['data'];
+      },
+      (error: any) => {
+        this.textMessageClass = 'red';
+        this.retMessage = error.message;
+      }
+    );
+  }
   ngOnInit(): void {
+    this.bonusTypeForm =  this.formInit();
     this.loadData();
-
+    this.loadGridData();
 
   }
 
@@ -209,7 +254,7 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
               this.bonusTypes.push({ itemCode: this.bonusTypeForm.get('bonusCode')?.value, itemName: this.bonusTypeForm.get('bonusName')?.value });
             }
             this.getBonusData(this.bonusTypeForm.get('bonusCode')?.value, this.bonusTypeForm.get('mode')?.value);
-
+            this.loadGridData();
             this.textMessageClass = 'green';
           } else {
             this.retMessage = res.message;

@@ -36,6 +36,10 @@ export class PayrollService {
     return this.http.post(environment.Url + 'payroll/GetEligibleLeaveDetails', pmt)
   }
 
+  GetEligibleLeaveTypesList(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetEligibleLeaveTypesList', pmt)
+  }
+
   GetEligibleLeaves(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetEligibleLeaves', pmt)
   }
@@ -73,6 +77,18 @@ export class PayrollService {
   }
   UpdateHolidayTypes(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/UpdateHolidayTypes', pmt)
+  }
+  getBonusTypesList(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetBonusTypesList', pmt)
+  }
+  GetTaxTableList(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetTaxTableList', pmt)
+  }
+  GetLeaveTypesList(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetLeaveTypesList', pmt)
+  }
+  GetHolidayTypesList(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetHolidayTypesList', pmt)
   }
   GetHolidayTypes(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetHolidayTypes', pmt)
@@ -139,6 +155,9 @@ export class PayrollService {
 
   GetShiftTypeDetails(body: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetShiftTypeDetails/', body)
+  }
+  GetShiftTypesList(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetShiftTypesList/', body)
   }
 
   GetTranCount(body: any): Observable<any> {

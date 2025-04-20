@@ -15,8 +15,8 @@
   <form [formGroup]="bonusTypeForm" (ngSubmit)="onSubmit()">
 
     <div class="row justify-content-center">
-      <div class="col-3">
-        <mat-form-field appearance="outline" class="mat-mode">
+      <div class="col-2">
+        <mat-form-field aria-colspan="2" appearance="outline" class="mat-mode">
           <mat-label>Mode</mat-label>
           <mat-select formControlName="mode" appearance="outline"
             (selectionChange)="modeChange(bonusTypeForm.get('mode')!.value)">
@@ -25,32 +25,34 @@
         </mat-form-field>
       </div>
       <div class="col-3">
-        <mat-form-field appearance="outline">
-          <mat-label>Bonus Types</mat-label>
+        <mat-form-field aria-colspan="2" appearance="outline" >
+          <mat-label class="mat-label-class">Bonus Types</mat-label>
           <mat-select formControlName="bonusTypes" (selectionChange)="getBonusTypeChange($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of bonusTypes" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
-    </div>
-
-    <div class="row justify-content-center">
-      <div class="col-3">
-        <mat-form-field appearance="outline">
+          <div class="col-3">
+          <mat-form-field aria-colspan="2" appearance="outline">
           <mat-label class="mat-label-class">Bonus Code</mat-label>
           <input matInput placeholder="Bonus Code" formControlName="bonusCode" type="text ">
         </mat-form-field>
       </div>
-      <div class="col-3">
-        <mat-form-field aria-colspan="5" appearance="outline">
+    </div>
+
+    <!-- <div class="row justify-content-center">
+  
+
+    </div> -->
+
+    <div class="row justify-content-center">
+      <div class="col-2">
+        <mat-form-field appearance="outline">
           <mat-label class="mat-label-class">Bonus Name</mat-label>
           <input matInput placeholder="Bonus Name" formControlName="bonusName" type="text ">
         </mat-form-field>
       </div>
-    </div>
-
-    <div class="row justify-content-center">
       <div class="col-3">
         <!-- <mat-form-field  appearance="outline">
           <mat-label class="mat-label-class">Bonus Type</mat-label>
@@ -77,9 +79,10 @@
     </div>
 
     <div class="row justify-content-center">
-      <div class="col-3">
-        <mat-form-field appearance="outline">
-          <mat-label>Notes</mat-label>
+      <div class="col-1"></div>
+      <div class="col-6">
+        <mat-form-field appearance="outline" style="width:95%">
+          <mat-label aria-colspan="2">Notes</mat-label>
           <textarea matInput placeholder="Notes" formControlName="notes"></textarea>
         </mat-form-field>
       </div>
@@ -102,4 +105,10 @@
       </button>
     </div>
   </form>
+  <div style="margin-top: -30px;">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+      [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+      [gridHeight]="'230px'" style="width: auto;" [paginationPageSize]="25" [showToolPanel]="true"
+      [showRecordCount]="true"></app-access-grid>
+  </div>
 </div>
