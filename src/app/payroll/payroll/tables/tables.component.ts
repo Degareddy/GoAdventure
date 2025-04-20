@@ -16,7 +16,7 @@ import { Item } from 'src/app/general/Interface/interface';
 import { taxTable } from '../payroll.class';
 import { DatePipe } from '@angular/common';
 import { TaxTableDetailsComponent } from './tax-table-details/tax-table-details.component';
-
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 
 @Component({
   selector: 'app-tables',
@@ -40,6 +40,19 @@ export class TablesComponent implements OnInit, OnDestroy {
   tomorrow = new Date();
   newTranMsg!: string;
   private taxCls: taxTable = new taxTable();
+  private columnApi!: ColumnApi;
+  private gridApi!: GridApi;
+  public gridOptions!: GridOptions;
+  rowData: any = [];
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  columnDefs: any = [
+      { field: "tableType", headerName: "Table Type", sortable: true, filter: true, resizable: true, flex: 2},
+      { field: "yearCode", headerName: "Year Code", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "validFrom", headerName: "Valid From",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "validTo", headerName: "Valid To",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "taxStatus", headerName: "Tax Status", sortable: true, filter: true, resizable: true, flex: 1},
+  ];
+
   constructor(private fb: FormBuilder,
     private router: Router, public dialog: MatDialog, private datePipe: DatePipe,
     private masterService: MastersService, private userDataService: UserDataService,
@@ -73,9 +86,40 @@ export class TablesComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  onGridReady(params: any) {
+    this.gridApi.sizeColumnsToFit();
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+  onRowSelected(event: any) {
+    this.getTableTypeData(event.data.tableType,"View");
+  }
+
 
   ngOnInit(): void {
    this.loadData();
+   this.loadGridData();
+  }
+  loadGridData(){
+    const data:getPayload={
+      ...this.commonParams(),
+      item:"TAXLIST",
+      mode:this.tthForm.get('mode')?.value
+    }
+    const requests = [
+      this.payService.GetTaxTableList(data)
+    ];
+    this.subSink.sink = forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.rowData = results[0]['data'];
+      },
+      (error: any) => {
+        this.textMessageClass = 'red';
+        this.retMessage = error.message;
+
+      }
+    );  
   }
   loadData() {
     this.masterParams.langId = this.userDataService.userData.langId;;
@@ -102,7 +146,7 @@ export class TablesComponent implements OnInit, OnDestroy {
           this.loader.stop();
           if(modesRes.status.toUpperCase() === 'SUCCESS'){
             this.modes = modesRes['data'];
-
+      
           }
           else{
             this.retMessage="Modes List empty!";
@@ -111,7 +155,6 @@ export class TablesComponent implements OnInit, OnDestroy {
           }
           if(taxTypeRes.status.toUpperCase() === 'SUCCESS'){
           this.taxTypesList = taxTypeRes['data'];
-
           }
           else{
             this.retMessage="Tax Types List empty!";

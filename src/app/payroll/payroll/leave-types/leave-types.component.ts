@@ -14,6 +14,8 @@ import { forkJoin } from 'rxjs';
 import { leaveType } from '../payroll.class';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+
 
 @Component({
   selector: 'app-leave-types',
@@ -33,6 +35,22 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
   @Input() max: any;
   tomorrow = new Date();
   private subsink: SubSink = new SubSink();
+  private columnApi!: ColumnApi;
+  private gridApi!: GridApi;
+  public gridOptions!: GridOptions;
+  rowData: any = [];
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  columnDefs: any = [
+      { field: "leaveCode", headerName: "Leave Code", sortable: true, filter: true, resizable: true, flex: 2,cellStyle:{whitespace:'normal'},suppressSizeToFit:true},
+      { field: "leaveDesc", headerName: "Leave Description", sortable: true, filter: true, resizable: true, flex: 1},
+  
+      { field: "applicableTo", headerName: "Applicable To", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "isEncashable", headerName: "En Cashable", sortable: true, filter: true, resizable: true, flex: 1, valueFormatter: (params:any) => params.value ? 'Yes' : 'No'},
+      { field: "isCarryFwdble", headerName: "Is Carry Forwadable",sortable: true, filter: true, resizable: true, flex: 1,  valueFormatter: (params:any) => params.value ? 'Yes' : 'No'},
+      { field: "tranDate", headerName: "Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "typeStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1},
+  ];
+ 
   constructor(private fb: FormBuilder, public dialog: MatDialog, private datePipe: DatePipe, protected router: Router,
     private masterService: MastersService, private userDataService: UserDataService,
     private loader: NgxUiLoaderService, private payService: PayrollService) {
@@ -80,6 +98,30 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
     this.masterParams.user = this.userDataService.userData.userID;
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.loadData();
+    this.loadGridData();
+
+    
+  }
+  loadGridData(){
+    const leavebody: getPayload = {
+      ...this.commonParams(),
+      item: "PAYROLLLEAVETYPES",
+      mode:this.ltDetForm.get('mode')?.value
+    };
+
+    const requests = [
+      this.payService.GetLeaveTypesList(leavebody)
+    ];
+    this.subsink.sink = forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.rowData = results[0]['data'];
+      },
+      (error: any) => {
+        this.textMessageClass = 'red';
+        this.retMessage = error.message;
+
+      }
+    );
   }
 
   loadData() {
@@ -126,6 +168,17 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID
     }
+  }
+  onGridReady(params: any) {
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    // params.api.setDomLayout('autoHeight');
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+    this.gridApi.sizeColumnsToFit();
+  }
+
+  onRowSelected(event: any) {
+    this.getLeaveTypes(event.data.leaveCode,"View");
   }
   leaveTypeChanged(event: any) {
     this.getLeaveTypes(event.value, this.ltDetForm.get('mode')?.value);
