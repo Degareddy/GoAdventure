@@ -18,6 +18,7 @@ import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
 import { Item } from 'src/app/general/Interface/interface';
 import { getPayload, getResponse, nameCountResponse, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { UserDataService } from 'src/app/Services/user-data.service';
+import { TranStatus } from 'src/app/utils/enums';
 @Component({
   selector: 'app-assets',
   templateUrl: './assets.component.html',
@@ -316,26 +317,27 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date): string {
-    return this.datePipe.transform(date, 'dd-MM-yyyy') || ''
+    // return this.datePipe.transform(date, 'dd-MM-yyyy') || ''
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || ''
   }
-
-
 
   searchData() {
     try {
       // Get the current date
       const currentDate = new Date();
       const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      // const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
-      // const formattedCurrentDate = this.formatDate(currentDate);
+      const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
+      const formattedCurrentDate = this.formatDate(currentDate);
 
       const body = {
         Company: this.userDataService.userData.company,
         Location: this.userDataService.userData.location,
         TranType: 'ASSET',
         TranNo: this.assetForm.controls['assignedSlNo'].value,
-        Party: "",
-        TranStatus: "ANY",
+        FromDate: formattedFirstDayOfMonth,
+        ToDate: formattedCurrentDate,
+        Party:"",
+        TranStatus:"ANY",
         User: this.userDataService.userData.userID,
         RefNo: this.userDataService.userData.sessionID
       }
@@ -421,8 +423,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
       this.assetDetailsCls.addedOn = this.assetForm.controls['addedOn'].value;
       this.assetDetailsCls.depLevel = this.assetForm.controls['depLevel'].value;
       this.assetDetailsCls.applyOn = this.assetForm.controls['applyOn'].value;
-      this.assetDetailsCls.depRate = parseFloat(this.assetForm.controls['depRate'].value.replace(/,/g, ','));
-      this.assetDetailsCls.disposedValue = parseFloat(this.assetForm.controls['disposedValue'].value.replace(/,/g, ','));
+      this.assetDetailsCls.depRate = parseFloat(this.assetForm.controls['depRate'].value.replace(/,/g, ''));
+      this.assetDetailsCls.disposedValue = parseFloat(this.assetForm.controls['disposedValue'].value.replace(/,/g, ''));
       this.assetDetailsCls.disposedOn = this.assetForm.controls['disposedOn'].value;
       this.assetDetailsCls.lifeYears = this.assetForm.controls['lifeYears'].value;
       this.assetDetailsCls.lifeMonths = this.assetForm.controls['lifeMonths'].value;
@@ -432,7 +434,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
       this.assetDetailsCls.applyWarranty = this.assetForm.controls['applyWarranty'].value;
       this.assetDetailsCls.warrExpiry = this.assetForm.controls['warrExpiry'].value;
       this.assetDetailsCls.warrDesc = this.assetForm.controls['warrDesc'].value;
-      this.assetDetailsCls.quantity = parseFloat(this.assetForm.controls['quantity'].value.replace(/,/g, ','));
+      this.assetDetailsCls.quantity = parseFloat(this.assetForm.controls['quantity'].value.replace(/,/g, ''));
       try {
         this.loader.start();
         this.subSink.sink = this.assetdtService.updateAssetdts(this.assetDetailsCls).subscribe((res: SaveApiResponse) => {
@@ -597,6 +599,4 @@ export class AssetsComponent implements OnInit, OnDestroy {
     });
 
   }
-
-
 }
