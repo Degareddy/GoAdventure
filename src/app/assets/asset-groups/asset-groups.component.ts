@@ -167,7 +167,7 @@ export class AssetGroupsComponent implements OnInit, OnDestroy {
       this.assetGrpCls.notes = this.assetgrpForm.controls['notes'].value;
       this.assetGrpCls.depOn = this.assetgrpForm.controls['depOn'].value;
       this.assetGrpCls.depType = this.assetgrpForm.controls['depType'].value;
-      this.assetGrpCls.depValue = parseFloat(this.assetgrpForm.controls['depValue'].value.replace(/,/g, ','));
+      this.assetGrpCls.depValue = parseFloat(this.assetgrpForm.controls['depValue'].value.replace(/,/g, ''));
       const transformedDate = this.datePipe.transform(this.assetgrpForm.controls['effectiveDate'].value, 'yyyy-MM-dd');
       if (transformedDate !== undefined && transformedDate !== null) {
         this.assetGrpCls.effectiveDate = transformedDate.toString();
