@@ -87,13 +87,13 @@ export class TablesComponent implements OnInit, OnDestroy {
     }
   }
   onGridReady(params: any) {
-    this.gridApi.sizeColumnsToFit();
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
+    this.gridApi.sizeColumnsToFit();
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
   onRowSelected(event: any) {
-    this.getTableTypeData(event.data.tableType,"View");
+    this.getTableTypeData(event.data.yearCode,"View");
   }
 
 
@@ -207,10 +207,12 @@ export class TablesComponent implements OnInit, OnDestroy {
 
   getTableTypeData(bonusCode: string, mode: string) {
     this.masterParams.item = bonusCode;
+    // console.log(this.masterParams.item)
     try {
       this.loader.start();
       this.subSink.sink = this.payService.GetTaxTable(this.masterParams).subscribe((res: any) => {
         this.loader.stop();
+        // console.log(res);
         if (res.status.toUpperCase() === "SUCCESS") {
           this.populateTaxDetails(res.data);
           if (mode != "View" && this.newTranMessage != "") {

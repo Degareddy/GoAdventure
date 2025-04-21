@@ -25,11 +25,12 @@
 
       <div class="col-3">
         <div class="col-3">
-        <mat-form-field appearance="outline" class="mat-mode">
+        <mat-form-field appearance="outline" class="mat-mode"> 
           <mat-label>Shift Code</mat-label>
-          <mat-select formControlName="typeCode">
+          <mat-select formControlName="typeCode" *ngIf="this.pstForm.get('mode')?.value !== 'Add'">
             <mat-option *ngFor="let x of shiftCodes" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
+          <input *ngIf="this.pstForm.get('mode')?.value === 'Add'" matInput placeholder="typeCode" formControlName="typeCode" type="text">
         </mat-form-field>
       </div>
 

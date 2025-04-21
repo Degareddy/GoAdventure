@@ -43,12 +43,11 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
   rowData: any = [];
   public rowSelection: 'single' | 'multiple' = 'multiple';
   columnDefs: any = [
-    // { field: "itemCode", headerName: "Bonus Code", sortable: true, filter: true, resizable: true, flex: 2,autoHeight:true,cellStyle:{whitespace:'normal'},suppressSizeToFit:true},
-    { field: "bonusCode", headerName: "Bonus Code", sortable: true, filter: true, resizable: true, flex: 1},
-    { field: "bonusName", headerName: "Bonus Name", sortable: true, filter: true, resizable: true, flex: 1},
-    { field: "bonusType", headerName: "Bonus Type", sortable: true, filter: true, resizable: true, flex: 1},
-    { field: "tranDate", headerName: "Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
-    { field: "itemStatus", headerName: "Bonus Status", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "yearNo", headerName: "Year", sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "tranDate", headerName: "Tran Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "fromDate", headerName: "From Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "toDate", headerName: "To Date",valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)} ,sortable: true, filter: true, resizable: true, flex: 1},
+    { field: "tranStatus", headerName: "Tran Status", sortable: true, filter: true, resizable: true, flex: 1},
   ];
 
   constructor(protected route: ActivatedRoute,
@@ -91,7 +90,7 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
   onRowSelected(event: any) {
-    this.getEligibleLeaves(event.data.bonusCode,"View");
+    this.getEligibleLeaves(event.data.yearNo,"View");
   }
   ngOnInit(): void {
     this.loadData();

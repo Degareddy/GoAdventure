@@ -121,11 +121,11 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
   onRowSelected(event: any) {
-    this.masterParams.item = "SHIFTTYPES";
+    // this.masterParams.item = "SHIFTTYPES";
     // this.masterParams.tranNo = this.pstForm.controls['typeCode'].value;
-    this.masterParams.tranNo = event.data.typeCode;
-    this.getShiftData(this.masterParams,"View");
-    this.pstForm.get('mode')?.setValue("View");
+    // this.masterParams.tranNo = event.data.typeCode;
+    this.getShiftData(event.data.typeDesc,"View");
+    // this.pstForm.get('mode')?.setValue("View");
   }
 
   ngOnInit(): void {
@@ -282,11 +282,11 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     try {
       this.loader.start();
       this.prService.GetShiftTypeDetails(this.masterParams).subscribe((res: any) => {
-        console.log(res);
+        // console.log(res);
         this.loader.stop();
 
         if (res.status.toUpperCase() == "SUCCESS") {
-          //console.log(res);
+          console.log(res);
           this.typeStatus = res['data'].tranStatus;
           this.pstForm.controls['typeCode'].setValue(res['data'].typeCode);
           this.pstForm.controls['toTime'].setValue(res['data'].toTime);
@@ -342,10 +342,13 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     if (event === "Add") {
       this.reset();
       this.pstForm.controls['mode'].setValue(event, { emitEvent: false });
-      this.pstForm.get('typeCode')!.disable();
-      this.pstForm.get('typeCode')!.clearValidators();
+      // this.pstForm.get('typeCode')!.disable();
+      this.pstForm.get('typeCode')!.enable();
       this.pstForm.get('typeCode')!.updateValueAndValidity();
+      // this.pstForm.get('typeCode')!.clearValidators();
+      // this.pstForm.controls['mode'].setValue("");
     }
+
     else {
       this.pstForm.controls['mode'].setValue(event, { emitEvent: false });
       this.pstForm.get('typeCode')!.enable();

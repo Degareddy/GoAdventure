@@ -108,4 +108,10 @@
 
     </div>
   </form>
+  <div style="margin-top: -30px;">
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+      [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+      [gridHeight]="'130px'" style="width: auto;" [paginationPageSize]="25" [showToolPanel]="true"
+      [showRecordCount]="true"></app-access-grid>
+  </div>
 </div>
