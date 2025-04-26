@@ -84,14 +84,15 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     }
   }
   onGridReady(params: any) {
-    this.gridApi.sizeColumnsToFit();
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+    this.gridApi.sizeColumnsToFit();
   }
   onRowSelected(event: any) {
     this.getEligibleLeaves(event.data.yearNo,"View");
   }
+
   ngOnInit(): void {
     this.loadData();
     this.loadGridData();
@@ -206,6 +207,7 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
           if (this.eligibleLeavesForm.get('mode')?.value === "Add") {
             this.modeChanged('Modify');
           }
+          this.loadGridData();
           this.retMessage = res.message;
           this.textMessageClass = "green";
         }
@@ -318,10 +320,12 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
         if (res.status.toUpperCase() === "SUCCESS") {
           this.status = res['data'].typeStatus;
           this.eligibleLeavesForm.patchValue({
+            yearNo: res.data.yearNo,
             tranDate: res.data.tranDate,
             fromDate: res.data.fromDate,
             toDate: res.data.toDate,
-            notes: res.data.notes
+            notes: res.data.notes,
+            tranStatus:res.data.notes
           });
           if (mode != 'View' && this.newTranMsg != "") {
             this.retMessage = this.newTranMsg;

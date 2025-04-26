@@ -13,6 +13,8 @@ import { PayrollService } from 'src/app/Services/payroll.service';
 import { payComponents } from '../payroll.class';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+
 
 @Component({
   selector: 'app-pay-components',
@@ -31,6 +33,25 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
   payComp: Item[] = []
   status: string = "";
   private payCls: payComponents = new payComponents();
+  private columnApi!: ColumnApi;
+  private gridApi!: GridApi;
+  public gridOptions!: GridOptions;
+  rowData: any = [];
+  public rowSelection: 'single' | 'multiple' = 'multiple';
+  columnDefs: any = [
+      { field: "payID", headerName: "Pay Id", sortable: true, filter: true, resizable: true, flex: 2,cellStyle:{whitespace:'normal'},suppressSizeToFit:true},
+      { field: "payDesc", headerName: "Pay Description", sortable: true, filter: true, resizable: true, flex: 1},
+  
+      { field: "payOn", headerName: "Pay On", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "payType", headerName: "Pay Type", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "payBy", headerName: "pay By",sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "taxable", headerName: "is Taxable",valueFormatter: (params:any) => params.value ? 'Yes' : 'No',sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "isMandatory", headerName: "is Mandatory",  valueFormatter: (params:any) => params.value ? 'Yes' : 'No', sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "payValue", headerName: "Pay Value", sortable: true, filter: true, resizable: true, flex: 1},
+      { field: "createdDate", headerName: "Created Date", sortable: true, filter: true, resizable: true, flex: 1,valueFormatter:(params:any)=>{ return this.datePipe.transform(params.value)}},
+  ];
+ 
+
   constructor(private fb: FormBuilder,
     public dialog: MatDialog, private payService: PayrollService,
     private loader: NgxUiLoaderService, protected router: Router,
@@ -80,9 +101,19 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  onGridReady(params: any) {
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+    this.gridApi.sizeColumnsToFit();
+  }
 
+  onRowSelected(event: any) {
+    this.getPayData(event.data.payID,"View");
+  }
   ngOnInit(): void {
     this.loadData();
+    this.loadGridData();
   }
   loadData(){
     const modebody: getPayload = {
@@ -120,6 +151,27 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
       this.textMessageClass = 'red';
     }
   }
+  loadGridData(){
+    const yearBody: getPayload = {
+      ...this.commonParams(),
+      item: "PAYROLLCOMP",
+      mode:this.ppcForm.get('mode')?.value
+    };
+    const requests = [
+      this.payService.GetPayComponentsList(yearBody)
+    ];
+    this.subsink.sink = forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.rowData = results[0]['data'];
+      },
+      (error: any) => {
+        this.textMessageClass = 'red';
+        this.retMessage = error.message;
+
+      }
+    );
+  }
+  
   Close() {
     this.router.navigateByUrl('/home');
   }
@@ -164,6 +216,7 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
           }
           this.tranMessage = res.message;
           this.getPayData(res.tranNoNew, this.ppcForm.get('mode')?.value);
+          this.loadGridData();
         }
         else {
           this.retMessage = res.message;

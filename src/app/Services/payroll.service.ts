@@ -90,6 +90,9 @@ export class PayrollService {
   GetHolidayTypesList(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetHolidayTypesList', pmt)
   }
+  GetPayComponentsList(pmt: any): Observable<any> {
+    return this.http.post(environment.Url + 'payroll/GetPayComponentsList', pmt)
+  }
   GetHolidayTypes(pmt: any): Observable<any> {
     return this.http.post(environment.Url + 'payroll/GetHolidayTypes', pmt)
   }
@@ -167,5 +170,6 @@ export class PayrollService {
   UpdateShiftDetails(shiftDet: shiftInfo): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'payroll/UpdateShiftTypes/', shiftDet)
   }
+
 
 }

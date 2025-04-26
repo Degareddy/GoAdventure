@@ -93,8 +93,33 @@ export class TablesComponent implements OnInit, OnDestroy {
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
   }
   onRowSelected(event: any) {
-    this.getTableTypeData(event.data.yearCode,"View");
+    // this.getTableTypeData(event.data.yearCode,"View");
+    this.tthForm.get('tableType')?.setValue(event.data.tableType);
+    this.resetMessages();
+    this.masterParams.type = 'TAXLIST';
+    this.masterParams.item = event.value;
+    this.taxTypeCode = event.value;
+
+    this.loader.start();
+    this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe(
+      (result: getResponse) => {
+      this.loader.stop();
+        if (result.message.toUpperCase() === 'SUCCESS'){
+          this.taxList = result.data;
+          this.tthForm.get('taxType')?.setValue(event.data.yearCode);
+          this.getTableTypeData(event.data.yearCode,"View");
+        }else{
+          this.textMessageClass = 'red';
+          this.retMessage = result.message;
+        }
+      },
+      (error: any) => {
+        this.handleChangedError(error);
+      }
+    );
+
   }
+
 
 
   ngOnInit(): void {
@@ -174,6 +199,9 @@ export class TablesComponent implements OnInit, OnDestroy {
     }
   }
 
+  // getTableTypeChange(event:any){
+  //   this.getTableTypeData(event.value,this.tthForm.get('mode')?.value)
+  // }
   getTableTypeChange(event: any) {
     // this.tthForm.
 
@@ -289,6 +317,7 @@ export class TablesComponent implements OnInit, OnDestroy {
               this.tthForm.get('taxType')?.patchValue(this.tthForm.get('yearCode')?.value);
             }
             this.getTableTypeData(res.tranNoNew, this.tthForm.get('mode')?.value);
+            this.loadGridData();
           }
           else {
             this.handleChangedError(res);

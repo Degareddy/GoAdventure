@@ -267,6 +267,7 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
             this.modeChanged('Modify');
             this.leaveList.push({ itemCode: this.ltDetForm.get('code')?.value, itemName: this.ltDetForm.get('leaveDesc')?.value })
           }
+          this.loadGridData();
           this.newTranMsg = res.message;
           this.textMessageClass = 'green';
           this.getLeaveTypes(res.tranNoNew, this.ltDetForm.get('mode')?.value);

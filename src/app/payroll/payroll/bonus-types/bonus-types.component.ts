@@ -79,13 +79,14 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
     }
   }
   onGridReady(params: any) {
-    this.gridApi.sizeColumnsToFit();
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+    this.gridApi.sizeColumnsToFit();
   }
   onRowSelected(event: any) {
-    this.getBonusData(event.data.bonusCode,"View");
+    this.bonusTypeForm.get('bonusTypes')?.setValue(event.data.bonusCode);
+    this.getBonusData(event.data.bonusCode,"View");   
   }
 
   formInit() {
@@ -175,23 +176,31 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
   getBonusTypeChange(event: any) {
     // console.log(event);
     this.bonusTypeCode = event.value;
-    this.getBonusData(this.bonusTypeCode, this.bonusTypeForm.get('mode')?.value);
+    this.getBonusData(event.value, this.bonusTypeForm.get('mode')?.value);
   }
 
   getBonusData(bonusCode: string, mode: string) {
-    this.masterParams.item = bonusCode;
-    this.masterParams.tranType = "BONUSTYPES";
+    const bonusTypes: getPayload = {
+      ...this.commonParams(),
+      item: bonusCode,
+
+    };
+
     try {
       this.loader.start();
-      this.subSink.sink = this.payService.GetBonusTypes(this.masterParams).subscribe((res: any) => {
+      this.subSink.sink = this.payService.GetBonusTypes(bonusTypes).subscribe((res: any) => {
         this.loader.stop();
+        // console.log(res.data)
         if (res.status.toUpperCase() === "SUCCESS") {
-          this.bonusTypeForm.controls['bonusCode'].patchValue(res['data'].bonusCode);
-          this.bonusTypeForm.controls['bonusName'].patchValue(res['data'].bonusName);
-          this.bonusTypeForm.controls['bonusType'].patchValue(res['data'].bonusType);
-          this.bonusTypeForm.controls['tranDate'].patchValue(res['data'].tranDate);
-          this.itemStatus = res['data'].itemStatus;
-          this.bonusTypeForm.controls['notes'].patchValue(res['data'].notes);
+        this.bonusTypeForm.patchValue({
+          bonusCode:res.data.bonusCode,
+          bonusName:res.data.bonusName,
+          bonusType:res.data.bonusType,
+          tranDate:res.data.tranDate,
+          // itemStatus:res.data.itemStatus,
+          notes:res.data.notes
+        })
+        this.itemStatus = res['data'].itemStatus;
           if (mode != 'View' && this.newTranMessage != "") {
             this.textMessageClass = 'green';
             this.retMessage = this.newTranMessage;
@@ -213,6 +222,41 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
       this.retMessage = ex.message;
     }
   }
+  // getBonusData(bonusCode: string, mode: string) {
+  //   this.masterParams.item = bonusCode;
+  //   this.masterParams.tranType = "BONUSTYPES";
+  //   try {
+  //     this.loader.start();
+  //     this.subSink.sink = this.payService.GetBonusTypes(this.masterParams).subscribe((res: any) => {
+  //       this.loader.stop();
+  //       if (res.status.toUpperCase() === "SUCCESS") {
+  //         this.bonusTypeForm.controls['bonusCode'].patchValue(res['data'].bonusCode);
+  //         this.bonusTypeForm.controls['bonusName'].patchValue(res['data'].bonusName);
+  //         this.bonusTypeForm.controls['bonusType'].patchValue(res['data'].bonusType);
+  //         this.bonusTypeForm.controls['tranDate'].patchValue(res['data'].tranDate);
+  //         this.itemStatus = res['data'].itemStatus;
+  //         this.bonusTypeForm.controls['notes'].patchValue(res['data'].notes);
+  //         if (mode != 'View' && this.newTranMessage != "") {
+  //           this.textMessageClass = 'green';
+  //           this.retMessage = this.newTranMessage;
+  //         }
+  //         else {
+  //           this.textMessageClass = 'green';
+  //           this.retMessage = "Bonus type data is retrieved successfully for " + res['data'].bonusName;
+  //         }
+
+  //       }
+  //       else {
+  //         this.textMessageClass = 'red';
+  //         this.retMessage = res.message;
+  //       }
+  //     });
+  //   }
+  //   catch (ex: any) {
+  //     this.textMessageClass = 'red';
+  //     this.retMessage = ex.message;
+  //   }
+  // }
 
   clearMsg() {
     this.textMessageClass = "";
