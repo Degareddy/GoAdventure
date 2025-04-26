@@ -109,7 +109,26 @@ export class PayComponentsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    this.getPayData(event.data.payID,"View");
+    this.ppcForm.get('payList')?.setValue(event.data.payID);
+    // this.getPayData(event.data.payID,"View");
+    this.ppcForm.patchValue({
+      payID: event.data.payID,
+      payDesc: event.data.payDesc,
+      payOn: event.data.payOn,
+      payType: event.data.payType,
+      payBy: event.data.payBy,
+      taxable: event.data.taxable,
+      isMandatory: event.data.isMandatory,
+      payValue: event.data.payValue?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      createdDate: event.data.createdDate,
+      notes: event.data.notes || ''
+    });
+    this.status = event.data.tranStatus;
+    // this.status = event.data.tranStatus ;
+
+    this.clearMsg();
+    this.retMessage = "Selected record loaded successfully.";
+    this.textMessageClass = "green";
   }
   ngOnInit(): void {
     this.loadData();

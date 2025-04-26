@@ -178,7 +178,23 @@ export class LeaveTypesComponent implements OnInit, OnDestroy {
   }
 
   onRowSelected(event: any) {
-    this.getLeaveTypes(event.data.leaveCode,"View");
+    // this.getLeaveTypes(event.data.leaveCode,"View");
+    this.ltDetForm.get('leaveTypes')?.setValue(event.data.leaveCode);
+
+  this.ltDetForm.patchValue({
+    leaveCode: event.data.leaveCode,
+      leaveDesc: event.data.leaveDesc ,
+      applicableTo: event.data.applicableTo ,
+      isEncashable: event.data.isEncashable || false,
+      isCarryFwdble: event.data.isCarryFwdble || false,
+      tranDate: event.data.tranDate ? new Date(event.data.tranDate) : new Date(),
+      notes: event.data.notes,
+      code: event.data.leaveCode
+  });
+
+  this.status = event.data.typeStatus ;
+  this.textMessageClass = 'green';
+  this.retMessage = "Leave type data loaded for " + event.data.leaveName;
   }
   leaveTypeChanged(event: any) {
     this.getLeaveTypes(event.value, this.ltDetForm.get('mode')?.value);

@@ -41,10 +41,10 @@
       <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Year No</mat-label>
-          <mat-select formControlName="yearNo" (selectionChange)="yearChanged($event)">
+          <!-- <mat-select formControlName="yearNo" (selectionChange)="yearChanged($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of yearNum" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
+          </mat-select> -->
           <!-- <input matInput placeholder="Tran No" formControlName="tranNo" type="text">
           <button mat-button [disabled]="eligibleLeavesForm.get('mode')!.value === 'View'" type="button" matSuffix
             mat-icon-button aria-label="Clear" (click)="eligibleLeavesForm.get('tranNo')!.setValue('')">
@@ -53,6 +53,7 @@
           <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="searchData()">
             <mat-icon class="mat-search-icon">search</mat-icon>
           </button> -->
+          <input matInput placeholder="Tran No" formControlName="yearNo" type="text">
         </mat-form-field>
       </div>
       <div class="col-2">

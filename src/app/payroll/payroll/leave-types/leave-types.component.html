@@ -24,10 +24,11 @@
       <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Leave type</mat-label>
-          <mat-select formControlName="leaveCode" (selectionChange)="leaveTypeChanged($event)">
+          <!-- <mat-select formControlName="leaveCode" (selectionChange)="leaveTypeChanged($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of leaveList" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
+          </mat-select> -->
+          <input matInput placeholder="leaveCode" formControlName="leaveCode" type="text">
         </mat-form-field>
       </div>
       <div class="col-2">

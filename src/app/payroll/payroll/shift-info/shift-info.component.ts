@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MasterParams } from 'src/app/Masters/Modules/masters.module';
@@ -101,10 +101,17 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
       fromTime: [this.getCurrentTime()],
       toTime: [this.getCurrentTime()],
       typeRate: [''],
-      tranDate: [new Date(), [Validators.required]],
+      tranDate: [new Date(), [Validators.required, this.validateSqlDate]],
       notes: ['', [Validators.maxLength(512)]],
       mode: ['View']
     });
+  }
+  validateSqlDate(control: AbstractControl): ValidationErrors | null {
+    const date = control.value;
+    if (!(date instanceof Date)) return { invalidDate: true };
+    const minDate = new Date('1753-01-01');
+    const maxDate = new Date('9999-12-31');
+    return date >= minDate && date <= maxDate ? null : { dateOutOfRange: true };
   }
   commonParams() {
     return {
@@ -115,17 +122,35 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     }
   }
   onGridReady(params: any) {
-    this.gridApi.sizeColumnsToFit();
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
     this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+    this.gridApi.sizeColumnsToFit();
   }
   onRowSelected(event: any) {
-    // this.masterParams.item = "SHIFTTYPES";
-    // this.masterParams.tranNo = this.pstForm.controls['typeCode'].value;
-    // this.masterParams.tranNo = event.data.typeCode;
-    this.getShiftData(event.data.typeDesc,"View");
-    // this.pstForm.get('mode')?.setValue("View");
+    // this.pstForm.get('typeCode')?.setValue(event.data.typeCode);
+    // this.getShiftData(event.data.typeCode, "View");
+
+    const rowData = event.data;
+    this.reset() 
+
+    if (rowData) {
+      this.pstForm.patchValue({
+      typeCode: rowData.typeCode || '',
+      fromTime: rowData.fromTime || '',
+      toTime: rowData.toTime || '',
+      typeDesc: rowData.typeDesc || '',
+      typeRate: rowData.typeRate || '',
+      tranDate: rowData.tranDate ? new Date(rowData.tranDate) : '',
+      notes: rowData.notes || ''
+    });
+    this.typeStatus = rowData.typeStatus;
+
+
+    this.textMessageClass = 'green';
+    this.retMessage = "Shift data loaded for " + (rowData.typeCode || '');
+  }
+
   }
 
   ngOnInit(): void {
@@ -181,18 +206,18 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
         this.masterParams.refNo = this.userDataService.userData.sessionID;
         
 
-        this.subsink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: any) => {
-          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-            this.shiftCodes = res['data'];
-            if (this.shiftCodes.length === 1) {
-              this.pstForm.get('typeCode')!.patchValue(this.shiftCodes[0].itemCode);
-            }
-          }
-          else {
-            this.displayMessage(res.message + " for types list!", TextClr.red);
-          }
+        // this.subsink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: any) => {
+        //   if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+        //     this.shiftCodes = res['data'];
+        //     if (this.shiftCodes.length === 1) {
+        //       this.pstForm.get('typeCode')!.patchValue(this.shiftCodes[0].itemCode);
+        //     }
+        //   }
+        //   else {
+        //     this.displayMessage(res.message + " for types list!", TextClr.red);
+        //   }
     
-        });
+        // });
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
@@ -277,6 +302,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
 
   getShiftData(masterparams: MasterParams, mode: string) {
     // this.masterParams.tranNo = this.pstForm.controls['typeCode'].value;
+    this.masterParams.tranNo = this.pstForm.controls['typeCode'].value;
 
     //console.log(this.masterParams);
     try {
@@ -294,7 +320,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
 
           this.pstForm.controls['typeDesc'].setValue(res['data'].typeDesc);
           this.pstForm.controls['tranDate'].setValue(res['data'].tranDate);
-          this.pstForm.controls['typeDate'].setValue(res['data'].typeDate);
+          this.pstForm.controls['typeRate'].setValue(res['data'].typeDate);
           this.pstForm.controls['notes'].setValue(res['data'].notes);
 
           this.textMessageClass = 'green';
@@ -334,6 +360,7 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
     this.shiftCls.mode = this.pstForm.controls['mode'].value;
     this.shiftCls.user = this.userDataService.userData.userID;
     this.shiftCls.refNo = this.userDataService.userData.sessionID;
+    this.shiftCls.tranDate = this.pstForm.controls['tranDate'].value;
 
   }
 
@@ -372,9 +399,10 @@ export class ShiftInfoComponent implements OnInit, OnDestroy {
               this.modeChange("Modify");
               this.pstForm.controls['typeCode'].setValue(res.tranNoNew);
               this.shiftCls.typeCode = res.tranNoNew;
-              if (res.tranNoNew) {
-                this.getShiftData(this.masterParams, this.pstForm.get('mode')?.value);
-              }
+              // if (res.tranNoNew) {
+              //   this.getShiftData(this.masterParams, this.pstForm.get('mode')?.value);
+              // }
+              this.loadGridData();
             }
             else {
               this.retMessage = res.message;

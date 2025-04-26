@@ -29,11 +29,12 @@
       <div class="col-3">
         <mat-form-field aria-colspan="2" appearance="outline">
           <mat-label class="mat-label-class">Table Type</mat-label>
-          <mat-select formControlName="tableType" appearance="outline" aria-colspan="2"
+          <!-- <mat-select formControlName="tableType" appearance="outline" aria-colspan="2"
             (selectionChange)="getTableTypeChange($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of taxTypesList" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
+          </mat-select> -->
+          <input matInput placeholder="tableType" formControlName="tableType" type="text">
         </mat-form-field>
       </div>
       <div class="col-3">

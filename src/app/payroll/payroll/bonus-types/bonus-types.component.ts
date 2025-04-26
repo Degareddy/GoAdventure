@@ -85,8 +85,21 @@ export class BonusTypesComponent implements OnInit, OnDestroy {
     this.gridApi.sizeColumnsToFit();
   }
   onRowSelected(event: any) {
+   
     this.bonusTypeForm.get('bonusTypes')?.setValue(event.data.bonusCode);
-    this.getBonusData(event.data.bonusCode,"View");   
+  
+    this.bonusTypeForm.patchValue({
+      bonusCode: event.data.bonusCode,
+      bonusName: event.data.bonusName,
+      bonusType: event.data.bonusType,
+      tranDate: new Date(event.data.tranDate), 
+      notes: event.data.notes
+    });
+    
+    this.itemStatus = event.data.itemStatus;
+    
+    this.textMessageClass = 'green';
+    this.retMessage = "Bonus type data loaded for " + event.data.bonusName;
   }
 
   formInit() {

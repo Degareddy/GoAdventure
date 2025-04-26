@@ -27,10 +27,11 @@
       <div class="col-3">
         <mat-form-field aria-colspan="2" appearance="outline" >
           <mat-label class="mat-label-class">Bonus Types</mat-label>
-          <mat-select formControlName="bonusTypes" (selectionChange)="getBonusTypeChange($event)">
+          <!-- <mat-select formControlName="bonusTypes" (selectionChange)="getBonusTypeChange($event)">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of bonusTypes" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
+          </mat-select> -->
+          <input matInput placeholder="bonus Types" formControlName="bonusTypes" type="text ">
         </mat-form-field>
       </div>
           <div class="col-3">

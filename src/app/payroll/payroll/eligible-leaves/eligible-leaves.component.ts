@@ -90,7 +90,24 @@ export class EligibleLeavesComponent implements OnInit, OnDestroy {
     this.gridApi.sizeColumnsToFit();
   }
   onRowSelected(event: any) {
-    this.getEligibleLeaves(event.data.yearNo,"View");
+    // this.getEligibleLeaves(event.data.yearNo,"View");
+    const selectedData = event.data;
+    this.status = selectedData.typeStatus || '';
+
+    this.eligibleLeavesForm.patchValue({
+      yearNo: selectedData.yearNo,
+      tranDate: selectedData.tranDate ? new Date(selectedData.tranDate) : null,
+      fromDate: selectedData.fromDate ? new Date(selectedData.fromDate) : null,
+      toDate: selectedData.toDate ? new Date(selectedData.toDate) : null,
+      notes: selectedData.notes || '',
+      mode: 'View',
+    });
+
+    this.tranStatus = selectedData.tranStatus || '';
+    
+    this.clearMsg();
+    this.retMessage = "Selected record loaded successfully.";
+    this.textMessageClass = "green";
   }
 
   ngOnInit(): void {

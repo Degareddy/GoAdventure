@@ -94,29 +94,25 @@ export class TablesComponent implements OnInit, OnDestroy {
   }
   onRowSelected(event: any) {
     // this.getTableTypeData(event.data.yearCode,"View");
-    this.tthForm.get('tableType')?.setValue(event.data.tableType);
+    const rowData = event.data;
     this.resetMessages();
-    this.masterParams.type = 'TAXLIST';
-    this.masterParams.item = event.value;
-    this.taxTypeCode = event.value;
-
-    this.loader.start();
-    this.subSink.sink = this.masterService.GetCascadingMasterItemsList(this.masterParams).subscribe(
-      (result: getResponse) => {
-      this.loader.stop();
-        if (result.message.toUpperCase() === 'SUCCESS'){
-          this.taxList = result.data;
-          this.tthForm.get('taxType')?.setValue(event.data.yearCode);
-          this.getTableTypeData(event.data.yearCode,"View");
-        }else{
-          this.textMessageClass = 'red';
-          this.retMessage = result.message;
-        }
-      },
-      (error: any) => {
-        this.handleChangedError(error);
-      }
-    );
+    
+    this.tthForm.patchValue({
+      tableType: rowData.tableType,
+      taxType: rowData.yearCode,
+      yearCode: rowData.yearCode,
+      validFrom: new Date(rowData.validFrom),
+      validTo: new Date(rowData.validTo),
+      notes: rowData.notes || ''
+    });
+    const found = this.taxList.find(x => x.itemCode === rowData.yearCode);
+    if (!found && rowData.yearCode) {
+      this.taxList.push({ itemCode: rowData.yearCode, itemName: rowData.yearCode });
+    }
+    this.taxStatus = rowData.taxStatus;
+    
+    this.textMessageClass = 'green';
+    this.retMessage = "Tax table data loaded for " + rowData.tableType;
 
   }
 
