@@ -31,10 +31,9 @@ export class LocationsComponent implements OnInit {
     pageSizes = [25, 50, 100, 250, 500];
     pageSize = 25;
     columnDefs: any  = [
-      { field: "slNo", headerName: "slNo", sortable: true, filter: true, resizable: true, flex: 1 },
       { field: "branch", headerName: "Branch", sortable: true, filter: true, resizable: true, flex: 1 },
-      { field: "date", headerName: "Date", sortable: true, filter: true, resizable: true, flex: 1 },
-      { field: "status", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
+      { field: "prodDate", headerName: "Date", sortable: true, filter: true, resizable: true, flex: 1 },
+      { field: "prodStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
       { field: "remarks", headerName: "Remarks", sortable: true, filter: true, resizable: true, flex: 1 },
     ]
     rowData=[]  
@@ -95,12 +94,20 @@ export class LocationsComponent implements OnInit {
           this.subSink.sink=this.invService.GetProductLocations(body).subscribe((res:any)=>{
             this.loader.stop();
             if(res.status.toUpperCase()=='SUCCESS'){
-              this.rowData=res
+              this.rowData=res.data
+              this.status=res.data[0].prodStatus
+              this.retMessage=res.message;
+              this.textMessageClass='green';
+            }
+            else{
+              this.retMessage=res.message;
+              this.textMessageClass='red';
             }
           })
         }
-        catch(ex){
-
+        catch(ex:any){
+          this.retMessage=ex.message;
+          this.textMessageClass='red';
         }
 
       }
@@ -118,7 +125,12 @@ export class LocationsComponent implements OnInit {
         try{
           this.loader.start();
           this.subSink.sink=this.invService.updateProductLocations(body).subscribe((res:any)=>{
-            
+            this.loader.stop();
+            if(res.status.toUpperCase()=='SUCCESS'){
+              this.retMessage=res.message;
+              this.textMessageClass='green';
+              this.loadBranches()
+            }
           })
         }
         catch(ex){
