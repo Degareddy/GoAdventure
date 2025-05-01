@@ -31,7 +31,7 @@ export class LocationsComponent implements OnInit {
     pageSizes = [25, 50, 100, 250, 500];
     pageSize = 25;
     columnDefs: any  = [
-      { field: "branch", headerName: "Branch", sortable: true, filter: true, resizable: true, flex: 1 },
+      { field: "locnName", headerName: "Branch", sortable: true, filter: true, resizable: true, flex: 1 },
       { field: "prodDate", headerName: "Date", sortable: true, filter: true, resizable: true, flex: 1 },
       { field: "prodStatus", headerName: "Status", sortable: true, filter: true, resizable: true, flex: 1 },
       { field: "remarks", headerName: "Remarks", sortable: true, filter: true, resizable: true, flex: 1 },
@@ -63,6 +63,18 @@ export class LocationsComponent implements OnInit {
       
     this.loadBranches()
     this.modes=this.data.modes
+  }
+  formatDate(unitDateValue: string): string {
+    const unitDateObject = new Date(unitDateValue);
+    if (unitDateObject instanceof Date && !isNaN(unitDateObject.getTime())) {
+      const year = unitDateObject.getFullYear();
+      const month = (unitDateObject.getMonth() + 1).toString().padStart(2, '0');
+      const day = unitDateObject.getDate().toString().padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    } else {
+      return '';
+    }
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
@@ -158,9 +170,9 @@ export class LocationsComponent implements OnInit {
       }
       onRowSelected(event:any){   
         console.log(event);
-        this.locationsForm.get('branch')?.patchValue(event.data.suppName);
-        this.locationsForm.get('remarks')?.patchValue(event.data.rate);
-        this.locationsForm.get('date')?.patchValue(event.data.supplier);
-        this.locationsForm.get('status')?.patchValue(event.data.validUntil);
+        this.locationsForm.get('branch')?.patchValue(event.data.location);
+        this.locationsForm.get('remarks')?.patchValue(event.data.remarks);
+        this.locationsForm.get('tranDate')?.patchValue( this.formatDate(event.data.prodDate));
+        this.status=event.data.prodStatus;
      }
 }
