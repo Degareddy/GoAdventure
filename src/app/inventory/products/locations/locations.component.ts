@@ -42,7 +42,7 @@ export class LocationsComponent implements OnInit {
     const lcnbody:getPayload = {
           ...this.commonParams(),
           company:this.data.company,
-          item: Items.LOCATION,
+          item: Items.BRANCHES,
           mode:this.data.mode
         };
         try {
