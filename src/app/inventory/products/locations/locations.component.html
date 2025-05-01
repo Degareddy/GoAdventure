@@ -1,0 +1,74 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+    <mat-icon class="close-icon small-icon" color="warn">close</mat-icon>
+  </button>
+  <div class="flex items-center text-white rounded-sm bg-blue-400 ">
+    <mat-icon class="mr-1">shopping_bag</mat-icon>
+    Product Locations:&nbsp;<b class="data">{{data.product}}</b>
+  </div>
+  <form [formGroup]="locationsForm">
+    <div class="row justify-content-center">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Mode</mat-label>
+          <mat-select formControlName="mode">
+            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label>Branches</mat-label>
+            <mat-select formControlName="branch"
+              >
+              <mat-option value="" >--Select--</mat-option>
+              <mat-option *ngFor="let x of branches" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field aria-colspan="2" appearance="outline">
+          <mat-label class="mat-label-class">Remarks</mat-label>
+          <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+            <mat-label class="mat-label-class">Tran Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+    </div>
+    <div class="col-3">
+        <mat-label class="mat-label-class">Status{{status}}</mat-label>
+
+    </div>
+      </div>
+      <div class="row justify-content-center">
+        
+      </div>
+      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="button" (click)="addNew()" class="btnUp"
+          [disabled]="locationsForm.get('mode')?.value ==='View'"><mat-icon>add</mat-icon><b>New</b>
+        </button>
+        <button mat-raised-button color="accent" type="submit" class="btnUp" (click)="onUpdate()"
+          [disabled]="locationsForm.get('mode')?.value ==='View' || locationsForm.invalid">
+          <mat-icon>update</mat-icon>Update
+        </button>
+        <button mat-raised-button color="primary" class="btnUp" type="button" (click)="clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" [mat-dialog-close]="true">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+        <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="Delete()" [disabled]="slNum === 0">
+          <mat-icon>delete</mat-icon> Delete
+        </button> -->
+      </div>
+      </form>
+    <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+    [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+    [gridHeight]="'280px'" [paginationPageSize]="100" [showToolPanel]="true" [reportName]="'Unit Details'"
+    [showRecordCount]="true">
+  </app-access-grid>

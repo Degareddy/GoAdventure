@@ -31,6 +31,7 @@ import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { APP_DATE_FORMATS, AppDateAdapter } from '../general/date-format';
 import { AgChartsAngularModule } from 'ag-charts-angular';
 import { SupplierProductsComponent } from './products/supplier-products/supplier-products.component';
+import { LocationsComponent } from './products/locations/locations.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { SupplierProductsComponent } from './products/supplier-products/supplier
     ProductDetailsComponent,
     WareHouseSearchComponent,
     ReceiptDetailsComponent,
-    SupplierProductsComponent
+    SupplierProductsComponent,
+    LocationsComponent
   ],
   imports: [
     CommonModule,

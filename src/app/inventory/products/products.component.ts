@@ -21,6 +21,8 @@ import { LogComponent } from 'src/app/general/log/log.component';
 import { SupplierProductsComponent } from './supplier-products/supplier-products.component';
 import { displayMsg, Items, Mode, ScreenId, TextClr, TranType } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { MessageBoxComponent } from "../../general/message-box/message-box.component";
+import { LocationsComponent } from './locations/locations.component';
 interface params {
   itemCode: string
   itemName: string
@@ -35,7 +37,7 @@ interface autoComplete {
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.css']
+  styleUrls: ['./products.component.css'],
 })
 export class ProductsComponent implements OnInit, OnDestroy {
   productForm!: FormGroup;
@@ -87,6 +89,19 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
   displayCustomer(item: autoComplete): string {
     return item && item.itemName ? item.itemName : '';
+  }
+  productLocation(){
+    const dialogRef: MatDialogRef<LocationsComponent> = this.dialog.open(LocationsComponent, {
+      width: '80%',
+      disableClose: true,
+      data: {
+        mode: this.productForm.controls['mode'].value,
+        product: this.productForm.controls['product'].value,
+        code: this.productForm.controls['code'].value,
+        company:this.userDataService.userData.company,
+        modes: this.modes
+      }
+    });
   }
   
   filerCutomers(value: any) {
@@ -254,6 +269,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
           this.productForm.controls['productGroup'].patchValue(res.data.selName);
           this.productForm.controls['code'].patchValue(res.data.selCode);
           this.productChange(res.data.selCode, this.productForm.get('mode')?.value);
+          this.autoFilteredCustomer=[]
         }
         else {
           this.openSearch();
@@ -322,6 +338,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
           this.productForm.controls['productGroup'].patchValue(result.prodName);
           this.productForm.controls['code'].patchValue(result.prodCode);
           this.productChange(result.prodCode, this.productForm.get('mode')?.value);
+          this.autoFilteredCustomer=[]
         }
       });
     }

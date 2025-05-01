@@ -45,6 +45,14 @@ export class InventoryService {
   saveWarehouse(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateWarehouse/', body)
   }
+
+GetProductLocations(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/GetProductLocations/', body)
+  }
+  updateProductLocations(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateProductLocations/', body)
+  }
+
   GetStockTransfer(body: any): Observable<getTransactionDetailsResp> {
     return this.http.post<getTransactionDetailsResp>(environment.Url + 'inventory/GetStockTransfer/', body)
   }

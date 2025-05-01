@@ -7,6 +7,9 @@
       </div>
       <div class="flex items-end space-x-1 mb-2.5">
         <button mat-raised-button color="primary" class="btnUp" type="button" [disabled]="this.productForm.invalid"
+        (click)="productLocation()"><mat-icon>location_on</mat-icon>
+        Locations</button>
+        <button mat-raised-button color="primary" class="btnUp" type="button" [disabled]="this.productForm.invalid"
         (click)="supplierProducts()"><mat-icon>list</mat-icon>
         Suppliers</button>
         <button mat-raised-button color="primary" class="btnUp" type="button" [disabled]="this.productForm.invalid"
@@ -286,7 +289,6 @@
 
         </div>
       </div>
-
       <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
       <div class="btnAlignment">
         <button mat-raised-button color="primary" type="submit" class="btnUp"
