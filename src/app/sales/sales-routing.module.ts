@@ -25,6 +25,7 @@ import { DeliveryComponent } from './delivery/delivery.component';
 import { SaleOrderComponent } from './sale-order/sale-order.component';
 import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-credit-note.component';
 import { OpeningBalancesComponent } from '../purchase/opening-balances/opening-balances.component';
+import { BookingComponent } from './booking/booking.component';
 
 
 const routes: Routes = [
@@ -54,6 +55,7 @@ const routes: Routes = [
   { path: 'customer-contacts/:code/:slno', component: CustomerContactsComponent, canActivate: [SaleGuard] },
   { path: 'delivery', component: DeliveryComponent, canActivate: [SaleGuard] },
   { path: 'sale-order', component: SaleOrderComponent, canActivate: [SaleGuard] },
+  { path: 'booking', component: BookingComponent, canActivate: [SaleGuard] },
   { path: 'debit-credit-note', component: DebitCreditNoteComponent, canActivate: [SaleGuard] },
 
 ]

@@ -25,6 +25,8 @@ import { LoaderComponent } from './general/loader/loader.component';
 import { LogoService } from './Services/logo.service';
 import { ForgotPasswordComponent } from './utilities/forgot-password/forgot-password.component';
 import { JWT_OPTIONS, JwtModule } from '@auth0/angular-jwt';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 
 
 export function jwtOptionsFactory() {
@@ -62,7 +64,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   declarations: [AppComponent, HomeComponent,
     AppHelpComponent,LoaderComponent,ForgotPasswordComponent],
   imports: [
-    
+    MatButtonToggleModule,
     DefaultModule,
     BrowserModule,
     AppRoutingModule,

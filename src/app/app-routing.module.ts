@@ -15,7 +15,6 @@ import { InventoryGuard } from './inventory/_guard/inventory.guard';
 import { PurchaseGuard } from './purchase/_guard/purchase.guard';
 import { MasterGuard } from './Masters/_guard/master.guard';
 import { ForgotPasswordComponent } from './utilities/forgot-password/forgot-password.component';
-import { TenantGuard } from './tenant/_guard/tenant.guard';
 import { LandlordGuard } from './landlord/_guard/landlord.guard';
 import { ReportGuard } from './reports/_guard/report.guard';
 
@@ -31,10 +30,7 @@ const routes: Routes = [
       {
         path: 'home', component: HomeComponent, canActivate: [AuthGuard],
       },
-      {
-        path: 'tenant',
-        loadChildren: () => import('src/app/tenant/tenant/tenant.module').then(m => m.TenantModule), canActivate: [TenantGuard]
-      },
+      
       {
         path: 'landlord',
         loadChildren: () => import('src/app/landlord/landlord.module').then(m => m.LandlordModule), canActivate: [LandlordGuard]

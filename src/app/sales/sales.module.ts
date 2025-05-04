@@ -39,6 +39,9 @@ import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 import { VendorProductsComponent } from './customer/vendor-products/vendor-products.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { BookingComponent } from './booking/booking.component';
+
 
 
 @NgModule({
@@ -73,9 +76,11 @@ import { VendorProductsComponent } from './customer/vendor-products/vendor-produ
     AllocateComponent,
     LoanAllocationComponent,
     CustomerUnitsComponent,
-    VendorProductsComponent
+    VendorProductsComponent,
+    BookingComponent
   ],
   imports: [
+    MatButtonToggleModule,
     CommonModule,
     SalesRoutingModule,
     GeneralModule,

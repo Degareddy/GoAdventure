@@ -17,11 +17,12 @@ import { GlDashboardComponent } from './gl-dashboard/gl-dashboard.component';
 import { ExchangeRateComponent } from './exchange-rate/exchange-rate.component';
 import { GlGuard } from './_guard/gl.guard';
 import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-credit-note.component';
+import { ReceiptsComponent } from '../sales/receipts/receipts.component';
 
 const routes: Routes = [
   { path: 'vat-details', component: VatDetailsComponent, canActivate: [GlGuard] },
   { path: 'fin-periods', component: FinPeriodsComponent, canActivate: [GlGuard] },
-  { path: 'banks', component: BanksComponent, canActivate: [GlGuard] },
+  { path: 'banks', component: ReceiptsComponent, canActivate: [GlGuard] },
   { path: 'expenses', component: ExpensesComponent, canActivate: [GlGuard] },
   { path: 'deposits', component: DepoitsComponent, canActivate: [GlGuard] },
   { path: 'bank-entries', component: BankEntriesComponent, canActivate: [GlGuard] },
