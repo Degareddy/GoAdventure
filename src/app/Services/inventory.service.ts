@@ -100,6 +100,12 @@ GetProductLocations(body: any): Observable<SaveApiResponse> {
   GetPhysicalStock(phyCls: PhysicalDeails): Observable<any> {
     return this.http.post(environment.Url + 'inventory/GetPhysicalStock/', phyCls)
   }
+  GetTripDefinitionsList(phyCls: any): Observable<any> {
+    return this.http.post(environment.Url + 'sales/GetTripDefinitionsList', phyCls)
+  }
+  UpdateTripDetails(phyCls: any): Observable<any> {
+    return this.http.post(environment.Url + 'sales/UpdateTripDetails', phyCls)
+  }
 
   UpdatePhysicalStock(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdatePhysicalStock/', body)
