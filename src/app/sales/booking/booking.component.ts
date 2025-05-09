@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Item } from 'src/app/general/Interface/interface';
+import { QuotationComponent } from '../quotation/quotation.component';
 
 @Component({
   selector: 'app-booking',
@@ -47,7 +48,11 @@ export class BookingComponent implements OnInit {
         zeroToFive:[''],
         fiveToTwelve:[''],
         gst:[''],
-        remarks:['']
+        remarks:[''],
+        regularAmount:[0],
+        discOffered:[0],
+        quotedPrice:[0],
+        addOns:[0],
       })
     }
 }

@@ -29,13 +29,16 @@
            
         <div class="bg-white p-2 border rounded-lg shadow-md">
             <div class="text-center text-gray-800 font-semibold">Client Details</div>
+            
               <mat-label></mat-label>
             <div class="matfield">
             <mat-form-field appearance="outline" style="width: 99%;">
-                <mat-label>Client Name</mat-label>
-                <input matInput type="text" placeholder="Receipt No" formControlName="clientName"
+                <mat-label fontsize="large">Client Name</mat-label>
+                <input matInput type="text" placeholder="Client Name" formControlName="clientName"
                  >
-                <button matSuffix mat-icon-button aria-label="Clear"
+                <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('clientName')?.value"
+                tabindex="-1" 
+                (click)="bookingForm.get('clientName')?.reset()"
                    type="button">
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
@@ -44,9 +47,11 @@
             <div class="matfield">
                 <mat-form-field appearance="outline" style="width: 99%;">
                     <mat-label>Contact</mat-label>
-                    <input matInput type="text" placeholder="Receipt No" formControlName="contact"
+                    <input matInput type="text" placeholder="Contact No" formControlName="contact"
                      >
-                    <button matSuffix mat-icon-button aria-label="Clear"
+                    <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('contact')?.value"
+                    tabindex="-1" 
+                    (click)="bookingForm.get('contact')?.reset()"
                        type="button">
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
@@ -55,9 +60,11 @@
                 <div class="matfield">
                     <mat-form-field appearance="outline" style="width: 99%;">
                         <mat-label>Email</mat-label>
-                        <input matInput type="text" placeholder="Receipt No" formControlName="email"
+                        <input matInput type="text" placeholder="Email" formControlName="email" 
                          >
-                        <button matSuffix mat-icon-button aria-label="Clear"
+                        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('email')?.value"
+                        tabindex="-1" 
+                        (click)="bookingForm.get('email')?.reset()"
                            type="button">
                           <mat-icon class="mat-clear-icon">clear</mat-icon>
                         </button>
@@ -66,9 +73,11 @@
                     <div class="matfield">
                         <mat-form-field appearance="outline" style="width: 99%;">
                             <mat-label>Adults</mat-label>
-                            <input matInput type="text" placeholder="Receipt No" formControlName="adults"
+                            <input matInput type="text" placeholder="Adults" formControlName="adults"
                              >
-                            <button matSuffix mat-icon-button aria-label="Clear"
+                            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('adults')?.reset()"
                                type="button">
                               <mat-icon class="mat-clear-icon">clear</mat-icon>
                             </button>
@@ -77,9 +86,11 @@
                         <div class="matfield">
                             <mat-form-field appearance="outline" style="width: 99%;">
                                 <mat-label>0-5</mat-label>
-                                <input matInput type="text" placeholder="Receipt No" formControlName="zeroToFive"
+                                <input matInput type="text" placeholder="0 - 5" formControlName="zeroToFive"
                                  >
-                                <button matSuffix mat-icon-button aria-label="Clear"
+                                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value"
+                                tabindex="-1" 
+                                (click)="bookingForm.get('zeroToFive')?.reset()"
                                    type="button">
                                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                                 </button>
@@ -88,9 +99,11 @@
                             <div class="matfield">
                                 <mat-form-field appearance="outline" style="width: 99%;">
                                     <mat-label>5 - 12</mat-label>
-                                    <input matInput type="text" placeholder="Receipt No" formControlName="fiveToTwelve"
+                                    <input matInput type="text" placeholder="5 - 12" formControlName="fiveToTwelve"
                                      >
-                                    <button matSuffix mat-icon-button aria-label="Clear"
+                                    <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('fiveToTwelve')?.value"
+                                    tabindex="-1" 
+                                    (click)="bookingForm.get('fiveToTwelve')?.reset()"
                                        type="button">
                                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                                     </button>
@@ -116,9 +129,11 @@
             <div class="matfield">
             <mat-form-field appearance="outline" style="width: 99%;">
                 <mat-label>Booking No</mat-label>
-                <input matInput type="text" placeholder="Receipt No" formControlName="batchNo"
+                <input matInput type="text" placeholder="Receipt No" formControlName="batchNo" 
                  >
-                <button matSuffix mat-icon-button aria-label="Clear"
+                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('batchNo')?.value"
+                tabindex="-1" 
+                (click)="bookingForm.get('batchNo')?.reset()"
                    type="button">
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
@@ -133,7 +148,9 @@
                     <mat-label>Batch Code</mat-label>
                     <input matInput type="text" placeholder="Receipt No" formControlName="batchCode"
                      >
-                    <button matSuffix mat-icon-button aria-label="Clear"
+                    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('batchCode')?.value"
+                    tabindex="-1" 
+                    (click)="bookingForm.get('batchCode')?.reset()"
                        type="button">
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
@@ -148,7 +165,9 @@
                         <mat-label>Package Name</mat-label>
                         <input matInput type="text" placeholder="Receipt No" formControlName="packageName"
                          >
-                        <button matSuffix mat-icon-button aria-label="Clear"
+                        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('packageName')?.value"
+                        tabindex="-1" 
+                        (click)="bookingForm.get('packageName')?.reset()"
                            type="button">
                           <mat-icon class="mat-clear-icon">clear</mat-icon>
                         </button>
@@ -163,7 +182,9 @@
                             <mat-label>Package Type</mat-label>
                             <input matInput type="text" placeholder="Receipt No" formControlName="packageType"
                              >
-                            <button matSuffix mat-icon-button aria-label="Clear"
+                            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('packageType')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('packageType')?.reset()"
                                type="button">
                               <mat-icon class="mat-clear-icon">clear</mat-icon>
                             </button>
@@ -182,9 +203,11 @@
             <div class="matfield">
             <mat-form-field appearance="outline" style="width: 99%;">
                 <mat-label>Regular Amount</mat-label>
-                <input matInput type="text" placeholder="Receipt No" formControlName="clientName"
+                <input matInput type="number" placeholder="Regular Amount" formControlName="regularAmount"
                  >
-                <button matSuffix mat-icon-button aria-label="Clear"
+                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('regularAmount')?.value"
+                tabindex="-1" 
+                (click)="bookingForm.get('regularAmount')?.reset()"
                    type="button">
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
@@ -193,9 +216,11 @@
             <div class="matfield">
                 <mat-form-field appearance="outline" style="width: 99%;">
                     <mat-label>Discount Offered</mat-label>
-                    <input matInput type="text" placeholder="Receipt No" formControlName="contact"
+                    <input matInput type="text" placeholder="Discount Offered" formControlName="discOffered"
                      >
-                    <button matSuffix mat-icon-button aria-label="Clear"
+                    <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('discOffered')?.value"
+                    tabindex="-1" 
+                    (click)="bookingForm.get('discOffered')?.reset()"
                        type="button">
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
@@ -204,9 +229,12 @@
                 <div class="matfield">
                     <mat-form-field appearance="outline" style="width: 99%;">
                         <mat-label>Quoted Price</mat-label>
-                        <input matInput type="text" placeholder="Receipt No" formControlName="email"
+                        <input matInput type="number" placeholder="Quoted Price" formControlName="quotedPrice"
                          >
-                        <button matSuffix mat-icon-button aria-label="Clear"
+                        <button matSuffix mat-icon-button *ngIf="bookingForm.get('quotedPrice')?.value"
+                        tabindex="-1" 
+                        (click)="bookingForm.get('quotedPrice')?.reset()"
+                        aria-label="Clear"  
                            type="button">
                           <mat-icon class="mat-clear-icon">clear</mat-icon>
                         </button>
@@ -215,9 +243,11 @@
                     <div class="matfield">
                         <mat-form-field appearance="outline" style="width: 99%;">
                             <mat-label>Add-Ons</mat-label>
-                            <input matInput type="text" placeholder="Receipt No" formControlName="adults"
+                            <input matInput type="number" placeholder="Add Ons" formControlName="addOns" 
                              >
-                            <button matSuffix mat-icon-button aria-label="Clear"
+                            <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('addOns')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('addOns')?.reset()"
                                type="button">
                               <mat-icon class="mat-clear-icon">clear</mat-icon>
                             </button>
