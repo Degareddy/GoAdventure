@@ -41,7 +41,9 @@ import { TableModule } from 'primeng/table';
 import { VendorProductsComponent } from './customer/vendor-products/vendor-products.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BookingComponent } from './booking/booking.component';
+
 import { TripIdComponent } from './trip-id/trip-id.component';
+import { TripsComponent } from './trips/trips.component';
 
 
 
@@ -79,7 +81,8 @@ import { TripIdComponent } from './trip-id/trip-id.component';
     CustomerUnitsComponent,
     VendorProductsComponent,
     BookingComponent,
-    TripIdComponent
+    TripIdComponent,
+    TripsComponent
   ],
   imports: [
     MatButtonToggleModule,
