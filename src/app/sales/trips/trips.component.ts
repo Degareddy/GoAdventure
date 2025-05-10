@@ -176,7 +176,7 @@ export class TripsComponent implements OnInit {
                  this.autoFilteredCustomer = res.data.map((item: any) => ({
                   itemCode: item.prodCode,
                   itemName: item.prodName,
-                  itemDetails: item.uom || item.stdSalesRate || 'No UOM Or Standard sale rate'  // Adjust as needed
+                  itemDetails: item.uom || item.stdSalesRate || 'No startDate Or trip Status'  // Adjust as needed
                 }));
                 this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
               }
@@ -188,5 +188,10 @@ export class TripsComponent implements OnInit {
     }
     tripPatch(){
       console.log(this.getTripIds)
+      const selectedTrip = this.getTripIds.find((item: any) => item.tripId === this.tripForm.get('tripId')?.value);
+      console.log(selectedTrip)
+      this.tripForm.get('tripDesc')?.patchValue(selectedTrip?.tripDesc || '');
+
+      this.tripForm.patchValue(this.getTripIds.filter((item: any) => item.itemCode === this.tripForm.get('tripId')?.value)[0])
     }
 }

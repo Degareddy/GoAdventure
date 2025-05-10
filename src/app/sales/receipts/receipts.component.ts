@@ -158,7 +158,7 @@ isPayment: boolean=false;
     { itemCode: 'STAFF', itemName: 'Staff' },
     
     { itemCode: 'VENDOR', itemName: 'Vendor' },
-    { itemCode: 'CUSTOMER', itemName: 'Customer' },
+    { itemCode: 'Client', itemName: 'Client' },
     { itemCode: 'SUPPLIER', itemName: 'Supplier' },
     { itemCode: 'EMPLOYEE', itemName: 'Employee' },
 
@@ -341,7 +341,7 @@ isPayment: boolean=false;
   }
   receiptTypeChange(event: string) {
     // console.log(event);
-    if (event.toUpperCase() === 'Income') {
+    if (event.toUpperCase() === 'INCOME') {
       this.clearForreceiptTypeChange()
 
       this.receiptsForm.controls['clientType'].enable();
@@ -352,7 +352,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('');
       this.filteredItemsClientType=this.clientTypeList
-      this.receiptsForm.controls['clientType'].patchValue("TENANT");
+      this.receiptsForm.controls['clientType'].patchValue("Client");
       this.Report = 'CLIENTBAL';
       this.receiptsForm.controls['mode'].patchValue('Add', {
         emitEvent: false,
