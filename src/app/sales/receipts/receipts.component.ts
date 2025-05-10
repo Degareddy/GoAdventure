@@ -97,15 +97,8 @@ isPayment: boolean=false;
  
   mobileNo:string='';
   receiptmodes: Item[] = [
-    { itemCode: 'receiveRent', itemName: 'Receive Rent' },
-    { itemCode: 'payRent', itemName: 'Pay Rent' },
-    { itemCode: 'utilityReceipt', itemName: 'Utility Receipt' },
-    { itemCode: 'payexpense', itemName: 'Pay Expense' },
-    { itemCode: 'internalTransfer', itemName: 'Internal Transfer' },
-    { itemCode: 'receiveDeposit', itemName: 'Receive Deposit' },
-    { itemCode: 'payDeposit', itemName: 'Pay Deposit' },
-    { itemCode: 'landlordRefund', itemName: 'Landlord Refund' },
-    { itemCode: 'tenantRefund', itemName: 'Tenant Refund' },
+    { itemCode: 'Income', itemName: 'Income/Receipt' },
+    { itemCode: 'payment', itemName: 'Payment/Expense' },
     { itemCode: 'other', itemName: '...Other' },
   ];
   labelPosition: 'before' | 'after' = 'after';
@@ -161,9 +154,9 @@ isPayment: boolean=false;
     { itemCode: 'JOURNAL', itemName: 'Journal' },
   ];
   clientTypeList: Item[] = [
-    { itemCode: 'TENANT', itemName: 'Tenant' },
+    
     { itemCode: 'STAFF', itemName: 'Staff' },
-    { itemCode: 'LANDLORD', itemName: 'Landlord' },
+    
     { itemCode: 'VENDOR', itemName: 'Vendor' },
     { itemCode: 'CUSTOMER', itemName: 'Customer' },
     { itemCode: 'SUPPLIER', itemName: 'Supplier' },
@@ -348,7 +341,7 @@ isPayment: boolean=false;
   }
   receiptTypeChange(event: string) {
     // console.log(event);
-    if (event.toUpperCase() === 'RECEIVERENT') {
+    if (event.toUpperCase() === 'Income') {
       this.clearForreceiptTypeChange()
 
       this.receiptsForm.controls['clientType'].enable();
@@ -357,7 +350,7 @@ isPayment: boolean=false;
       this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
-      this.receiptsForm.controls['tranFor'].patchValue('RENTPMT');
+      this.receiptsForm.controls['tranFor'].patchValue('');
       this.filteredItemsClientType=this.clientTypeList
       this.receiptsForm.controls['clientType'].patchValue("TENANT");
       this.Report = 'CLIENTBAL';
@@ -634,7 +627,7 @@ isPayment: boolean=false;
       tranFor: ['', Validators.required],
       sms: [false],
       clientType: [''],
-      customer: [{ value: '', disabled: true }, Validators.required],
+      bookingID: [{ value: '', disabled: true }, Validators.required],
     });
   }
   formatExchangeRate() {
@@ -722,7 +715,7 @@ isPayment: boolean=false;
         });
         this.payStatus = 'Open';
         if (this.data.clientName || this.data.partyName) {
-          this.onSearchCustomer();
+          this.onSearchbookingID();
         }
       } else if (
         (this.data && this.data.receipt === 'Payment') ||
@@ -737,7 +730,7 @@ isPayment: boolean=false;
         });
         this.payStatus = 'Open';
         if (this.data.clientName || this.data.partyName) {
-          this.onSearchCustomer();
+          this.onSearchbookingID();
         }
       }
     }
@@ -1108,12 +1101,12 @@ isPayment: boolean=false;
   }
   onSubmit() {
     if (this.receiptsForm.controls['mode'].value === 'Add') {
-      this.recptCls.rctAccount='';
+      this.recptCls.TxnAccount='';
     }
     this.isApplied=true;
     if (this.receiptsForm.valid) {
       if (this.supCode) {
-        this.recptCls.customer = this.supCode;
+        this.recptCls.Client = this.supCode;
       } else {
         this.displayMessage(
           'Error: Select Valid Customer/Tenant/Others!',
@@ -1145,15 +1138,15 @@ isPayment: boolean=false;
         );
         return;
       }
-      if (!this.recptCls.rctAccount || this.recptCls.rctAccount.length === 0) {
+      if (!this.recptCls.TxnAccount || this.recptCls.TxnAccount.length === 0) {
         if (
           this.receiptsForm.controls['rctBank'].value.toUpperCase() == 'CASH'
         ) {
-          this.recptCls.rctAccount =
+          this.recptCls.TxnAccount =
             this.userDataService.userData.userID.toUpperCase();
         } else {
           if (this.receiptsForm.controls['rctAccount'].value) {
-            this.recptCls.rctAccount =
+            this.recptCls.TxnAccount =
               this.receiptsForm.controls['rctAccount'].value;
           } else {
             this.displayMessage('Error: Select Valid Account!', 'red');
@@ -1265,27 +1258,27 @@ isPayment: boolean=false;
     this.recptCls.company = this.userDataService.userData.company;
     this.recptCls.location = this.userDataService.userData.location;
     this.recptCls.langID = this.userDataService.userData.langId;
-    this.recptCls.rctType = formData.rctType;
-    this.recptCls.currency = formData.currency;
-    this.recptCls.custAccount = this.receiptsForm.get('custAccount')?.value;
-    this.recptCls.custAccountName = formData.accname;
-    this.recptCls.customerBank = this.receiptsForm.get('customerBank')?.value;
+    this.recptCls.TranType = formData.rctType;
+    this.recptCls.Currency = formData.currency;
+    this.recptCls.ClientAccount = this.receiptsForm.get('custAccount')?.value;
+    this.recptCls.ClientAccName = formData.accname;
+    this.recptCls.ClientBank= this.receiptsForm.get('customerBank')?.value;
     this.recptCls.instrumentNo = formData.instrumentNo;
     this.recptCls.instrumentStatus = formData.instrumentStatus;
-    this.recptCls.txnFor = formData.tranFor;
+    this.recptCls.TranFor = formData.tranFor;
 
-    this.recptCls.rctBank = this.receiptsForm.get('rctBank')?.value;
-    this.recptCls.rctMode = formData.rctMode;
-    this.recptCls.rctStatus = formData.rctStatus;
-    this.recptCls.receiptNo = formData.receiptNo || '';
-    this.recptCls.remarks = formData.remarks;
-    this.recptCls.paidCurrency = formData.paidCurrency;
-    this.recptCls.exchRate = formData.exchRate;
-    this.recptCls.charges = formData.charges;
+    this.recptCls.TxnBank = this.receiptsForm.get('rctBank')?.value;
+    this.recptCls.TranMode = formData.rctMode;
+    this.recptCls.TxnStatus = formData.rctStatus;
+    this.recptCls.TranNo = formData.receiptNo || '';
+    this.recptCls.Remarks = formData.remarks;
+    this.recptCls.PaidCurrency = formData.paidCurrency;
+    this.recptCls.PaidExchRate = formData.exchRate;
+    this.recptCls.Charges = formData.charges;
     const paidAmountValue = this.receiptsForm.controls['paidAmt'].value;
     if (paidAmountValue !== null && paidAmountValue !== undefined) {
       const parsedValue = typeof paidAmountValue === 'string' ? paidAmountValue.replace(/,/g, '') : paidAmountValue;
-      this.recptCls.paidAmt = Number(parsedValue);
+      this.recptCls.PaidAmt = Number(parsedValue);
     }
     // if (formData.rctMode.toUpperCase() === 'DEDUCTION') {
     //   this.recptCls.rctAmount = this.recptCls.paidAmt
@@ -1293,13 +1286,13 @@ isPayment: boolean=false;
     const rctAmountValue = this.receiptsForm.controls['rctAmount'].value;
     if (rctAmountValue !== null && rctAmountValue !== undefined) {
       const parsedValue = typeof rctAmountValue === 'string' ? rctAmountValue.replace(/,/g, '') : rctAmountValue;
-      this.recptCls.rctAmount = Number(parsedValue);
+      this.recptCls.TranAmount = Number(parsedValue);
     }
     // }
 
     this.recptCls.instrumentDate = this.formatDate(formData.instrumentDate);
-    this.recptCls.rctDate = this.formatDate(this.receiptsForm.controls['rctDate'].value);
-    this.recptCls.receiptDate = this.formatDate(formData.receiptDate);
+    this.recptCls.TxnDate = this.formatDate(this.receiptsForm.controls['rctDate'].value);
+    this.recptCls.TranDate = this.formatDate(formData.receiptDate);
   }
 
   clear() {
@@ -1417,14 +1410,14 @@ isPayment: boolean=false;
 
 
   bindDataToForm(res: any) {
-    this.recptCls.rctAccount='';
+    this.recptCls.TxnAccount='';
     this.filteredpayMode = this.payMode;
     this.filteredStatusList = this.StatusList;
     this.filteredbank = this.bank;
     this.payStatus = res['data'].tranStatus;
     this.allocStatus = res['data'].allocStatus;
     this.supCode = res['data'].customer;
-    this.recptCls.rctAccount= res['data'].rctAccount
+    this.recptCls.TxnAccount= res['data'].rctAccount
     // console.log(res.data);
     this.receiptsForm.get('receiptmode')?.patchValue(this.receiptmodes[3].itemCode);
     this.receiptsForm.patchValue({
@@ -1507,7 +1500,7 @@ isPayment: boolean=false;
   }
   // SUPPLIES
 
-  async onSearchCustomer() {
+  async onSearchbookingID() {
 
     this.displayMessage("", "");
     let clientTypeTemp = '';

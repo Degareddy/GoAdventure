@@ -30,6 +30,7 @@ export class MastersService {
     return this.http.post<string[]>(environment.Url + 'MasterItems/GetMasterItemsList/', masParams)
   }
 
+  
   getSpecificMasterItemDetails(masParams: MasterParams): Observable<string[]> {
     return this.http.post<string[]>(environment.Url + 'MasterItems/GetMasterItemsDetails/', masParams)
   }
@@ -126,7 +127,7 @@ export class MastersService {
   }
 
   GetRctPmtTranSearchList(body: any): Observable<any> {
-    return this.http.post<any>(environment.Url + 'MasterItems/GetRctPmtTranSearchList/', body)
+    return this.http.post<any>(environment.Url + 'sales/GetReceiptPaymentsDetails/', body)
   }
 
   UpdateMyCashTransfers(body: any): Observable<any> {

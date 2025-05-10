@@ -104,14 +104,14 @@
         </div>
         <div class="matfield">
           <mat-form-field appearance="outline" style="width: 100%;">
-            <mat-label class="mat-label-class">Customer/Tenant/Others</mat-label>
-            <input matInput type="text" placeholder="Customer/Tenant/Others" formControlName="customer" />
-            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('customer')!.value"
-              (click)="receiptsForm.get('customer')?.setValue('')" type="button">
+            <mat-label class="mat-label-class">Booking ID</mat-label>
+            <input matInput type="text" placeholder="Booking ID" formControlName="bookingID" />
+            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="receiptsForm.get('bookingID')!.value"
+              (click)="receiptsForm.get('bookingID')?.setValue('')" type="button">
               <mat-icon class="mat-clear-icon">clear</mat-icon>
             </button>
             <button matSuffix mat-icon-button aria-label="Search" [disabled]="receiptsForm.get('mode')!.value == 'View' || receiptsForm.get('rctType')!.value == ''
-              || receiptsForm.get('clientType')!.value == ''" (click)="onSearchCustomer()" type="button">
+              || receiptsForm.get('clientType')!.value == ''" (click)="onSearchbookingID()" type="button">
               <mat-icon class="mat-search-icon">search</mat-icon>
             </button>
           </mat-form-field>

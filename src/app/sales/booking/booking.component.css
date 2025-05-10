@@ -144,4 +144,38 @@
   .small-label {
     font-size: smaller;
   }
+  .large-form {
+    font-size: 18px; /* Base font size for the form */
+  }
+  
+  .large-form mat-form-field {
+    font-size: 18px; /* Font size for mat-form-field */
+  }
+  
+  .large-form .mat-form-field-label {
+    font-size: 18px; /* Font size for floating labels */
+  }
+  
+  .large-form .mat-input-element {
+    font-size: 18px; /* Font size for input text */
+  }
+  
+  .large-form .mat-select-value {
+    font-size: 18px; /* Font size for selected mat-select value */
+  }
+  
+  .large-form .mat-option-text {
+    font-size: 18px; /* Font size for mat-select options */
+  }
+  
+  .large-form .mat-checkbox-label {
+    font-size: 18px; /* Font size for checkbox labels */
+  }
+  
+  .large-form .mat-icon {
+    font-size: 24px; /* Font size for icons */
+  }
+  .large-form .mat-form-field-label {
+    transform: translateY(-1.34375em) scale(1) !important;
+  }
   

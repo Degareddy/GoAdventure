@@ -62,7 +62,22 @@ export class MasterParams {
   public tranType!: string
   public tranNo!: string
 }
-
+export class getTripIds{
+  public company!:string
+  public location!: string
+  public packageType!: string
+  public packageName!: string
+  public tripId!: string
+  public tripDesc!: string
+  public tranDate!: string
+  public startDate!: string
+  public endDate!: string
+  public tripStatus!: string
+  public remarks!: string
+  public mode!: string
+  public user!: string
+  public refNo!: string
+}
 export class Address {
   public mode!: string
   public company!: string
@@ -315,33 +330,44 @@ export class recieptsClass {
   public company!: string
   public location!: string
   public langID!: number
-  public receiptNo!: string
-  public receiptDate!: string
-  public customer!: string
-  public currency!: string
-  public rctMode!: string
-  public customerBank!: string
-  public custAccount!: string
-  public custAccountName!: string
+  public TranNo!: string
+  public TranDate!: string
+  public ClientBankRefDate!: string
+  public OtherFirstRefNo!: string
+  public OtherSecondRefNo!: string
+  public OtherRefDate!: string
+  public ClientTranStatus!: string
+  public TranAt!: string
+  public TranBy!:string
+  public Client!: string
+  public Currency!: string
+  public TranMode!: string
+  public ClientBank!: string
+  public ClientAccount!: string
+  public ClientAccName!: string
   public instrumentNo!: string
   public instrumentDate!: string
   public instrumentStatus!: string
-  public rctType!: string
-  public rctBank!: string
-  public rctAccount!: string
-  public rctDate!: string
-  public rctStatus!: string
-  public rctAmount!: number
+  public TranType!: string
+  public TxnBank!: string
+  public TxnAccount!: string
+  public TxnDate!: string
+  public TxnStatus!: string
+  public TranAmount!: number
   public tranStatus!: string
-  public remarks!: string
-  public paidCurrency!: string
-  public exchRate!: number
-  public charges!: number
-  public paidAmt!: number
+  public Remarks!: string
+  public PaidCurrency!: string
+  public PaidExchRate!: number
+  public Charges!: number
+  public PaidAmt!: number
+  public AllottedAmount!: number
   public Mode!: string
   public User!: string
   public RefNo!: string
-  public txnFor!: string
+  public TranFor!: string
+  public ClientType!:string
+  public IsCash!:boolean
+  public ClientBankRefNo!:string
 }
 export class ReceiptsDetails {
   public company!: string

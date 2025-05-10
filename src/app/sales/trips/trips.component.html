@@ -1,5 +1,5 @@
-
-<div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+<div class="large-form">
+  <div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
     <div class="flex justify-between items-center mb-0.1 h-8">
       <div class="flex items-center text-white">
         <mat-icon class="mr-1">shopping_cart</mat-icon>
@@ -35,6 +35,7 @@
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label>Package Type</mat-label>
               <mat-select formControlName="packageType" >
+                <mat-option value="">--Select--</mat-option>
                 <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{x.itemName}}
                 </mat-option>
               </mat-select>
@@ -43,7 +44,28 @@
           <div class="col-3">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Trip Id</mat-label>
-              <input matInput placeholder="Trip Id" formControlName="tripId" type="text">
+              <input matInput placeholder="Trip Id" formControlName="tripId" type="text" 
+              [matAutocomplete]="auto"
+              (input)="tripIdSearch()"
+              >
+              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
+  
+                <!-- Static header -->
+                <div class="autocomplete-header">
+                  <div class="col-code">Code</div>
+                  <div class="col-name">Name</div>
+                  <div class="col-phone">Details</div>
+                </div>
+              
+                <!-- Options -->
+                <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
+                  <div class="autocomplete-row">
+                    <div class="col-code">{{ option.itemCode }}</div>
+                    <div class="col-name">{{ option.itemName }}</div>
+                    <div class="col-phone">{{ option.itemDetails }}</div>
+                  </div>
+                </mat-option>
+              </mat-autocomplete>
               <button mat-button *ngIf="tripForm.get('tripId')!.value" type="button" matSuffix mat-icon-button
                 aria-label="Clear" (click)="tripForm.get('tripId')!.setValue('')">
                 <mat-icon>cancel</mat-icon>
@@ -118,3 +140,4 @@
     </div>
     </form>
     </div>
+</div>

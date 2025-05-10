@@ -46,7 +46,7 @@ const routes: Routes = [
   { path: 'transfer-invoice', component: TransferInvoiceComponent, canActivate: [SaleGuard] },
   { path: 'credit-invoice', component: CreditInvoiceComponent, canActivate: [SaleGuard] },
   { path: 'invoice-adjustment', component: InvoiceAdjustmentComponent, canActivate: [SaleGuard] },
-  { path: 'receipts', component: ReceiptsComponent, canActivate: [SaleGuard] },
+  { path: 'rctpmt', component: ReceiptsComponent, canActivate: [SaleGuard] },
   { path: 'pricing', component: PricingComponent, canActivate: [SaleGuard] },
   { path: 'sales-statement', component: ReprotsComponent, canActivate: [SaleGuard] },
   { path: 'sales-reports', component: SalesReportsComponent, canActivate: [SaleGuard] },

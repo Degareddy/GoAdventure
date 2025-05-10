@@ -78,7 +78,7 @@ export class SalesService {
   }
 
   UpdateReceiptDetails(recptCls: recieptsClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateReceiptDetails', recptCls)
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdateReceiptPaymentDetails', recptCls)
   }
 
   GetPaymentsDetails(body: any): Observable<any> {
