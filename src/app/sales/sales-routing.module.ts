@@ -27,6 +27,7 @@ import { DebitCreditNoteComponent } from '../general/debit-credit-note/debit-cre
 import { OpeningBalancesComponent } from '../purchase/opening-balances/opening-balances.component';
 import { BookingComponent } from './booking/booking.component';
 import { TripsComponent } from './trips/trips.component';
+import { PackageNamesComponent } from './package-names/package-names.component';
 
 
 const routes: Routes = [
@@ -59,7 +60,8 @@ const routes: Routes = [
   { path: 'booking', component: BookingComponent, canActivate: [SaleGuard] },
   { path: 'debit-credit-note', component: DebitCreditNoteComponent, canActivate: [SaleGuard] },
 
-  { path: 'trip', component: TripsComponent, canActivate: [SaleGuard] },
+  { path: 'packages', component: PackageNamesComponent, canActivate: [SaleGuard] },
+  {path:'trip',component:TripsComponent,canActivate:[SaleGuard]},
 
 ]
 // }];debit-credit-note

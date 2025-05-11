@@ -36,6 +36,12 @@ export class SalesService {
   GetDeliveryReport(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetDeliveryReport', qtnDet)
   }
+  GetPackagesList(qtnDet: any): Observable<any> {
+    return this.http.post(environment.Url + 'sales/GetPackagesList', qtnDet)
+  }
+  UpdatePackageDetails(qtnDet: any): Observable<any> {
+    return this.http.post(environment.Url + 'sales/UpdatePackageDetails', qtnDet)
+  }
   getDetailsPdf(body:any):Observable<any>{
     return this.http.post<SaveApiResponse>(environment.Url + 'sales/GetReceiptReport', body)
 

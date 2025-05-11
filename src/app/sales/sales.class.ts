@@ -46,6 +46,12 @@ export class vendorProducts{
   public RefNo!:string;
 
 }
+export interface autoComplete {
+  itemCode: string
+  itemName: string
+  itemDetails:string
+
+}
 
 export class MasterParams {
   public company!: string

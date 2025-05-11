@@ -22,7 +22,7 @@
   <div class="p-4 bg-zinc-100 container rounded-sm">
     <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
       <div class="row justify-content-center  myCustomClass">
-        <div class="col-3">
+        <div class="col-2">
           <mat-form-field appearance="outline" class="mat-mode">
             <mat-label>Modes</mat-label>
             <mat-select formControlName="mode" >
@@ -31,17 +31,55 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label>Package Type</mat-label>
-              <mat-select formControlName="packageType" >
+              <mat-select formControlName="packageType" (selectionChange)="getPackageNames()">
                 <mat-option value="">--Select--</mat-option>
                 <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{x.itemName}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-3">
+          <div class="col-2">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Package Name</mat-label>
+              <input matInput placeholder="Package Name" formControlName="packageName" type="text"
+              [matAutocomplete]="auto1">
+              <mat-autocomplete #auto1="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
+  
+                <!-- Static header -->
+                <div class="autocomplete-header">
+                  <div class="col-code">Code</div>
+                  <div class="col-name">Name</div>
+                  <div class="col-phone">Details</div>
+                </div>
+              
+                <!-- Options -->
+                <mat-option *ngFor="let option of autoFilteredPackageNames" [value]="option.itemCode">
+                  <div class="autocomplete-row">
+                    <div class="col-code">{{ option.itemCode }}</div>
+                    <div class="col-name">{{ option.itemName }}</div>
+                    <div class="col-phone">{{ option.itemDetails }}</div>
+                  </div>
+                </mat-option>
+              </mat-autocomplete>
+              <button mat-button *ngIf="tripForm.get('packageName')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="tripForm.get('packageName')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button mat-button *ngIf="tripForm.get('packageName')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="tripForm.get('packageName')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
+               >
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+              
+            </mat-form-field>
+          </div>
+          <div class="col-2">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Trip Id</mat-label>
               <input matInput placeholder="Trip Id" formControlName="tripId" type="text" 
@@ -76,7 +114,7 @@
               </button>
             </mat-form-field>
           </div>
-          <div class="col-3">
+          <div class="col-2">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Trip Desc</mat-label>
               <input matInput placeholder="Trip Desc" formControlName="tripDesc" type="text">

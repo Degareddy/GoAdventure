@@ -11,6 +11,7 @@ import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 import { getTripIds } from '../sales.class';
+import { SalesService } from 'src/app/Services/sales.service';
 
 interface autoComplete {
   itemCode: string
@@ -26,7 +27,8 @@ interface autoComplete {
 export class TripsComponent implements OnInit {
   autoFilteredCustomer: autoComplete[] = [];
   tripIdList:autoComplete[]=[]
-
+  autoFilteredPackageNames: autoComplete[] = [];
+  packageNamesList:autoComplete[]=[]
   title:string="Trips"
   tripForm!:FormGroup
   packageTypes:Item[]=[]
@@ -46,7 +48,7 @@ export class TripsComponent implements OnInit {
   ]
 
 
-  constructor(private fb:FormBuilder,protected masterService: MastersService,
+  constructor(private fb:FormBuilder,protected masterService: MastersService,private salesService:SalesService,
     private loader: NgxUiLoaderService,private invService: InventoryService,private userDataService: UserDataService,) { 
     this.tripForm=this.formInit();
     this.subSink = new SubSink();
@@ -88,11 +90,37 @@ export class TripsComponent implements OnInit {
       StartDate:this.tripForm.get('StartDate')?.value,
       EndDate:this.tripForm.get('endDate')?.value,
       Remarks:this.tripForm.get('remarks')?.value,
-    }
+   }
     try {
       this.loader.start()
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
             this.loader.stop()
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        }
+  }
+  getPackageNames(){
+    const body={
+      "Mode":"View",
+      "Company":this.userDataService.userData.company,
+      "Location":this.userDataService.userData.location,
+      "User":this.userDataService.userData.userID,
+      "RefNo":this.userDataService.userData.sessionID,
+      "item":this.tripForm.get('packageType')?.value,
+    }
+    try {
+      this.loader.start()
+          this.subSink.sink = this.salesService.GetPackagesList(body).subscribe((res: any) => {
+            this.loader.stop();
+            if(res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR){
+              this.displayMessage(res.message, TextClr.red);
+            }
+            else{
+              
+              this.displayMessage(res.message, TextClr.green);
+            }
           });
         }
         catch (ex: any) {
@@ -108,7 +136,8 @@ export class TripsComponent implements OnInit {
         tranDate:[new Date()],
         StartDate:[new Date()],
         endDate:[new Date()],
-        remarks:['']
+        remarks:[''],
+        packageName:['']
       });
     }
     tripIdSearch(){

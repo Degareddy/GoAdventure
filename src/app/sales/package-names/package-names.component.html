@@ -1,0 +1,148 @@
+<div class="large-form">
+    <div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
+      <div class="flex justify-between items-center mb-0.1 h-8">
+        <div class="flex items-center text-white">
+          <mat-icon class="mr-1">shopping_cart</mat-icon>
+          <b>{{title | titlecase}}</b>
+        </div>
+        <div class="flex items-end space-x-1 mb-2.5">
+          <button mat-raised-button color="primary" 
+          class="btnUp" type="button" >
+           <mat-icon>info</mat-icon>Details
+         </button>
+         <button mat-raised-button color="accent" type="button" class="btnUp" 
+         ><mat-icon>cloud_upload</mat-icon>Docs</button>
+         <button mat-raised-button color="primary" class="btnUp" type="button" >
+           <mat-icon>help</mat-icon>
+           Help
+         </button>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 bg-zinc-100 container rounded-sm">
+      <form [formGroup]="packageNamesForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
+        <div class="row justify-content-center  myCustomClass">
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label>Modes</mat-label>
+              <mat-select formControlName="mode" >
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+              <mat-form-field appearance="outline" >
+                <mat-label>Package Type</mat-label>
+                <mat-select formControlName="packageType" selectionChange="loadPackages()" >
+                  <mat-option value="">--Select--</mat-option>
+                  <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{x.itemName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-4">
+                <mat-form-field appearance="outline" class="mat-mode">
+                  <mat-label class="mat-label-class">Tran Date</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div>
+            
+      </div>
+      <div class="row justify-content-left">
+        <div class="col-4">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>package Code</mat-label>
+              <input matInput placeholder="Package Code" formControlName="packageCode" type="text" 
+              [matAutocomplete]="auto"
+              (input)="tripIdSearch()"
+              >
+              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
+  
+                <!-- Static header -->
+                <div class="autocomplete-header">
+                  <div class="col-code">Code</div>
+                  <div class="col-name">Name</div>
+                  <div class="col-phone">Details</div>
+                </div>
+              
+                <!-- Options -->
+                <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
+                  <div class="autocomplete-row">
+                    <div class="col-code">{{ option.itemCode }}</div>
+                    <div class="col-name">{{ option.itemName }}</div>
+                    <div class="col-phone">{{ option.itemDetails }}</div>
+                  </div>
+                </mat-option>
+              </mat-autocomplete>
+              <button mat-button *ngIf="packageNamesForm.get('packageCode')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="packageNamesForm.get('packageCode')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
+                [disabled]="packageNamesForm.get('mode')!.value ==='Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Package Name</mat-label>
+              <input matInput placeholder="Package Name" formControlName="packageName" type="text">
+              <button mat-button *ngIf="packageNamesForm.get('packageName')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="packageNamesForm.get('packageName')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-4">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Start Date</mat-label>
+                <input matInput [matDatepicker]="picker1" formControlName="StartDate"  />
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+              </mat-form-field>
+            </div> -->
+            <!-- <div class="col-4">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">End Date</mat-label>
+                <input matInput [matDatepicker]="picker2" formControlName="endDate"  />
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2></mat-datepicker>
+              </mat-form-field>
+            </div> -->
+            <div class="col-4">
+              <mat-form-field appearance="outline" style="width: 95%;">
+                <mat-label>Remarks</mat-label>
+                <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+                
+              </mat-form-field>
+            </div>
+          </div>
+          <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <div class="btnAlignment">
+        <button mat-raised-button color="primary" type="submit" class="btnUp"
+         [disabled]="packageNamesForm.invalid || packageNamesForm.get('mode')!.value==='View'
+         ">
+          <mat-icon>done</mat-icon>Apply
+        </button>
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+          <mat-icon>clear_all</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
+          <mat-icon>cancel</mat-icon>Close
+        </button>
+      </div>
+      </form>
+      <div style="margin-top: -30px;">
+        <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+          [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+          [gridHeight]="'230px'" [paginationPageSize]="25" [showToolPanel]="true"
+          [showRecordCount]="true"></app-access-grid>
+      </div>
+      </div>
+  </div>
+  

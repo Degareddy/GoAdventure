@@ -347,7 +347,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['clientType'].enable();
       // this.clear();
       this.filteredpayMode = "";
-      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "TRANSFER");
+      this.filteredpayMode = this.payMode.filter(item => item.itemCode === "CASH" || item.itemCode === "OLTRF");
       this.receiptsForm.controls['mode'].patchValue('Add');
       this.receiptsForm.controls['rctType'].patchValue('RECEIPT');
       this.receiptsForm.controls['tranFor'].patchValue('');
@@ -360,6 +360,7 @@ isPayment: boolean=false;
       this.receiptsForm.controls['receiptNo'].disable();
       this.loadData();
       this.receiptsForm.controls['clientType'].disable();
+      this.receiptsForm.get('')
     }
     else if (event.toUpperCase() === 'PAYRENT') {
       this.clearForreceiptTypeChange()
