@@ -12,12 +12,18 @@ import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
 import { getTripIds } from '../sales.class';
 import { SalesService } from 'src/app/Services/sales.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 
 interface autoComplete {
   itemCode: string
   itemName: string
   itemDetails:string
 
+}
+interface packageNames {
+  packageId:string;
+  packageName:string;
 }
 @Component({
   selector: 'app-trips',
@@ -29,6 +35,7 @@ export class TripsComponent implements OnInit {
   tripIdList:autoComplete[]=[]
   autoFilteredPackageNames: autoComplete[] = [];
   packageNamesList:autoComplete[]=[]
+  packageNames:packageNames[]=[]
   title:string="Trips"
   tripForm!:FormGroup
   packageTypes:Item[]=[]
@@ -46,9 +53,11 @@ export class TripsComponent implements OnInit {
     {itemCode:'View',itemName:'View'},
 
   ]
+  dialogOpen = false;
 
 
-  constructor(private fb:FormBuilder,protected masterService: MastersService,private salesService:SalesService,
+  constructor(private fb:FormBuilder,
+    public dialog: MatDialog,protected masterService: MastersService,private salesService:SalesService,
     private loader: NgxUiLoaderService,private invService: InventoryService,private userDataService: UserDataService,) { 
     this.tripForm=this.formInit();
     this.subSink = new SubSink();
@@ -84,6 +93,7 @@ export class TripsComponent implements OnInit {
       User:this.userDataService.userData.userID,
       RefNo:this.userDataService.userData.sessionID,
       PackageType:this.tripForm.get('packageType')?.value,
+      package:this.tripForm.get('packageName')?.value,
       TripId:this.tripForm.get('tripId')?.value,
       TripDesc:this.tripForm.get('tripDesc')?.value,
       TranDate:this.tripForm.get('tranDate')?.value,
@@ -118,7 +128,7 @@ export class TripsComponent implements OnInit {
               this.displayMessage(res.message, TextClr.red);
             }
             else{
-              
+              this.packageNames=res.data;
               this.displayMessage(res.message, TextClr.green);
             }
           });
@@ -141,7 +151,33 @@ export class TripsComponent implements OnInit {
       });
     }
     tripIdSearch(){
-
+       try {
+           
+            
+                  if (!this.dialogOpen) {
+                    this.dialogOpen = true;
+                    const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                      width: '90%',
+                      disableClose: true,
+                      data: {
+                        'tranNum':'',
+                        'search': 'Trip Searc'
+                      }
+                    });
+      
+                    dialogRef.afterClosed().subscribe(result => {
+                      this.dialogOpen = false;
+                      if (result != true) {
+                        
+                      }
+                    });
+                  }
+          }       
+      
+          catch (ex: any) {
+            this.retMessage = "Exception " + ex.message;
+            this.textMessageClass = 'red';
+          }
     }
     clear(){
 

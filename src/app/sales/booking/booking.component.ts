@@ -9,6 +9,9 @@ import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { InventoryService } from 'src/app/Services/inventory.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { DatePipe } from '@angular/common';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 
 @Component({
   selector: 'app-booking',
@@ -21,6 +24,8 @@ export class BookingComponent implements OnInit {
   subSink!:SubSink
   textMessageClass:string=""
   packageTypes:Item[]=[]
+  dialogOpen = false;
+
   modes:Item[]=[
     {itemCode:'Add',itemName:'Add'},
     {itemCode:'Modify',itemName:'Modify'},
@@ -29,8 +34,9 @@ export class BookingComponent implements OnInit {
     {itemCode:'View',itemName:'View'},
 
   ]
-    constructor(private fb:FormBuilder,private userDataService:UserDataService,private invService:InventoryService,
-      private loader: NgxUiLoaderService,
+    constructor(private fb:FormBuilder,
+      public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
+      private loader: NgxUiLoaderService, private datePipe: DatePipe,
       private masterService:MastersService
     ) {
     this.bookingForm=this.formInit()
@@ -134,8 +140,38 @@ export class BookingComponent implements OnInit {
   onHelpCilcked(){
 
   }
+  formatDate(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
   onSearchCilcked(){
 
+    try {
+     
+      
+            if (!this.dialogOpen) {
+              this.dialogOpen = true;
+              const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                width: '90%',
+                disableClose: true,
+                data: {
+                  'tranNum':'',
+                  'search': 'Trip Searc'
+                }
+              });
+
+              dialogRef.afterClosed().subscribe(result => {
+                this.dialogOpen = false;
+                if (result != true) {
+                  
+                }
+              });
+            }
+    }       
+
+    catch (ex: any) {
+      this.retMessage = "Exception " + ex.message;
+      this.textMessageClass = 'red';
+    }
   }
   
 }

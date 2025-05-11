@@ -8,43 +8,37 @@
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="tranSearchForm">
     <div class="row  justify-content-center" style="margin-top: 8px;">
-      <div class="col-2">
-        <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label>Tran No</mat-label>
-          <input matInput placeholder="TranNo" formControlName="tranNo" type="text">
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="tranStatus">
-            <mat-option *ngFor="let e of tranStatus" [value]="e">
-              {{e}} </mat-option>
+      <div class="col-4">
+        
+        <mat-form-field appearance="outline" >
+          <mat-label>Package Type</mat-label>
+          <mat-select formControlName="packageType" (selectionChange)="loadPackages()" >
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{x.itemName}}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-2">
+      <div class="col-4">
+        <mat-form-field appearance="outline" style="width: 95%;">
+          <mat-label>Package Name</mat-label>
+          <mat-select formControlName="packageName" >
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of packageNames" [value]="x.packageId">{{x.packageName}}
+            </mat-option>
+          </mat-select>
+          
+        </mat-form-field>
+      </div>
+      <div class="col-4">
         <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label class="mat-label-class">From Date</mat-label>
-          <input matInput [matDatepicker]="picker3" formControlName="fromDate" [max]="tomorrow" />
-          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
-          <mat-datepicker #picker3></mat-datepicker>
+          <mat-label class="mat-label-class">Start Date</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="fromDate"  />
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
       </div>
-      <div class="col-2">
-        <mat-form-field appearance="outline" class="mat-mode">
-          <mat-label class="mat-label-class">To Date</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="toDate" [max]="tomorrow" />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <mat-form-field appearance="outline">
-          <mat-label>Client</mat-label>
-          <input matInput placeholder="Client" formControlName="client" type="text">
-        </mat-form-field>
-      </div>
+      
     </div>
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">

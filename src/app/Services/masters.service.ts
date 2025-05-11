@@ -125,6 +125,9 @@ export class MastersService {
   GetTranSearchList(body: any): Observable<any> {
     return this.http.post<any>(environment.Url + 'MasterItems/GetTranSearchList/', body)
   }
+  GetTripSearchList(body: any): Observable<any> {
+    return this.http.post<any>(environment.Url + 'MasterItems/GetTripSearchList/', body)
+  }
 
   GetRctPmtTranSearchList(body: any): Observable<any> {
     return this.http.post<any>(environment.Url + 'sales/GetReceiptPaymentsDetails/', body)

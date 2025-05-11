@@ -11,7 +11,13 @@ import { DatePipe } from '@angular/common';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { Item } from '../Interface/interface';
+import { SalesService } from 'src/app/Services/sales.service';
 
+interface packageNames {
+  packageId:string;
+  packageName:string;
+}
 @Component({
   selector: 'app-search-engine',
   templateUrl: './search-engine.component.html',
@@ -21,8 +27,12 @@ import { AccessSettings } from 'src/app/utils/access';
 export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   tranSearchForm!: FormGroup;
   @Input() max: any;
+  packageNames:packageNames[]=[]
+
   tomorrow = new Date();
   textMessageClass!: string;
+    packageTypes:Item[]=[]
+  
   retMessage!: string;
   tranStatus: any = ['ANY', 'Closed', 'Authorized', 'Open', 'Deleted', 'Confirmed']
   masterParams!: MasterParams;
@@ -40,45 +50,25 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   totalAmount: number = 0;
   afterDisc:number=0;
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
-  { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 90, hide: true },
-  { field: "unitName", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
-  { field: "partyName", headerName: "Party Name", sortable: true, filter: true, resizable: true, width: 190 },
-  { field: "partyId", headerName: "Party Id", sortable: true, filter: true, resizable: true, width: 190, hide: true },
-  { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 190 },
-
-  { field: "tranType", headerName: "Tran Type", sortable: true, filter: true, resizable: true, width: 120 },
-
+  { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+  { field: "packageName", headerName: "Package name", sortable: true, filter: true, resizable: true, width: 90 },
+  { field: "tripId", headerName: "Trip Id", sortable: true, filter: true, resizable: true, width: 190 },
+  
   {
-    field: "tranAmount", headerName: "Tran Amount", sortable: true, filter: true, resizable: true, width: 120,
+    field: "startDate", headerName: "Start Date", sortable: true, filter: true, resizable: true, width: 120,
     valueFormatter: function (params: any) {
-      if (typeof params.value === 'number' || typeof params.value === 'string') {
-        const numericValue = parseFloat(params.value.toString());
-        if (!isNaN(numericValue)) {
-          return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
-        }
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
       }
       return null;
     },
-    type: 'rightAligned',
-    cellStyle: { justifyContent: "flex-end" },
   },
   {
-    field: "totalAmount", headerName: "Total Amount", sortable: true, filter: true, resizable: true, width: 120,
-    valueFormatter: function (params: any) {
-      if (typeof params.value === 'number' || typeof params.value === 'string') {
-        const numericValue = parseFloat(params.value.toString());
-        if (!isNaN(numericValue)) {
-          return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
-        }
-      }
-      return null;
-    },
-    type: 'rightAligned',
-    cellStyle: { justifyContent: "flex-end" },
-  },
-  { field: "tranStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 120 },
-  {
-    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+    field: "endDate", headerName: "End Date", sortable: true, filter: true, resizable: true, width: 120,
     valueFormatter: function (params: any) {
       if (params.value) {
         const date = new Date(params.value);
@@ -91,7 +81,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
     },
   }
   ];
-  constructor(protected mastService: MastersService, private userDataService: UserDataService,
+  constructor(protected mastService: MastersService, private salesService:SalesService,private userDataService: UserDataService,protected masterService: MastersService,
     private fb: FormBuilder, private datePipe: DatePipe,
     private dialogRef: MatDialogRef<SearchEngineComponent>,
     private loaderService: NgxUiLoaderService,
@@ -103,18 +93,63 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
     this.loader = this.loaderService;
   }
+  loadTripList(){
+    const body={
+      Mode:'View',
+      Company:this.userDataService.userData.company,
+      Location:this.userDataService.userData.location,
+      User:this.userDataService.userData.userID,
+      RefNo:this.userDataService.userData.sessionID,
+      item:"PACKAGE",
+      itemFirstLevel: "",
+      itemSecondLevel: "",
+      password: "",
+      selLocation: "",
+      tranNo: "",
+      tranType: "",
+      type: ""
+    }
+    try {
+          this.subSink.sink =this.masterService.getSpecificMasterItems(body).subscribe((res: any) => {
+            this.packageTypes= res.data
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        }
+  }
+  loadPackages(){
+    this.packageNames=[]
+    const body={
+      "Mode":"View",
+      "Company":this.userDataService.userData.company,
+      "Location":this.userDataService.userData.location,
+      "User":this.userDataService.userData.userID,
+      "RefNo":this.userDataService.userData.sessionID,
+      "item":this.tranSearchForm.get('packageType')?.value,
+    }
+    try {
+      this.loader.start()
+          this.subSink.sink = this.salesService.GetPackagesList(body).subscribe((res: any) => {
+            this.loader.stop();
+            if(res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR){
+              this.displayMessage(res.message, TextClr.red);
+            }
+            else{
+              this.packageNames=res.data;
+              this.displayMessage(res.message, TextClr.green);
+            }
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        }
+  }
 
   ngOnInit(): void {
-
+    this.loadTripList();
     this.searchName = this.data.search;
-    this.tranSearchForm.get('tranNo')!.patchValue(this.data.tranNum);
-    if (this.data.tranNum) {
-      this.tranSearchForm.get('tranNo')!.patchValue(this.data.tranNum);
-    }
-    if (this.data.supplier || this.data.party) {
-      this.tranSearchForm.get('client')?.patchValue(this.data.supplier || this.data.party);
-
-    }
+    
     this.search();
   }
 
@@ -124,9 +159,8 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 onRowSelected(event: any) {
-    if (event.colDef.field === "tranNo") {
-      this.dialogRef.close(event.data.tranNo);
-    }
+    
+      this.dialogRef.close(event.data);
   
   }
 
@@ -146,7 +180,9 @@ onRowSelected(event: any) {
       toDate: [new Date(), Validators.required],
       tranStatus: ['ANY'],
       client: [''],
-      message: ['']
+      message: [''],
+      packageType:[''],
+      packageName:[''],
     });
   }
   commonParams() {
@@ -163,23 +199,17 @@ onRowSelected(event: any) {
       return
     }
     else {
-      const fromDate = new Date(this.tranSearchForm.get('fromDate')!.value);
-      const toDate = new Date(this.tranSearchForm.get('toDate')!.value);
-      if (fromDate > toDate) {
-        this.displayMessage(displayMsg.ERROR + "From date should be less than To date", TextClr.red);
-        return;
-      }
+      
       const body = {
         ...this.commonParams(),
-        TranType: this.data.TranType,
-        TranNo: this.tranSearchForm.get('tranNo')!.value,
-        Party: this.tranSearchForm.get('client')!.value,
-        FromDate: this.datePipe.transform(this.tranSearchForm.get('fromDate')!.value, 'yyyy-MM-dd'),
-        ToDate: this.datePipe.transform(this.tranSearchForm.get('toDate')!.value, 'yyyy-MM-dd'),
-        TranStatus: this.tranSearchForm.get('tranStatus')!.value,
+        SearchFor:"TRIP",
+        Type:this.tranSearchForm.get('packageType')?.value,
+        ItemFirstLevel: this.tranSearchForm.get('packageName')?.value,
+        FirstDate: this.datePipe.transform(this.tranSearchForm.get('fromDate')!.value, 'yyyy-MM-dd'),
+        
       }
       try {
-        this.subSink.sink = await this.mastService.GetTranSearchList(body).subscribe((res: any) => {
+        this.subSink.sink = await this.mastService.GetTripSearchList(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];

@@ -34,7 +34,7 @@
           <div class="col-4">
               <mat-form-field appearance="outline" >
                 <mat-label>Package Type</mat-label>
-                <mat-select formControlName="packageType" selectionChange="loadPackages()" >
+                <mat-select formControlName="packageType" (selectionChange)="loadPackages()" >
                   <mat-option value="">--Select--</mat-option>
                   <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{x.itemName}}
                   </mat-option>

@@ -44,38 +44,11 @@
           <div class="col-2">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Package Name</mat-label>
-              <input matInput placeholder="Package Name" formControlName="packageName" type="text"
-              [matAutocomplete]="auto1">
-              <mat-autocomplete #auto1="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
-  
-                <!-- Static header -->
-                <div class="autocomplete-header">
-                  <div class="col-code">Code</div>
-                  <div class="col-name">Name</div>
-                  <div class="col-phone">Details</div>
-                </div>
-              
-                <!-- Options -->
-                <mat-option *ngFor="let option of autoFilteredPackageNames" [value]="option.itemCode">
-                  <div class="autocomplete-row">
-                    <div class="col-code">{{ option.itemCode }}</div>
-                    <div class="col-name">{{ option.itemName }}</div>
-                    <div class="col-phone">{{ option.itemDetails }}</div>
-                  </div>
+              <mat-select formControlName="packageName" >
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of packageNames" [value]="x.packageId">{{x.packageName}}
                 </mat-option>
-              </mat-autocomplete>
-              <button mat-button *ngIf="tripForm.get('packageName')!.value" type="button" matSuffix mat-icon-button
-                aria-label="Clear" (click)="tripForm.get('packageName')!.setValue('')">
-                <mat-icon>cancel</mat-icon>
-              </button>
-              <button mat-button *ngIf="tripForm.get('packageName')!.value" type="button" matSuffix mat-icon-button
-                aria-label="Clear" (click)="tripForm.get('packageName')!.setValue('')">
-                <mat-icon>cancel</mat-icon>
-              </button>
-              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
-               >
-                <mat-icon class="mat-search-icon">search</mat-icon>
-              </button>
+              </mat-select>
               
             </mat-form-field>
           </div>
@@ -83,27 +56,24 @@
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Trip Id</mat-label>
               <input matInput placeholder="Trip Id" formControlName="tripId" type="text" 
-              [matAutocomplete]="auto"
-              (input)="tripIdSearch()"
               >
-              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
+              <!-- [matAutocomplete]="auto" -->
+              <!-- <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
   
-                <!-- Static header -->
-                <div class="autocomplete-header">
+\                <div class="autocomplete-header">
                   <div class="col-code">Code</div>
                   <div class="col-name">Name</div>
                   <div class="col-phone">Details</div>
                 </div>
               
-                <!-- Options -->
-                <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
+\                <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
                   <div class="autocomplete-row">
                     <div class="col-code">{{ option.itemCode }}</div>
                     <div class="col-name">{{ option.itemName }}</div>
                     <div class="col-phone">{{ option.itemDetails }}</div>
                   </div>
                 </mat-option>
-              </mat-autocomplete>
+              </mat-autocomplete> -->
               <button mat-button *ngIf="tripForm.get('tripId')!.value" type="button" matSuffix mat-icon-button
                 aria-label="Clear" (click)="tripForm.get('tripId')!.setValue('')">
                 <mat-icon>cancel</mat-icon>
