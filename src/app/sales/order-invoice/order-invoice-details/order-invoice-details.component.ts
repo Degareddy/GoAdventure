@@ -7,6 +7,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { SubSink } from 'subsink';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -24,7 +25,9 @@ export class OrderInvoiceDetailsComponent implements OnInit, OnDestroy {
   SlNo:number=0
   
 
-  constructor(private fb: FormBuilder,    private loader: NgxUiLoaderService
+  constructor(private fb: FormBuilder, 
+        protected router: Router,
+       private loader: NgxUiLoaderService
     ,private userregisterService: UserDataService ,@Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialog,private salesservice: SalesService) {
     this.oidDetForm = this.formInit();
     this.subSink=new SubSink();
@@ -128,6 +131,7 @@ export class OrderInvoiceDetailsComponent implements OnInit, OnDestroy {
     this.oidDetForm.reset();
   }
   Close() {
+    this.router.navigateByUrl('/home');
 
   }
   onViewClicked() {

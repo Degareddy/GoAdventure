@@ -5,9 +5,37 @@
   <mat-icon class="mr-1">search</mat-icon>
   <b>{{searchName | titlecase}}</b>
 </div>
+
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="tranSearchForm">
-    <div class="row  justify-content-center" style="margin-top: 8px;">
+    <div *ngIf="searchName == 'Booking Search'">
+<div class="row  justify-content-center" style="margin-top: 8px;">
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Batch No</mat-label>
+          <input matInput placeholder="Btach No" formControlName="batchNo" type="text">
+        </mat-form-field>
+               
+        </div>
+        <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">From Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="fromDate"  />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">To Date</mat-label>
+              <input matInput [matDatepicker]="picker2" formControlName="toDate"  />
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+  </div>
+    <div *ngIf="searchName != 'Booking Search'" class="row  justify-content-center" style="margin-top: 8px;">
       <div class="col-4">
         
         <mat-form-field appearance="outline" >
@@ -19,7 +47,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-4">
+      <div class="col-4" *ngIf="data.searchName != 'Package Name Search'">
         <mat-form-field appearance="outline" style="width: 95%;">
           <mat-label>Package Name</mat-label>
           <mat-select formControlName="packageName" >
@@ -30,7 +58,7 @@
           
         </mat-form-field>
       </div>
-      <div class="col-4">
+      <div class="col-4" *ngIf="data.searchName != 'Package Name Search'">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Start Date</mat-label>
           <input matInput [matDatepicker]="picker1" formControlName="fromDate"  />

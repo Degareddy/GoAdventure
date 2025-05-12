@@ -31,7 +31,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
 
   tomorrow = new Date();
   textMessageClass!: string;
-    packageTypes:Item[]=[]
+packageTypes:Item[]=[]
   
   retMessage!: string;
   tranStatus: any = ['ANY', 'Closed', 'Authorized', 'Open', 'Deleted', 'Confirmed']
@@ -90,6 +90,7 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tranSearchForm = this.formInit();
     this.subSink = new SubSink();
   }
+
   ngAfterViewInit(): void {
     this.loader = this.loaderService;
   }
@@ -147,12 +148,37 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadTripList();
+    if(this.data.search === "Package Name Search"){
+
+    }
+    else if(this.data.search === "Booking Search"){
+    }
+    else{
+          this.loadTripList();
+    }
     this.searchName = this.data.search;
     
     this.search();
   }
-
+loadPackageNames(){
+  const body={
+      Mode:'View',
+      Company:this.userDataService.userData.company,
+      Location:this.userDataService.userData.location,
+      User:this.userDataService.userData.userID,
+      RefNo:this.userDataService.userData.sessionID,
+      item:this.tranSearchForm.get('packageType')?.value,
+     
+    }
+    try {
+          this.subSink.sink =this.masterService.getSpecificMasterItems(body).subscribe((res: any) => {
+            this.packageTypes= res.data
+          });
+        }
+        catch (ex: any) {
+          this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+        }
+}
   onPageSizeChanged() {
     if (this.gridApi) {
       this.gridApi.paginationSetPageSize(this.pageSize);
@@ -161,7 +187,6 @@ export class SearchEngineComponent implements OnInit, OnDestroy, AfterViewInit {
 onRowSelected(event: any) {
     
       this.dialogRef.close(event.data);
-  
   }
 
   onGridReady(params: any) {
@@ -183,6 +208,8 @@ onRowSelected(event: any) {
       message: [''],
       packageType:[''],
       packageName:[''],
+      batchNo:[''],
+      
     });
   }
   commonParams() {
@@ -209,13 +236,15 @@ onRowSelected(event: any) {
         
       }
       try {
+        this.loader.start();
         this.subSink.sink = await this.mastService.GetTripSearchList(body).subscribe((res: any) => {
+          this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
             this.rowData = [];
           }
           else if(res.data.length === 1){
-            this.dialogRef.close(res.data[0].tranNo)
+           this.rowData=res.data
           }
           else {
             this.rowData = res['data'];
@@ -248,7 +277,7 @@ onRowSelected(event: any) {
   }
 
   onRowClick(row: any, i: number) {
-    this.dialogRef.close(row.tranNo);
+    this.dialogRef.close(row);
   }
   clear() {
     this.tranSearchForm.reset()

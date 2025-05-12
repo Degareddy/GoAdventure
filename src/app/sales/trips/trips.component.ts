@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { map, Observable, startWith } from 'rxjs';
 import { nameCountResponse } from 'src/app/general/Interface/admin/admin';
@@ -10,10 +10,12 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
-import { getTripIds } from '../sales.class';
+import { dateFormat, getTripIds } from '../sales.class';
 import { SalesService } from 'src/app/Services/sales.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 interface autoComplete {
   itemCode: string
@@ -32,6 +34,7 @@ interface packageNames {
 })
 export class TripsComponent implements OnInit {
   autoFilteredCustomer: autoComplete[] = [];
+    dateFormat!:dateFormat
   tripIdList:autoComplete[]=[]
   autoFilteredPackageNames: autoComplete[] = [];
   packageNamesList:autoComplete[]=[]
@@ -56,16 +59,18 @@ export class TripsComponent implements OnInit {
   dialogOpen = false;
 
 
-  constructor(private fb:FormBuilder,
-    public dialog: MatDialog,protected masterService: MastersService,private salesService:SalesService,
+  constructor(private fb:FormBuilder,protected router: Router,
+    public dialog: MatDialog,protected masterService: MastersService,
+    private datepipe: DatePipe,private salesService:SalesService,
     private loader: NgxUiLoaderService,private invService: InventoryService,private userDataService: UserDataService,) { 
     this.tripForm=this.formInit();
     this.subSink = new SubSink();
+        this.dateFormat=new dateFormat(datepipe);
   }
 
   ngOnInit(): void {
     this.loadTripList();
-    this.loadTripsId()
+    // this.loadTripsId()
     this.tripForm.get('tripId')!.valueChanges
     .pipe(
       startWith(''),
@@ -86,6 +91,10 @@ export class TripsComponent implements OnInit {
     );
   }
   onSubmit(){
+    if(this.tripForm.get('StartDate')?.value > this.tripForm.get('endDate')?.value){
+      alert("Please make sure the start date is before the end date");
+      return;
+    }
     const body={
       Mode:this.tripForm.get('mode')?.value,
       Company:this.userDataService.userData.company,
@@ -104,7 +113,14 @@ export class TripsComponent implements OnInit {
     try {
       this.loader.start()
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
-            this.loader.stop()
+            this.loader.stop();
+            if(res.status.toUpperCase === "SUCCESS"){
+              this.displayMessage(displayMsg.SUCCESS,TextClr.green);
+              this.tripForm.get('mode')?.patchValue("Modify")
+            }
+            else{
+              this.displayMessage(displayMsg.ERROR,TextClr.red);
+            }
           });
         }
         catch (ex: any) {
@@ -140,20 +156,18 @@ export class TripsComponent implements OnInit {
   formInit() {
       return this.fb.group({
         mode: ['View'],
-        tripId:[''],
-        tripDesc:[''],
-        packageType:[''],
+        tripId:['',Validators.required],
+        tripDesc:['',Validators.required],
+        packageType:['',Validators.required],
         tranDate:[new Date()],
         StartDate:[new Date()],
         endDate:[new Date()],
         remarks:[''],
-        packageName:['']
+        packageName:['',Validators.required]
       });
     }
     tripIdSearch(){
        try {
-           
-            
                   if (!this.dialogOpen) {
                     this.dialogOpen = true;
                     const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -168,7 +182,22 @@ export class TripsComponent implements OnInit {
                     dialogRef.afterClosed().subscribe(result => {
                       this.dialogOpen = false;
                       if (result != true) {
-                        
+                        if(result.tripId){
+                          this.getPackageNames()
+                        this.displayMessage("Details for "+ result.tripId +"Has retrived ","green")
+                        this.tripForm.get('mode')?.patchValue("Modify")
+                        this.tripForm.get('tripId')?.patchValue(result.tripId)
+                        this.tripForm.get('tripDesc')?.patchValue(result.tripDesc)
+                        this.tripForm.get('packageType')?.patchValue(result.packageType)
+                        // this.tripForm.get('tranDate')?.patchValue(result.)
+                        this.tripForm.get('StartDate')?.patchValue(this.dateFormat.formatDate(result.startDate))
+                        this.tripForm.get('endDate')?.patchValue(this.dateFormat.formatDate( result.endDate))
+                        this.tripForm.get('packageName')?.patchValue(result.package)
+                        // this.tripForm.get('remarks')?.patchValue(result.)
+                        }     
+                        else{
+                          this.displayMessage("Please contact Admin","red")
+                        }
                       }
                     });
                   }
@@ -180,9 +209,19 @@ export class TripsComponent implements OnInit {
           }
     }
     clear(){
-
+       
+        this.tripForm.get('mode')?.patchValue("View")
+        this.tripForm.get('tripId')?.patchValue('')
+        this.tripForm.get('tripDesc')?.patchValue('')
+        this.tripForm.get('packageType')?.patchValue('')
+        this.tripForm.get('tranDate')?.patchValue(new Date())
+        this.tripForm.get('StartDate')?.patchValue(new Date())
+        this.tripForm.get('endDate')?.patchValue(new Date())
+        this.tripForm.get('packageName')?.patchValue('')
+        this.tripForm.get('remarks')?.patchValue('')
     }
     Close(){
+      this.router.navigateByUrl('/home');
 
     }
     loadTripList(){

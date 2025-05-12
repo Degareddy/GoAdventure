@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Item } from 'src/app/general/Interface/interface';
 import { QuotationComponent } from '../quotation/quotation.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -25,7 +25,8 @@ export class BookingComponent implements OnInit {
   textMessageClass:string=""
   packageTypes:Item[]=[]
   dialogOpen = false;
-
+  gst:boolean=false
+  selectdPackageNameId!:string;
   modes:Item[]=[
     {itemCode:'Add',itemName:'Add'},
     {itemCode:'Modify',itemName:'Modify'},
@@ -45,8 +46,36 @@ export class BookingComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTripList()
+    this.bookingForm.get('regularAmount')?.valueChanges.subscribe((regularAmount: number) => {
+    if (regularAmount != null) {
+      const discount = this.bookingForm.get('discOffered')?.value; // 10% discount
+      const quotedPrice = regularAmount - discount;
+
+      this.bookingForm.patchValue({
+        discOffered: discount,
+        quotedPrice: quotedPrice
+      });
+    }
+  });
+  this.bookingForm.get('discOffered')?.valueChanges.subscribe((discOffered: number) => {
+    if (discOffered != null) {
+      const regPrice = this.bookingForm.get('regularAmount')?.value; // 10% discount
+      const quotedPrice =regPrice - discOffered;
+
+      this.bookingForm.patchValue({
+        quotedPrice: quotedPrice
+      });
+    }
+  });
   }
+  
   onSubmit(){
+    if(this.bookingForm.get('gstYes')?.value){
+      this.gst=true
+    }
+    else{
+      this.gst=false
+    }
     const body={
       "Mode": this.bookingForm.get('mode')?.value,
       "Company":this.userDataService.userData.company,
@@ -59,7 +88,7 @@ export class BookingComponent implements OnInit {
       "AdultsCnt": this.bookingForm.get('adults')?.value,
       "AgeUptoYrs5": this.bookingForm.get('zeroToFive')?.value,
       "AgeYrs6to12": this.bookingForm.get('fiveToTwelve')?.value,
-      "ApplyGST": this.bookingForm.get('gst')?.value,
+      "ApplyGST": this.gst,
       "PkgValue": this.bookingForm.get('regularAmount')?.value,
       "Discount": this.bookingForm.get('discOffered')?.value,
       "AddOns": this.bookingForm.get('addOns')?.value,
@@ -72,7 +101,12 @@ export class BookingComponent implements OnInit {
     try {
           this.loader.start()
               this.subSink.sink = this.invService.UpdateBookingDetails(body).subscribe((res: any) => {
-                this.loader.stop()
+                this.loader.stop();
+                if(res.status.toUpperCase === "SUCCESS"){
+                  this.displayMessage(res.message,'green');
+                  this.bookingForm.get('batchNo')?.patchValue(res.tranNoNew);
+                  this.bookingForm.get('mode')?.patchValue('Modify')
+                }
               });
             }
             catch (ex: any) {
@@ -81,18 +115,19 @@ export class BookingComponent implements OnInit {
   }
   formInit() {
     return this.fb.group({
-      mode:[''],
+      mode:['View'],
       batchNo:[''],
-      packageType:[''],
-      batchCode:[''],
-      packageName:[''],
-      clientName:[''],
-      contact:[''],
-      email:[''],
-      adults:[''],
-      zeroToFive:[''],
-      fiveToTwelve:[''],
-      gst:[''],
+      packageType:['',Validators.required],
+      batchCode:['',Validators.required],
+      packageName:['',Validators.required],
+      clientName:['',Validators.required],
+      contact:['',Validators.required],
+      email:['',Validators.required],
+      adults:['',Validators.required],
+      zeroToFive:['',Validators.required],
+      fiveToTwelve:['',Validators.required],
+      gstYes:[false],
+      gstNo:[true],
       remarks:[''],
       regularAmount:[0],
       discOffered:[0],
@@ -143,6 +178,38 @@ export class BookingComponent implements OnInit {
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
+  onBookingSearch(){
+    try {
+     
+      
+            if (!this.dialogOpen) {
+              this.dialogOpen = true;
+              const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                width: '90%',
+                disableClose: true,
+                data: {
+                  'tranNum':'',
+                  'search': 'Booking Search'
+                }
+              });
+
+              dialogRef.afterClosed().subscribe(result => {
+                this.dialogOpen = false;
+                if (result != true) {
+                  this.selectdPackageNameId=result.package
+                  this.bookingForm.get('batchCode')?.patchValue(result.tripId)
+                  this.bookingForm.get('packageName')?.patchValue(result.packageName)
+                  this.bookingForm.get('packageType')?.patchValue(result.packageType)
+                }
+              });
+            }
+    }       
+
+    catch (ex: any) {
+      this.retMessage = "Exception " + ex.message;
+      this.textMessageClass = 'red';
+    }
+  }
   onSearchCilcked(){
 
     try {
@@ -162,7 +229,10 @@ export class BookingComponent implements OnInit {
               dialogRef.afterClosed().subscribe(result => {
                 this.dialogOpen = false;
                 if (result != true) {
-                  
+                  this.selectdPackageNameId=result.package
+                  this.bookingForm.get('batchCode')?.patchValue(result.tripId)
+                  this.bookingForm.get('packageName')?.patchValue(result.packageName)
+                  this.bookingForm.get('packageType')?.patchValue(result.packageType)
                 }
               });
             }

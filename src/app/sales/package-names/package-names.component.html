@@ -56,35 +56,35 @@
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>package Code</mat-label>
               <input matInput placeholder="Package Code" formControlName="packageCode" type="text" 
-              [matAutocomplete]="auto"
-              (input)="tripIdSearch()"
+              
               >
-              <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()">
+              <!-- [matAutocomplete]="auto" -->
+              <!-- <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()"> -->
   
                 <!-- Static header -->
-                <div class="autocomplete-header">
+                <!-- <div class="autocomplete-header">
                   <div class="col-code">Code</div>
                   <div class="col-name">Name</div>
                   <div class="col-phone">Details</div>
-                </div>
+                </div> -->
               
                 <!-- Options -->
-                <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
+                <!-- <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
                   <div class="autocomplete-row">
                     <div class="col-code">{{ option.itemCode }}</div>
                     <div class="col-name">{{ option.itemName }}</div>
                     <div class="col-phone">{{ option.itemDetails }}</div>
                   </div>
                 </mat-option>
-              </mat-autocomplete>
+              </mat-autocomplete> -->
               <button mat-button *ngIf="packageNamesForm.get('packageCode')!.value" type="button" matSuffix mat-icon-button
-                aria-label="Clear" (click)="packageNamesForm.get('packageCode')!.setValue('')">
+                aria-label="Clear" (click)="formInit()">
                 <mat-icon>cancel</mat-icon>
               </button>
-              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
+              <!-- <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
                 [disabled]="packageNamesForm.get('mode')!.value ==='Add'">
                 <mat-icon class="mat-search-icon">search</mat-icon>
-              </button>
+              </button> -->
             </mat-form-field>
           </div>
           <div class="col-4">

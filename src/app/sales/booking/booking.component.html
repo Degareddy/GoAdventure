@@ -140,7 +140,7 @@
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
                 <button matSuffix mat-icon-button aria-label="Search" 
-                  (click)="onSearchCilcked()" type="button">
+                  (click)="onBookingSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
               </mat-form-field>
@@ -182,7 +182,7 @@
                     <div class="matfield">
                       <mat-form-field appearance="outline" class="w-full mt-2">
                         <mat-label>Package Type</mat-label>
-                        <mat-select formControlName="mode" >
+                        <mat-select formControlName="packageType" >
                           <mat-option value="">--Select--</mat-option>
                           <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
                         </mat-select>
@@ -258,8 +258,8 @@
                         <div class="row justify-content-center mb-3 align-items-center">
                             <div class="col-3 d-flex align-items-center">
                               <label class="me-2">GST:</label>
-                              <mat-checkbox formControlName="gst" class="me-2">Yes</mat-checkbox>
-                              <mat-checkbox [checked]="!bookingForm.get('gst')?.value" (change)="bookingForm.get('gst')?.setValue(false)">No</mat-checkbox>
+                              <mat-checkbox formControlName="gstYes" class="me-2">Yes</mat-checkbox>
+                              <mat-checkbox formControlName="gstNo" [checked]="!bookingForm.get('gstYes')?.value" (change)="bookingForm.get('gstYes')?.setValue(false)">No</mat-checkbox>
                             </div>
                           </div>
         </div>
@@ -275,7 +275,7 @@
       </div>
       <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
       <div class="flex justify-center mt-0.1">
-        <button mat-raised-button color="primary" class="btnUp" type="submit"
+        <button mat-raised-button color="primary" class="btnUp" type="submit" [disabled]="!bookingForm.valid"
           >
           <mat-icon>done</mat-icon> Apply
         </button>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { Observable, startWith, map } from 'rxjs';
 import { Item } from 'src/app/general/Interface/interface';
@@ -9,9 +9,13 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
-import { autoComplete, getTripIds } from '../sales.class';
+import { autoComplete, dateFormat, getTripIds } from '../sales.class';
 import { SalesService } from 'src/app/Services/sales.service';
 import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-package-names',
@@ -21,7 +25,7 @@ import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 export class PackageNamesComponent implements OnInit {
   autoFilteredCustomer: autoComplete[] = [];
     tripIdList:autoComplete[]=[]
-  
+  dateFormat!:dateFormat
     title:string="Packages"
     packageNamesForm!:FormGroup
     packageTypes:Item[]=[]
@@ -40,6 +44,7 @@ export class PackageNamesComponent implements OnInit {
   
       
     ]
+    dialogOpen:boolean=false
       private columnApi!: ColumnApi;
       private gridApi!: GridApi;
       public gridOptions!: GridOptions;
@@ -51,25 +56,27 @@ export class PackageNamesComponent implements OnInit {
       {field:"packageStatus",headerName:"Status",sortable:true,filter:true,resizable:true,flex:1},
     ];
     rowData:any=[]
-    constructor(private fb:FormBuilder,protected masterService: MastersService,private salesService:SalesService,
+    constructor(private fb:FormBuilder,
+          protected router: Router, private datepipe: DatePipe,  public dialog: MatDialog,protected masterService: MastersService,private salesService:SalesService,
       private loader: NgxUiLoaderService,private invService: InventoryService,private userDataService: UserDataService,) { 
       this.packageNamesForm=this.formInit();
       this.subSink = new SubSink();
+      this.dateFormat=new dateFormat(datepipe);
     }
   
     ngOnInit(): void {
       // this.loadPackages();
       this.loadTripList();
       // this.loadTripsId()
-      this.packageNamesForm.get('tripId')!.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => typeof value === 'string' ? value : value?.itemName || ''),
-        map(name => this._filter(name))
-      )
-      .subscribe(filtered => {
-        this.autoFilteredCustomer = filtered;
-      });
+      // this.packageNamesForm.get('tripId')!.valueChanges
+      // .pipe(
+      //   startWith(''),
+      //   map(value => typeof value === 'string' ? value : value?.itemName || ''),
+      //   map(name => this._filter(name))
+      // )
+      // .subscribe(filtered => {
+      //   this.autoFilteredCustomer = filtered;
+      // });
     }
     private _filter(value: string): autoComplete[] {
       const filterValue = value.toLowerCase();
@@ -89,14 +96,19 @@ export class PackageNamesComponent implements OnInit {
       console.log(event.data);
       this.patchForm(event.data);
     } 
+    
     patchForm(event:any){
       this.packageNamesForm.get('mode')?.patchValue("Modify");
       this.packageNamesForm.get('packageCode')?.patchValue(event.packageTypeName);
       this.packageNamesForm.get('packageName')?.patchValue(event.packageName);
       this.packageNamesForm.get('packageType')?.patchValue(event.packageId);
       this.packageNamesForm.get('remarks')?.patchValue(event.remarks);
+      this.packageNamesForm.get('packageType')?.patchValue(event.packageType)
+      this.packageNamesForm.get('tranDate')?.patchValue(this.dateFormat.formatDate(event.tranDate))
+
     }   
     loadPackages(){
+      
       const body={
         "Mode":"View",
         "Company":this.userDataService.userData.company,
@@ -111,6 +123,7 @@ export class PackageNamesComponent implements OnInit {
               this.loader.stop();
               if(res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR){
                 this.displayMessage(res.message, TextClr.red);
+                this.rowData=[]
               }
               else{
                 this.rowData=res.data;
@@ -157,21 +170,52 @@ export class PackageNamesComponent implements OnInit {
     formInit() {
         return this.fb.group({
           mode: ['View'],
-          packageCode:[''],
-          packageName:[''],
-          packageType:[''],
+          packageCode:['',Validators.required],
+          packageName:['',Validators.required],
+          packageType:['',Validators.required],
           tranDate:[new Date()],
           remarks:['']
         });
       }
       tripIdSearch(){
-  
+  try {
+                    if (!this.dialogOpen) {
+                      this.dialogOpen = true;
+                      const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                        width: '90%',
+                        disableClose: true,
+                        data: {
+                          'tranNum':'',
+                          'search': 'Package Name Search'
+                        }
+                      });
+        
+                      dialogRef.afterClosed().subscribe(result => {
+                        this.dialogOpen = false;
+                        if (result != true) {
+                          
+                        }
+                      });
+                    }
+            }       
+        
+            catch (ex: any) {
+              this.retMessage = "Exception " + ex.message;
+              this.textMessageClass = 'red';
+            }
       }
       clear(){
-  
+     this.packageNamesForm.get('mode')?.patchValue("View");
+      this.packageNamesForm.get('packageCode')?.patchValue('');
+      this.packageNamesForm.get('packageName')?.patchValue('');
+      this.packageNamesForm.get('packageType')?.patchValue('');
+      this.packageNamesForm.get('remarks')?.patchValue('');
+      this.packageNamesForm.get('packageType')?.patchValue('')
+      this.packageNamesForm.get('tranDate')?.patchValue(new Date())
       }
       Close(){
-  
+      this.router.navigateByUrl('/home');
+
       }
       loadTripList(){
         const body={

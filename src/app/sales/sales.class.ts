@@ -1,4 +1,15 @@
-export class Customer {
+import { DatePipe } from "@angular/common";
+
+export class dateFormat{
+  constructor(    private datepipe: DatePipe,
+  ){
+    
+  }
+   public formatDate(date: Date) {
+    return this.datepipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+}
+  export class Customer {
   public mode!: string
   public company!: string
   public location!: string
@@ -394,6 +405,7 @@ export class ReceiptsDetails {
   public User!: string
   public RefNo!: string
 }
+
 export class paymentClass {
   public company!: string
   public location!: string
