@@ -35,7 +35,7 @@ export class addOneDay{
 
     // Add 1 day to correct for timezone offset
     const correctedDate = new Date(date);
-    correctedDate.setDate(date.getDate() + duration);
+    correctedDate.setDate(date.getDate() + --duration);
 
     return this.datepipe.transform(correctedDate, 'yyyy-MM-dd') || '';
   }
