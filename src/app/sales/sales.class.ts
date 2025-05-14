@@ -9,6 +9,25 @@ export class dateFormat{
     return this.datepipe.transform(date, 'yyyy-MM-dd') || '';
   }
 }
+export class addOneDay{
+  constructor(    private datepipe: DatePipe,
+  ){
+    
+  }
+  public formatDate(date: Date): string {
+    if (!date) return '';
+    else if(date == new Date()){
+          return this.datepipe.transform(date, 'yyyy-MM-dd') || '';
+
+    }
+
+    // Add 1 day to correct for timezone offset
+    // const correctedDate = new Date(date);
+    // correctedDate.setDate(correctedDate.getDate() + 1);
+
+    return this.datepipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+}
   export class Customer {
   public mode!: string
   public company!: string
