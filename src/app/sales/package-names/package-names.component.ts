@@ -147,6 +147,7 @@ export class PackageNamesComponent implements OnInit {
         PackageName:this.packageNamesForm.get('packageName')?.value,
         TranDate:this.packageNamesForm.get('tranDate')?.value,
         Remarks:this.packageNamesForm.get('remarks')?.value,
+        days:this.packageNamesForm.get('days')?.value
        //PackageDesc/TranDate/Remarks
       }
       try {
@@ -174,7 +175,8 @@ export class PackageNamesComponent implements OnInit {
           packageName:['',Validators.required],
           packageType:['',Validators.required],
           tranDate:[new Date()],
-          remarks:['']
+          remarks:[''],
+          days:[0]
         });
       }
       tripIdSearch(){

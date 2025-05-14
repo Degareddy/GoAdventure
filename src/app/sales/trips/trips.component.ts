@@ -26,6 +26,7 @@ interface autoComplete {
 interface packageNames {
   packageId:string;
   packageName:string;
+  days:number
 }
 @Component({
   selector: 'app-trips',
@@ -93,6 +94,18 @@ export class TripsComponent implements OnInit {
       option.itemDetails.toLowerCase().includes(filterValue)
     );
   }
+  getEndDate(){
+    
+    this.tripForm.get('endDate')?.patchValue(this.addOneDay.durationAdd((this.tripForm.get('StartDate')?.value),this.getDaysByPackageId(this.tripForm.get('packageName')?.value))) 
+  }
+  getDaysByPackageId(id: string): number {
+    
+  const result = this.packageNames.find((pkg: { packageId: string; }) => pkg.packageId === id);
+  return result ? result.days : 0;
+}
+packageNameSelected(){
+  this.getEndDate();
+}
   onSubmit(){
     if(this.tripForm.get('StartDate')?.value > this.tripForm.get('endDate')?.value){
       alert("Please make sure the start date is before the end date");

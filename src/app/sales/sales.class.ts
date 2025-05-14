@@ -14,7 +14,8 @@ export class addOneDay{
   ){
     
   }
-  public formatDate(date: Date): string {
+  public formatDate(date: any): string {
+    
     if (!date) return '';
     else if(date == new Date()){
           return this.datepipe.transform(date, 'yyyy-MM-dd') || '';
@@ -26,6 +27,17 @@ export class addOneDay{
     // correctedDate.setDate(correctedDate.getDate() + 1);
 
     return this.datepipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+  public durationAdd(date: any,duration:number): string {
+    
+    if (!date) return '';
+    
+
+    // Add 1 day to correct for timezone offset
+    const correctedDate = new Date(date);
+    correctedDate.setDate(date.getDate() + duration);
+
+    return this.datepipe.transform(correctedDate, 'yyyy-MM-dd') || '';
   }
 }
   export class Customer {
