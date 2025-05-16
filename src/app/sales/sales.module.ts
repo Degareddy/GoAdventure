@@ -46,6 +46,8 @@ import { TripIdComponent } from './trip-id/trip-id.component';
 import { TripsComponent } from './trips/trips.component';
 import { SearchTripIDComponent } from './search-trip-id/search-trip-id.component';
 import { PackageNamesComponent } from './package-names/package-names.component';
+import { ReceiptsPaymentsComponent } from './receipts-payments/receipts-payments.component';
+import { EditorComponent } from './booking/editor/editor.component';
 
 
 
@@ -86,7 +88,9 @@ import { PackageNamesComponent } from './package-names/package-names.component';
     TripIdComponent,
     TripsComponent,
     SearchTripIDComponent,
-    PackageNamesComponent
+    PackageNamesComponent,
+    ReceiptsPaymentsComponent,
+    EditorComponent
   ],
   imports: [
     MatButtonToggleModule,

@@ -89,7 +89,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
   }
 
   enableFormControls() {
-    this.companyForm.controls['companyID'].enable({ onlySelf: false });
+    this.companyForm.controls['companyID'].enable({ onlySelf: true });
   }
 
   ngOnInit(): void {

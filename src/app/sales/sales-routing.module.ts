@@ -28,6 +28,8 @@ import { OpeningBalancesComponent } from '../purchase/opening-balances/opening-b
 import { BookingComponent } from './booking/booking.component';
 import { TripsComponent } from './trips/trips.component';
 import { PackageNamesComponent } from './package-names/package-names.component';
+import { ReceiptsPaymentsComponent } from './receipts-payments/receipts-payments.component';
+import { EditorComponent } from './booking/editor/editor.component';
 
 
 const routes: Routes = [
@@ -47,7 +49,7 @@ const routes: Routes = [
   { path: 'transfer-invoice', component: TransferInvoiceComponent, canActivate: [SaleGuard] },
   { path: 'credit-invoice', component: CreditInvoiceComponent, canActivate: [SaleGuard] },
   { path: 'invoice-adjustment', component: InvoiceAdjustmentComponent, canActivate: [SaleGuard] },
-  { path: 'rctpmt', component: ReceiptsComponent, canActivate: [SaleGuard] },
+  { path: 'rctpmt', component: ReceiptsPaymentsComponent, canActivate: [SaleGuard] },
   { path: 'pricing', component: PricingComponent, canActivate: [SaleGuard] },
   { path: 'sales-statement', component: ReprotsComponent, canActivate: [SaleGuard] },
   { path: 'sales-reports', component: SalesReportsComponent, canActivate: [SaleGuard] },
@@ -62,7 +64,10 @@ const routes: Routes = [
 
   { path: 'packages', component: PackageNamesComponent, canActivate: [SaleGuard] },
   {path:'trip',component:TripsComponent,canActivate:[SaleGuard]},
+  { path: 'invoice-editor', component: EditorComponent },
 
+
+  
 ]
 // }];debit-credit-note
 

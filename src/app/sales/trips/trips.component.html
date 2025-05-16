@@ -44,7 +44,7 @@
           <div class="col-2">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Package Name</mat-label>
-              <mat-select formControlName="packageName" >
+              <mat-select formControlName="packageName" (selectionChange)="packageNameSelected()">
                 <mat-option value="">--Select--</mat-option>
                 <mat-option *ngFor="let x of packageNames" [value]="x.packageId">{{x.packageName}}
                 </mat-option>
@@ -111,7 +111,7 @@
         <div class="col-3">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">Start Date</mat-label>
-              <input matInput [matDatepicker]="picker1" formControlName="StartDate"  />
+              <input matInput (dateChange)="getEndDate()" [matDatepicker]="picker1" formControlName="StartDate"  />
               <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
               <mat-datepicker #picker1></mat-datepicker>
             </mat-form-field>

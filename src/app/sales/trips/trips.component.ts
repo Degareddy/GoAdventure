@@ -10,7 +10,7 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
-import { dateFormat, getTripIds } from '../sales.class';
+import { addOneDay, dateFormat, getTripIds } from '../sales.class';
 import { SalesService } from 'src/app/Services/sales.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
@@ -26,6 +26,7 @@ interface autoComplete {
 interface packageNames {
   packageId:string;
   packageName:string;
+  days:number
 }
 @Component({
   selector: 'app-trips',
@@ -35,6 +36,7 @@ interface packageNames {
 export class TripsComponent implements OnInit {
   autoFilteredCustomer: autoComplete[] = [];
     dateFormat!:dateFormat
+    addOneDay!:addOneDay
   tripIdList:autoComplete[]=[]
   autoFilteredPackageNames: autoComplete[] = [];
   packageNamesList:autoComplete[]=[]
@@ -43,6 +45,7 @@ export class TripsComponent implements OnInit {
   tripForm!:FormGroup
   packageTypes:Item[]=[]
   tomorrow=new Date();
+  // this.tomorrow.setDate(tjhtomorrow.getDate() + 1);
     private subSink!: SubSink;
     filteredOptions!: Observable<string[]>;
     getTripIds!:getTripIds[]
@@ -66,6 +69,7 @@ export class TripsComponent implements OnInit {
     this.tripForm=this.formInit();
     this.subSink = new SubSink();
         this.dateFormat=new dateFormat(datepipe);
+        this.addOneDay=new addOneDay(datepipe);
   }
 
   ngOnInit(): void {
@@ -90,6 +94,18 @@ export class TripsComponent implements OnInit {
       option.itemDetails.toLowerCase().includes(filterValue)
     );
   }
+  getEndDate(){
+    
+    this.tripForm.get('endDate')?.patchValue(this.addOneDay.durationAdd((this.tripForm.get('StartDate')?.value),this.getDaysByPackageId(this.tripForm.get('packageName')?.value))) 
+  }
+  getDaysByPackageId(id: string): number {
+    
+  const result = this.packageNames.find((pkg: { packageId: string; }) => pkg.packageId === id);
+  return result ? result.days : 0;
+}
+packageNameSelected(){
+  this.getEndDate();
+}
   onSubmit(){
     if(this.tripForm.get('StartDate')?.value > this.tripForm.get('endDate')?.value){
       alert("Please make sure the start date is before the end date");
@@ -105,9 +121,9 @@ export class TripsComponent implements OnInit {
       package:this.tripForm.get('packageName')?.value,
       TripId:this.tripForm.get('tripId')?.value,
       TripDesc:this.tripForm.get('tripDesc')?.value,
-      TranDate:this.tripForm.get('tranDate')?.value,
-      StartDate:this.tripForm.get('StartDate')?.value,
-      EndDate:this.tripForm.get('endDate')?.value,
+      TranDate: this.addOneDay.formatDate(this.tripForm.get('tranDate')?.value) ,
+      StartDate:this.addOneDay.formatDate(this.tripForm.get('StartDate')?.value) ,
+      EndDate: this.addOneDay.formatDate(this.tripForm.get('endDate')?.value) ,
       Remarks:this.tripForm.get('remarks')?.value,
    }
     try {
@@ -116,7 +132,7 @@ export class TripsComponent implements OnInit {
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
             this.loader.stop();
             if(res.status.toUpperCase === "SUCCESS"){
-              this.displayMessage(displayMsg.SUCCESS + res.message,TextClr.green);
+              this.displayMessage(displayMsg.SUCCESS,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
             }
             else{

@@ -9,7 +9,8 @@
         <button mat-raised-button color="accent" class="btnUp" type="button">
           <mat-icon>cloud_upload</mat-icon> Docs
         </button>
-        <button mat-raised-button color="primary" class="btnUp" type="button">
+        <!-- (click)="openInvoiceEditor()" mat-raised-button color="accent" -->
+        <button mat-raised-button color="primary" class="btnUp" type="button" (click)="downloadPDF()">
           <mat-icon>picture_as_pdf</mat-icon> PDF
         </button>
   

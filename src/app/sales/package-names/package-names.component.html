@@ -22,7 +22,7 @@
     <div class="p-4 bg-zinc-100 container rounded-sm">
       <form [formGroup]="packageNamesForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
         <div class="row justify-content-center  myCustomClass">
-          <div class="col-4">
+          <div class="col-3">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label>Modes</mat-label>
               <mat-select formControlName="mode" >
@@ -31,7 +31,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="col-4">
+          <div class="col-3">
               <mat-form-field appearance="outline" >
                 <mat-label>Package Type</mat-label>
                 <mat-select formControlName="packageType" (selectionChange)="loadPackages()" >
@@ -41,12 +41,18 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <mat-form-field appearance="outline" class="mat-mode">
                   <mat-label class="mat-label-class">Tran Date</mat-label>
                   <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
                   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="col-3">
+                <mat-form-field appearance="outline" class="mat-mode">
+                  <mat-label class="mat-label-class">Duration</mat-label>
+                  <input matInput placeholder="Package Duration" formControlName="days" type="number">
                 </mat-form-field>
               </div>
             
