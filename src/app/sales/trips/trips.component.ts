@@ -127,11 +127,12 @@ packageNameSelected(){
       Remarks:this.tripForm.get('remarks')?.value,
    }
     try {
+      this.displayMessage("","");
       this.loader.start()
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
             this.loader.stop();
-            if(res.status == "Success"){
-              this.displayMessage(displayMsg.SUCCESS + res.message,TextClr.green);
+            if(res.status.toUpperCase === "SUCCESS"){
+              this.displayMessage(displayMsg.SUCCESS,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
             }
             else{

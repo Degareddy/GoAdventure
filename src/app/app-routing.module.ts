@@ -75,7 +75,7 @@ const routes: Routes = [
       },
     
       {
-        path: 'reports',
+        path: 'Reports',
         loadChildren: () => import('src/app/reports/reports.module').then(m => m.ReportsModule), canActivate: [ReportGuard]
       },
       {

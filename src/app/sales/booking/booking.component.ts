@@ -131,6 +131,9 @@ downloadPDF(){
                   this.bookingForm.get('batchNo')?.patchValue(res.tranNoNew);
                   this.bookingForm.get('mode')?.patchValue('Modify')
                 }
+                else{
+                  this.displayMessage(res.message,'red');
+                }
               });
             }
             catch (ex: any) {
