@@ -99,7 +99,7 @@ export class PackageNamesComponent implements OnInit {
     
     patchForm(event:any){
       this.packageNamesForm.get('mode')?.patchValue("Modify");
-      this.packageNamesForm.get('packageCode')?.patchValue(event.packageTypeName);
+      this.packageNamesForm.get('packageCode')?.patchValue(event.packageId);
       this.packageNamesForm.get('packageName')?.patchValue(event.packageName);
       this.packageNamesForm.get('packageType')?.patchValue(event.packageId);
       this.packageNamesForm.get('remarks')?.patchValue(event.remarks);
@@ -143,7 +143,7 @@ export class PackageNamesComponent implements OnInit {
         User:this.userDataService.userData.userID,
         RefNo:this.userDataService.userData.sessionID,
         PackageType:this.packageNamesForm.get('packageType')?.value,
-        PackageId:this.packageNamesForm.get('packageCode')?.value,
+        PackageId:this.packageNamesForm.get('packageId')?.value,
         PackageName:this.packageNamesForm.get('packageName')?.value,
         TranDate:this.packageNamesForm.get('tranDate')?.value,
         Remarks:this.packageNamesForm.get('remarks')?.value,
