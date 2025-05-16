@@ -143,7 +143,7 @@ export class PackageNamesComponent implements OnInit {
         User:this.userDataService.userData.userID,
         RefNo:this.userDataService.userData.sessionID,
         PackageType:this.packageNamesForm.get('packageType')?.value,
-        PackageId:this.packageNamesForm.get('packageId')?.value,
+        PackageId:this.packageNamesForm.get('packageCode')?.value,
         PackageName:this.packageNamesForm.get('packageName')?.value,
         TranDate:this.packageNamesForm.get('tranDate')?.value,
         Remarks:this.packageNamesForm.get('remarks')?.value,
