@@ -47,6 +47,7 @@ import { TripsComponent } from './trips/trips.component';
 import { SearchTripIDComponent } from './search-trip-id/search-trip-id.component';
 import { PackageNamesComponent } from './package-names/package-names.component';
 import { ReceiptsPaymentsComponent } from './receipts-payments/receipts-payments.component';
+import { EditorComponent } from './booking/editor/editor.component';
 
 
 
@@ -88,7 +89,8 @@ import { ReceiptsPaymentsComponent } from './receipts-payments/receipts-payments
     TripsComponent,
     SearchTripIDComponent,
     PackageNamesComponent,
-    ReceiptsPaymentsComponent
+    ReceiptsPaymentsComponent,
+    EditorComponent
   ],
   imports: [
     MatButtonToggleModule,

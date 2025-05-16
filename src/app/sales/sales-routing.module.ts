@@ -29,6 +29,7 @@ import { BookingComponent } from './booking/booking.component';
 import { TripsComponent } from './trips/trips.component';
 import { PackageNamesComponent } from './package-names/package-names.component';
 import { ReceiptsPaymentsComponent } from './receipts-payments/receipts-payments.component';
+import { EditorComponent } from './booking/editor/editor.component';
 
 
 const routes: Routes = [
@@ -63,7 +64,10 @@ const routes: Routes = [
 
   { path: 'packages', component: PackageNamesComponent, canActivate: [SaleGuard] },
   {path:'trip',component:TripsComponent,canActivate:[SaleGuard]},
+  { path: 'invoice-editor', component: EditorComponent },
 
+
+  
 ]
 // }];debit-credit-note
 

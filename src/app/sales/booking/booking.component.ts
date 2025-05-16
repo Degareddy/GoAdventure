@@ -12,6 +12,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { DatePipe } from '@angular/common';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
+import { EditorComponent } from './editor/editor.component';
 
 @Component({
   selector: 'app-booking',
@@ -43,7 +44,30 @@ export class BookingComponent implements OnInit {
     this.bookingForm=this.formInit()
     this.subSink=new SubSink()
    }
+openInvoiceEditor() {
+  const url = `${window.location.origin}/invoice-editor`;
+  window.open(url, '_blank');
+}
+downloadPDF(){
+  if (!this.dialogOpen) {
+              this.dialogOpen = true;
+              const dialogRef: MatDialogRef<EditorComponent> = this.dialog.open(EditorComponent, {
+                width: '90%',
+                disableClose: true,
+                data: {
+                  'tranNum':'',
+                  'search': 'Booking Search'
+                }
+              });
 
+              dialogRef.afterClosed().subscribe(result => {
+                this.dialogOpen = false;
+                if (result != true) {
+                 
+                }
+              });
+            }
+}
   ngOnInit(): void {
     this.loadTripList()
     this.bookingForm.get('regularAmount')?.valueChanges.subscribe((regularAmount: number) => {
