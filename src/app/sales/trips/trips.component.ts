@@ -111,15 +111,16 @@ export class TripsComponent implements OnInit {
       Remarks:this.tripForm.get('remarks')?.value,
    }
     try {
+      this.displayMessage("","");
       this.loader.start()
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
             this.loader.stop();
             if(res.status.toUpperCase === "SUCCESS"){
-              this.displayMessage(displayMsg.SUCCESS,TextClr.green);
+              this.displayMessage(displayMsg.SUCCESS + res.message,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
             }
             else{
-              this.displayMessage(displayMsg.ERROR,TextClr.red);
+              this.displayMessage(displayMsg.ERROR + res.message,TextClr.red);
             }
           });
         }
