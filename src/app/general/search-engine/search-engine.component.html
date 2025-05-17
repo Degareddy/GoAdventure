@@ -50,7 +50,7 @@
       <div class="col-4" *ngIf="data.searchName != 'Package Name Search'">
         <mat-form-field appearance="outline" style="width: 95%;">
           <mat-label>Package Name</mat-label>
-          <mat-select formControlName="packageName" >
+          <mat-select formControlName="packageName" (selectionChange)="search()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of packageNames" [value]="x.packageId">{{x.packageName}}
             </mat-option>
