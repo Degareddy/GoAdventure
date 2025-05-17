@@ -48,8 +48,9 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
   { field: "address2", headerName: "Address2", sortable: true, filter: true, resizable: true, width: 180 },
   { field: "city", headerName: "City", sortable: true, filter: true, resizable: true, width: 130 },
   { field: "province", headerName: "Province", sortable: true, filter: true, resizable: true, width: 120 },
-  // { field: "eMail", headerName: "Email", sortable: true, filter: true, resizable: true, width: 180 },
-  { field: "currStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 100 }
+  { field: "eMail", headerName: "Email", sortable: true, filter: true, resizable: true, width: 180 },
+  { field: "currStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 100 },
+  { field: "allowWhatsApp", headerName: "Status", sortable: true, filter: true, resizable: true, width: 100, hide: true },
 
   ];
   constructor(private custService: CustomerService,
@@ -75,7 +76,7 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
       address1: ['', Validators.required],
       address2: ['', Validators.required],
       address3: [''],
-      pO_PIN_ZIP: ['', Validators.required, Validators.maxLength(12)],
+      pO_PIN_ZIP: ['', Validators.required],
       city: ['', Validators.required],
       province: ['', Validators.required],
       country: ['', Validators.required],
@@ -170,33 +171,52 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
   }
 
   onViewClicked(data: any) {
+    ;
+    console.log(data)
     this.srNum = data.slNo;
     this.custParas.slNo = this.srNum;
     this.custParas.code = this.code;
     this.serialCreated.emit({ slNo: this.srNum });
     this.slNo = data.slNo;
-    const formData = {
-      slNo: data.slNo,
-      address1: data.address1,
-      address2: data.address2,
-      address3: data.address3,
-      pO_PIN_ZIP: data.pO_PIN_ZIP,
-      city: data.city,
-      province: data.province,
-      country: data.country,
-      phone1: data.phone1,
-      phone2: data.phone2,
-      phone3: data.phone3,
-      fax: data.fax,
-      email: data.eMail,
-      currStatus: data.currStatus,
-      notes: data.notes,
-      allowEmail: data.allowEmail,
-      allowWhatsApp: data.allowWhatsApp,
-      allowSMS: data.allowSMS
-    };
+    // const formData = {
+    //   slNo: data.slNo,
+    //   address1: data.address1,
+    //   address2: data.address2,
+    //   address3: data.address3,
+    //   pO_PIN_ZIP: data.pO_PIN_ZIP,
+    //   city: data.city,
+    //   province: data.province,
+    //   country: data.country,
+    //   phone1: data.phone1,
+    //   phone2: data.phone2,
+    //   phone3: data.phone3,
+    //   fax: data.fax,
+    //   email: data.eMail,
+    //   currStatus: data.currStatus,
+    //   notes: data.notes,
+    //   allowEmail: data.allowEmail,
+    //   allowWhatsApp: data.allowWhatsApp,
+    //   allowSMS: data.allowSMS
+    // };
+    this.addressForm.get('slNo')?.patchValue(data.slNo)
+    this.addressForm.get('address1')?.patchValue(data.address1)
+    this.addressForm.get('address2')?.patchValue(data.address2)
+    this.addressForm.get('address3')?.patchValue(data.address3)
+    this.addressForm.get('pO_PIN_ZIP')?.patchValue(data.pO_PIN_ZIP)
+    this.addressForm.get('city')?.patchValue(data.city)
+    this.addressForm.get('province')?.patchValue(data.province)
+    this.addressForm.get('country')?.patchValue(data.country)
+    this.addressForm.get('phone1')?.patchValue(data.phone1)
+    this.addressForm.get('phone2')?.patchValue(data.phone2)
+    this.addressForm.get('phone3')?.patchValue(data.phone3)
+    this.addressForm.get('fax')?.patchValue(data.fax)
+    this.addressForm.get('email')?.patchValue(data.eMail)
+    this.addressForm.get('currStatus')?.patchValue(data.currStatus)
     this.addressForm.get('allowEmail')?.patchValue(data.allowEmail)
-    this.addressForm.patchValue(formData);
+    this.addressForm.get('allowEmail')?.patchValue(data.allowEmail)
+    this.addressForm.get('allowWhatsApp')?.patchValue(data.allowWhatsApp)
+    this.addressForm.get('allowSMS')?.patchValue(data.allowSMS)
+    // this.addressForm.patchValue(formData);
   }
   Submit() {
     this.textMessageClass = ""

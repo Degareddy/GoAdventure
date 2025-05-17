@@ -16,6 +16,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+
 
 interface autoComplete {
   itemCode: string
@@ -37,6 +39,7 @@ export class TripsComponent implements OnInit {
   autoFilteredCustomer: autoComplete[] = [];
     dateFormat!:dateFormat
     addOneDay!:addOneDay
+    screenName:string=localStorage.getItem('previousScreen')||''
   tripIdList:autoComplete[]=[]
   autoFilteredPackageNames: autoComplete[] = [];
   packageNamesList:autoComplete[]=[]
@@ -62,7 +65,7 @@ export class TripsComponent implements OnInit {
   dialogOpen = false;
 
 
-  constructor(private fb:FormBuilder,protected router: Router,
+  constructor(private fb:FormBuilder,protected router: Router,private location: Location,
     public dialog: MatDialog,protected masterService: MastersService,
     private datepipe: DatePipe,private salesService:SalesService,
     private loader: NgxUiLoaderService,private invService: InventoryService,private userDataService: UserDataService,) { 
@@ -70,6 +73,9 @@ export class TripsComponent implements OnInit {
     this.subSink = new SubSink();
         this.dateFormat=new dateFormat(datepipe);
         this.addOneDay=new addOneDay(datepipe);
+  }
+   goBack(): void {
+    this.location.back();
   }
 
   ngOnInit(): void {
@@ -84,6 +90,10 @@ export class TripsComponent implements OnInit {
     .subscribe(filtered => {
       this.autoFilteredCustomer = filtered;
     });
+  }
+  ngOnDestroy(){
+    this.subSink.unsubscribe();
+     localStorage.setItem('previousScreen','Trips')
   }
   private _filter(value: string): autoComplete[] {
     const filterValue = value.toLowerCase();

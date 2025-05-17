@@ -13,6 +13,8 @@ import { DatePipe } from '@angular/common';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { EditorComponent } from './editor/editor.component';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-booking',
@@ -22,6 +24,8 @@ import { EditorComponent } from './editor/editor.component';
 export class BookingComponent implements OnInit {
   bookingForm!:FormGroup
   retMessage:string=""
+      screenName:string=localStorage.getItem('previousScreen')||''
+
   subSink!:SubSink
   textMessageClass:string=""
   packageTypes:Item[]=[]
@@ -36,7 +40,7 @@ export class BookingComponent implements OnInit {
     {itemCode:'View',itemName:'View'},
 
   ]
-    constructor(private fb:FormBuilder,
+    constructor(private fb:FormBuilder,private location: Location,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
       private loader: NgxUiLoaderService, private datePipe: DatePipe,
       private masterService:MastersService
@@ -48,6 +52,9 @@ openInvoiceEditor() {
   const url = `${window.location.origin}/invoice-editor`;
   window.open(url, '_blank');
 }
+   goBack(): void {
+    this.location.back();
+  }
 downloadPDF(){
   if (!this.dialogOpen) {
               this.dialogOpen = true;
@@ -68,6 +75,10 @@ downloadPDF(){
               });
             }
 }
+ ngOnDestroy(){
+    this.subSink.unsubscribe();
+     localStorage.setItem('previousScreen','Booking')
+  }
   ngOnInit(): void {
     this.loadTripList()
     this.bookingForm.get('regularAmount')?.valueChanges.subscribe((regularAmount: number) => {
