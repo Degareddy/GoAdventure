@@ -92,21 +92,21 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
       mode: ['View'],
       code: [{ value: '', disabled: true }],
       custName: ['', [Validators.required, Validators.maxLength(50)]],
-      groupName: ['GEN', [Validators.required]],
+      groupName: ['GENERAL', [Validators.required]],
       effectiveDate: [new Date(), [Validators.required]],
       //custStatus: [''],
       vATPINNo: ['0', [Validators.required]],
       name:[''],
-      currency: ['KES', [Validators.required]],
+      currency: ['INR'],
       payTerm: ['NA', [Validators.required]],
       pricing: ['NA', [Validators.required]],
       maxCrLimit: [0, [Validators.required]],
       secuItemDesc: ['NA', [Validators.required]],
       salesExecutive: ['NA', [Validators.required]],
-      countryName:['',Validators.required],
+      countryName:['IND',Validators.required],
       countryCode: [
         {
-          value: '',
+          value: '+91',
           disabled: true,
         },
         Validators.required,
@@ -220,6 +220,7 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
       this.currencyList = currencyList['data'];
       this.pricesList = priceList['data'];
     });
+    
     if (this.customer == undefined || this.customer.Type == undefined || this.customer.Type == '') {
       return;
     }
@@ -288,7 +289,6 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: { mode: this.custForm.controls['mode'].value, tranNo: this.custForm.controls['code'].value, search: 'Customer Docs', tranType: "CLIENT" }
     });
-
   }
   prepareCustCls() {
     
@@ -448,9 +448,10 @@ export class CustomerDetailsComponent implements OnInit, OnDestroy {
   }
 
   countryChanged(event: any) {
+ 
     const body = {
       ...this.commonParams(),
-      item: event.source.value,
+      item: event,
       type:'COUNTRY'
     };
     try{

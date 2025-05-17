@@ -61,7 +61,7 @@
         <div class="col-4">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>package Code</mat-label>
-              <input matInput placeholder="Package Code" formControlName="packageCode" type="text" 
+              <input matInput placeholder="Package Code" [disabled]="packageNamesForm.get('mode')?.value === 'Modify'" formControlName="packageCode" type="text" 
               
               >
               <!-- [matAutocomplete]="auto" -->

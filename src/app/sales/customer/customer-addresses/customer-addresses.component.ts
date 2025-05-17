@@ -195,6 +195,7 @@ export class CustomerAddressesComponent implements OnInit, OnDestroy {
       allowWhatsApp: data.allowWhatsApp,
       allowSMS: data.allowSMS
     };
+    this.addressForm.get('allowEmail')?.patchValue(data.allowEmail)
     this.addressForm.patchValue(formData);
   }
   Submit() {

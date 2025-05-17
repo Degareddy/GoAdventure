@@ -133,6 +133,10 @@ export class MastersService {
     return this.http.post<any>(environment.Url + 'sales/GetReceiptPaymentsDetails/', body)
   }
 
+   GetBookingDetails(body: any): Observable<any> {
+    return this.http.post<any>(environment.Url + 'sales/GetBookingDetails/', body)
+  }
+
   UpdateMyCashTransfers(body: any): Observable<any> {
     return this.http.post<any>(environment.Url + 'sales/UpdateMyCashTransfers/', body)
   }

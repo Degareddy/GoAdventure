@@ -126,10 +126,10 @@ downloadPDF(){
           this.loader.start()
               this.subSink.sink = this.invService.UpdateBookingDetails(body).subscribe((res: any) => {
                 this.loader.stop();
-                if(res.status.toUpperCase === "SUCCESS"){
+                if(res.status === "Success"){
                   this.displayMessage(res.message,'green');
                   this.bookingForm.get('batchNo')?.patchValue(res.tranNoNew);
-                  this.bookingForm.get('mode')?.patchValue('Modify')
+                  this.bookingForm.get('mode')?.patchValue('Modify');
                 }
                 else{
                   this.displayMessage(res.message,'red');
@@ -249,7 +249,7 @@ downloadPDF(){
                 disableClose: true,
                 data: {
                   'tranNum':'',
-                  'search': 'Trip Searc'
+                  'search': 'Trip Search'
                 }
               });
 

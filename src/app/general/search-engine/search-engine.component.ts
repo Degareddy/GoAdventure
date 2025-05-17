@@ -152,6 +152,7 @@ packageTypes:Item[]=[]
 
     }
     else if(this.data.search === "Booking Search"){
+      this.bookingSearch();
     }
     else{
           this.loadTripList();
@@ -159,6 +160,34 @@ packageTypes:Item[]=[]
     this.searchName = this.data.search;
     
     this.search();
+  }
+  bookingSearch(){
+    const body = {
+        ...this.commonParams(),
+        TranNo:this.tranSearchForm.get('batchNo')?.value
+        
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink =  this.mastService.GetBookingDetails(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.calculateTotal(this.rowData);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
   }
 loadPackageNames(){
   const body={

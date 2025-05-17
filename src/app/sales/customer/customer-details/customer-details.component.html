@@ -114,8 +114,8 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div class="col-3">
-              <mat-form-field appearance="outline" class="w-full h-8"> <!-- Adjust height here -->
+            <!-- <div class="col-3">
+              <mat-form-field appearance="outline" class="w-full h-8">
                 <mat-label class="mat-label-class">Country</mat-label>
                 <input
                   type="text"
@@ -126,12 +126,12 @@
                 >
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCountryName.bind(this)">
                   <mat-option *ngFor="let country of filteredCountryNames | async" [value]="country.itemCode"
-                    (onSelectionChange)="countryChanged($event)">
+                    (onSelectionChange)="countryChanged($event.source.value)">
                     {{ country.itemName  }}
                   </mat-option>
                 </mat-autocomplete>
               </mat-form-field>
-            </div>
+            </div> -->
             <div class="col-3">
               <mat-form-field appearance="outline" class="mat-mode" >
                 <mat-label class="mat-label-class">Country Code</mat-label>
