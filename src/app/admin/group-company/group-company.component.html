@@ -48,7 +48,9 @@
             [disabled]="row.mapStatus === 'UnMap' || row.mapStatus === 'Mapped'  || row.mapStatus === 'UnMapped'">
             <mat-icon>done</mat-icon>Apply
           </button>
-        </td>
+     <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="goBack()">
+        <mat-icon>arrow_back_ios</mat-icon>go back </button>   -->
+           </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayColumns; sticky:true"></tr>
       <tr mat-row [class.selected]="selectedRowIndex === i" *matRowDef="let row; columns: displayColumns; let i=index;"

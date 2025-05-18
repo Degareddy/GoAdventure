@@ -10,6 +10,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { Item } from 'src/app/general/Interface/interface';
 import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
+import { Location } from '@angular/common';
+
 interface IAcess {
   item_id: string;
   item_text: string;
@@ -40,7 +42,7 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
   mappedList: any = [];
   unMappedList: any = [];
   @ViewChild('frmClear') public sprFrm!: NgForm;
-  constructor(private fb: FormBuilder, private userDataService: UserDataService,
+  constructor(private fb: FormBuilder, private userDataService: UserDataService,private location: Location,
     protected route: ActivatedRoute,
     protected router: Router,
     private adminService: AdminService,
@@ -54,6 +56,9 @@ export class AccessRightsComponent implements OnInit, OnDestroy {
     await this.loadData();
 
 
+  }
+     goBack(): void {
+    this.location.back();
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;

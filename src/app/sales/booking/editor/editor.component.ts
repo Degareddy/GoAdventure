@@ -9,10 +9,12 @@ import html2canvas from 'html2canvas';
   styleUrls: ['./editor.component.css']
 })
 export class EditorComponent implements OnInit {
+
+  
   ngOnInit(): void {
     throw new Error('Method not implemented.');
   }
-email:string="mail@goadventure.in"
+email:string="support@goadventure.in"
   invoiceData = {
     customerName: 'Rajuldev Sai Kiran',
     customerAddress: 'Hyderabad, Telangana',
@@ -51,7 +53,7 @@ email:string="mail@goadventure.in"
       // Show button again
       if (button) button.style.display = 'block';
     });
-  }, 100); // Optional delay to ensure the DOM is repainted
+  }, 60); // Optional delay to ensure the DOM is repainted
 }
 
 }

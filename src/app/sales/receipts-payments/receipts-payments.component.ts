@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Item } from 'src/app/general/Interface/interface';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-receipts-payments',
@@ -21,7 +23,7 @@ filteredpayMode:Item[]=[]
 providers:Item[]=[]
 providerTypes:Item[]=[]
 statusList:Item[]=[]
-  constructor(private fb: FormBuilder) { 
+  constructor(private fb: FormBuilder , private location: Location,) { 
     this.receiptsForm=this.formInit()
   }
 
@@ -29,6 +31,9 @@ statusList:Item[]=[]
   }
   onSubmit(){
 
+  }
+  onngDestroy(){
+    localStorage.setItem('previousScreen','Receipts - Payments');
   }
   receiptTypeChange(mode:string){
 
@@ -68,5 +73,7 @@ statusList:Item[]=[]
   accountNo: ['']
     });
     }
-
+  goBack(): void {
+    this.location.back();
+  }
 }

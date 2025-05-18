@@ -5,6 +5,7 @@ import { AdminService } from 'src/app/Services/admin.service';
 import { CompanyClass } from '../admin.class';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { MatIcon } from '@angular/material/icon';
+import { Location } from '@angular/common';
 
 import { MastersService } from 'src/app/Services/masters.service';
 import { SubSink } from 'subsink';
@@ -43,7 +44,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
   @ViewChild('frmClear') public sprFrm!: NgForm;
   durationInSeconds = 5;
   newTranMsg: string = "";
-  constructor(protected route: ActivatedRoute, private adminService: AdminService,
+  constructor(protected route: ActivatedRoute, private adminService: AdminService,private location: Location,
     private masterService: MastersService, public dialog: MatDialog, private snackBar: MatSnackBar,
     protected router: Router, private loader: NgxUiLoaderService, private userDataService: UserDataService,
     private fb: FormBuilder
@@ -89,11 +90,20 @@ export class CompanyComponent implements OnInit, OnDestroy {
   }
 
   enableFormControls() {
-    this.companyForm.controls['companyID'].enable({ onlySelf: true });
+    // this.companyForm.controls['companyID'].enable({ onlySelf: true });
   }
 
   ngOnInit(): void {
+    
+    localStorage.setItem('previousScreen','Company');
     this.loadData();
+  }
+  ngDestroy(){
+    localStorage.setItem('previousScreen','Home');
+  }
+
+      goBack(): void {
+    this.location.back();
   }
   private createRequestData(item: string): getPayload {
     return {

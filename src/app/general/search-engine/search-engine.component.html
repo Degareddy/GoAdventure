@@ -10,12 +10,43 @@
   <form [formGroup]="tranSearchForm">
     <div *ngIf="searchName == 'Booking Search'">
 <div class="row  justify-content-center" style="margin-top: 8px;">
-      <div class="col-4">
+      <div class="col-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label>Batch No</mat-label>
           <input matInput placeholder="Btach No" formControlName="batchNo" type="text">
         </mat-form-field>
                
+        </div>
+        <div class = "col-3">
+          <mat-form-field appearance="outline" class="w-full mt-2">
+                        <mat-label>Package Type</mat-label>
+                        <mat-select formControlName="packageType" >
+                          <mat-option value="">--Select--</mat-option>
+                          <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+        </div>
+        <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Client Name</mat-label>
+          <input matInput placeholder="Client Name " formControlName="clientName" type="text">
+        </mat-form-field>
+               
+        </div>
+        <div class="col-3">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Phone</mat-label>
+          <input matInput placeholder="Phone no" formControlName="phoneNo" type="text">
+        </mat-form-field>
+               
+        </div>
+      </div>
+        <div class="row  justify-content-center" style="margin-top: 8px;">
+        <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Email</mat-label>
+          <input matInput placeholder="Email" formControlName="email" type="text">
+        </mat-form-field>
         </div>
         <div class="col-4">
             <mat-form-field appearance="outline" class="mat-mode">

@@ -95,6 +95,7 @@ packageTypes:Item[]=[]
     this.loader = this.loaderService;
   }
   loadTripList(){
+        this.displayMessage("Please Wait ...Loading",'')
     const body={
       Mode:'View',
       Company:this.userDataService.userData.company,
@@ -120,6 +121,7 @@ packageTypes:Item[]=[]
         }
   }
   loadPackages(){
+    this.displayMessage("Please Wait ...Loading",'')
     this.packageNames=[]
     const body={
       "Mode":"View",
@@ -130,7 +132,7 @@ packageTypes:Item[]=[]
       "item":this.tranSearchForm.get('packageType')?.value,
     }
     try {
-      this.loader.start()
+      this.loader.start();
           this.subSink.sink = this.salesService.GetPackagesList(body).subscribe((res: any) => {
             this.loader.stop();
             if(res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR){
@@ -153,6 +155,8 @@ packageTypes:Item[]=[]
     }
     else if(this.data.search === "Booking Search"){
       this.bookingSearch();
+                this.loadTripList();
+
     }
     else{
           this.loadTripList();
@@ -162,6 +166,8 @@ packageTypes:Item[]=[]
     this.search();
   }
   bookingSearch(){
+        this.displayMessage("Please Wait ...Loading",'')
+
     const body = {
         ...this.commonParams(),
         TranNo:this.tranSearchForm.get('batchNo')?.value
@@ -238,7 +244,9 @@ onRowSelected(event: any) {
       packageType:[''],
       packageName:[''],
       batchNo:[''],
-      
+      clientName:[''],
+      phoneNo:["0"],
+      email:['']
     });
   }
   commonParams() {
@@ -250,10 +258,75 @@ onRowSelected(event: any) {
     }
   }
   async search() {
-    this.displayMessage("", "");
-    if (this.tranSearchForm.invalid) {
-      return
+    if(this.data.search === "Booking Search"){
+      const body = {
+      SearchFor:"BOOKING",
+      TranNo:this.tranSearchForm.get('batchNo')?.value,
+      FirstPara:this.tranSearchForm.get('packageType')?.value,
+      SecondPara:this.tranSearchForm.get('clientName')?.value,
+      ThirdPara:this.tranSearchForm.get('phoneNo')?.value,
+      FourthPara:this.tranSearchForm.get('email')?.value,
+      FirstDate:this.tranSearchForm.get('fromDate')?.value,
+      SecondDate:this.tranSearchForm.get('toDate')?.value,
+        ...this.commonParams(),
+       
+        
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink = await this.masterService.GetTranSearch(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.calculateTotal(this.rowData);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
     }
+    // else{
+    // this.displayMessage("", "");
+    // if (this.tranSearchForm.invalid) {
+    //   const body = {
+    //     ...this.commonParams(),
+    //     SearchFor:"TRIP",
+    //     Type:this.tranSearchForm.get('packageType')?.value,
+    //     ItemFirstLevel: this.tranSearchForm.get('packageName')?.value,
+    //     FirstDate: this.datePipe.transform(this.tranSearchForm.get('fromDate')!.value, 'yyyy-MM-dd'),
+        
+    //   }
+    //   try {
+    //     this.loader.start();
+    //     this.subSink.sink = await this.mastService.GetTripSearchList(body).subscribe((res: any) => {
+    //       this.loader.stop();
+    //       if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+    //         this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+    //         this.rowData = [];
+    //       }
+    //       else if(res.data.length === 1){
+    //        this.rowData=res.data
+    //       }
+    //       else {
+    //         this.rowData = res['data'];
+    //         this.calculateTotal(this.rowData);
+    //         this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+    //       }
+    //     });
+    //   }
+    //   catch (ex: any) {
+    //     this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    //   }
+    // }
     else {
       
       const body = {
@@ -287,6 +360,8 @@ onRowSelected(event: any) {
       }
 
     }
+    
+    
   }
 
   calculateTotal(data: any) {

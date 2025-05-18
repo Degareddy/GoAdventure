@@ -25,7 +25,9 @@ export class MastersService {
   GetMyCashTransfers(masParams: any): Observable<string[]> {
     return this.http.post<string[]>(environment.Url + 'MasterItems/GetMasterTypesList/', masParams)
   }
-
+  GetTranSearch(masParams: any): Observable<string[]> {
+    return this.http.post<string[]>(environment.Url + 'MasterItems/GetTranSearch/', masParams)
+  }
   getSpecificMasterItems(masParams: any): Observable<string[]> {
     return this.http.post<string[]>(environment.Url + 'MasterItems/GetMasterItemsList/', masParams)
   }

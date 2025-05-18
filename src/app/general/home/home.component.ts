@@ -82,6 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    localStorage.setItem('previousScreen','Home');
     // console.log(this.userService.userData.company);
     if (this.userService.userData.company != 'SADASA') {
       this.images=['assets/img/img04.jpg', 'assets/img/tk001.jpg', 'assets/img/tk002.jpg',

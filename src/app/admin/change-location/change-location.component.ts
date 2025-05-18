@@ -13,6 +13,8 @@ import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
 import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { Location } from '@angular/common';
+
 @Component({
   selector: 'app-change-location',
   templateUrl: './change-location.component.html',
@@ -26,7 +28,8 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   private subSink!: SubSink;
   textMessageClass: string = "";
   retMessage: string = "";
-  constructor(private adminService: AdminService, private userDataService: UserDataService, private toaster: ToastrService,
+  constructor(private adminService: AdminService,private location: Location,
+     private userDataService: UserDataService, private toaster: ToastrService,
     private fb: FormBuilder, protected router: Router, private store: Store) {
     this.changeLocationForm = this.formInit();
     this.subSink = new SubSink();
@@ -38,10 +41,14 @@ export class ChangeLocationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    localStorage.setItem('previousScreen','Change Location');
     this.loadData();
   }
   Close() {
     this.router.navigateByUrl('/home');
+  }
+     goBack(): void {
+    this.location.back();
   }
   commonParams() {
     return {

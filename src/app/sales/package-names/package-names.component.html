@@ -25,7 +25,7 @@
           <div class="col-3">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label>Modes</mat-label>
-              <mat-select formControlName="mode" >
+              <mat-select formControlName="mode" (selectionChange)="modeChange()">
                 <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{x.itemName}}
                 </mat-option>
               </mat-select>
@@ -61,28 +61,11 @@
         <div class="col-4">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>package Code</mat-label>
-              <input matInput placeholder="Package Code" [disabled]="packageNamesForm.get('mode')?.value === 'Modify'" formControlName="packageCode" type="text" 
+              <input matInput placeholder="Package Code"  formControlName="packageCode" type="text" 
               
               >
-              <!-- [matAutocomplete]="auto" -->
-              <!-- <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="tripPatch()"> -->
-  
-                <!-- Static header -->
-                <!-- <div class="autocomplete-header">
-                  <div class="col-code">Code</div>
-                  <div class="col-name">Name</div>
-                  <div class="col-phone">Details</div>
-                </div> -->
               
-                <!-- Options -->
-                <!-- <mat-option *ngFor="let option of autoFilteredCustomer" [value]="option.itemCode">
-                  <div class="autocomplete-row">
-                    <div class="col-code">{{ option.itemCode }}</div>
-                    <div class="col-name">{{ option.itemName }}</div>
-                    <div class="col-phone">{{ option.itemDetails }}</div>
-                  </div>
-                </mat-option>
-              </mat-autocomplete> -->
+
               <button mat-button *ngIf="packageNamesForm.get('packageCode')!.value" type="button" matSuffix mat-icon-button
                 aria-label="Clear" (click)="formInit()">
                 <mat-icon>cancel</mat-icon>
@@ -139,14 +122,15 @@
           <mat-icon>clear_all</mat-icon>Clear
         </button>
         <button mat-raised-button color="warn" class="btnUp" type="button" (click)="Close()">
-          <mat-icon>cancel</mat-icon>Close
-        </button>
+          <mat-icon>cancel</mat-icon>Close    </button>
+     <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="goBack()">
+        <mat-icon>arrow_back_ios</mat-icon>go back </button>     -->
       </div>
       </form>
       <div style="margin-top: -30px;">
         <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
           [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
-          [gridHeight]="'230px'" [paginationPageSize]="25" [showToolPanel]="true"
+          [gridHeight]="'240px'" [paginationPageSize]="25" [showToolPanel]="true"
           [showRecordCount]="true"></app-access-grid>
       </div>
       </div>

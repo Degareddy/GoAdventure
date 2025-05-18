@@ -22,6 +22,8 @@ import { LogComponent } from 'src/app/general/log/log.component';
 import { CompaniesComponent } from './companies/companies.component';
 import { displayMsg, Items, Log, Mode, ScreenId, searchDocs, searchNotes, searchType, TextClr, Type } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { Location } from '@angular/common';
+
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -60,7 +62,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   ]
   @ViewChild('frmClear') public sprFrm!: NgForm;
   imageBlob: string = "assets/img/user.jpg";
-  constructor(protected route: ActivatedRoute, protected router: Router, private fb: FormBuilder,
+  constructor(protected route: ActivatedRoute, protected router: Router, private fb: FormBuilder,private location: Location,
     private adminService: AdminService, private loader: NgxUiLoaderService, public dialog: MatDialog,
     private utlService: UtilitiesService, private masterService: MastersService, private dateService: FormatdateService,
     private userDataService: UserDataService
@@ -131,7 +133,9 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   }
 
-
+  goBack(): void {
+    this.location.back();
+  }
   formInit() {
     return this.fb.group({
       mode: ['View'],
@@ -195,6 +199,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    localStorage.setItem('previousScreen','User Reg');
     this.loadData();
     const modeBody = this.createRequestData(ScreenId.USER_REGISTRATION_SCRID);
     try{

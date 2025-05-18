@@ -15,6 +15,10 @@ import { displayMsg, Items, TextClr } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
 import { SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 
+
+import { Location } from '@angular/common';
+
+
 @Component({
   selector: 'app-group-company',
   templateUrl: './group-company.component.html',
@@ -32,7 +36,8 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
   private subSink = new SubSink();
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) matsort!: MatSort;
-  constructor(private fb: FormBuilder, private masterService: MastersService, private userdataService: UserDataService,
+  constructor(private fb: FormBuilder, private masterService: MastersService ,
+    private location: Location, private userdataService: UserDataService,
     private loader: NgxUiLoaderService, private adService: AdminService,
     private toastr: ToastrService) {
     this.subSink = new SubSink();
@@ -41,6 +46,8 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
 
   }
   ngOnDestroy(): void {
+    localStorage.setItem('previousScreen','Group Company');
+  
     this.subSink.unsubscribe();
   }
 
@@ -72,6 +79,9 @@ export class GroupCompanyComponent implements OnInit, OnDestroy {
       this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     }
 
+  }
+    goBack(): void {
+    this.location.back();
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;

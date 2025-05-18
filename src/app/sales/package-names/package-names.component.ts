@@ -16,6 +16,7 @@ import { SearchEngineComponent } from 'src/app/general/search-engine/search-engi
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-package-names',
@@ -56,7 +57,7 @@ export class PackageNamesComponent implements OnInit {
       {field:"packageStatus",headerName:"Status",sortable:true,filter:true,resizable:true,flex:1},
     ];
     rowData:any=[]
-    constructor(private fb:FormBuilder,
+    constructor(private fb:FormBuilder,private location: Location,
           protected router: Router, private datepipe: DatePipe,  public dialog: MatDialog,protected masterService: MastersService,private salesService:SalesService,
       private loader: NgxUiLoaderService,private invService: InventoryService,private userDataService: UserDataService,) { 
       this.packageNamesForm=this.formInit();
@@ -65,6 +66,7 @@ export class PackageNamesComponent implements OnInit {
     }
   
     ngOnInit(): void {
+      localStorage.setItem('previousScreen','Packages');
       // this.loadPackages();
       this.loadTripList();
       // this.loadTripsId()
@@ -80,12 +82,21 @@ export class PackageNamesComponent implements OnInit {
     }
     private _filter(value: string): autoComplete[] {
       const filterValue = value.toLowerCase();
-    
       return this.tripIdList.filter(option =>
         option.itemName.toLowerCase().includes(filterValue) ||
         option.itemCode.toLowerCase().includes(filterValue) ||
         option.itemDetails.toLowerCase().includes(filterValue)
       );
+    }
+    modeChange(){
+      if(this.packageNamesForm.get('mode')?.value=='Modify'){
+        this.packageNamesForm.get('packageCode')?.disable();
+      }
+      if(this.packageNamesForm.get('mode')?.value=='Add'){
+        this.clear();
+         this.packageNamesForm.get('mode')?.patchValue("Add");
+        this.packageNamesForm.get('packageCode')?.enable();
+      }
     }
     onGridReady(params: any) {
       this.gridApi = params.api;
@@ -95,6 +106,7 @@ export class PackageNamesComponent implements OnInit {
     onRowSelected(event: any) {
       console.log(event.data);
       this.patchForm(event.data);
+      this.modeChange();
     } 
     
     patchForm(event:any){
@@ -104,9 +116,15 @@ export class PackageNamesComponent implements OnInit {
       this.packageNamesForm.get('packageType')?.patchValue(event.packageId);
       this.packageNamesForm.get('remarks')?.patchValue(event.remarks);
       this.packageNamesForm.get('packageType')?.patchValue(event.packageType)
-      this.packageNamesForm.get('tranDate')?.patchValue(this.dateFormat.formatDate(event.tranDate))
+      this.packageNamesForm.get('tranDate')?.patchValue(this.dateFormat.formatDate(event.tranDate)),
+      this.packageNamesForm.get('days')?.patchValue(event.days)
 
     }   
+
+
+      goBack(): void {
+    this.location.back();
+  }
     loadPackages(){
       
       const body={

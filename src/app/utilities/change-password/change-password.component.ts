@@ -8,6 +8,8 @@ import { UtilitiesService } from 'src/app/Services/utilities.service';
 import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, TextClr } from 'src/app/utils/enums';
 import { SubSink } from 'subsink';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-change-password',
@@ -23,7 +25,8 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   showPassword: boolean = false;
   showNewPassword: boolean = false;
   showConfirmPassword: boolean = false;
-  constructor(private fb: FormBuilder, private loader: NgxUiLoaderService,public userDataService: UserDataService,
+  constructor(private fb: FormBuilder, private loader: NgxUiLoaderService, private location: Location,
+    public userDataService: UserDataService,
      private utilityService: UtilitiesService,private router:Router,private toaster: ToastrService,) {
     this.chPassForm = this.formInit();
     this.subSink = new SubSink();
@@ -43,6 +46,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
   ngOnInit(): void {
+    localStorage.setItem('previousScreen','Change Password');
   }
 
   formInit() {
@@ -76,6 +80,9 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
       }
     }
     return null;
+  }
+      goBack(): void {
+    this.location.back();
   }
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
