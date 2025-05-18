@@ -39,7 +39,7 @@ const routes: Routes = [
   { path: 'customer-contacts/:code/:slno', component: CustomerContactsComponent, canActivate: [SaleGuard] },
   { path: 'customer', component: CustomerComponent, canActivate: [SaleGuard] },
   { path: 'customer-opening', component: CustomerOpeningComponent, canActivate: [SaleGuard] },
-    { path: 'party-opbalances', component: OpeningBalancesComponent, canActivate: [SaleGuard] },
+    { path: 'opening', component: OpeningBalancesComponent, canActivate: [SaleGuard] },
     { path: 'party-opbalances', component: OpeningBalancesComponent, canActivate: [SaleGuard] },
   { path: 'quotation', component: QuotationComponent, canActivate: [SaleGuard] },
   { path: 'order-invoice', component: OrderInvoiceComponent, canActivate: [SaleGuard] },
