@@ -88,16 +88,7 @@ export class PackageNamesComponent implements OnInit {
         option.itemDetails.toLowerCase().includes(filterValue)
       );
     }
-    modeChange(){
-      if(this.packageNamesForm.get('mode')?.value=='Modify'){
-        this.packageNamesForm.get('packageCode')?.disable();
-      }
-      if(this.packageNamesForm.get('mode')?.value=='Add'){
-        this.clear();
-         this.packageNamesForm.get('mode')?.patchValue("Add");
-        this.packageNamesForm.get('packageCode')?.enable();
-      }
-    }
+    
     onGridReady(params: any) {
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
@@ -120,7 +111,16 @@ export class PackageNamesComponent implements OnInit {
       this.packageNamesForm.get('days')?.patchValue(event.days)
 
     }   
-
+modeChange(){
+      if(this.packageNamesForm.get('mode')?.value=='Modify'){
+        this.packageNamesForm.get('packageCode')?.disable();
+      }
+      if(this.packageNamesForm.get('mode')?.value=='Add'){
+        this.clear();
+         this.packageNamesForm.get('mode')?.patchValue("Add");
+        this.packageNamesForm.get('packageCode')?.enable();
+      }
+    }
 
       goBack(): void {
     this.location.back();
