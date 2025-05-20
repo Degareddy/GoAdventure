@@ -9,6 +9,10 @@ import { forkJoin } from 'rxjs';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { ToastrService } from 'ngx-toastr';
 import { MastersService } from 'src/app/Services/masters.service';
+import { AccessSettings } from 'src/app/utils/access';
+import { TextClr } from 'src/app/utils/enums';
+import { getPayload } from 'src/app/general/Interface/admin/admin';
+import { AdminService } from 'src/app/Services/admin.service';
 
 
 @Component({
@@ -47,6 +51,7 @@ tranFor:Item[]=[]
 statusList:Item[]=[]
 private subSink!: SubSink;
   constructor(private fb: FormBuilder , private location: Location, private userDataService:UserDataService,
+    private adminService: AdminService,
         private masterService: MastersService,
     
     private toaster: ToastrService,
@@ -62,6 +67,8 @@ private subSink!: SubSink;
   }
 
   ngOnInit(): void {
+    this.loadBankTypes();
+    this.loadProviderSubTypes();
     const modeBody = {
       ...this.commonParams(),
       item: 'ST210',
@@ -180,6 +187,55 @@ private subSink!: SubSink;
 
       ]
   }
+  loadProviderSubTypes() {
+      const bankbody: getPayload = {
+        ...this.commonParams(),
+        item: "BANK",
+        mode:this.receiptsForm.get('mode')?.value
+      };
+      
+      const service1 = this.adminService.GetMasterItemsList(bankbody);
+      this.subSink.sink = forkJoin([service1]).subscribe(
+        (results: any[]) => {
+          this.loader.stop();
+          const res1 = results[0];
+          this.providers = res1.data;
+        },
+        (error: any) => {
+          this.loader.stop();
+        }
+      );
+    }
+  loadBankTypes(){
+    const body=  {
+    company: this.userDataService.userData.company,
+    location:  this.userDataService.userData.location,
+    selLocation: "",
+    type: "",
+    tranType: "",
+    item: "BANKTYPE",
+    itemFirstLevel: "",
+    itemSecondLevel: "",
+    user:  this.userDataService.userData.userID,
+    password: "",
+    refNo:  this.userDataService.userData.sessionID,
+    tranNo: "",
+    mode: ""
+    }
+    this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.providerTypes = res['data'];
+            if (this.providerTypes.length === 1) {
+              this.receiptsForm.get('typeName')!.patchValue(this.providerTypes[0].itemCode);
+              // this.onSelectedTypeChanged()
+            }
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
+    }
   modeChange(mode:string){}
   clear(){}
   close(){}

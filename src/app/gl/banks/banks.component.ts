@@ -17,6 +17,8 @@ import { UserDataService } from 'src/app/Services/user-data.service';
 import { getPayload, SaveApiResponse } from 'src/app/general/Interface/admin/admin';
 import { Item } from 'src/app/general/Interface/interface';
 import { DatePipe } from '@angular/common';
+import { AccessSettings } from 'src/app/utils/access';
+import { TextClr } from 'src/app/utils/enums';
 
 @Component({
   selector: 'app-banks',
@@ -30,6 +32,7 @@ export class BanksComponent implements OnInit, OnDestroy {
   private subSink!: SubSink;
   modes: Item[] = [];
   bankList: Item[] = [];
+  bankTypeList:Item[]=[]
   bankStatus!: string;
   private bankCls!: BankClass;
   retMessage: string = "";
@@ -59,6 +62,40 @@ export class BanksComponent implements OnInit, OnDestroy {
       refNo: this.userDataService.userData.sessionID
     }
   }
+  loadBankTypes(){
+  const body=  {
+  company: this.userDataService.userData.company,
+  location:  this.userDataService.userData.location,
+  selLocation: "",
+  type: "",
+  tranType: "",
+  item: "BANKTYPE",
+  itemFirstLevel: "",
+  itemSecondLevel: "",
+  user:  this.userDataService.userData.userID,
+  password: "",
+  refNo:  this.userDataService.userData.sessionID,
+  tranNo: "",
+  mode: ""
+  }
+  this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.bankTypeList = res['data'];
+          if (this.bankTypeList.length === 1) {
+            this.bankForm.get('typeName')!.patchValue(this.bankTypeList[0].itemCode);
+            // this.onSelectedTypeChanged()
+          }
+        }
+        else {
+          this.displayMessage(res.message + " for types list!", TextClr.red);
+        }
+  
+      });
+  }
+    private displayMessage(message: string, cssClass: string) {
+        this.retMessage = message;
+        this.textMessageClass = cssClass;
+      }
   onDetailsCilcked(tranNo: any) {
     const dialogRef: MatDialogRef<BankDepositsDetailsComponent> = this.dialog.open(BankDepositsDetailsComponent, {
       width: '90%', // Set the width of the dialog
@@ -69,6 +106,7 @@ export class BanksComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadBankTypes();
   }
   loadData() {
     const bankbody: getPayload = {
@@ -95,7 +133,9 @@ export class BanksComponent implements OnInit, OnDestroy {
       }
     );
   }
+banktypeChange(){
 
+}
   bankChange() {
     this.bankValue(this.bankForm.controls['mode'].value)
   }
@@ -142,7 +182,8 @@ export class BanksComponent implements OnInit, OnDestroy {
       website: [''],
       notes: [''],
       notCashHandles: [false],
-      cashHandles: [false]
+      cashHandles: [false],
+      bankType:['']
     });
   }
 
@@ -167,6 +208,7 @@ export class BanksComponent implements OnInit, OnDestroy {
     this.bankCls.cashHandles = this.bankForm.get('cashHandles')!.value;
     this.bankCls.notCashHandles = this.bankForm.get('notCashHandles')!.value;
     this.bankCls.code = this.bankForm.get('code')!.value;
+    this.bankCls.BankType = this.bankForm.get('bankType')!.value;
 
     const transformedDate = this.datePipe.transform(this.bankForm.controls['Date'].value, 'yyyy-MM-dd');
 		if (transformedDate !== undefined && transformedDate !== null) {

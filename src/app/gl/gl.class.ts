@@ -56,6 +56,7 @@ export class BankClass {
   public mode!: string
   public user!: string
   public refNo!: string
+   public BankType!: string
 }
 
 export class ExpenseHdr {

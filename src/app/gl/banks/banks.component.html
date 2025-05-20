@@ -30,6 +30,15 @@
       </div>
       <div class="col-3">
         <mat-form-field appearance="outline">
+          <mat-label>Bank Type</mat-label>
+          <mat-select formControlName="bankType" placeholder="List" (selectionChange)="banktypeChange()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of bankTypeList" [value]="x.itemCode">{{x.itemName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
           <mat-label>Bank List</mat-label>
           <mat-select formControlName="list" placeholder="List" (selectionChange)="bankChange()">
             <mat-option value="">--Select--</mat-option>
