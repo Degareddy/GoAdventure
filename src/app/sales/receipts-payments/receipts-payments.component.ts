@@ -13,6 +13,7 @@ import { AccessSettings } from 'src/app/utils/access';
 import { TextClr } from 'src/app/utils/enums';
 import { getPayload } from 'src/app/general/Interface/admin/admin';
 import { AdminService } from 'src/app/Services/admin.service';
+import { GeneralLedgerService } from 'src/app/Services/general-ledger.service';
 
 
 @Component({
@@ -51,6 +52,7 @@ tranFor:Item[]=[]
 statusList:Item[]=[]
 private subSink!: SubSink;
   constructor(private fb: FormBuilder , private location: Location, private userDataService:UserDataService,
+    private glService: GeneralLedgerService,
     private adminService: AdminService,
         private masterService: MastersService,
     
@@ -273,5 +275,28 @@ private subSink!: SubSink;
     }
   goBack(): void {
     this.location.back();
+  }
+  onSelectionChangeProviderType(){
+    const body=  {
+  company: this.userDataService.userData.company,
+  location:  this.userDataService.userData.location,
+  Type:this.receiptsForm.get('providerType')!.value,
+  user:  this.userDataService.userData.userID,
+  refNo:  this.userDataService.userData.sessionID,
+  
+  }
+  this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.providers = res['data'];
+          if (this.providers.length === 1) {
+            this.receiptsForm.get('provider')!.patchValue(this.providers[0].itemCode);
+            // this.onSelectedTypeChanged()
+          }
+        }
+        else {
+          this.displayMessage(res.message + " for types list!", TextClr.red);
+        }
+  
+      });
   }
 }

@@ -285,13 +285,20 @@
     <div class="row myCustomClass">
       <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Tran Type</mat-label>
+          <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- <mat-form-field appearance="outline" class="w-full">
           <mat-label>Receipt Type</mat-label>
 
           <mat-select formControlName="receiptmode" (selectionChange)="receiptTypeChange($event.value)">
             <mat-option  value="">--Select--</mat-option>
             <mat-option *ngFor="let x of receiptmodes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
       <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
@@ -325,7 +332,7 @@
 
     <!-- Row 2: Client Info -->
     <div class="row myCustomClass">
-      <div class="col-md-3">
+      <div class="col-md-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Client Type</mat-label>
           <mat-select formControlName="clientType">
@@ -334,7 +341,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Client Name</mat-label>
           <input matInput type="text" placeholder="Client Name" formControlName="clientName" />
@@ -346,7 +353,7 @@
           </button>
         </mat-form-field>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Tran For</mat-label>
           <mat-select formControlName="tranFor" (selectionChange)="onSelectionChangeClientType()">
@@ -356,13 +363,13 @@
         </mat-form-field>
       </div>
       <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
+        <!-- <mat-form-field appearance="outline" class="w-full">
           <mat-label>Tran Type</mat-label>
           <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
     </div>
 
@@ -404,7 +411,7 @@
                   <div class="col-6">
             <mat-form-field appearance="outline">
               <mat-label>Provider Type</mat-label>
-              <mat-select formControlName="providerType">
+              <mat-select formControlName="providerType" (onselectionChange) = "onSelectionChangeProviderType()">
                                                       <mat-option value="">--Select--</mat-option>
 
                 <mat-option *ngFor="let item of providerTypes" [value]="item.itemCode">{{ item.itemName }}</mat-option>

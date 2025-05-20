@@ -15,6 +15,10 @@ export class GeneralLedgerService {
   GetFinancialPeriods(body: any): Observable<any> {
     return this.http.post(environment.Url + 'ledger/GetFinancialPeriods/', body)
   }
+  
+  GeBanksList(body: any): Observable<any> {
+    return this.http.post(environment.Url + 'ledger/GeBanksList/', body)
+  }
   UpdateFinancialPeriods(body: financialPerioddetails): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'ledger/UpdateFinancialPeriods/', body)
   }

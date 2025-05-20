@@ -134,7 +134,27 @@ export class BanksComponent implements OnInit, OnDestroy {
     );
   }
 banktypeChange(){
-
+const body=  {
+  company: this.userDataService.userData.company,
+  location:  this.userDataService.userData.location,
+  Type:this.bankForm.get('bankType')!.value,
+  user:  this.userDataService.userData.userID,
+  refNo:  this.userDataService.userData.sessionID,
+  
+  }
+  this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.bankTypeList = res['data'];
+          if (this.bankList.length === 1) {
+            this.bankForm.get('typeName')!.patchValue(this.bankTypeList[0].itemCode);
+            // this.onSelectedTypeChanged()
+          }
+        }
+        else {
+          this.displayMessage(res.message + " for types list!", TextClr.red);
+        }
+  
+      });
 }
   bankChange() {
     this.bankValue(this.bankForm.controls['mode'].value)
