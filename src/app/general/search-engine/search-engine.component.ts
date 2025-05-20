@@ -49,7 +49,25 @@ packageTypes:Item[]=[]
   pageSize = 100;
   totalAmount: number = 0;
   afterDisc:number=0;
+
+  
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
+    { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    { field: "clientName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    { field: "tranNo", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    {
+    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
   { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
   { field: "packageName", headerName: "Package name", sortable: true, filter: true, resizable: true, width: 90 },
   { field: "tripId", headerName: "Trip Id", sortable: true, filter: true, resizable: true, width: 190 },
@@ -164,6 +182,26 @@ packageTypes:Item[]=[]
     this.searchName = this.data.search;
     
     this.search();
+    if(this.data.search == 'Booking Search'){
+    this.columnDefs= [{ field: "slNo", headerName: "S.No", width: 80 },
+    { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90 },
+    { field: "clientName", headerName: "Client Name", sortable: true, filter: true, resizable: true, width: 90 },
+    { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 90 },
+    {
+    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+]
+}
   }
   bookingSearch(){
         this.displayMessage("Please Wait ...Loading",'')
@@ -245,7 +283,7 @@ onRowSelected(event: any) {
       packageName:[''],
       batchNo:[''],
       clientName:[''],
-      phoneNo:["0"],
+      phoneNo:[""],
       email:['']
     });
   }

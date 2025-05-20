@@ -14,6 +14,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { EditorComponent } from './editor/editor.component';
 import { Location } from '@angular/common';
+import { SalesService } from 'src/app/Services/sales.service';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class BookingComponent implements OnInit {
   bookingForm!:FormGroup
   retMessage:string=""
       screenName:string=localStorage.getItem('previousScreen')||''
-
+    selectedClientId!:string
   subSink!:SubSink
   textMessageClass:string=""
   packageTypes:Item[]=[]
@@ -40,7 +41,7 @@ export class BookingComponent implements OnInit {
     {itemCode:'View',itemName:'View'},
 
   ]
-    constructor(private fb:FormBuilder,private location: Location,
+    constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
       private loader: NgxUiLoaderService, private datePipe: DatePipe,
       private masterService:MastersService
@@ -118,7 +119,7 @@ downloadPDF(){
       "TranNo": this.bookingForm.get('batchNo')?.value,
       "TranDate": this.bookingForm.get('tranDate')?.value,
       "PackageType": this.bookingForm.get('packageType')?.value,
-      "TripId": this.bookingForm.get('batchCode')?.value,
+      "TripId": this.bookingForm.get('tripId')?.value,
       "Client": this.bookingForm.get('clientName')?.value,
       "AdultsCnt": this.bookingForm.get('adults')?.value,
       "AgeUptoYrs5": this.bookingForm.get('zeroToFive')?.value,
@@ -156,7 +157,7 @@ downloadPDF(){
       mode:['View'],
       batchNo:[''],
       packageType:['',Validators.required],
-      batchCode:['',Validators.required],
+      tripId:['',Validators.required],
       packageName:['',Validators.required],
       clientName:['',Validators.required],
       contact:['',Validators.required],
@@ -235,9 +236,8 @@ downloadPDF(){
                 this.dialogOpen = false;
                 if (result != true) {
                   this.selectdPackageNameId=result.package
-                  this.bookingForm.get('batchCode')?.patchValue(result.tripId)
-                  this.bookingForm.get('packageName')?.patchValue(result.packageName)
-                  this.bookingForm.get('packageType')?.patchValue(result.packageType)
+                  this.bookingForm.get('batchNo')?.patchValue(result.tranNo);
+                  this.searchBookingOnTran();
                 }
               });
             }
@@ -246,6 +246,56 @@ downloadPDF(){
     catch (ex: any) {
       this.retMessage = "Exception " + ex.message;
       this.textMessageClass = 'red';
+    }
+  }
+  searchBookingOnTran(){
+ const body={
+          Company:this.userDataService.userData.company,
+          Location:this.userDataService.userData.location,
+          User:this.userDataService.userData.userID,
+          RefNo:this.userDataService.userData.sessionID,
+          TranNo:this.bookingForm.get('batchNo')?.value
+         
+        }
+        try {
+          this.loader.start();
+              this.subSink.sink =this.salesSerivce.GetBookingDetails(body).subscribe((res: any) => {
+                this.loader.stop();
+                if(res.status === "Success"){
+                  this.parchForm(res.data);
+                }
+              });
+            }
+            catch (ex: any) {
+              this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+            }
+  }
+  parchForm(data:any){
+     
+    this.bookingForm.get('mode')?.patchValue('Modify')
+    this.bookingForm.get('packageType')?.patchValue(data.packageType)
+    this.bookingForm.get('tripId')?.patchValue(data.tripId)
+    this.bookingForm.get('packageName')?.patchValue('')
+    this.bookingForm.get('clientName')?.patchValue(data.clientName)
+    this.bookingForm.get('contact')?.patchValue(data.contact)
+    this.bookingForm.get('email')?.patchValue(data.email)
+    this.bookingForm.get('adults')?.patchValue(data.adultsCnt)
+    this.bookingForm.get('zeroToFive')?.patchValue(data.ageUptoYrs5)
+    this.bookingForm.get('fiveToTwelve')?.patchValue(data.ageYrs6to12)
+    this.bookingForm.get('remarks')?.patchValue(data.remarks)
+    this.bookingForm.get('regularAmount')?.patchValue(data.pkgValue)
+    this.bookingForm.get('discOffered')?.patchValue(data.discount)
+    this.bookingForm.get('quotedPrice')?.patchValue(data.netPayable)
+    this.bookingForm.get('addOns')?.patchValue(data.addOns)
+    this.bookingForm.get('tranDate')?.patchValue(this.formatDate(new Date(data.tranDate)))
+    this.selectedClientId = data.client
+    if(data.applyGST){
+      this.bookingForm.get('gstYes')?.patchValue(true)
+      this.bookingForm.get('gstYes')?.patchValue(false)
+    }
+    else{
+         this.bookingForm.get('gstYes')?.patchValue(false)
+      this.bookingForm.get('gstYes')?.patchValue(true)
     }
   }
   onSearchCilcked(){
@@ -268,7 +318,7 @@ downloadPDF(){
                 this.dialogOpen = false;
                 if (result != true) {
                   this.selectdPackageNameId=result.package
-                  this.bookingForm.get('batchCode')?.patchValue(result.tripId)
+                  this.bookingForm.get('tripId')?.patchValue(result.tripId)
                   this.bookingForm.get('packageName')?.patchValue(result.packageName)
                   this.bookingForm.get('packageType')?.patchValue(result.packageType)
                 }

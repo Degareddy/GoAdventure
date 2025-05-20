@@ -23,7 +23,11 @@ receiptsForm!:FormGroup;
 retMessage:string="";
 textMessageClass:string="";
 tomorrow=new Date()
-receiptmodes:Item[]=[]
+receiptmodes:Item[]=[
+  {itemCode:"rctForBooking",itemName:"Receipt for Booking"},
+  {itemCode:"paymentForExp",itemName:"Payment for Expense"},
+  {itemCode:"other",itemName:"...Other"},
+]
 modes:Item[]=[]
 filteredItemsClientType:Item[]=[
   {itemCode:"Customer",itemName:"Customer"},
@@ -31,7 +35,10 @@ filteredItemsClientType:Item[]=[
   {itemCode:"Staff",itemName:"Staff"},
 ]
 filteredItemsTranFor:Item[]=[]
-rctTypeList:Item[]=[]
+rctTypeList:Item[]=[
+  {itemCode:"Receipt",itemName:"Receipt"},
+  {itemCode:"Payment",itemName:"Payment"},
+]
 filteredpayMode:Item[]=[]
 providers:Item[]=[]
 providerTypes:Item[]=[]
@@ -158,7 +165,20 @@ private subSink!: SubSink;
      );
    }
   receiptTypeChange(mode:string){
+      if(mode =='rctForBooking'){
+         this.receiptsForm.get('mode')?.patchValue('Add');
+         this.receiptsForm.get('clientType')?.patchValue('Customer');
+         this.receiptsForm.get('tranFor')?.patchValue('BKG');
+         this.receiptsForm.get('rctType')?.patchValue('Receipt');
+         this.receiptsForm.get('rctMode')?.patchValue('OLTRF'
+         );
+      }
+      else if(mode =='paymentForExp'){
 
+      }
+      else[
+
+      ]
   }
   modeChange(mode:string){}
   clear(){}

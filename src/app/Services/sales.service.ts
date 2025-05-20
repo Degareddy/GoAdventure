@@ -39,6 +39,9 @@ export class SalesService {
   GetPackagesList(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetPackagesList', qtnDet)
   }
+   GetBookingDetails(qtnDet: any): Observable<any> {
+    return this.http.post(environment.Url + 'sales/GetBookingDetails', qtnDet)
+  }
  
   UpdatePackageDetails(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/UpdatePackageDetails', qtnDet)

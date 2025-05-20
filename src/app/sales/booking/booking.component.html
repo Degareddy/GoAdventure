@@ -149,11 +149,11 @@
             <div class="matfield">
                 <mat-form-field appearance="outline" style="width: 99%;">
                     <mat-label>Trip Id</mat-label>
-                    <input matInput type="text" placeholder="Batch Code" formControlName="batchCode"
+                    <input matInput type="text" placeholder="Batch Code" formControlName="tripId"
                      >
-                    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('batchCode')?.value"
+                    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('tripId')?.value"
                     tabindex="-1" 
-                    (click)="bookingForm.get('batchCode')?.reset()"
+                    (click)="bookingForm.get('tripId')?.reset()"
                        type="button">
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
