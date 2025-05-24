@@ -42,6 +42,11 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   props: Item[] = [];
   blocks: Item[] = [];
   flats: Item[] = [];
+  filteredItemsClientType:Item[]=[
+  {itemCode:"Customer",itemName:"Customer"},
+  {itemCode:"Vendor",itemName:"Vendor"},
+  {itemCode:"Staff",itemName:"Staff"},
+]
   columnDefs: any = [
     // { field: "propertyName", headerName: "Property", sortable: true, filter: true, resizable: true, width: 130 },
     // { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 100 },
@@ -126,15 +131,8 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
     this.masterParams.refNo = this.userDataService.userData.sessionID;
     this.searchName = this.data.search;
     this.SearchPartyForm.controls['name'].setValue(this.data.PartyName);
-    const propertyBody = this.createRequestData('PROPERTY');
-    this.subSink.sink = this.masterService.GetMasterItemsList(propertyBody).subscribe((res: any) => {
-      this.props = res.data;
-      if (this.props.length === 1) {
-        this.SearchPartyForm.get('property')!.setValue(this.props[0].itemCode);
-        this.onSelectedPropertyChanged();
-      }
-    });
-    this.loadData();
+  
+    // this.loadData();
     // this. search();
   }
 
@@ -151,9 +149,9 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   formInit() {
     return this.fb.group({
       name: [''],
-      property: ['All'],
-      block: ['All'],
-      flat: ['All'],
+      clientType: [''],
+      mobile: [''],
+      email: [''],
       isSummary: [false]
     });
   }
@@ -170,18 +168,14 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID,
-      property: this.SearchPartyForm.controls['property'].value,
-      block: this.SearchPartyForm.controls['block'].value,
-      unit: this.SearchPartyForm.controls['flat'].value,
       Client: this.SearchPartyForm.controls['name'].value,
-      isSummary: this.SearchPartyForm.controls['isSummary'].value,
       ClientType: this.data.PartyType,
-      Report:this.data.searchFor,
-      txnFor:this.data.txnFor
+      contact: this.SearchPartyForm.controls['mobile'].value,
+      mail: this.SearchPartyForm.controls['email'].value
     }
     try {
       this.loader.start();
-      this.subSink.sink = this.saleService.GetClientBalances(body).subscribe((res: any) => {
+      this.subSink.sink = this.saleService.GetPartySearchList(body).subscribe((res: any) => {
         this.loader.stop();
         if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
           this.textMessageClass = 'red';

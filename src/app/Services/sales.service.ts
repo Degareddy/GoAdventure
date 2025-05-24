@@ -29,7 +29,9 @@ export class SalesService {
   getQuotationDetails(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetQuotationDetails', qtnDet)
   }
-
+GetPartySearchList(doc: any): Observable<any> {
+    return this.http.post(environment.Url + 'MasterItems/GetPartySearchList', doc)
+  }
   GetQuotationReport(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetQuotationReport', qtnDet)
   }

@@ -265,8 +265,8 @@ private subSink!: SubSink;
           Report: 'CLIENTBAL'
         };
         try {
-          this.subSink.sink =  this.saleService.GetClientBalances(body).subscribe((res: any) => {
-            if (res.status.toUpperCase() === 'SUCCESS') {
+          // this.subSink.sink =  this.saleService.GetClientBalances(body).subscribe((res: any) => {
+            // if (res.status.toUpperCase() === 'SUCCESS') {
               // if (res && res.data && res.data.length === 1) {
               //   if (this.userDataService.userData.userID === res.data[0].clientCode && this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
               //     this.displayMessage("Error: You can't make payment to yourself.", "red");
@@ -293,7 +293,7 @@ private subSink!: SubSink;
                       PartyName: this.receiptsForm.controls['clientName'].value,
                       PartyType: this.receiptsForm.controls['clientType'].value.toUpperCase(),
                       search: this.receiptsForm.controls['clientType'].value + ' Search',
-                      serData: res.data,
+                      // serData: res.data,
                       searchFor:'CLIENTBAL',
                       txnFor: this.receiptsForm.controls['tranFor'].value || '',
                     },
@@ -302,7 +302,7 @@ private subSink!: SubSink;
                   dialogRef.afterClosed().subscribe((result) => {
                     // console.log(result);
                     if (result != true) {
-                      if (this.userDataService.userData.userID === res.data[0].clientCode && this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
+                      if (this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
                         this.displayMessage("Error: You can't make payment to yourself.", "red");
                         this.dialogOpen = false;
                         return;
@@ -330,10 +330,10 @@ private subSink!: SubSink;
                   });
                 }
               // }
-            } else {
-              this.displayMessage('No client balances available for this location!', 'red');
-            }
-          });
+            // } else {
+            //   this.displayMessage('No client balances available for this location!', 'red');
+            // }
+          // });
         } catch (ex: any) {
           this.displayMessage('Exception: ' + ex.message, 'red');
         }

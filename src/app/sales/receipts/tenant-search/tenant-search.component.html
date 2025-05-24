@@ -9,45 +9,36 @@
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="SearchPartyForm">
     <div class="row  justify-content-center">
-      <!-- <div class="col-2">
-        <mat-form-field appearance="outline">
-          <mat-label class="mat-label-class">Property</mat-label>
-          <mat-select formControlName="property" (selectionChange)="onSelectedPropertyChanged()">
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Client Type</mat-label>
+          <mat-select formControlName="clientType">
             <mat-option value="">--Select--</mat-option>
-            <mat-option value="All">All</mat-option>
-            <mat-option *ngFor="let x of props" [value]="x.itemCode">{{x.itemName}}</mat-option>
+            <mat-option *ngFor="let x of filteredItemsClientType" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-2">
-        <mat-form-field appearance="outline">
-          <mat-label class="mat-label-class">Block</mat-label>
-          <mat-select formControlName="block" (selectionChange)="onSelectedBlockChanged()">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option value="All">All</mat-option>
-            <mat-option *ngFor="let x of blocks" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-2">
-        <mat-form-field appearance="outline">
-          <mat-label class="mat-label-class">Flat</mat-label>
-          <mat-select formControlName="flat">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option value="All">All</mat-option>
-            <mat-option *ngFor="let x of flats" [value]="x.itemCode">{{x.itemName}}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div> -->
-      <div class="col-2">
+      <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
           <input matInput placeholder="Name" formControlName="name" type="text">
         </mat-form-field>
       </div>
-      <!-- <div class="col-2">
-        <mat-checkbox formControlName="isSummary">Summarize</mat-checkbox>
-      </div> -->
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>Mobile</mat-label>
+          <input matInput placeholder="mobile" formControlName="mobile" type="text">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline">
+          <mat-label>E Mail</mat-label>
+          <input matInput placeholder="E Mail" formControlName="email" type="text">
+        </mat-form-field>
+      </div>
+     
+
+     
     </div>
     <div class="btnAlignment">
       <button mat-raised-button color="primary" class="btnUp"
