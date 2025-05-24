@@ -48,9 +48,9 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   {itemCode:"Staff",itemName:"Staff"},
 ]
   columnDefs: any = [
-    // { field: "propertyName", headerName: "Property", sortable: true, filter: true, resizable: true, width: 130 },
-    // { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 100 },
-    // { field: "unit", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
+    { field: "partyName", headerName: "Name", sortable: true, filter: true, resizable: true, width: 130 },
+    { field: "phones", headerName: "Mobile", sortable: true, filter: true, resizable: true, width: 100 },
+    { field: "email", headerName: "Email", sortable: true, filter: true, resizable: true, width: 90 },
     // { field: "clientName", headerName: "Client Name", sortable: true, filter: true, resizable: true, width: 200 },
     // {
     //   field: "balAmount", headerName: "Bal Amount", sortable: true, resizable: true, width: 150, filter: 'agNumberColumnFilter', type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },

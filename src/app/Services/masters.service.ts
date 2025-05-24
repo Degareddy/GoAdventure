@@ -58,6 +58,7 @@ export class MastersService {
   GetMasterItemsList(body: any): Observable<getResponse> {
     return this.http.post<getResponse>(environment.Url + 'MasterItems/GetMasterItemsList/', body);
   }
+
   getCountriesList(body: any): Observable<getResponse> {
     return this.http.post<getResponse>(environment.Url + 'MasterItems/GetMasterItemsList/', body);
   }

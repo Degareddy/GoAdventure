@@ -28,8 +28,10 @@ export class ReceiptsPaymentsComponent implements OnInit {
 title:string="Receipts - Payments";
 receiptsForm!:FormGroup;
 retMessage:string="";
+balance:number=0
 textMessageClass:string="";
 tomorrow=new Date()
+selecTedClient:String=''
 receiptmodes:Item[]=[
   {itemCode:"rctForBooking",itemName:"Receipt for Booking"},
   {itemCode:"paymentForExp",itemName:"Payment for Expense"},
@@ -300,33 +302,11 @@ private subSink!: SubSink;
                   });
                   this.dialogOpen = true;
                   dialogRef.afterClosed().subscribe((result) => {
-                    // console.log(result);
-                    if (result != true) {
-                      if (this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
-                        this.displayMessage("Error: You can't make payment to yourself.", "red");
-                        this.dialogOpen = false;
-                        return;
-                      }
-                      this.receiptsForm.controls['customer'].patchValue(result.clientName);
-                      if (this.receiptsForm.controls['rctType'].value.toUpperCase() === "PAYMENT") {
-                        if (result.balAmount < 0) {
-                          const positiveBal = result.balAmount * -1;
-                          this.receiptsForm.controls['rctAmount'].patchValue(positiveBal.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
-                        }
-                        else {
-                          this.receiptsForm.controls['rctAmount'].patchValue(result.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
-                        }
-                      } else {
-                        this.receiptsForm.controls['rctAmount'].patchValue(result.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
-    
-                      }
-                      // this.supCode = result.clientCode;
-                      this.receiptsForm.controls['accname'].patchValue(result.clientName);
-                      this.receiptsForm.controls['paidCurrency'].patchValue(result.currency);
-                      this.receiptsForm.controls['currency'].patchValue(result.currency);
-                      // this.receiptAmount = result.balAmount;
-                    }
+                    console.log(result);
+                    this.selecTedClient = result.code;
+                    this.receiptsForm.controls['clientName'].patchValue(result.partyName);
                     this.dialogOpen = false;
+                    this.loadClientBal();
                   });
                 }
               // }
@@ -338,6 +318,27 @@ private subSink!: SubSink;
           this.displayMessage('Exception: ' + ex.message, 'red');
         }
   }
+  loadClientBal(){
+    const body=  {
+    company: this.userDataService.userData.company,
+    location:  this.userDataService.userData.location,
+   Client:this.selecTedClient,
+    user:  this.userDataService.userData.userID,
+    refNo:  this.userDataService.userData.sessionID,
+   
+    }
+    this.subSink.sink = this.saleService.GetClientBalance(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.balance = res.data.balance;
+           this.receiptsForm.get('rctAmount')?.patchValue(this.balance);
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
+    }
+  
   onSearchCilcked(){}
   tranDateChanged(){}
   formInit() {
