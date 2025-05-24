@@ -168,8 +168,8 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
       location: this.userDataService.userData.location,
       user: this.userDataService.userData.userID,
       refNo: this.userDataService.userData.sessionID,
-      Client: this.SearchPartyForm.controls['name'].value,
-      ClientType: this.data.PartyType,
+      PartyName: this.SearchPartyForm.controls['name'].value,
+      PartyType: this.SearchPartyForm.get('clientType')?.value,
       contact: this.SearchPartyForm.controls['mobile'].value,
       mail: this.SearchPartyForm.controls['email'].value
     }
