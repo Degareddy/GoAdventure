@@ -14,6 +14,8 @@ import { TextClr } from 'src/app/utils/enums';
 import { getPayload } from 'src/app/general/Interface/admin/admin';
 import { AdminService } from 'src/app/Services/admin.service';
 import { GeneralLedgerService } from 'src/app/Services/general-ledger.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { TenantSearchComponent } from '../receipts/tenant-search/tenant-search.component';
 
 
 @Component({
@@ -33,6 +35,7 @@ receiptmodes:Item[]=[
   {itemCode:"paymentForExp",itemName:"Payment for Expense"},
   {itemCode:"other",itemName:"...Other"},
 ]
+dialogOpen:boolean=false
 modes:Item[]=[]
 filteredItemsClientType:Item[]=[
   {itemCode:"Customer",itemName:"Customer"},
@@ -51,7 +54,9 @@ bank:Item[]=[]
 tranFor:Item[]=[]
 statusList:Item[]=[]
 private subSink!: SubSink;
-  constructor(private fb: FormBuilder , private location: Location, private userDataService:UserDataService,
+  constructor(private fb: FormBuilder , private location: Location, private userDataService:UserDataService,  
+      public dialog: MatDialog,
+
     private glService: GeneralLedgerService,
     private adminService: AdminService,
         private masterService: MastersService,
@@ -243,7 +248,96 @@ private subSink!: SubSink;
   close(){}
   PayModeChanged(){}
   onSelectionChangeClientType(){}
-  onSearchClientName(){{}}
+  onSearchClientName(){
+    
+        this.displayMessage("", "");
+        let clientTypeTemp = '';
+        
+        const body = {
+          ...this.commonParams(),
+          property: 'All',
+          block: 'All',
+          unit: 'All',
+          Client: this.receiptsForm.controls['clientName'].value || '',
+          ClientType: clientTypeTemp,
+          txnFor: this.receiptsForm.controls['tranFor'].value || '',
+          isSummary: false,
+          Report: 'CLIENTBAL'
+        };
+        try {
+          this.subSink.sink =  this.saleService.GetClientBalances(body).subscribe((res: any) => {
+            if (res.status.toUpperCase() === 'SUCCESS') {
+              // if (res && res.data && res.data.length === 1) {
+              //   if (this.userDataService.userData.userID === res.data[0].clientCode && this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
+              //     this.displayMessage("Error: You can't make payment to yourself.", "red");
+              //     return;
+              //   }
+              //   this.receiptsForm.controls['customer'].patchValue(res.data[0].clientName);
+              //   // this.supCode = res.data[0].clientCode;
+              //   this.receiptsForm.controls['accname'].patchValue(res.data[0].clientName);
+              //   this.receiptsForm.controls['currency'].patchValue(res.data[0].currency);
+              //   this.receiptsForm.controls['paidCurrency'].patchValue(res.data[0].currency);
+              //   // this.receiptAmount = res.data[0].balAmount;
+              //   const balAmount = res.data[0].balAmount;
+              //   const positiveAmount = Math.abs(balAmount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+    
+              //   this.receiptsForm.controls['rctAmount'].patchValue(positiveAmount || '0.00');
+    
+              // }
+              //  else {
+                if (!this.dialogOpen) {
+                  const dialogRef: MatDialogRef<TenantSearchComponent> = this.dialog.open(TenantSearchComponent, {
+                    width: '90%',
+                    disableClose: true,
+                    data: {
+                      PartyName: this.receiptsForm.controls['clientName'].value,
+                      PartyType: this.receiptsForm.controls['clientType'].value.toUpperCase(),
+                      search: this.receiptsForm.controls['clientType'].value + ' Search',
+                      serData: res.data,
+                      searchFor:'CLIENTBAL',
+                      txnFor: this.receiptsForm.controls['tranFor'].value || '',
+                    },
+                  });
+                  this.dialogOpen = true;
+                  dialogRef.afterClosed().subscribe((result) => {
+                    // console.log(result);
+                    if (result != true) {
+                      if (this.userDataService.userData.userID === res.data[0].clientCode && this.receiptsForm.controls['rctType'].value.toUpperCase() !== 'PAYMENT' && this.receiptsForm.controls['tranFor'].value.toUpperCase() !== 'EXPENSE') {
+                        this.displayMessage("Error: You can't make payment to yourself.", "red");
+                        this.dialogOpen = false;
+                        return;
+                      }
+                      this.receiptsForm.controls['customer'].patchValue(result.clientName);
+                      if (this.receiptsForm.controls['rctType'].value.toUpperCase() === "PAYMENT") {
+                        if (result.balAmount < 0) {
+                          const positiveBal = result.balAmount * -1;
+                          this.receiptsForm.controls['rctAmount'].patchValue(positiveBal.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
+                        }
+                        else {
+                          this.receiptsForm.controls['rctAmount'].patchValue(result.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
+                        }
+                      } else {
+                        this.receiptsForm.controls['rctAmount'].patchValue(result.balAmount.toLocaleString('en-US', { minimumFractionDigits: 2, }) || 0.0);
+    
+                      }
+                      // this.supCode = result.clientCode;
+                      this.receiptsForm.controls['accname'].patchValue(result.clientName);
+                      this.receiptsForm.controls['paidCurrency'].patchValue(result.currency);
+                      this.receiptsForm.controls['currency'].patchValue(result.currency);
+                      // this.receiptAmount = result.balAmount;
+                    }
+                    this.dialogOpen = false;
+                  });
+                }
+              // }
+            } else {
+              this.displayMessage('No client balances available for this location!', 'red');
+            }
+          });
+        } catch (ex: any) {
+          this.displayMessage('Exception: ' + ex.message, 'red');
+        }
+  }
   onSearchCilcked(){}
   tranDateChanged(){}
   formInit() {

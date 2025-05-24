@@ -43,36 +43,36 @@ export class TenantSearchComponent implements OnInit, OnDestroy {
   blocks: Item[] = [];
   flats: Item[] = [];
   columnDefs: any = [
-    { field: "propertyName", headerName: "Property", sortable: true, filter: true, resizable: true, width: 130 },
-    { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 100 },
-    { field: "unit", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
-    { field: "clientName", headerName: "Client Name", sortable: true, filter: true, resizable: true, width: 200 },
-    {
-      field: "balAmount", headerName: "Bal Amount", sortable: true, resizable: true, width: 150, filter: 'agNumberColumnFilter', type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },
-      valueFormatter: function (params: any) {
-        if (typeof params.value === 'number' || typeof params.value === 'string') {
-          const numericValue = parseFloat(params.value.toString());
-          if (!isNaN(numericValue)) {
-            return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
-          }
-        }
-        return null;
-      },
-    },
-    {
-      field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 150, valueFormatter: function (params: any) {
-        if (params.value) {
-          const date = new Date(params.value);
-          const day = date.getDate().toString().padStart(2, '0');
-          const month = (date.getMonth() + 1).toString().padStart(2, '0');
-          const year = date.getFullYear();
-          return `${day}-${month}-${year}`;
-        }
-        return null;
-      },
-    },
-    // { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true,  width:150 },
-    { field: "currency", headerName: "Currency", sortable: true, filter: true, resizable: true, width: 100 },
+    // { field: "propertyName", headerName: "Property", sortable: true, filter: true, resizable: true, width: 130 },
+    // { field: "blockName", headerName: "Block", sortable: true, filter: true, resizable: true, width: 100 },
+    // { field: "unit", headerName: "Unit", sortable: true, filter: true, resizable: true, width: 90 },
+    // { field: "clientName", headerName: "Client Name", sortable: true, filter: true, resizable: true, width: 200 },
+    // {
+    //   field: "balAmount", headerName: "Bal Amount", sortable: true, resizable: true, width: 150, filter: 'agNumberColumnFilter', type: 'rightAligned', cellStyle: { justifyContent: "flex-end" },
+    //   valueFormatter: function (params: any) {
+    //     if (typeof params.value === 'number' || typeof params.value === 'string') {
+    //       const numericValue = parseFloat(params.value.toString());
+    //       if (!isNaN(numericValue)) {
+    //         return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(numericValue);
+    //       }
+    //     }
+    //     return null;
+    //   },
+    // },
+    // {
+    //   field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 150, valueFormatter: function (params: any) {
+    //     if (params.value) {
+    //       const date = new Date(params.value);
+    //       const day = date.getDate().toString().padStart(2, '0');
+    //       const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    //       const year = date.getFullYear();
+    //       return `${day}-${month}-${year}`;
+    //     }
+    //     return null;
+    //   },
+    // },
+    // // { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true,  width:150 },
+    // { field: "currency", headerName: "Currency", sortable: true, filter: true, resizable: true, width: 100 },
 
 
 

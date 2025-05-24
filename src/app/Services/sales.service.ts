@@ -98,7 +98,7 @@ export class SalesService {
     return this.http.post<SaveApiResponse>(environment.Url + 'purchase/UpdatePaymentDetails', payCls)
   }
   GetClientBalances(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'sales/GetClientBalances', body)
+    return this.http.post(environment.Url + 'sales/GetClientBalance', body)
   }
 
 

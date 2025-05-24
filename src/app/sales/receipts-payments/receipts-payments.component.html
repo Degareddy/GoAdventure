@@ -348,7 +348,7 @@
           <button matSuffix mat-icon-button *ngIf="receiptsForm.get('clientName')!.value" (click)="receiptsForm.get('clientName')?.setValue('')" type="button">
             <mat-icon>clear</mat-icon>
           </button>
-          <button matSuffix mat-icon-button [disabled]="receiptsForm.get('mode')!.value == 'View' || receiptsForm.get('rctType')!.value == '' || receiptsForm.get('clientType')!.value == ''" (click)="onSearchClientName()" type="button">
+          <button matSuffix mat-icon-button [disabled]="receiptsForm.get('mode')!.value == 'View'" (click)="onSearchClientName()" type="button">
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>

@@ -9,7 +9,7 @@
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="SearchPartyForm">
     <div class="row  justify-content-center">
-      <div class="col-2">
+      <!-- <div class="col-2">
         <mat-form-field appearance="outline">
           <mat-label class="mat-label-class">Property</mat-label>
           <mat-select formControlName="property" (selectionChange)="onSelectedPropertyChanged()">
@@ -38,16 +38,16 @@
             <mat-option *ngFor="let x of flats" [value]="x.itemCode">{{x.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
+      </div> -->
       <div class="col-2">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
           <input matInput placeholder="Name" formControlName="name" type="text">
         </mat-form-field>
       </div>
-      <div class="col-2">
+      <!-- <div class="col-2">
         <mat-checkbox formControlName="isSummary">Summarize</mat-checkbox>
-      </div>
+      </div> -->
     </div>
     <div class="btnAlignment">
       <button mat-raised-button color="primary" class="btnUp"
