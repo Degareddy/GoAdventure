@@ -8,6 +8,34 @@
 
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="tranSearchForm">
+    <div *ngIf="searchName == 'Opening Balance Search'">
+    <div class="row  justify-content-center" style="margin-top: 8px;">
+        <div class="col-4">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label>Tran No</mat-label>
+                <input matInput placeholder="Btach No" formControlName="batchNo" type="text">
+              </mat-form-field>
+                    
+              </div>
+        <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">From Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="fromDate"  />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">To Date</mat-label>
+              <input matInput [matDatepicker]="picker2" formControlName="toDate"  />
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+          </div>
+</div>
+    </div>
+
     <div *ngIf="searchName == 'Booking Search'">
 <div class="row  justify-content-center" style="margin-top: 8px;">
       <div class="col-3">
@@ -66,7 +94,7 @@
           </div>
         </div>
   </div>
-    <div *ngIf="searchName != 'Booking Search'" class="row  justify-content-center" style="margin-top: 8px;">
+    <div *ngIf="searchName == 'Trip Search'" class="row  justify-content-center" style="margin-top: 8px;">
       <div class="col-4">
         
         <mat-form-field appearance="outline" >

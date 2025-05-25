@@ -31,8 +31,7 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
   patyTypeList: Item[] = [
     { itemCode: 'OPNBAL', itemName: 'Opening Balance' },
     { itemCode: 'LOANBAL', itemName: 'Loan Balance' },
-    { itemCode: 'UTILITY', itemName: 'Utility' },
-    { itemCode: 'RENTDPST', itemName: 'Rent Deposit' },
+    
   ];
   rowData: any = [];
   masterParams!: MasterParams;
@@ -273,13 +272,15 @@ export class OpeningBalancesComponent implements OnInit, OnDestroy {
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
               width: '90%',
               disableClose: true,
+              
               data: { 'tranNum': this.openingBalForm.controls['tranNo'].value, 'search': 'Opening Balance Search', 'TranType': "PARTYOPNBAL" }  // Pass any data you want to send to CustomerDetailsComponent
             });
             this.detdialogOpen = true;
             dialogRef.afterClosed().subscribe(result => {
               this.detdialogOpen = false;
               if (result != true && result != undefined) {
-                this.getOpeningBalalceHdr(result, this.openingBalForm.controls['mode'].value);
+                console.log(result.tranNo);
+                this.getOpeningBalalceHdr(result.tranNo, this.openingBalForm.controls['mode'].value);
               }
 
             });

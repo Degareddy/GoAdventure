@@ -61,7 +61,8 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
   { field: "city", headerName: "City", sortable: true, filter: true, resizable: true, width: 130 },
   { field: "province", headerName: "Province", sortable: true, filter: true, resizable: true, width: 120 },
   { field: "email", headerName: "Email", sortable: true, filter: true, resizable: true, width: 180 },
-  { field: "accountStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 100 }
+  { field: "accountStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 100 },
+  { field: "accountName", headerName: "Name", sortable: true, filter: true, resizable: true, width: 100 }
   ];
 
   constructor(private fb: FormBuilder,private utlService: UtilitiesService, public dialog: MatDialog,  private loaderService: NgxUiLoaderService,private glService: GeneralLedgerService,
@@ -95,6 +96,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
   formInit() {
     return this.fb.group({
       accNo: ['', [Validators.required, Validators.maxLength(15)]],
+      accountName:-['', [Validators.required, Validators.maxLength(50)]],
       currency: ['', [Validators.required, Validators.maxLength(20)]],
       branchCode: ['', [Validators.required, Validators.maxLength(10)]],
       branchName: ['', [Validators.required, Validators.maxLength(50)]],
@@ -246,6 +248,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
     this.bankAccCls.accountStatus = this.accStatus;
     this.bankAccCls.notes = this.bankAccountForm.controls['notes'].value;
     this.bankAccCls.email = this.bankAccountForm.controls['email'].value;
+    this.bankAccCls.accountName=this.bankAccountForm.controls['accountName'].value;
     // this.bankAccCls.signerName=this.bankAccountForm.controls['user'].value;
   }
   clearMsg() {

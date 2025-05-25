@@ -199,21 +199,21 @@ export class PurchaseService {
   }
 
   UpdatePartyOpeningBalancesHeader(opBalances: OpeningBalancesClass): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'property/UpdatePartyOpeningBalancesHeader', opBalances)
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdatePartyOpeningBalancesHeader', opBalances)
   }
 
 
   UpdatePartyOpeningBalanceDetails(opBalances: OpeningBalDetailCls): Observable<SaveApiResponse> {
-    return this.http.post<SaveApiResponse>(environment.Url + 'property/UpdatePartyOpeningBalanceDetails', opBalances)
+    return this.http.post<SaveApiResponse>(environment.Url + 'sales/UpdatePartyOpeningBalanceDetails', opBalances)
   }
 
 
   GetPartyOpeningBalancesHdr(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'property/GetPartyOpeningBalancesHdr', body)
+    return this.http.post(environment.Url + 'sales/GetPartyOpeningBalancesHdr', body)
   }
 
   GetPartyOpeningBalanceDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'property/GetPartyOpeningBalanceDetails', body)
+    return this.http.post(environment.Url + 'sales/GetPartyOpeningBalanceDetails', body)
   }
 
 

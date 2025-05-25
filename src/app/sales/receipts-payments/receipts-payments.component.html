@@ -286,7 +286,7 @@
       <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Tran Type</mat-label>
-          <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
+          <mat-select formControlName="rctType" >
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
@@ -332,7 +332,7 @@
 
     <!-- Row 2: Client Info -->
     <div class="row myCustomClass">
-      <div class="col-md-4">
+      <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Client Type</mat-label>
           <mat-select formControlName="clientType">
@@ -341,7 +341,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Client Name</mat-label>
           <input matInput type="text" placeholder="Client Name" formControlName="clientName" />
@@ -353,12 +353,21 @@
           </button>
         </mat-form-field>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Tran For</mat-label>
           <mat-select formControlName="tranFor" (selectionChange)="onSelectionChangeClientType()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of filteredItemsTranFor" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Pay Mode</mat-label>
+          <mat-select formControlName="rctMode" (selectionChange)="PayModeChanged()">
+            <mat-option value="">--Select--</mat-option>
+            <mat-option *ngFor="let x of filteredpayMode" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -375,22 +384,26 @@
 
     <!-- Row 3: Pay Info -->
     <div class="row myCustomClass">
-      <div class="col-md-4">
+      
+      <div class="col-md-3">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Pay Mode</mat-label>
-          <mat-select formControlName="rctMode" (selectionChange)="PayModeChanged()">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option *ngFor="let x of filteredpayMode" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-md-4">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Amount</mat-label>
+          <mat-label>Tran Amount</mat-label>
           <input matInput placeholder="Amount" class="right-align-input" formControlName="rctAmount" type="number" appNumberFormat separator />
         </mat-form-field>
       </div>
-      <div class="col-md-4 d-flex align-items-center">
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Charges</mat-label>
+          <input matInput placeholder="Charges" class="right-align-input" formControlName="charges" type="number" appNumberFormat separator />
+        </mat-form-field>
+      </div>
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Total</mat-label>
+          <input matInput placeholder="tOTAL" class="right-align-input" formControlName="total" type="number" appNumberFormat separator />
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 d-flex align-items-center">
         <mat-checkbox formControlName="recurring"></mat-checkbox> <label class="ml-2">Recurring</label>
 
       </div>
@@ -411,7 +424,7 @@
                   <div class="col-6">
             <mat-form-field appearance="outline">
               <mat-label>Provider Type</mat-label>
-              <mat-select formControlName="providerType" (onselectionChange) = "onSelectionChangeProviderType()">
+              <mat-select formControlName="providerType" (selectionChange)="banktypeChange('provider','providerType')">
                                                       <mat-option value="">--Select--</mat-option>
 
                 <mat-option *ngFor="let item of providerTypes" [value]="item.itemCode">{{ item.itemName }}</mat-option>
@@ -496,7 +509,7 @@
                   <div class="col-12">
                     <mat-form-field appearance="outline" class="w-full">
                       <mat-label>Provider Type</mat-label>
-                      <mat-select formControlName="accountProviderType" (selectionChange)="banktypeChange()">
+                      <mat-select formControlName="accountProviderType" (selectionChange)="banktypeChange('accountProvider','accountProviderType')">
                                         <mat-option value="">--Select--</mat-option>
                         <mat-option *ngFor="let item of providerTypes" [value]="item.itemCode">{{ item.itemName }}</mat-option>
                       </mat-select>
@@ -513,17 +526,21 @@
                       </mat-select>
                     </mat-form-field>
                   </div>
-                  <div class="col-12">
+                   <div class="col-12">
                     <mat-form-field appearance="outline" class="w-full">
-                      <mat-label>Account No</mat-label>
-                      <input matInput formControlName="accountNo" />
+                       <mat-label>Account No</mat-label>
+              <mat-select formControlName="CustaccountNo">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let item of accountNosCmp" [value]="item.itemCode">{{ item.itemName }}</mat-option>
+              </mat-select>
                     </mat-form-field>
                   </div>
+          >
                 </div>
               </mat-card-content>
               <div class="flex justify-center mt-0.1">
       <button mat-raised-button color="primary" class="btnUp" type="submit"
-        [disabled]="receiptsForm.get('mode')!.value === 'View' || receiptsForm.invalid">
+        [disabled]="isSubmitBtn()">
         <mat-icon>done</mat-icon> Apply
         
       </button>

@@ -94,6 +94,7 @@ export class ExpenseDet {
 
 export class bankAccountDetails {
   public signAuthority!:string;
+  public accountName!:string
   public Company!: string
   public Location!: string
   public langID!: number

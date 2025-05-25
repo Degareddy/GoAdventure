@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Item } from 'src/app/general/Interface/interface';
 import { Location } from '@angular/common';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -28,10 +28,13 @@ export class ReceiptsPaymentsComponent implements OnInit {
 title:string="Receipts - Payments";
 receiptsForm!:FormGroup;
 retMessage:string="";
+submitButton:boolean=false
 balance:number=0
 textMessageClass:string="";
 tomorrow=new Date()
 selecTedClient:String=''
+accountNosCmp:Item[]=[]
+// accountNosClient:Item[]=[]
 receiptmodes:Item[]=[
   {itemCode:"rctForBooking",itemName:"Receipt for Booking"},
   {itemCode:"paymentForExp",itemName:"Payment for Expense"},
@@ -157,12 +160,12 @@ private subSink!: SubSink;
       refNo: this.userDataService.userData.sessionID,
     };
   }
-  banktypeChange(){
+  banktypeChange(name:any,name2:any){
     this.displayMessage('','');
   const body=  {
     company: this.userDataService.userData.company,
     location:  this.userDataService.userData.location,
-    Type:this.receiptsForm.get('accountProviderType')!.value,
+    Type:this.receiptsForm.get(name2)!.value,
     user:  this.userDataService.userData.userID,
     refNo:  this.userDataService.userData.sessionID,
     
@@ -176,7 +179,7 @@ private subSink!: SubSink;
               itemName: bank.bankName
             }));
             if(this.providers.length === 1){
-              this.receiptsForm.get('accountProvider')!.patchValue(this.providers[0].itemCode);
+              this.receiptsForm.get(name)!.patchValue(this.providers[0].itemCode);
               this.loadBankAccountNumber();
             }
           }
@@ -205,6 +208,7 @@ private subSink!: SubSink;
     this.subSink.sink = this.masterService.GetCascadingMasterItemsList(body).subscribe((res: any) => {
       this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.accountNosCmp=res.data;
             // this.providerTypes = res['data'];
             // if (this.providerTypes.length === 1) {
             //   this.receiptsForm.get('typeName')!.patchValue(this.providerTypes[0].itemCode);
@@ -353,6 +357,32 @@ private subSink!: SubSink;
   clear(){}
   close(){}
   PayModeChanged(){}
+  onSelectionChangetranType(){
+    if(this.receiptsForm.get('rctType')?.value===''){
+      this.submitButton=true
+    }
+      if(this.receiptsForm.get('mode')?.value==='View'){
+      this.submitButton=true
+    }
+      if(this.receiptsForm.get('clientType')?.value===''){
+      this.submitButton=true
+    }
+      if(this.selecTedClient == ''){
+      this.submitButton=true
+    }
+      if(this.receiptsForm.get('tran')?.value===''){
+      this.submitButton=true
+    }
+    else{
+      this.submitButton=false
+    }
+  }
+  isSubmitBtn():boolean{
+    if(this.receiptsForm.get('rctType')?.value!==''){
+      return true
+    }
+    return false;
+  }
   onSelectionChangeClientType(){}
   onSearchClientName(){
     
@@ -470,7 +500,9 @@ private subSink!: SubSink;
 accountNo:[''],
   accountProviderType: [''],
   accountProvider: [''],
-  CustaccountNo: ['']
+  CustaccountNo: [''],
+  charges:[0],
+  total:[0]
     });
     }
   goBack(): void {

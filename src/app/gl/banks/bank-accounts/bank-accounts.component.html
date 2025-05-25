@@ -19,6 +19,12 @@
       </div>
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label class="mat-label-class">Name</mat-label>
+          <input type="text" matInput placeholder="Name" #input formControlName="accountName">
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Currency</mat-label>
           <mat-select matInput placeholder="Currency" formControlName="currency">
             <mat-option value="">--Select--</mat-option>

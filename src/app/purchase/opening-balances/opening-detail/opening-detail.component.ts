@@ -79,9 +79,9 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
 
 
   clientTypeList: Item[] = [
-    { itemCode: 'TENANT', itemName: 'Tenant' },
-    // { itemCode: 'STAFF', itemName: 'Staff' },
-    { itemCode: 'LANDLORD', itemName: 'Landlord' },
+    { itemCode: 'Customer', itemName: 'Customer' },
+    { itemCode: 'Vendor', itemName: 'Vendor' },
+    { itemCode: 'Staff', itemName: 'Staff' },
     // { itemCode: 'VENDOR', itemName: 'Vendor' },
     // { itemCode: 'CUSTOMER', itemName: 'Customer' },
     // { itemCode: 'SUPPLIER', itemName: 'Supplier' },
@@ -109,7 +109,6 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
     }
   }
   loadData() {
-    this.getProperty();
     const body = {
       ...this.commonParams(),
       langId: this.userDataService.userData.langId,
@@ -169,35 +168,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       }
       }
   }
-  getProperty(){
-    const propertyBody ={...this.createRequestData('PROPERTY'),mode:this.data.mode};
-      try {
-
-        const property$ = this.masterService.GetMasterItemsList(propertyBody);
-
-        this.subSink.sink = forkJoin([property$]).subscribe(
-          ([ propertyRes]: any) => {
-
-            if (propertyRes.status.toUpperCase() === "SUCCESS") {
-              this.props = propertyRes.data;
-              if (this.props.length === 1) {
-                this.openinBalDetForm.controls['property'].patchValue(this.props[0].itemCode);
-                this.onSelectedPropertyChanged();
-              }
-            }
-            else {
-              this.retMessage = "Properties list empty!";
-              this.textMessageClass = "red";
-            }
-          },
-          error => {
-            this.displayMessage("Exception: " + error.message, "red");
-          }
-        );
-      } catch (ex: any) {
-        this.displayMessage("Exception: " + ex, "red");
-      }
-  }
+  
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
     this.textMessageClass = cssClass;
@@ -485,22 +456,10 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
       this.displayMessage("Enter all required fields", 'red');
       return;
     }
-    else {
+   
       this.prepareOneCls();
-      if(this.data.balType === 'RENTDPST'){
-        if(this.openingDetCls.partyType === 'LANDLORD'){
-          if(this.openingDetCls.balAmount < 0){
-            this.displayMessage("Negative amount not allowed for landlord for rent Deposit", 'red');
-            return;
-          }
-        }
-        else if(this.openingDetCls.partyType === 'TENANT'){
-          if(this.openingDetCls.balAmount > 0){
-            this.displayMessage("Positive amount not allowed for tenant for rent Deposit", 'red');
-            return;
-          }
-        }
-      }
+     
+      
       this.loader.start();
       
       
@@ -524,7 +483,7 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
 
     }
 
-  }
+
   onfileSubmit() {
     if (this.openinBalDetForm.invalid) {
       this.openinBalDetForm.markAllAsTouched();
@@ -589,9 +548,9 @@ export class OpeningDetailComponent implements OnInit, OnDestroy {
   formInit() {
     return this.fb.group({
       // partyType: ['', Validators.required],
-      property: ['', Validators.required],
-      block: ['', Validators.required],
-      flat: ['', Validators.required],
+      property: [''],
+      block: [''],
+      flat: [''],
       partyName: ['', Validators.required],
       balAmount: ['0.00', Validators.required],
       currency: ['', Validators.required],

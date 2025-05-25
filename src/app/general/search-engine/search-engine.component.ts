@@ -176,7 +176,7 @@ packageTypes:Item[]=[]
                 this.loadTripList();
 
     }
-    else{
+    else if(this.data.search === "Trip Search"){
           this.loadTripList();
     }
     this.searchName = this.data.search;
@@ -187,6 +187,25 @@ packageTypes:Item[]=[]
     { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90 },
     { field: "clientName", headerName: "Client Name", sortable: true, filter: true, resizable: true, width: 90 },
     { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 90 },
+    {
+    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+]
+}
+else if(this.data.search == 'Opening Balance Search'){
+  this.columnDefs= [{ field: "slNo", headerName: "S.No", width: 80 },
+    { field: "tranNo", headerName: "Tran No ", sortable: true, filter: true, resizable: true, width: 90 },
+    
     {
     field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
     valueFormatter: function (params: any) {
@@ -365,6 +384,40 @@ onRowSelected(event: any) {
     //     this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
     //   }
     // }
+    else if(this.data.search  == 'Opening Balance Search'){
+         const body = {
+      SearchFor:"OPNBAL",
+      TranNo:this.tranSearchForm.get('batchNo')?.value,
+      FirstPara:this.tranSearchForm.get('packageType')?.value,
+      SecondPara:this.tranSearchForm.get('clientName')?.value,
+      ThirdPara:this.tranSearchForm.get('phoneNo')?.value,
+      FourthPara:this.tranSearchForm.get('email')?.value,
+      FirstDate:this.tranSearchForm.get('fromDate')?.value,
+      SecondDate:this.tranSearchForm.get('toDate')?.value,
+        ...this.commonParams(),
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink = await this.masterService.GetTranSearch(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.calculateTotal(this.rowData);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
+    }
     else {
       
       const body = {
