@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Item } from 'src/app/general/Interface/interface';
-import { Location } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { UserDataService } from 'src/app/Services/user-data.service';
 import { SalesService } from 'src/app/Services/sales.service';
 import { SubSink } from 'subsink';
-import { forkJoin } from 'rxjs';
+import { combineLatest, forkJoin, startWith } from 'rxjs';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { ToastrService } from 'ngx-toastr';
 import { MastersService } from 'src/app/Services/masters.service';
@@ -16,6 +16,9 @@ import { AdminService } from 'src/app/Services/admin.service';
 import { GeneralLedgerService } from 'src/app/Services/general-ledger.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TenantSearchComponent } from '../receipts/tenant-search/tenant-search.component';
+import { Router } from '@angular/router';
+import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
+import { dateFormat } from '../sales.class';
 
 
 @Component({
@@ -53,21 +56,26 @@ rctTypeList:Item[]=[
   {itemCode:"Payment",itemName:"Payment"},
 ]
 filteredpayMode:Item[]=[]
-providers:Item[]=[]
+dateFormat!:dateFormat
+clinentProviders:Item[]=[]
+companyProviders:Item[]=[]
 providerTypes:Item[]=[]
 bank:Item[]=[]
 tranFor:Item[]=[]
-statusList:Item[]=[]
+statusList:Item[]=[
+  {itemCode:"Pending",itemName:"Pending"},
+  {itemCode:"Paid",itemName:"Paid"},
+]
 private subSink!: SubSink;
-  constructor(private fb: FormBuilder , private location: Location, private userDataService:UserDataService,  
-      public dialog: MatDialog,
+  constructor(private fb: FormBuilder , private location: Location, private userDataService:UserDataService,protected router: Router  
+     , public dialog: MatDialog,
 
     private glService: GeneralLedgerService,
     private adminService: AdminService,
         private masterService: MastersService,
     
     private toaster: ToastrService,
-  
+  private datePipe: DatePipe,
     private loader: NgxUiLoaderService,
   
 
@@ -75,6 +83,7 @@ private subSink!: SubSink;
   ) { 
     this.receiptsForm=this.formInit()
         this.subSink = new SubSink();
+        this.dateFormat=new dateFormat(datePipe);  
     
   }
 
@@ -97,8 +106,17 @@ private subSink!: SubSink;
       this.displayMessage("Error " + ex.message, 'red');
     }
     this.loadData();
+   combineLatest([
+      this.receiptsForm.get('rctAmount')!.valueChanges.pipe(startWith(0)),
+      this.receiptsForm.get('charges')!.valueChanges.pipe(startWith(0))
+    ]).subscribe(() => {
+      this.calculateTotal();
+    });
+
+    this.calculateTotal();
   }
   onSubmit(){
+    this.displayMessage('','');
       const body={
 
         Mode:this.receiptsForm.get('mode')?.value,
@@ -120,7 +138,7 @@ private subSink!: SubSink;
         ClientBankRefDate:this.receiptsForm.get('refDate')?.value,
         OtherFirstRefNo:this.receiptsForm.get('otherRef1')?.value,
         OtherSecondRefNo:this.receiptsForm.get('otherRef2')?.value,
-        OtherRefDate:this.receiptsForm.get('holder')?.value,
+        OtherRefDate:new Date(),
         ClientTranStatus:this.receiptsForm.get('status')?.value,
         TxnBank:this.receiptsForm.get('accountProvider')?.value,
         TxnAccount:this.receiptsForm.get('accountNo')?.value,
@@ -129,7 +147,7 @@ private subSink!: SubSink;
         TranFor:this.receiptsForm.get('tranFor')?.value,
         TranAmount:this.receiptsForm.get('rctAmount')?.value,
         TranBy:this.userDataService.userData.userID,
-        TranAt:this.userDataService.userData.location,
+        TranAt:new Date(),
         // AllottedAmount:this.receiptsForm.get()?.value,
         PaidCurrency:"INR",
         PaidExchRate:1.00,
@@ -141,7 +159,9 @@ private subSink!: SubSink;
       }
       this.subSink.sink = this.saleService.UpdateReceiptsAndPayments(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-           
+           this.receiptsForm.get('mode')?.patchValue('Modify');
+           this.receiptsForm.get('tranNo')?.patchValue(res.tranNoNew);
+           this.displayMessage(res.message,TextClr.green);
           }
           else {
             this.displayMessage(res.message + " for types list!", TextClr.red);
@@ -174,14 +194,28 @@ private subSink!: SubSink;
     this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
        this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-            this.providers = res.data.map((bank: any) => ({
+            this.displayMessage(res.message,TextClr.green);
+            if(name === 'provider' && name2 ==="providerType"){
+              this.clinentProviders = res.data.map((bank: any) => ({
               itemCode: bank.code,
               itemName: bank.bankName
             }));
-            if(this.providers.length === 1){
-              this.receiptsForm.get(name)!.patchValue(this.providers[0].itemCode);
+            if(this.clinentProviders.length === 2){
+              this.receiptsForm.get(name)!.patchValue(this.clinentProviders[1].itemCode);
+              // this.loadBankAccountNumber();
+            }
+            }
+            else if(name === 'accountProvider' && name2 ==="accountProviderType" ){
+              this.companyProviders = res.data.map((bank: any) => ({
+              itemCode: bank.code,
+              itemName: bank.bankName
+            }));
+            if(this.clinentProviders.length === 2){
+              this.receiptsForm.get(name)!.patchValue(this.clinentProviders[1].itemCode);
               this.loadBankAccountNumber();
             }
+            }
+            
           }
           else {
             this.displayMessage(res.message + " for types list!", TextClr.red);
@@ -194,6 +228,7 @@ private subSink!: SubSink;
     this.textMessageClass = cssClass;
   }
   loadBankAccountNumber(){
+    this.displayMessage('','');
     const body={
       Mode:this.receiptsForm.get('mode')?.value,
       Company:this.userDataService.userData.company,
@@ -208,6 +243,7 @@ private subSink!: SubSink;
     this.subSink.sink = this.masterService.GetCascadingMasterItemsList(body).subscribe((res: any) => {
       this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(res.message,TextClr.green);
             this.accountNosCmp=res.data;
             // this.providerTypes = res['data'];
             // if (this.providerTypes.length === 1) {
@@ -304,26 +340,27 @@ private subSink!: SubSink;
 
       ]
   }
-  loadProviderSubTypes() {
-      const bankbody: getPayload = {
-        ...this.commonParams(),
-        item: "BANK",
-        mode:this.receiptsForm.get('mode')?.value
-      };
+  // loadProviderSubTypes() {
+  //     const bankbody: getPayload = {
+  //       ...this.commonParams(),
+  //       item: "BANK",
+  //       mode:this.receiptsForm.get('mode')?.value
+  //     };
       
-      const service1 = this.adminService.GetMasterItemsList(bankbody);
-      this.subSink.sink = forkJoin([service1]).subscribe(
-        (results: any[]) => {
-          this.loader.stop();
-          const res1 = results[0];
-          this.providers = res1.data;
-        },
-        (error: any) => {
-          this.loader.stop();
-        }
-      );
-    }
+  //     const service1 = this.adminService.GetMasterItemsList(bankbody);
+  //     this.subSink.sink = forkJoin([service1]).subscribe(
+  //       (results: any[]) => {
+  //         this.loader.stop();
+  //         const res1 = results[0];
+  //         this.providers = res1.data;
+  //       },
+  //       (error: any) => {
+  //         this.loader.stop();
+  //       }
+  //     );
+  //   }
   loadBankTypes(){
+    this.displayMessage('','')
     const body=  {
     company: this.userDataService.userData.company,
     location:  this.userDataService.userData.location,
@@ -341,6 +378,7 @@ private subSink!: SubSink;
     }
     this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(res.message,TextClr.green);
             this.providerTypes = res['data'];
             if (this.providerTypes.length === 1) {
               this.receiptsForm.get('typeName')!.patchValue(this.providerTypes[0].itemCode);
@@ -354,8 +392,13 @@ private subSink!: SubSink;
         });
     }
   modeChange(mode:string){}
-  clear(){}
-  close(){}
+  clear(){
+    this.receiptsForm = this.formInit()
+  }
+  close(){
+        this.router.navigateByUrl('/home');
+
+  }
   PayModeChanged(){}
   onSelectionChangetranType(){
     if(this.receiptsForm.get('rctType')?.value===''){
@@ -378,10 +421,37 @@ private subSink!: SubSink;
     }
   }
   isSubmitBtn():boolean{
-    if(this.receiptsForm.get('rctType')?.value!==''){
+    if(this.receiptsForm.get('rctType')?.value ===''){
+      return true
+    }
+    if(this.receiptsForm.get('clientType')?.value ===''){
+      return true
+    }
+    if(this.selecTedClient ===''){
+      return true
+    }
+    if(this.receiptsForm.get('tranFor')?.value ===''){
+      return true
+    }
+    if(this.receiptsForm.get('rctMode')?.value ===''){
+      return true
+    }
+    if(this.receiptsForm.get('rctMode')?.value ===''){
       return true
     }
     return false;
+  }
+  calculateTotal() {
+    const amount = Number(this.receiptsForm.get('rctAmount')?.value) || 0;
+    const charges = Number(this.receiptsForm.get('charges')?.value) || 0;
+    const total = amount + charges;
+    
+    this.receiptsForm.get('total')?.setValue(total);
+  }
+
+  // Format number for display only
+  formatNumber(value: number): string {
+    return new Intl.NumberFormat('en-IN').format(value);
   }
   onSelectionChangeClientType(){}
   onSearchClientName(){
@@ -432,6 +502,7 @@ private subSink!: SubSink;
                       // serData: res.data,
                       searchFor:'CLIENTBAL',
                       txnFor: this.receiptsForm.controls['tranFor'].value || '',
+                      clientType: this.receiptsForm.controls['clientType'].value
                     },
                   });
                   this.dialogOpen = true;
@@ -473,7 +544,59 @@ private subSink!: SubSink;
         });
     }
   
-  onSearchCilcked(){}
+  onSearchCilcked(){
+    try {
+         
+          
+                if (!this.dialogOpen) {
+                  this.dialogOpen = true;
+                  const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
+                    width: '90%',
+                    disableClose: true,
+                    data: {
+                      'tranNum':'',
+                      'search': 'Receipt/Payment Search'
+                    }
+                  });
+    
+                  dialogRef.afterClosed().subscribe(result => {
+                    this.dialogOpen = false;
+                    if (result != true) {
+                      this.receiptsForm.get('tranNo')?.patchValue(result.tranNo);
+                      this.selecTedClient=result.client
+                      this.receiptsForm.get('clientName')?.patchValue(result.clientName);
+                      this.receiptsForm.get('tranDate')?.patchValue(this.dateFormat.formatDate(result.tranDate));
+                     this.getTranNoData(); 
+                    }
+                  });
+                }
+        }       
+    
+        catch (ex: any) {
+          this.retMessage = "Exception " + ex.message;
+          this.textMessageClass = 'red';
+        }
+  }
+  getTranNoData(){
+    const body={
+      Company:this.userDataService.userData.company,
+      Location:this.userDataService.userData.location,
+      TranNo:this.receiptsForm.get('tranNo')?.value,
+      User:this.userDataService.userData.userID,
+      RefNo:this.userDataService.userData.sessionID,
+    }
+    this.subSink.sink = this.saleService.GetReceiptPaymentsDetails(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.displayMessage(res.message,TextClr.green);
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
+    }
+  
+  
   tranDateChanged(){}
   formInit() {
     return this.fb.group({
@@ -491,44 +614,44 @@ private subSink!: SubSink;
       providerType: [''],
   provider: [''],
   refNo: [''],
-  refDate: [''],
+  refDate: [new Date()],
   otherRef1: [''],
   otherRefDate1: [''],
   otherRef2: [''],
-  status: [''],
+  status: ['Paid'],
  holder:[''], 
 accountNo:[''],
   accountProviderType: [''],
   accountProvider: [''],
   CustaccountNo: [''],
   charges:[0],
-  total:[0]
+  total:[0,{disabled: true}],
     });
     }
   goBack(): void {
     this.location.back();
   }
-  onSelectionChangeProviderType(){
-    const body=  {
-  company: this.userDataService.userData.company,
-  location:  this.userDataService.userData.location,
-  Type:this.receiptsForm.get('providerType')!.value,
-  user:  this.userDataService.userData.userID,
-  refNo:  this.userDataService.userData.sessionID,
+  // onSelectionChangeProviderType(){
+  //   const body=  {
+  // company: this.userDataService.userData.company,
+  // location:  this.userDataService.userData.location,
+  // Type:this.receiptsForm.get('providerType')!.value,
+  // user:  this.userDataService.userData.userID,
+  // refNo:  this.userDataService.userData.sessionID,
   
-  }
-  this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
-        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-          this.providers = res['data'];
-          if (this.providers.length === 1) {
-            this.receiptsForm.get('provider')!.patchValue(this.providers[0].itemCode);
-            // this.onSelectedTypeChanged()
-          }
-        }
-        else {
-          this.displayMessage(res.message + " for types list!", TextClr.red);
-        }
+  // }
+  // this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
+  //       if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+  //         this.providers = res['data'];
+  //         if (this.providers.length === 1) {
+  //           this.receiptsForm.get('provider')!.patchValue(this.providers[0].itemCode);
+  //           // this.onSelectedTypeChanged()
+  //         }
+  //       }
+  //       else {
+  //         this.displayMessage(res.message + " for types list!", TextClr.red);
+  //       }
   
-      });
-  }
+  //     });
+  // }
 }

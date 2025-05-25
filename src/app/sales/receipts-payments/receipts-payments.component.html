@@ -385,24 +385,31 @@
     <!-- Row 3: Pay Info -->
     <div class="row myCustomClass">
       
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tran Amount</mat-label>
-          <input matInput placeholder="Amount" class="right-align-input" formControlName="rctAmount" type="number" appNumberFormat separator />
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Charges</mat-label>
-          <input matInput placeholder="Charges" class="right-align-input" formControlName="charges" type="number" appNumberFormat separator />
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Total</mat-label>
-          <input matInput placeholder="tOTAL" class="right-align-input" formControlName="total" type="number" appNumberFormat separator />
-        </mat-form-field>
-      </div>
+     <div class="col-md-3">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Tran Amount</mat-label>
+    <input matInput placeholder="Amount" class="right-align-input" 
+           formControlName="rctAmount" type="number" />
+  </mat-form-field>
+</div>
+
+<div class="col-md-3">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Charges</mat-label>
+    <input matInput placeholder="Charges" class="right-align-input" 
+           formControlName="charges" type="number" />
+  </mat-form-field>
+</div>
+
+<div class="col-md-3">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Total</mat-label>
+    <input matInput placeholder="Total" class="right-align-input" 
+           formControlName="total" type="text" 
+           [value]="receiptsForm.get('total')?.value | currency:'INR':'symbol':'1.2-2'" 
+           readonly />
+  </mat-form-field>
+</div>
       <div class="col-md-3 d-flex align-items-center">
         <mat-checkbox formControlName="recurring"></mat-checkbox> <label class="ml-2">Recurring</label>
 
@@ -435,7 +442,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Provider</mat-label>
               <mat-select formControlName="provider">
-                <mat-option *ngFor="let item of providers" [value]="item.itemCode">{{ item.itemName }}</mat-option>
+                <mat-option *ngFor="let item of clinentProviders" [value]="item.itemCode">{{ item.itemName }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -522,7 +529,7 @@
                       <mat-select formControlName="accountProvider" (selectionChange)="loadBankAccountNumber()">
                                                               <mat-option value="">--Select--</mat-option>
 
-                        <mat-option *ngFor="let item of providers" [value]="item.itemCode">{{ item.itemName }}</mat-option>
+                        <mat-option *ngFor="let item of companyProviders" [value]="item.itemCode">{{ item.itemName }}</mat-option>
                       </mat-select>
                     </mat-form-field>
                   </div>
@@ -535,7 +542,6 @@
               </mat-select>
                     </mat-form-field>
                   </div>
-          >
                 </div>
               </mat-card-content>
               <div class="flex justify-center mt-0.1">
@@ -558,5 +564,7 @@
         </div>
       </div>
     </form>
+        <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+
   </div>
 </div>

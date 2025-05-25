@@ -8,7 +8,57 @@
 
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="tranSearchForm">
-    <div *ngIf="searchName == 'Opening Balance Search'">
+    <div *ngIf=" searchName == 'Receipt/Payment Search'">
+    <div class="row  justify-content-center" style="margin-top: 8px;">
+        <div class="col-4">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label>Tran No</mat-label>
+                <input matInput placeholder="Btach No" formControlName="batchNo" type="text">
+              </mat-form-field>
+                    
+              </div>
+        <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">From Date</mat-label>
+              <input matInput [matDatepicker]="picker1" formControlName="fromDate"  />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-4">
+            <mat-form-field appearance="outline" class="mat-mode">
+              <mat-label class="mat-label-class">To Date</mat-label>
+              <input matInput [matDatepicker]="picker2" formControlName="toDate"  />
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+          </div>
+          </div>
+          <div class="row  justify-content-center" style="margin-top: 8px;">
+           <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Client Name</mat-label>
+          <input matInput placeholder="Client Name " formControlName="clientName" type="text">
+        </mat-form-field>
+               
+        </div>
+        <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Phone</mat-label>
+          <input matInput placeholder="Phone no" formControlName="phoneNo" type="text">
+        </mat-form-field>
+               
+        </div>
+         <div class="col-4">
+        <mat-form-field appearance="outline" class="mat-mode">
+          <mat-label>Email</mat-label>
+          <input matInput placeholder="Email" formControlName="email" type="text">
+        </mat-form-field>
+</div>
+      </div>
+       
+    </div>
+     <div *ngIf="searchName == 'Opening Balance Search' ">
     <div class="row  justify-content-center" style="margin-top: 8px;">
         <div class="col-4">
               <mat-form-field appearance="outline" class="mat-mode">

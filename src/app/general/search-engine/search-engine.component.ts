@@ -221,6 +221,25 @@ else if(this.data.search == 'Opening Balance Search'){
   },
 ]
 }
+else if(this.data.search == 'Receipt/Payment Search'){
+this.columnDefs= [{ field: "slNo", headerName: "S.No", width: 80 },
+  { field: "clientName", headerName: "Client Name", sortable: true, filter: true, resizable: true, width: 90 },
+    { field: "tranNo", headerName: "Tran No ", sortable: true, filter: true, resizable: true, width: 90 },
+    {
+    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+]
+}
   }
   bookingSearch(){
         this.displayMessage("Please Wait ...Loading",'')
@@ -351,44 +370,19 @@ onRowSelected(event: any) {
         this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
-    // else{
-    // this.displayMessage("", "");
-    // if (this.tranSearchForm.invalid) {
-    //   const body = {
-    //     ...this.commonParams(),
-    //     SearchFor:"TRIP",
-    //     Type:this.tranSearchForm.get('packageType')?.value,
-    //     ItemFirstLevel: this.tranSearchForm.get('packageName')?.value,
-    //     FirstDate: this.datePipe.transform(this.tranSearchForm.get('fromDate')!.value, 'yyyy-MM-dd'),
-        
-    //   }
-    //   try {
-    //     this.loader.start();
-    //     this.subSink.sink = await this.mastService.GetTripSearchList(body).subscribe((res: any) => {
-    //       this.loader.stop();
-    //       if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
-    //         this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
-    //         this.rowData = [];
-    //       }
-    //       else if(res.data.length === 1){
-    //        this.rowData=res.data
-    //       }
-    //       else {
-    //         this.rowData = res['data'];
-    //         this.calculateTotal(this.rowData);
-    //         this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
-    //       }
-    //     });
-    //   }
-    //   catch (ex: any) {
-    //     this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
-    //   }
-    // }
-    else if(this.data.search  == 'Opening Balance Search'){
+    
+    else if(this.data.search  == 'Opening Balance Search' || this.data.search  == 'Receipt/Payment Search'){
+      let searchFor:string='';
+      if(this.data.search  == 'Opening Balance Search'){
+        searchFor='OPNBAL'
+      }
+      else if(this.data.search  == 'Receipt/Payment Search'){
+        searchFor='RCTPMT'
+      }
          const body = {
-      SearchFor:"OPNBAL",
+      SearchFor:searchFor,
       TranNo:this.tranSearchForm.get('batchNo')?.value,
-      FirstPara:this.tranSearchForm.get('packageType')?.value,
+      FirstPara:'Customer',
       SecondPara:this.tranSearchForm.get('clientName')?.value,
       ThirdPara:this.tranSearchForm.get('phoneNo')?.value,
       FourthPara:this.tranSearchForm.get('email')?.value,
