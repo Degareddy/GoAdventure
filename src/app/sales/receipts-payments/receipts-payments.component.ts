@@ -175,6 +175,10 @@ private subSink!: SubSink;
               itemCode: bank.code,
               itemName: bank.bankName
             }));
+            if(this.providers.length === 1){
+              this.receiptsForm.get('accountProvider')!.patchValue(this.providers[0].itemCode);
+              this.loadBankAccountNumber();
+            }
           }
           else {
             this.displayMessage(res.message + " for types list!", TextClr.red);
