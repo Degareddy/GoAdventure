@@ -19,6 +19,7 @@ import { Item } from 'src/app/general/Interface/interface';
 import { DatePipe } from '@angular/common';
 import { AccessSettings } from 'src/app/utils/access';
 import { TextClr } from 'src/app/utils/enums';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 
 @Component({
   selector: 'app-banks',
@@ -40,6 +41,15 @@ export class BanksComponent implements OnInit, OnDestroy {
   @Input() max: any;
   tomorrow = new Date();
   newTranMsg !: string;
+  columnDefs=[
+    { field: "bankTypeName", headerName: "Bank Type", sortable: true, filter: true, resizable: true, flex: 2, },
+
+    { field: "bankName", headerName: "Bank Name", sortable: true, filter: true, resizable: true, flex: 1, },
+  ]
+  rowData:any=[]
+    private columnApi!: ColumnApi;
+    private gridApi!: GridApi;
+    public gridOptions!: GridOptions;
 
   constructor(private fb: FormBuilder, private loader: NgxUiLoaderService, private userDataService: UserDataService,
     public dialog: MatDialog, private adminService: AdminService, private glService: GeneralLedgerService,
@@ -53,6 +63,24 @@ export class BanksComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
   }
+    onGridReady(params: any) {
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+    this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+  onRowSelected(event: any) {
+    console.log(event.data);
+    this.bankForm.get('code')?.patchValue(event.data.code);
+     this.bankForm.get('name')?.patchValue(event.data.bankName);
+      this.bankForm.get('website')?.patchValue(event.data.website);
+       this.bankForm.get('cashHandles')?.patchValue(event.data.cashHandles);
+        this.bankForm.get('notCashHandles')?.patchValue(event.data.notCashHandles);
+         this.bankForm.get('notes')?.patchValue(event.data.notes);
+         this.bankForm.get('mode')?.patchValue('Modify');
+this.bankStatus=event.data.bankStatus
+
+  }
+
 
   commonParams() {
     return {
@@ -134,6 +162,7 @@ export class BanksComponent implements OnInit, OnDestroy {
     );
   }
 banktypeChange(){
+  this.displayMessage('','');
 const body=  {
   company: this.userDataService.userData.company,
   location:  this.userDataService.userData.location,
@@ -142,13 +171,14 @@ const body=  {
   refNo:  this.userDataService.userData.sessionID,
   
   }
+  this.loader.start();
   this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
+     this.loader.stop();
         if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-          this.bankTypeList = res['data'];
-          if (this.bankList.length === 1) {
-            this.bankForm.get('typeName')!.patchValue(this.bankTypeList[0].itemCode);
+         
+            this.rowData=res.data
             // this.onSelectedTypeChanged()
-          }
+          
         }
         else {
           this.displayMessage(res.message + " for types list!", TextClr.red);

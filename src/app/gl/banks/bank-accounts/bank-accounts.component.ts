@@ -47,6 +47,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
   dialogOpen = false;
   rowData: any = [];
   private bankAccCls: bankAccountDetails;
+  signerCode:string="";
   private loader!: NgxUiLoaderService
   public rowSelection: 'single' | 'multiple' = 'multiple';
   columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
@@ -180,6 +181,7 @@ export class BankAccountsComponent implements OnInit, OnDestroy {
             // this.bankAccountForm.controls['userID'].patchValue(res.data.selCode);
             // this.bankAccountForm(res.data.selCode);
             this.bankAccountForm.controls['signerName'].patchValue(res.data.selName);
+            this.bankAccCls.signAuthority=res.data.selCode;
           }
           else {
             if (!this.dialogOpen) {

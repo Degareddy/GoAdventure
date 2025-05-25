@@ -77,7 +77,7 @@ private subSink!: SubSink;
 
   ngOnInit(): void {
     this.loadBankTypes();
-    this.loadProviderSubTypes();
+    // this.loadProviderSubTypes();
     const modeBody = {
       ...this.commonParams(),
       item: 'ST210',
@@ -96,7 +96,55 @@ private subSink!: SubSink;
     this.loadData();
   }
   onSubmit(){
+      const body={
 
+        Mode:this.receiptsForm.get('mode')?.value,
+        Company:this.userDataService.userData.company,  
+        Location:this.userDataService.userData.location,
+        TranType:this.receiptsForm.get('rctType')?.value,
+        TranNo:this.receiptsForm.get('tranNo')?.value,
+        TranDate:this.receiptsForm.get('tranDate')?.value,
+        ClientType:this.receiptsForm.get('clientType')?.value,
+        Client:this.selecTedClient,
+        IsRecurring:this.receiptsForm.get('recurring')?.value,
+        PayMode:this.receiptsForm.get('rctMode')?.value,
+        Currency:"INR",
+        ExchRate:1.00,
+        ClientBank:this.receiptsForm.get('provider')?.value,
+        ClientAccount:this.receiptsForm.get('CustaccountNo')?.value,
+        ClientAccName:this.receiptsForm.get('holder')?.value,
+        ClientBankRefNo:this.receiptsForm.get('refNo')?.value,
+        ClientBankRefDate:this.receiptsForm.get('refDate')?.value,
+        OtherFirstRefNo:this.receiptsForm.get('otherRef1')?.value,
+        OtherSecondRefNo:this.receiptsForm.get('otherRef2')?.value,
+        OtherRefDate:this.receiptsForm.get('holder')?.value,
+        ClientTranStatus:this.receiptsForm.get('status')?.value,
+        TxnBank:this.receiptsForm.get('accountProvider')?.value,
+        TxnAccount:this.receiptsForm.get('accountNo')?.value,
+        TxnDate:this.receiptsForm.get('tranDate')?.value,
+        TxnStatus:'',
+        TranFor:this.receiptsForm.get('tranFor')?.value,
+        TranAmount:this.receiptsForm.get('rctAmount')?.value,
+        TranBy:this.userDataService.userData.userID,
+        TranAt:this.userDataService.userData.location,
+        // AllottedAmount:this.receiptsForm.get()?.value,
+        PaidCurrency:"INR",
+        PaidExchRate:1.00,
+        Charges:0.00,
+        PaidAmt:this.receiptsForm.get('rctAmount')?.value,
+        Remarks:'',
+        User:this.userDataService.userData.userID,
+        RefNo:this.userDataService.userData.sessionID
+      }
+      this.subSink.sink = this.saleService.UpdateReceiptsAndPayments(body).subscribe((res: any) => {
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+           
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
   }
   onngDestroy(){
     localStorage.setItem('previousScreen','Receipts - Payments');
@@ -109,9 +157,61 @@ private subSink!: SubSink;
       refNo: this.userDataService.userData.sessionID,
     };
   }
+  banktypeChange(){
+    this.displayMessage('','');
+  const body=  {
+    company: this.userDataService.userData.company,
+    location:  this.userDataService.userData.location,
+    Type:this.receiptsForm.get('accountProviderType')!.value,
+    user:  this.userDataService.userData.userID,
+    refNo:  this.userDataService.userData.sessionID,
+    
+    }
+    this.loader.start();
+    this.subSink.sink = this.glService.GeBanksList(body).subscribe((res: any) => {
+       this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            this.providers = res.data.map((bank: any) => ({
+              itemCode: bank.code,
+              itemName: bank.bankName
+            }));
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
+  }
     private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
     this.textMessageClass = cssClass;
+  }
+  loadBankAccountNumber(){
+    const body={
+      Mode:this.receiptsForm.get('mode')?.value,
+      Company:this.userDataService.userData.company,
+      Location:this.userDataService.userData.location,
+      Type:'BANKACCTS',
+      Item:this.receiptsForm.get('accountProviderType')?.value,
+      ItemFirstLevel:this.receiptsForm.get('accountProvider')?.value,
+      User:this.userDataService.userData.userID,
+      RefNo:this.userDataService.userData.sessionID
+    }
+    this.loader.start();
+    this.subSink.sink = this.masterService.GetCascadingMasterItemsList(body).subscribe((res: any) => {
+      this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+            // this.providerTypes = res['data'];
+            // if (this.providerTypes.length === 1) {
+            //   this.receiptsForm.get('typeName')!.patchValue(this.providerTypes[0].itemCode);
+            //   // this.onSelectedTypeChanged()
+            // }
+          }
+          else {
+            this.displayMessage(res.message + " for types list!", TextClr.red);
+          }
+    
+        });
   }
 
    async loadData() {
@@ -362,10 +462,11 @@ private subSink!: SubSink;
   otherRefDate1: [''],
   otherRef2: [''],
   status: [''],
-
+ holder:[''], 
+accountNo:[''],
   accountProviderType: [''],
   accountProvider: [''],
-  accountNo: ['']
+  CustaccountNo: ['']
     });
     }
   goBack(): void {
