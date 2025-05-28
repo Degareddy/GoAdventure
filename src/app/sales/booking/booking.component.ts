@@ -30,6 +30,7 @@ export class BookingComponent implements OnInit {
   subSink!:SubSink
   textMessageClass:string=""
   packageTypes:Item[]=[]
+  clientId:string='';
   dialogOpen = false;
   gst:boolean=false
   leadsources:Item[]=[]
@@ -205,7 +206,10 @@ const body={
       "TranDate": this.bookingForm.get('tranDate')?.value,
       "PackageType": this.bookingForm.get('packageType')?.value,
       "TripId": this.bookingForm.get('tripId')?.value,
-      "Client": this.bookingForm.get('clientName')?.value,
+      "Client": this.clientId,
+      "ClientName": this.bookingForm.get('clientName')?.value,
+      "Contact": this.bookingForm.get('contact')?.value,
+      "Email": this.bookingForm.get('email')?.value,
       "AdultsCnt": this.bookingForm.get('adults')?.value,
       "AgeUptoYrs5": this.bookingForm.get('zeroToFive')?.value,
       "AgeYrs6to12": this.bookingForm.get('fiveToTwelve')?.value,
@@ -227,6 +231,7 @@ const body={
                   this.displayMessage(res.message,'green');
                   this.bookingForm.get('batchNo')?.patchValue(res.tranNoNew);
                   this.bookingForm.get('mode')?.patchValue('Modify');
+                  this.clientId=res.tranNoNew;
                 }
                 else{
                   this.displayMessage(res.message,'red');
@@ -314,8 +319,12 @@ const body={
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum':'',
-                  'search': 'Booking Search'
+                  'tranNum':this.bookingForm.get('batchNo')?.value,
+                  'search': 'Booking Search',
+                  'name':this.bookingForm.get('clientName')?.value,
+                  'clientId':this.clientId,
+                  'contact':this.bookingForm.get('contact')?.value,
+                  'email':this.bookingForm.get('email')?.value
                 }
               });
 
@@ -350,6 +359,7 @@ const body={
                 this.loader.stop();
                 if(res.status === "Success"){
                   this.parchForm(res.data);
+                  this.clientId = res.data.client;
                 }
               });
             }

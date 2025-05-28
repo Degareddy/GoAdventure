@@ -42,7 +42,6 @@ import { VendorProductsComponent } from './customer/vendor-products/vendor-produ
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { BookingComponent } from './booking/booking.component';
 
-import { TripIdComponent } from './trip-id/trip-id.component';
 import { TripsComponent } from './trips/trips.component';
 import { SearchTripIDComponent } from './search-trip-id/search-trip-id.component';
 import { PackageNamesComponent } from './package-names/package-names.component';
@@ -86,7 +85,6 @@ import { BookingChatbotComponent } from './booking/booking-chatbot/booking-chatb
     CustomerUnitsComponent,
     VendorProductsComponent,
     BookingComponent,
-    TripIdComponent,
     TripsComponent,
     SearchTripIDComponent,
     PackageNamesComponent,

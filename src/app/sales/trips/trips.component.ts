@@ -117,6 +117,7 @@ packageNameSelected(){
   this.getEndDate();
 }
   onSubmit(){
+
     if(this.tripForm.get('StartDate')?.value > this.tripForm.get('endDate')?.value){
       alert("Please make sure the start date is before the end date");
       return;
@@ -135,6 +136,7 @@ packageNameSelected(){
       StartDate:this.addOneDay.formatDate(this.tripForm.get('StartDate')?.value) ,
       EndDate: this.addOneDay.formatDate(this.tripForm.get('endDate')?.value) ,
       Remarks:this.tripForm.get('remarks')?.value,
+
    }
     try {
       this.displayMessage("","");
@@ -246,6 +248,7 @@ packageNameSelected(){
         this.tripForm.get('endDate')?.patchValue(new Date())
         this.tripForm.get('packageName')?.patchValue('')
         this.tripForm.get('remarks')?.patchValue('')
+        this.displayMessage("","");
     }
     Close(){
       this.router.navigateByUrl('/home');

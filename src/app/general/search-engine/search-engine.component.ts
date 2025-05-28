@@ -173,7 +173,11 @@ packageTypes:Item[]=[]
     }
     else if(this.data.search === "Booking Search"){
       this.bookingSearch();
-                this.loadTripList();
+      this.loadTripList();
+      this.tranSearchForm.get('clientName')?.patchValue(this.data.name);
+      this.tranSearchForm.get('phoneNo')?.patchValue(this.data.contact);
+      this.tranSearchForm.get('email')?.patchValue(this.data.email);
+      this.tranSearchForm.get('email')?.patchValue(this.data.batchNo);
 
     }
     else if(this.data.search === "Trip Search"){

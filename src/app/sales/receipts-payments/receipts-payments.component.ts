@@ -596,7 +596,32 @@ private subSink!: SubSink;
         });
     }
   
-  
+  patchForm(data:any){
+    this.receiptsForm.get('mode')?.patchValue("Modify");
+    // this.receiptsForm.get('receiptmode')?.patchValue(data.);
+    this.receiptsForm.get('tranDate')?.patchValue(this.dateFormat.formatDate(data.tranDate));
+    this.receiptsForm.get('tranNo')?.patchValue(data.tranNo);
+    this.receiptsForm.get('clientType')?.patchValue(data.clientType);
+    this.receiptsForm.get('clientName')?.patchValue(data.clientName);
+    this.receiptsForm.get('tranFor')?.patchValue(data.tranFor);
+    this.receiptsForm.get('rctType')?.patchValue(data.tranType);
+    this.receiptsForm.get('rctAmount')?.patchValue(data.tranAmount);
+    this.receiptsForm.get('recurring')?.patchValue(data.isRecurring);
+    this.receiptsForm.get('providerType')?.patchValue('');
+    this.receiptsForm.get('refNo')?.patchValue("Modify");
+    this.receiptsForm.get('refDate')?.patchValue("Modify");
+    this.receiptsForm.get('otherRef1')?.patchValue("Modify");
+    this.receiptsForm.get('otherRefDate1')?.patchValue("Modify");
+    this.receiptsForm.get('otherRef2')?.patchValue("Modify");
+    this.receiptsForm.get('status')?.patchValue("Modify");
+    this.receiptsForm.get('holder')?.patchValue("Modify");
+    this.receiptsForm.get('accountNo')?.patchValue("Modify");
+    this.receiptsForm.get('accountProviderType')?.patchValue('');
+    this.receiptsForm.get('CustaccountNo')?.patchValue("Modify");
+    this.receiptsForm.get('charges')?.patchValue("Modify");
+    this.receiptsForm.get('total')?.patchValue("Modify");
+    this.receiptsForm.get('mode')?.patchValue("Modify");
+  }
   tranDateChanged(){}
   formInit() {
     return this.fb.group({
