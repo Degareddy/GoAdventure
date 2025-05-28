@@ -1,0 +1,65 @@
+<div class="chatbot-container" [class.expanded]="isExpanded">
+      <!-- Chatbot Toggle Button -->
+      <button 
+        mat-fab 
+        color="primary" 
+        class="chatbot-toggle"
+        (click)="toggleChatbot()"
+        *ngIf="!isExpanded">
+        <mat-icon>smart_toy</mat-icon>
+      </button>
+
+      <!-- Chatbot Interface -->
+      <div class="chatbot-interface" *ngIf="isExpanded">
+        <div class="chatbot-header">
+          <div class="flex items-center">
+            <mat-icon class="mr-2">smart_toy</mat-icon>
+            <span>Booking Assistant</span>
+          </div>
+          <button mat-icon-button (click)="toggleChatbot()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="chatbot-messages" #messagesContainer>
+          <div class="message bot-message">
+            <mat-icon class="message-icon">smart_toy</mat-icon>
+            <div class="message-content">
+              <p>Hi! I can help you create bookings from text. Just paste your booking details and I'll fill the form for you!</p>
+              <p><strong>Example:</strong> Paste booking details like "Booking ID: 2025-00822, Client Name: John Doe, Contact: 9876543210..."</p>
+            </div>
+          </div>
+
+          <div *ngFor="let message of messages" 
+               class="message" 
+               [class.user-message]="message.type === 'user'"
+               [class.bot-message]="message.type === 'bot'">
+            <mat-icon class="message-icon" *ngIf="message.type === 'bot'">smart_toy</mat-icon>
+            <div class="message-content">
+              <p [innerHTML]="message.text"></p>
+            </div>
+            <mat-icon class="message-icon" *ngIf="message.type === 'user'">person</mat-icon>
+          </div>
+        </div>
+
+        <div class="chatbot-input">
+          <mat-form-field appearance="outline" class="flex-1">
+            <mat-label>Type or paste booking details...</mat-label>
+            <textarea 
+              matInput 
+              [(ngModel)]="userInput" 
+              (keydown.enter)="handleEnter($event)"
+              rows="6"
+              placeholder="Paste your booking details here...">
+            </textarea>
+          </mat-form-field>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="processBookingText()"
+            [disabled]="!userInput.trim()">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>

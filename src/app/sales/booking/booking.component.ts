@@ -32,6 +32,8 @@ export class BookingComponent implements OnInit {
   packageTypes:Item[]=[]
   dialogOpen = false;
   gst:boolean=false
+  leadsources:Item[]=[]
+  departuretypes:Item[]=[]
   selectdPackageNameId!:string;
   modes:Item[]=[
     {itemCode:'Add',itemName:'Add'},
@@ -63,8 +65,11 @@ downloadPDF(){
                 width: '90%',
                 disableClose: true,
                 data: {
-                  'tranNum':'',
-                  'search': 'Booking Search'
+                  'clientName': this.bookingForm.get('clientName')?.value,
+                  'tripName': this.bookingForm.get('packageName')?.value,
+                  'travelDate':'',
+                  'bookindId':this.bookingForm.get('batchNo')?.value,
+                  
                 }
               });
 
@@ -76,11 +81,91 @@ downloadPDF(){
               });
             }
 }
+onChatbotFormUpdate(data: any) {
+  console.log('Chatbot filled form with:', data);
+  // You can add additional processing here
+  // For example, trigger validation, show success message, etc.
+}
  ngOnDestroy(){
     this.subSink.unsubscribe();
      localStorage.setItem('previousScreen','Booking')
   }
+  loadLeadsources(){
+const body={
+        "Mode": this.bookingForm.get('mode')?.value,
+        "Company": this.userDataService.userData.company,
+        "Location": this.userDataService.userData.location,
+        "User": this.userDataService.userData.userID,
+        "RefNo": this.userDataService.userData.sessionID,
+        "item": "DEPTYPE",
+        "itemFirstLevel": "",
+        "itemSecondLevel": "",
+        "password": "",
+        "selLocation": "",
+        "tranNo": "",
+        "tranType": "",
+        "type": ""
+    }
+    try {
+            this.subSink.sink = this.masterService.getSpecificMasterItems(body).subscribe((reslt: any) => {
+              if (reslt && reslt.data && reslt.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.departuretypes = reslt.data;
+                if(this.departuretypes.length == 1){
+                  this.bookingForm.get('departuretype')?.patchValue(this.departuretypes[0].itemCode) 
+                }
+
+              }
+              else {
+                this.leadsources = [];
+                this.displayMessage(reslt.message, TextClr.red);
+    
+              }
+            });
+          }
+          catch (ex: any) {
+            this.displayMessage(displayMsg.EXCEPTION+ ex.message, TextClr.red);
+          }
+  }
+  loadDeparturetypes(){
+    const body={
+        "Mode": this.bookingForm.get('mode')?.value,
+        "Company": this.userDataService.userData.company,
+        "Location": this.userDataService.userData.location,
+        "User": this.userDataService.userData.userID,
+        "RefNo": this.userDataService.userData.sessionID,
+        "item": "LEADSOURCE",
+        "itemFirstLevel": "",
+        "itemSecondLevel": "",
+        "password": "",
+        "selLocation": "",
+        "tranNo": "",
+        "tranType": "",
+        "type": ""
+    }
+    try {
+            this.subSink.sink = this.masterService.getSpecificMasterItems(body).subscribe((reslt: any) => {
+              if (reslt && reslt.data && reslt.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.leadsources = reslt.data;
+                if(this.leadsources.length == 1){
+                  this.bookingForm.get('leadsource')?.patchValue(this.leadsources[0].itemCode) 
+                }
+
+              }
+              else {
+                this.leadsources = [];
+                this.displayMessage(reslt.message, TextClr.red);
+    
+              }
+            });
+          }
+          catch (ex: any) {
+            this.displayMessage(displayMsg.EXCEPTION+ ex.message, TextClr.red);
+          }
+    
+  }
   ngOnInit(): void {
+    this.loadLeadsources();
+    this.loadDeparturetypes();
     this.loadTripList()
     this.bookingForm.get('regularAmount')?.valueChanges.subscribe((regularAmount: number) => {
     if (regularAmount != null) {
@@ -163,8 +248,8 @@ downloadPDF(){
       contact:['',Validators.required],
       email:['',Validators.required],
       adults:['',Validators.required],
-      zeroToFive:['',Validators.required],
-      fiveToTwelve:['',Validators.required],
+      zeroToFive:['0',Validators.required],
+      fiveToTwelve:['0',Validators.required],
       gstYes:[false],
       gstNo:[true],
       remarks:[''],
@@ -173,6 +258,8 @@ downloadPDF(){
       quotedPrice:[0],
       addOns:[0],
       tranDate:[new Date()],
+      departuretype:['',Validators.required],
+      leadsource:['',Validators.required]
     })
   }
   loadTripList(){
@@ -329,6 +416,14 @@ downloadPDF(){
     catch (ex: any) {
       this.retMessage = "Exception " + ex.message;
       this.textMessageClass = 'red';
+    }
+  }
+  modeChange(){
+    if(this.bookingForm.get('mode')?.value === 'Add'){
+      this.bookingForm.get('batchNo')?.disable();
+    }
+    else{
+      this.bookingForm.get('batchNo')?.enable();
     }
   }
   

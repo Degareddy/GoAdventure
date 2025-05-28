@@ -124,7 +124,7 @@
             <div appearance="outline" class="w-full mt-2">
             <mat-form-field appearance="outline" class="w-full mt-2">
               <mat-label>Mode</mat-label>
-              <mat-select formControlName="mode" >
+              <mat-select formControlName="mode" (selectionChange)="modeChange()">
                 <mat-option value="">--Select--</mat-option>
                 <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
               </mat-select>
@@ -132,7 +132,7 @@
             <div class="matfield">
             <mat-form-field appearance="outline" style="width: 99%;">
                 <mat-label>Booking No</mat-label>
-                <input matInput type="text" placeholder="Booking No" formControlName="batchNo" 
+                <input matInput type="text" placeholder="Booking No" formControlName="batchNo" [disabled]="bookingForm.get('mode')?.value === 'Add'"
                  >
                 <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('batchNo')?.value"
                 tabindex="-1" 
@@ -255,7 +255,22 @@
                               <mat-icon class="mat-clear-icon">clear</mat-icon>
                             </button>
                           </mat-form-field>
+                           <mat-form-field appearance="outline" class="w-full mt-2">
+              <mat-label>Lead Source</mat-label>
+              <mat-select formControlName="leadsource" >
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of leadsources" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+             <mat-form-field appearance="outline" class="w-full mt-2">
+              <mat-label>Departure Type</mat-label>
+              <mat-select formControlName="departuretype" >
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of departuretypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
                         </div> 
+
                         <div class="row justify-content-center mb-3 align-items-center">
                             <div class="col-3 d-flex align-items-center">
                               <label class="me-2">GST:</label>
@@ -294,3 +309,7 @@
   
   </div>
 
+<app-booking-chatbot 
+  [bookingForm]="bookingForm"
+  (formUpdated)="onChatbotFormUpdate($event)">
+</app-booking-chatbot>

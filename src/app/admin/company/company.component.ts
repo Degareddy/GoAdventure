@@ -75,13 +75,15 @@ export class CompanyComponent implements OnInit, OnDestroy {
   modeChange(event: string) {
     if (event.toUpperCase() === Mode.Add) {
       this.status = '';
-      this.companyForm = this.formInit();
+      // this.companyForm = this.formInit();
       this.companyForm.controls['mode'].patchValue(event, { emitEvent: false, onlySelf: false });
       this.companyForm.controls['companyList'].disable({ emitEvent: false, onlySelf: false })
       this.enableFormControls();
       this.retMessage = "";
       this.isDisabled = false;
-      this.loadData();
+      // this.loadData();
+      this.clear();
+      this.companyForm.get('mode')?.patchValue('Add');
     } else {
       this.companyForm.controls['mode'].patchValue(event, { emitEvent: false, onlySelf: false });
       this.companyForm.controls['companyList'].enable({ emitEvent: false, onlySelf: false })
@@ -90,7 +92,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
   }
 
   enableFormControls() {
-    // this.companyForm.controls['companyID'].enable({ onlySelf: true });
+    this.companyForm.controls['companyID'].enable({ onlySelf: true });
   }
 
   ngOnInit(): void {
@@ -168,7 +170,10 @@ export class CompanyComponent implements OnInit, OnDestroy {
         this.status = res.data.status,
           this.companyCls.ID = res.data.ID;
         this.populateData(res);
-        this.companyForm.controls['companyID'].disable({ onlySelf: true });
+        if(this.companyForm.get('mode')?.value.toUpperCase() != Mode.Add){
+ this.companyForm.controls['companyID'].disable({ onlySelf: true });
+        }
+       
         this.textMessageClass = TextClr.green;
         if (mode.toUpperCase() != Mode.view) {
           this.displayMessage(this.newTranMsg, TextClr.green);

@@ -12,7 +12,7 @@ export class EditorComponent implements OnInit {
 
   
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method not implemented.');
   }
 email:string="support@goadventure.in"
   invoiceData = {
