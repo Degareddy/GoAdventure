@@ -51,17 +51,7 @@
         </mat-expansion-panel>
 
         <!-- Properties pannel -->
-        <mat-expansion-panel *ngIf="isProperty" [expanded]="isRouteActive('/property')">
-          <mat-expansion-panel-header [ngClass]="{ 'active-panel': isRouteActive('/property') }">
-            <mat-panel-title>
-              <mat-icon>apartment</mat-icon>Properties
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <mat-nav-list class="mat-list" *ngFor="let x of propertyMenu">
-            <a mat-list-item routerLinkActive="router-link-active" routerLink="{{x.function_url}}">
-              <mat-icon>{{x.menuItemIcon}}</mat-icon>{{x.text}}</a>
-          </mat-nav-list>
-        </mat-expansion-panel>
+        
         
 
         <!-- Saleas pannel -->

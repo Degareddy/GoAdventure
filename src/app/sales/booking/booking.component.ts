@@ -244,6 +244,7 @@ const body={
               this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
             }
   }
+ 
   formInit() {
     return this.fb.group({
       mode:['View'],
@@ -300,7 +301,7 @@ const body={
     }
       
   clear(){
-
+    this.bookingForm=this.formInit();
   }
   close(){
 
@@ -431,6 +432,9 @@ searchBookingOnTran(){
   modeChange(){
     if(this.bookingForm.get('mode')?.value === 'Add'){
       this.bookingForm.get('batchNo')?.disable();
+        this.clear();
+              this.bookingForm.get('mode')?.patchValue("Add")
+
     }
     else{
       this.bookingForm.get('batchNo')?.enable();

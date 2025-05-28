@@ -250,6 +250,13 @@ packageNameSelected(){
         this.tripForm.get('remarks')?.patchValue('')
         this.displayMessage("","");
     }
+    modeChange(){
+      if(this.tripForm.get('mode')?.value === "Add"){
+        this.clear();
+        this.tripForm.get('mode')?.patchValue("Add")
+      }
+
+    }
     Close(){
       this.router.navigateByUrl('/home');
 
