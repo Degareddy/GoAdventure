@@ -36,7 +36,7 @@ GetPartySearchList(doc: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetQuotationReport', qtnDet)
   }
   GetReceiptPaymentsDetails(qtnDet: any): Observable<any> {
-    return this.http.post(environment.Url + 'sales/GetReceiptPaymentsDetails', qtnDet)
+    return this.http.post(environment.Url + 'sales/GetReceiptsAndPaymentsDetails', qtnDet)
   }
   GetDeliveryReport(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetDeliveryReport', qtnDet)
