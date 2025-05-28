@@ -222,6 +222,8 @@ const body={
       "Remarks": this.bookingForm.get('remarks')?.value,
       "User": this.userDataService.userData.userID,
       "RefNo": this.userDataService.userData.sessionID,
+      "DepType":this.bookingForm.get('departuretype')?.value,
+      "leadsource":this.bookingForm.get('leadsource')?.value
     }
     try {
           this.loader.start()
@@ -291,11 +293,11 @@ const body={
             catch (ex: any) {
               this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
             }
-      }
-      private displayMessage(message: string, cssClass: string) {
+    }
+  private displayMessage(message: string, cssClass: string) {
         this.retMessage = message;
         this.textMessageClass = cssClass;
-      }
+    }
       
   clear(){
 
@@ -311,8 +313,6 @@ const body={
   }
   onBookingSearch(){
     try {
-     
-      
             if (!this.dialogOpen) {
               this.dialogOpen = true;
               const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -344,7 +344,7 @@ const body={
       this.textMessageClass = 'red';
     }
   }
-  searchBookingOnTran(){
+searchBookingOnTran(){
  const body={
           Company:this.userDataService.userData.company,
           Location:this.userDataService.userData.location,

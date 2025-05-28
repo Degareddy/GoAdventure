@@ -143,7 +143,7 @@ packageNameSelected(){
       this.loader.start()
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
             this.loader.stop();
-            if(res.status.toUpperCase === "SUCCESS"){
+            if(res.status.toUpperCase() === "SUCCESS"){
               this.displayMessage(displayMsg.SUCCESS,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
             }
