@@ -106,7 +106,21 @@
           </div>
     </div>
     <div class="row justify-content-left">
-        <div class="col-3">
+      <div class="col-2">
+            <mat-form-field appearance="outline" style="width: 95%;">
+              <mat-label>Standard Price</mat-label>
+              <input matInput placeholder="Trip Regular Amount" formControlName="tripRegularAmount" type="number">
+              <button mat-button *ngIf="tripForm.get('tripDesc')!.value" type="button" matSuffix mat-icon-button
+                aria-label="Clear" (click)="tripForm.get('tripRegularAmount')!.setValue('')">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <!-- <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
+                [disabled]="tripForm.get('mode')!.value ==='Add'">
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button> -->
+            </mat-form-field>
+          </div>
+        <div class="col-2">
           <mat-form-field appearance="outline" class="mat-mode">
             <mat-label class="mat-label-class">Tran Date</mat-label>
             <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" (dateChange)="packageNameSelected()" />
@@ -114,7 +128,7 @@
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">Start Date</mat-label>
               <input matInput (dateChange)="getEndDate()" [matDatepicker]="picker1" formControlName="StartDate"  />
@@ -122,7 +136,7 @@
               <mat-datepicker #picker1></mat-datepicker>
             </mat-form-field>
           </div>
-          <div class="col-3">
+          <div class="col-2">
             <mat-form-field appearance="outline" class="mat-mode">
               <mat-label class="mat-label-class">End Date</mat-label>
               <input matInput [matDatepicker]="picker2" formControlName="endDate"  />
@@ -130,7 +144,7 @@
               <mat-datepicker #picker2></mat-datepicker>
             </mat-form-field>
           </div>
-          <div class="col-3">
+          <div class="col-2">
             <mat-form-field appearance="outline" style="width: 95%;">
               <mat-label>Remarks</mat-label>
               <input matInput placeholder="Remarks" formControlName="remarks" type="text">

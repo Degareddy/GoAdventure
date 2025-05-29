@@ -50,8 +50,8 @@
                    type="button">
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
-                <button matSuffix mat-icon-button aria-label="Search" 
-                  (click)="onBookingSearch()" type="button">
+                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                  (click)="onBookingSearch()" [disabled]="bookingForm.get('mode')?.value === 'Add'" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
               </mat-form-field>
@@ -67,7 +67,7 @@
                        type="button">
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
-                    <button matSuffix mat-icon-button aria-label="Search" 
+                    <button matSuffix mat-icon-button aria-label="Search"  [disabled]="bookingForm.get('mode')?.value === 'Add'"
                   (click)="onBookingSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
@@ -84,7 +84,7 @@
                            type="button">
                           <mat-icon class="mat-clear-icon">clear</mat-icon>
                         </button>
-                        <button matSuffix mat-icon-button aria-label="Search" 
+                        <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value === 'Add'"
                   (click)="onBookingSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
@@ -164,7 +164,7 @@
                    type="button">
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
-                <button matSuffix mat-icon-button aria-label="Search" 
+                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value === 'Add'"
                   (click)="onBookingSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
@@ -182,7 +182,6 @@
               <div class="autocomplete-header">
                 <div class="col-code">Code</div>
                 <div class="col-name">Dates</div>
-                <div class="col-phone">Details</div>
               </div>
             
               <!-- Options -->
@@ -190,7 +189,6 @@
                 <div class="autocomplete-row">
                   <div class="col-code">{{ option.itemCode }}</div>
                   <div class="col-name">{{ option.itemName }}</div>
-                  <div class="col-phone">{{ option.itemDetails }}</div>
                 </div>
               </mat-option>
             </mat-autocomplete>
@@ -239,6 +237,24 @@
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                           </mat-form-field>
+                          <div class="matfield"> 
+                           <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
+                        <mat-label>Reference Booking</mat-label>
+                        <input matInput type="text" placeholder="Website reference id" formControlName="websiteReferenceId"
+                         >
+                        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('websiteReferenceId')?.value"
+                        tabindex="-1" 
+                        (click)="bookingForm.get('websiteReferenceId')?.reset()"
+                           type="button">
+                          <mat-icon class="mat-clear-icon">clear</mat-icon>
+                        </button>
+                        <!-- <button matSuffix mat-icon-button aria-label="Search" 
+                          (click)="onSearchCilcked()" type="button">
+                          <mat-icon class="mat-search-icon">search</mat-icon>
+                        </button> -->
+                      </mat-form-field>
+                                          </div>
+
                         </div>
               
         </div>
@@ -252,7 +268,7 @@
             <div class="pricing-label">Regular</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="Regular Amount" formControlName="regularAmount" (input)="onPriceFieldChange()">
+                    <input matInput type="number" placeholder="Regular Amount"  style="text-align: right;" formControlName="regularAmount" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('regularAmount')?.value"
                             tabindex="-1" 
@@ -269,7 +285,7 @@
             <div class="pricing-label">Quoted</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()">
+                    <input matInput type="number"  style="text-align: right;" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('quotedPrice')?.value"
                             tabindex="-1" 
@@ -286,7 +302,7 @@
             <div class="pricing-label">Disc</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="Discount" formControlName="discOffered" (input)="onPriceFieldChange()">
+                    <input matInput type="number"  style="text-align: right;" placeholder="Discount" formControlName="discOffered" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('discOffered')?.value"
                             tabindex="-1" 
@@ -303,7 +319,7 @@
             <div class="pricing-label">AddOns</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
+                    <input matInput type="number"  style="text-align: right;" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('addOns')?.value"
                             tabindex="-1" 
@@ -320,7 +336,7 @@
             <div class="pricing-label">Total</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="Total" formControlName="total" readonly>
+                    <input  style="text-align: right;" matInput type="number" placeholder="Total" formControlName="total" readonly>
                 </mat-form-field>
             </div>
         </div>
@@ -330,7 +346,7 @@
             <div class="pricing-label">GST</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="GST" formControlName="gst" readonly>
+                    <input  style="text-align: right;" matInput type="number" placeholder="GST" formControlName="gst" readonly>
                 </mat-form-field>
             </div>
         </div>
@@ -340,7 +356,7 @@
             <div class="pricing-label">Payable</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline">
-                    <input matInput type="number" placeholder="Payable" formControlName="payable" readonly>
+                    <input  style="text-align: right;" matInput type="number" placeholder="Payable" formControlName="payable" readonly>
                 </mat-form-field>
             </div>
         </div>

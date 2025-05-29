@@ -236,6 +236,7 @@ export class TripsComponent implements OnInit {
       StartDate:this.addOneDay.formatDate(this.tripForm.get('StartDate')?.value) ,
       EndDate: this.addOneDay.formatDate(this.tripForm.get('endDate')?.value) ,
       Remarks:this.tripForm.get('remarks')?.value,
+      stdcose:this.tripForm.get('tripRegularAmount')?.value,
 
    }
     try {
@@ -292,7 +293,8 @@ export class TripsComponent implements OnInit {
         StartDate:[new Date()],
         endDate:[new Date()],
         remarks:[''],
-        packageName:['',Validators.required]
+        packageName:['',Validators.required],
+        tripRegularAmount:[0.00]
       });
     }
     tripIdSearch(){

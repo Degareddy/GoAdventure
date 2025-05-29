@@ -21,7 +21,6 @@ import { forkJoin, map, startWith } from 'rxjs';
 interface autoComplete {
   itemCode: string
   itemName: string
-  itemDetails:string
 
 }
 @Component({
@@ -31,6 +30,7 @@ interface autoComplete {
 })
 export class BookingComponent implements OnInit {
   bookingForm!:FormGroup
+  discAmount:number=0;
   retMessage:string=""
       screenName:string=localStorage.getItem('previousScreen')||''
     selectedClientId!:string
@@ -92,6 +92,7 @@ downloadPDF(){
             }
 }
 onChatbotFormUpdate(data: any) {
+  this.onPriceFieldChange()
   console.log('Chatbot filled form with:', data);
   // You can add additional processing here
   // For example, trigger validation, show success message, etc.
@@ -214,9 +215,7 @@ const body={
   
     return this.tripIdList.filter(option =>
       option.itemName.toLowerCase().includes(filterValue) ||
-      option.itemCode.toLowerCase().includes(filterValue) ||
-      option.itemDetails.toLowerCase().includes(filterValue)
-    );
+      option.itemCode.toLowerCase().includes(filterValue)     );
   }
   onSubmit(){
     if(this.bookingForm.get('gstYes')?.value){
@@ -226,31 +225,34 @@ const body={
       this.gst=false
     }
     const body={
-      "Mode": this.bookingForm.get('mode')?.value,
-      "Company":this.userDataService.userData.company,
-      "Location": this.userDataService.userData.location,
-      "TranNo": this.bookingForm.get('batchNo')?.value,
-      "TranDate": this.bookingForm.get('tranDate')?.value,
-      "PackageType": this.bookingForm.get('packageType')?.value,
-      "TripId": this.bookingForm.get('tripId')?.value,
-      "Client": this.clientId,
-      "ClientName": this.bookingForm.get('clientName')?.value,
-      "Contact": this.bookingForm.get('contact')?.value,
-      "Email": this.bookingForm.get('email')?.value,
-      "AdultsCnt": this.bookingForm.get('adults')?.value,
-      "AgeUptoYrs5": this.bookingForm.get('zeroToFive')?.value,
-      "AgeYrs6to12": this.bookingForm.get('fiveToTwelve')?.value,
-      "ApplyGST": this.gst,
-      "PkgValue": this.bookingForm.get('regularAmount')?.value,
-      "Discount": this.bookingForm.get('discOffered')?.value,
-      "AddOns": this.bookingForm.get('addOns')?.value,
-      "TaxAmount": 0,
-      "NetPayable": this.bookingForm.get('quotedPrice')?.value,
-      "Remarks": this.bookingForm.get('remarks')?.value,
-      "User": this.userDataService.userData.userID,
-      "RefNo": this.userDataService.userData.sessionID,
-      "DepType":this.bookingForm.get('departuretype')?.value,
-      "leadsource":this.bookingForm.get('leadsource')?.value
+      Mode: this.bookingForm.get('mode')?.value,
+      Company:this.userDataService.userData.company,
+      Location: this.userDataService.userData.location,
+      TranNo: this.bookingForm.get('batchNo')?.value,
+      TranDate: this.bookingForm.get('tranDate')?.value,
+      PackageType: this.bookingForm.get('packageType')?.value,
+      TripId: this.bookingForm.get('tripId')?.value,
+      DepType:this.bookingForm.get('departuretype')?.value,
+      LeadSource:this.bookingForm.get('leadsource')?.value,
+      Client: this.clientId,
+      ClientName: this.bookingForm.get('clientName')?.value,
+      Contact: this.bookingForm.get('contact')?.value,
+      Email: this.bookingForm.get('email')?.value,
+      AdultsCnt: this.bookingForm.get('adults')?.value,
+      AgeUptoYrs5: this.bookingForm.get('zeroToFive')?.value,
+      AgeYrs6to12: this.bookingForm.get('fiveToTwelve')?.value,
+      PkgValue:this.bookingForm.get('regularAmount')?.value,
+      ActualPrice:this.bookingForm.get('quotedPrice')?.value,
+      AddOns: this.bookingForm.get('addOns')?.value,
+      Discount: this.bookingForm.get('discOffered')?.value,
+      TotalAmount: this.bookingForm.get('total')?.value,
+      TaxAmount:this.bookingForm.get('gst')?.value,
+      NetPayable:this.bookingForm.get('payable')?.value,
+      Remarks: this.bookingForm.get('remarks')?.value,
+      RefBooking: this.bookingForm.get('websiteReferenceId')?.value,
+      User:this.userDataService.userData.userID,
+      RefNo: this.userDataService.userData.sessionID,
+     
     }
     try {
           this.loader.start()
@@ -303,7 +305,8 @@ const body={
       total:[0,{disabled: true}],
       tranDate:[new Date()],
       departuretype:['',Validators.required],
-      leadsource:['',Validators.required]
+      leadsource:['',Validators.required],
+      websiteReferenceId:['']
     })
   }
   loadTripList(){
@@ -548,6 +551,7 @@ calculateTotals() {
     payable: payable,
   });
   this.bookingForm.get('discOffered')?.patchValue(regularAmount - quotedPrice);
+  this.discAmount=regularAmount - quotedPrice
 }
 
 
