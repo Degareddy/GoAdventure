@@ -17,6 +17,7 @@ import { SearchEngineComponent } from 'src/app/general/search-engine/search-engi
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
 
 
 interface autoComplete {
@@ -40,10 +41,60 @@ export class TripsComponent implements OnInit {
     dateFormat!:dateFormat
     addOneDay!:addOneDay
     screenName:string=localStorage.getItem('previousScreen')||''
-  tripIdList:autoComplete[]=[]
+  tripIdList:autoComplete[]=[];
+  formatDate!:dateFormat
   autoFilteredPackageNames: autoComplete[] = [];
   packageNamesList:autoComplete[]=[]
-  packageNames:packageNames[]=[]
+  packageNames:packageNames[]=[];
+  columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 40 },
+    { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    { field: "clientName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    { field: "tranNo", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+  //   {
+  //   field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+  //   valueFormatter: function (params: any) {
+  //     if (params.value) {
+  //       const date = new Date(params.value);
+  //       const day = date.getDate().toString().padStart(2, '0');
+  //       const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  //       const year = date.getFullYear();
+  //       return `${day}-${month}-${year}`;
+  //     }
+  //     return null;
+  //   },
+  // },
+  { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+  { field: "packageName", headerName: "Package name", sortable: true, filter: true, resizable: true, width: 190 },
+  { field: "tripId", headerName: "Trip Id", sortable: true, filter: true, resizable: true, width: 80 },
+  
+  {
+    field: "startDate", headerName: "Start Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+  {
+    field: "endDate", headerName: "End Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  }
+  ];
+  rowData:any[]=[]
   title:string="Trips"
   tripForm!:FormGroup
   packageTypes:Item[]=[]
@@ -53,6 +104,7 @@ export class TripsComponent implements OnInit {
     filteredOptions!: Observable<string[]>;
     getTripIds!:getTripIds[]
   retMessage:string='';
+  private columnApi!: ColumnApi;
   textMessageClass:string=''
   modes:Item[]=[
     {itemCode:'Add',itemName:'Add'},
@@ -62,6 +114,8 @@ export class TripsComponent implements OnInit {
     {itemCode:'View',itemName:'View'},
 
   ]
+   private gridApi!: GridApi;
+        public gridOptions!: GridOptions;
   dialogOpen = false;
 
 
@@ -73,6 +127,7 @@ export class TripsComponent implements OnInit {
     this.subSink = new SubSink();
         this.dateFormat=new dateFormat(datepipe);
         this.addOneDay=new addOneDay(datepipe);
+        this.formatDate=new dateFormat(datepipe);
   }
    goBack(): void {
     this.location.back();
@@ -113,9 +168,54 @@ export class TripsComponent implements OnInit {
   const result = this.packageNames.find((pkg: { packageId: string; }) => pkg.packageId === id);
   return result ? result.days : 0;
 }
-packageNameSelected(){
-  this.getEndDate();
+ commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID
+    }
+  }
+  async packageNameSelected(){
+  const body = {
+        ...this.commonParams(),
+        SearchFor:"TRIP",
+        Type:this.tripForm.get('packageType')?.value,
+        ItemFirstLevel: this.tripForm.get('packageName')?.value,
+        FirstDate: this.formatDate.formatDate(this.tripForm.get('StartDate')?.value),
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink = await this.masterService.GetTripSearchList(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
+
 }
+  onGridReady(params: any) {
+      this.gridApi = params.api;
+      this.columnApi = params.columnApi;
+      this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+    onRowSelected(event: any) {
+      console.log(event.data);
+      // this.patchForm(event.data);
+      this.modeChange();
+    } 
   onSubmit(){
 
     if(this.tripForm.get('StartDate')?.value > this.tripForm.get('endDate')?.value){

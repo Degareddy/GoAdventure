@@ -84,10 +84,10 @@
 
 
 
-              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
+              <!-- <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
                 [disabled]="tripForm.get('mode')!.value ==='Add'">
                 <mat-icon class="mat-search-icon">search</mat-icon>
-              </button>
+              </button> -->
             </mat-form-field>
           </div>
           <div class="col-2">
@@ -98,10 +98,10 @@
                 aria-label="Clear" (click)="tripForm.get('tripDesc')!.setValue('')">
                 <mat-icon>cancel</mat-icon>
               </button>
-              <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
+              <!-- <button matSuffix mat-icon-button aria-label="Search" type="button" (click)="tripIdSearch()"
                 [disabled]="tripForm.get('mode')!.value ==='Add'">
                 <mat-icon class="mat-search-icon">search</mat-icon>
-              </button>
+              </button> -->
             </mat-form-field>
           </div>
     </div>
@@ -109,7 +109,7 @@
         <div class="col-3">
           <mat-form-field appearance="outline" class="mat-mode">
             <mat-label class="mat-label-class">Tran Date</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+            <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" (dateChange)="packageNameSelected()" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
@@ -155,6 +155,13 @@
         <mat-icon>cancel</mat-icon>Close
       </button>
     </div>
+    
     </form>
+    <div style="margin-top: -30px;">
+        <app-access-grid [columnDefs]="columnDefs" [rowData]="rowData" [exportPDF]="true" [exportExcel]="true"
+          [globalSearch]="true" (gridReady)="onGridReady($event)" (cellClicked)="onRowSelected($event)"
+          [gridHeight]="'240px'" [paginationPageSize]="25" [showToolPanel]="true"
+          [showRecordCount]="true"></app-access-grid>
+      </div>
     </div>
 </div>

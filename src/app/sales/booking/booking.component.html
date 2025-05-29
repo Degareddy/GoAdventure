@@ -32,8 +32,14 @@
         <div class="bg-white p-2 border rounded-lg shadow-md">
             <div class="text-center text-gray-800 font-semibold">Client Details</div>
             
-              <mat-label></mat-label>
             <div class="matfield">
+              <mat-form-field appearance="outline" class="w-full mt-2">
+              <mat-label>Mode</mat-label>
+              <mat-select formControlName="mode" (selectionChange)="modeChange()">
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
             <mat-form-field appearance="outline" style="width: 99%;">
                 <mat-label fontsize="large">Client Name</mat-label>
                 <input matInput type="text" placeholder="Client Name" formControlName="clientName"
@@ -85,43 +91,55 @@
                       </mat-form-field>
                     </div>
                     <div class="matfield">
-                        <mat-form-field appearance="outline" style="width: 99%;">
-                            <mat-label>Adults</mat-label>
-                            <input matInput type="number" placeholder="Adults" formControlName="adults"
-                             >
-                            <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value"
-                            tabindex="-1" 
-                            (click)="bookingForm.get('adults')?.reset()"
-                               type="button">
-                              <mat-icon class="mat-clear-icon">clear</mat-icon>
-                            </button>
-                          </mat-form-field>
-                        </div>
-                        <div class="matfield">
-                            <mat-form-field appearance="outline" style="width: 99%;">
-                                <mat-label>0-5</mat-label>
-                                <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive"
-                                 >
-                                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value"
-                                tabindex="-1" 
-                                (click)="bookingForm.get('zeroToFive')?.reset()"
-                                   type="button">
-                                  <mat-icon class="mat-clear-icon">clear</mat-icon>
-                                </button>
-                              </mat-form-field>
-                            </div>
-                            <div class="matfield">
-                                <mat-form-field appearance="outline" style="width: 99%;">
-                                    <mat-label>5 - 12</mat-label>
-                                    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve"
-                                     >
-                                    <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('fiveToTwelve')?.value"
-                                    tabindex="-1" 
-                                    (click)="bookingForm.get('fiveToTwelve')?.reset()"
-                                       type="button">
-                                      <mat-icon class="mat-clear-icon">clear</mat-icon>
-                                    </button>
-                                  </mat-form-field>
+                        <div class="form-row">
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>Adults</mat-label>
+    <input matInput type="number" placeholder="Adults" formControlName="adults">
+    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value"
+            tabindex="-1" 
+            (click)="bookingForm.get('adults')?.reset()"
+            type="button">
+      <mat-icon class="mat-clear-icon">clear</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>0-5</mat-label>
+    <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive">
+    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value"
+            tabindex="-1" 
+            (click)="bookingForm.get('zeroToFive')?.reset()"
+            type="button">
+      <mat-icon class="mat-clear-icon">clear</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="form-field">
+    <mat-label>5 - 12</mat-label>
+    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve">
+    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('fiveToTwelve')?.value"
+            tabindex="-1" 
+            (click)="bookingForm.get('fiveToTwelve')?.reset()"
+            type="button">
+      <mat-icon class="mat-clear-icon">clear</mat-icon>
+    </button>
+  </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline" class="w-full mt-2">
+              <mat-label>Lead Source</mat-label>
+              <mat-select formControlName="leadsource" >
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of leadsources" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+             <mat-form-field appearance="outline" class="w-full mt-2">
+              <mat-label>Departure Type</mat-label>
+              <mat-select formControlName="departuretype" >
+                <mat-option value="">--Select--</mat-option>
+                <mat-option *ngFor="let x of departuretypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
                                 </div>
                                 
                             
@@ -134,13 +152,7 @@
             <div class="text-center text-gray-800 font-semibold">                  <mat-label></mat-label>
             </div>
             <div appearance="outline" class="w-full mt-2">
-            <mat-form-field appearance="outline" class="w-full mt-2">
-              <mat-label>Mode</mat-label>
-              <mat-select formControlName="mode" (selectionChange)="modeChange()">
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-              </mat-select>
-            </mat-form-field>
+            
             <div class="matfield">
             <mat-form-field appearance="outline" style="width: 99%;">
                 <mat-label>Booking No</mat-label>
@@ -161,8 +173,27 @@
             <div class="matfield">
                 <mat-form-field appearance="outline" style="width: 99%;">
                     <mat-label>Trip Id</mat-label>
-                    <input matInput type="text" placeholder="Batch Code" formControlName="tripId"
+                    <input matInput type="text" placeholder="Batch Code" formControlName="tripId"  [matAutocomplete]="auto"  
                      >
+                     <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="getTripDetails()"
+                     >
+  
+              <!-- Static header -->
+              <div class="autocomplete-header">
+                <div class="col-code">Code</div>
+                <div class="col-name">Dates</div>
+                <div class="col-phone">Details</div>
+              </div>
+            
+              <!-- Options -->
+              <mat-option *ngFor="let option of autoFilteredTripIdList" [value]="option.itemCode">
+                <div class="autocomplete-row">
+                  <div class="col-code">{{ option.itemCode }}</div>
+                  <div class="col-name">{{ option.itemName }}</div>
+                  <div class="col-phone">{{ option.itemDetails }}</div>
+                </div>
+              </mat-option>
+            </mat-autocomplete>
                     <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('tripId')?.value"
                     tabindex="-1" 
                     (click)="bookingForm.get('tripId')?.reset()"
@@ -213,84 +244,108 @@
         </div>
     </div> 
         <div class="bg-white p-2 border rounded-lg shadow-md">
-            <div class="text-center text-gray-800 font-semibold">Pricing</div>
-              <mat-label></mat-label>
-            <div class="matfield">
-            <mat-form-field appearance="outline" style="width: 99%;">
-                <mat-label>Regular Amount</mat-label>
-                <input matInput type="number" placeholder="Regular Amount" formControlName="regularAmount"
-                 >
-                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('regularAmount')?.value"
-                tabindex="-1" 
-                (click)="bookingForm.get('regularAmount')?.reset()"
-                   type="button">
-                  <mat-icon class="mat-clear-icon">clear</mat-icon>
-                </button>
-              </mat-form-field>
-            </div>
-            <div class="matfield">
-                <mat-form-field appearance="outline" style="width: 99%;">
-                    <mat-label>Discount Offered</mat-label>
-                    <input matInput type="text" placeholder="Discount Offered" formControlName="discOffered"
-                     >
-                    <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('discOffered')?.value"
-                    tabindex="-1" 
-                    (click)="bookingForm.get('discOffered')?.reset()"
-                       type="button">
-                      <mat-icon class="mat-clear-icon">clear</mat-icon>
+    <div class="text-center text-gray-800 font-semibold">Pricing</div>
+    
+    <div class="pricing-container">
+        <!-- Row 1: Regular Amount -->
+        <div class="pricing-row">
+            <div class="pricing-label">Regular</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="Regular Amount" formControlName="regularAmount" (input)="onPriceFieldChange()">
+                    <button matSuffix mat-icon-button aria-label="Clear" 
+                            *ngIf="bookingForm.get('regularAmount')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('regularAmount')?.reset()"
+                            type="button">
+                        <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
-                  </mat-form-field>
-                </div>
-                <div class="matfield">
-                    <mat-form-field appearance="outline" style="width: 99%;">
-                        <mat-label>Quoted Price</mat-label>
-                        <input matInput type="number" placeholder="Quoted Price" formControlName="quotedPrice"
-                         >
-                        <button matSuffix mat-icon-button *ngIf="bookingForm.get('quotedPrice')?.value"
-                        tabindex="-1" 
-                        (click)="bookingForm.get('quotedPrice')?.reset()"
-                        aria-label="Clear"  
-                           type="button">
-                          <mat-icon class="mat-clear-icon">clear</mat-icon>
-                        </button>
-                      </mat-form-field>
-                    </div>
-                    <div class="matfield">
-                        <mat-form-field appearance="outline" style="width: 99%;">
-                            <mat-label>Add-Ons</mat-label>
-                            <input matInput type="number" placeholder="Add Ons" formControlName="addOns" 
-                             >
-                            <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('addOns')?.value"
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Row 2: Quoted Price -->
+        <div class="pricing-row">
+            <div class="pricing-label">Quoted</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()">
+                    <button matSuffix mat-icon-button aria-label="Clear" 
+                            *ngIf="bookingForm.get('quotedPrice')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('quotedPrice')?.reset()"
+                            type="button">
+                        <mat-icon class="mat-clear-icon">clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Row 3: Discount -->
+        <div class="pricing-row">
+            <div class="pricing-label">Disc</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="Discount" formControlName="discOffered" (input)="onPriceFieldChange()">
+                    <button matSuffix mat-icon-button aria-label="Clear" 
+                            *ngIf="bookingForm.get('discOffered')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('discOffered')?.reset()"
+                            type="button">
+                        <mat-icon class="mat-clear-icon">clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Row 4: Add-Ons -->
+        <div class="pricing-row">
+            <div class="pricing-label">AddOns</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
+                    <button matSuffix mat-icon-button aria-label="Clear" 
+                            *ngIf="bookingForm.get('addOns')?.value"
                             tabindex="-1" 
                             (click)="bookingForm.get('addOns')?.reset()"
-                               type="button">
-                              <mat-icon class="mat-clear-icon">clear</mat-icon>
-                            </button>
-                          </mat-form-field>
-                           <mat-form-field appearance="outline" class="w-full mt-2">
-              <mat-label>Lead Source</mat-label>
-              <mat-select formControlName="leadsource" >
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of leadsources" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-             <mat-form-field appearance="outline" class="w-full mt-2">
-              <mat-label>Departure Type</mat-label>
-              <mat-select formControlName="departuretype" >
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of departuretypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-                        </div> 
-
-                        <div class="row justify-content-center mb-3 align-items-center">
-                            <div class="col-3 d-flex align-items-center">
-                              <label class="me-2">GST:</label>
-                              <mat-checkbox formControlName="gstYes" class="me-2">Yes</mat-checkbox>
-                              <mat-checkbox formControlName="gstNo" [checked]="!bookingForm.get('gstYes')?.value" (change)="bookingForm.get('gstYes')?.setValue(false)">No</mat-checkbox>
-                            </div>
-                          </div>
+                            type="button">
+                        <mat-icon class="mat-clear-icon">clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
         </div>
+
+        <!-- Row 5: Total (calculated field - readonly) -->
+        <div class="pricing-row total-row">
+            <div class="pricing-label">Total</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="Total" formControlName="total" readonly>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Row 6: GST (calculated field - readonly) -->
+        <div class="pricing-row gst-row">
+            <div class="pricing-label">GST</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="GST" formControlName="gst" readonly>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Row 7: Payable (calculated field - readonly) -->
+        <div class="pricing-row payable-row">
+            <div class="pricing-label">Payable</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number" placeholder="Payable" formControlName="payable" readonly>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</div>
         
     </div> 
     <div class="row">

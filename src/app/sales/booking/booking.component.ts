@@ -15,8 +15,15 @@ import { SearchEngineComponent } from 'src/app/general/search-engine/search-engi
 import { EditorComponent } from './editor/editor.component';
 import { Location } from '@angular/common';
 import { SalesService } from 'src/app/Services/sales.service';
+import { forkJoin, map, startWith } from 'rxjs';
 
 
+interface autoComplete {
+  itemCode: string
+  itemName: string
+  itemDetails:string
+
+}
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
@@ -36,6 +43,8 @@ export class BookingComponent implements OnInit {
   leadsources:Item[]=[]
   departuretypes:Item[]=[]
   selectdPackageNameId!:string;
+  tripIdList:autoComplete[]=[]
+  autoFilteredTripIdList: autoComplete[] = [];
   modes:Item[]=[
     {itemCode:'Add',itemName:'Add'},
     {itemCode:'Modify',itemName:'Modify'},
@@ -47,7 +56,7 @@ export class BookingComponent implements OnInit {
     constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
       private loader: NgxUiLoaderService, private datePipe: DatePipe,
-      private masterService:MastersService
+      private masterService:MastersService,private saleService:SalesService
     ) {
     this.bookingForm=this.formInit()
     this.subSink=new SubSink()
@@ -189,8 +198,26 @@ const body={
       });
     }
   });
+  this.bookingForm.get('tripId')!.valueChanges
+    .pipe(
+      startWith(''),
+      map(value => typeof value === 'string' ? value : value?.itemName || ''),
+      map(name => this._filter(name))
+    )
+    .subscribe(filtered => {
+      this.autoFilteredTripIdList = filtered;
+    });
+    this.loadTripIds();
   }
+    private _filter(value: string): autoComplete[] {
+    const filterValue = value.toLowerCase();
   
+    return this.tripIdList.filter(option =>
+      option.itemName.toLowerCase().includes(filterValue) ||
+      option.itemCode.toLowerCase().includes(filterValue) ||
+      option.itemDetails.toLowerCase().includes(filterValue)
+    );
+  }
   onSubmit(){
     if(this.bookingForm.get('gstYes')?.value){
       this.gst=true
@@ -244,7 +271,15 @@ const body={
               this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
             }
   }
- 
+   commomParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      langId: this.userDataService.userData.langId,
+      refNo: this.userDataService.userData.sessionID,
+      user: this.userDataService.userData.userID
+    }
+  }
   formInit() {
     return this.fb.group({
       mode:['View'],
@@ -258,13 +293,14 @@ const body={
       adults:['',Validators.required],
       zeroToFive:['0',Validators.required],
       fiveToTwelve:['0',Validators.required],
-      gstYes:[false],
-      gstNo:[true],
+      gst:[0,{disabled: true}],
       remarks:[''],
+      payable:[0,{disabled: true}],
       regularAmount:[0],
-      discOffered:[0],
+      discOffered:[0,{disabled: true}],
       quotedPrice:[0],
       addOns:[0],
+      total:[0,{disabled: true}],
       tranDate:[new Date()],
       departuretype:['',Validators.required],
       leadsource:['',Validators.required]
@@ -294,6 +330,52 @@ const body={
             catch (ex: any) {
               this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
             }
+    }
+    getTripDetails(){
+      const body={
+        Mode:"ADD",
+        Company:this.userDataService.userData.company,
+        Location:this.userDataService.userData.location,
+        Type:"TRIPPKG",
+        Item:this.bookingForm.get('tripId')?.value,
+        User:this.userDataService.userData.userID,
+        RefNo:this.userDataService.userData.sessionID,
+      }
+      try {
+          this.loader.start();
+              this.subSink.sink =this.masterService.GetCascadingMasterItemsList(body).subscribe((res: any) => {
+                this.loader.stop();
+                
+          
+              });
+            }
+            catch (ex: any) {
+              this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+            }
+    }
+    loadTripIds(){
+      const body={ ...this.commomParams(), item: "UPCMGTRIPS" }
+      try {
+          this.loader.start();
+              this.subSink.sink =this.salesSerivce.GetMasterItemsList(body).subscribe((res: any) => {
+                this.loader.stop();
+                this.tripIdList = res.data.map((item: any) => ({
+            itemCode: item.itemCode,
+            itemName: item.itemName,
+            itemDetails: "No Package Name please contact adminstrator"  // Adjust as needed
+          }));
+           this.autoFilteredTripIdList = res.data.map((item: any) => ({
+            itemCode: item.itemCode,
+            itemName: item.itemName,
+            itemDetails: "No Package Name please contact adminstrator"  // Adjust as needed
+          }));
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+              });
+            }
+            catch (ex: any) {
+              this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+            }
+      
     }
   private displayMessage(message: string, cssClass: string) {
         this.retMessage = message;
@@ -440,5 +522,36 @@ searchBookingOnTran(){
       this.bookingForm.get('batchNo')?.enable();
     }
   }
+  // Add this method to calculate totals
+calculateTotals() {
+  const regularAmount = this.bookingForm.get('regularAmount')?.value || 0;
+  const quotedPrice = this.bookingForm.get('quotedPrice')?.value || 0;
+  const discount = this.bookingForm.get('discOffered')?.value || 0;
+  const addOns = this.bookingForm.get('addOns')?.value || 0;
   
+  // Apply discount to quoted price (discount is between regular and quoted price)
+  const discountedPrice = quotedPrice - discount;
+  
+  // Calculate total (discounted price + addons)
+  const total = quotedPrice + addOns;
+  
+  // Calculate GST on quoted price (5% as per your current rate)
+  const gst = total * 0.05;
+  
+  // Calculate payable amount (total + GST)
+  const payable = total + gst;
+  
+  // Update form controls
+  this.bookingForm.patchValue({
+    total: total,
+    gst: gst,
+    payable: payable,
+  });
+  this.bookingForm.get('discOffered')?.patchValue(regularAmount - quotedPrice);
+}
+
+// Call this method whenever any pricing field changes
+onPriceFieldChange() {
+  this.calculateTotals();
+}
 }

@@ -144,4 +144,165 @@
   .small-label {
     font-size: smaller;
   }
-  
+  /* Sticky header styles */
+.autocomplete-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 2;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-bottom: 1px solid #ccc;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+/* Option rows */
+.autocomplete-row {
+  display: flex;
+  white-space: nowrap;
+  min-width: 600px;
+  padding: 6px 10px;
+  font-size: 10px;
+}
+
+/* Alternating colors */
+::ng-deep .mat-autocomplete-panel mat-option:nth-child(even) .autocomplete-row {
+  background-color: #f9f9f9;
+  overflow-y: auto;
+}
+
+::ng-deep .mat-autocomplete-panel mat-option:nth-child(odd) .autocomplete-row {
+  background-color: #ffffff;
+  overflow-y: auto;
+}
+
+/* Custom hover & focus background */
+::ng-deep .mat-autocomplete-panel mat-option:hover:not(.mat-selected) .autocomplete-row,
+::ng-deep .mat-autocomplete-panel mat-option.mat-active .autocomplete-row {
+  background-color: #5b6acefe !important; /* Light blue */
+  color: #000;
+  overflow-y: auto;
+}
+
+/* Prevent default dark blue selection */
+::ng-deep .mat-autocomplete-panel mat-option.mat-selected {
+  background-color: #dbeafe !important; /* Light blue selection */
+  color: #000 !important;
+  overflow-y: auto;
+}
+
+/* Column styles */
+.col-code,
+.col-name,
+.col-phone {
+  padding-right: 12px;
+  flex: 1;
+  min-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Panel styling */
+::ng-deep .mat-autocomplete-panel {
+  max-height: 300px;
+  overflow-y: auto important;
+  overflow-x: auto !important;
+  min-width: 600px;
+  white-space: nowrap !important;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+}
+.form-row {
+  display: flex;
+  gap: 16px; /* Adjust spacing between fields */
+  align-items: flex-start;
+}
+
+.form-field {
+  flex: 1; /* Equal width for all fields */
+  min-width: 0; /* Prevents overflow */
+}
+
+/* Responsive - stack on mobile */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+.pricing-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.pricing-row {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 4px 0;
+}
+
+.pricing-row:last-child {
+    border-bottom: none;
+}
+
+.pricing-label {
+    flex: 0 0 80px;
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+    padding-right: 16px;
+    font-size: 14px;
+}
+
+.pricing-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.pricing-field mat-form-field {
+    width: 100%;
+}
+
+/* Special styling for calculated fields */
+.total-row,
+.gst-row,
+.payable-row {
+    border-top: 1px solid #e0e0e0;
+    margin-top: 4px;
+    padding-top: 8px;
+    background-color: #f9f9f9;
+}
+
+.payable-row {
+    border-top: 2px solid #333;
+    font-weight: bold;
+    /* background-color: #e3f2fd; */
+}
+
+.payable-row .pricing-label {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+/* Input styling for readonly fields */
+.total-row ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix,
+.gst-row ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix,
+.payable-row ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    /* background-color: #f5f5f5; */
+}
+
+/* Remove mat-label from pricing fields since we have external labels */
+.pricing-field ::ng-deep .mat-form-field-label {
+    display: none;
+}
+
+/* Adjust form field padding */
+.pricing-field ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 12px 14px;
+}
