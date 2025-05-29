@@ -550,6 +550,7 @@ calculateTotals() {
   this.bookingForm.get('discOffered')?.patchValue(regularAmount - quotedPrice);
 }
 
+
 // Call this method whenever any pricing field changes
 onPriceFieldChange() {
   this.calculateTotals();
