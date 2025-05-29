@@ -249,7 +249,7 @@ export class TripsComponent implements OnInit {
           this.subSink.sink = this.invService.UpdateTripDetails(body).subscribe((res: any) => {
             this.loader.stop();
             if(res.status.toUpperCase() === "SUCCESS"){
-              this.displayMessage(displayMsg.SUCCESS,TextClr.green);
+              this.displayMessage(displayMsg.SUCCESS + res.message,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
             }
             else{

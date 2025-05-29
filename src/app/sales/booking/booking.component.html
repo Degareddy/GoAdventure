@@ -205,23 +205,15 @@
                   </mat-form-field>
                 </div>
                 <div class="matfield">
-                    <mat-form-field appearance="outline" style="width: 99%;">
-                        <mat-label>Package Name</mat-label>
-                        <input matInput type="text" placeholder="Package Name" formControlName="packageName"
-                         >
-                        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('packageName')?.value"
-                        tabindex="-1" 
-                        (click)="bookingForm.get('packageName')?.reset()"
-                           type="button">
-                          <mat-icon class="mat-clear-icon">clear</mat-icon>
-                        </button>
-                        <button matSuffix mat-icon-button aria-label="Search" 
-                          (click)="onSearchCilcked()" type="button">
-                          <mat-icon class="mat-search-icon">search</mat-icon>
-                        </button>
-                      </mat-form-field>
-                    </div>
-                    <div class="matfield">
+  <label style="font-weight: 500;">Package Name : {{ selectedPackageName}}</label>
+  
+</div>
+<div class="matfield">
+  <label style="font-weight: 500;">Package Type : {{ seletedPackageTypeName}}</label>
+  
+</div>
+
+                    <!-- <div class="matfield">
                       <mat-form-field appearance="outline" class="w-full mt-2">
                         <mat-label>Package Type</mat-label>
                         <mat-select formControlName="packageType" >
@@ -229,7 +221,7 @@
                           <mat-option *ngFor="let x of packageTypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
                         </mat-select>
                       </mat-form-field>
-                        </div>
+                        </div> -->
                         <div class="matfield">  
                           <mat-form-field appearance="outline" class="mat-mode">
                             <mat-label class="mat-label-class">Tran Date</mat-label>

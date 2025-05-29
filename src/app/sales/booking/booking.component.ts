@@ -36,6 +36,10 @@ export class BookingComponent implements OnInit {
     selectedClientId!:string
   subSink!:SubSink
   textMessageClass:string=""
+  selectedPackageId!:string;
+   selectedPackageName:string="";
+    selectedPackageTypeId!:string;
+     seletedPackageTypeName!:string;
   packageTypes:Item[]=[]
   clientId:string='';
   dialogOpen = false;
@@ -235,7 +239,7 @@ const body={
       Location: this.userDataService.userData.location,
       TranNo: this.bookingForm.get('batchNo')?.value,
       TranDate: this.bookingForm.get('tranDate')?.value,
-      PackageType: this.bookingForm.get('packageType')?.value,
+      PackageType: this.selectedPackageId,
       TripId: this.bookingForm.get('tripId')?.value,
       DepType:this.bookingForm.get('departuretype')?.value,
       LeadSource:this.bookingForm.get('leadsource')?.value,
@@ -291,9 +295,9 @@ const body={
     return this.fb.group({
       mode:['View'],
       batchNo:[''],
-      packageType:['',Validators.required],
+      packageType:['',{disabled: true}],
       tripId:['',Validators.required],
-      packageName:['',Validators.required],
+      packageName:['',{disabled: true}],
       clientName:['',Validators.required],
       contact:['',Validators.required],
       email:['',Validators.required],
@@ -353,7 +357,19 @@ const body={
           this.loader.start();
               this.subSink.sink =this.salesSerivce.GetTripDataToBooking(body).subscribe((res: any) => {
                 this.loader.stop();
-                
+                if(res.status === "Success"){
+                  this.displayMessage(res.message,'green');
+                  this.selectedPackageId=res.data.package
+                  this.selectedPackageName=res.data.packageName
+                  this.selectedPackageTypeId=res.data.packageType
+                  this.seletedPackageTypeName=res.data.packageTypeDesc
+
+            
+                  this.bookingForm.get('regularAmount')?.patchValue(res.data.stdCost);
+                }
+                else{
+                  this.displayMessage(res.message,'red');
+                }
           
               });
             }
@@ -392,6 +408,10 @@ const body={
       
   clear(){
     this.bookingForm=this.formInit();
+    this.selectedPackageId=''
+    this.selectedPackageName=''
+    this.selectedPackageTypeId=''
+    this.seletedPackageTypeName=''
   }
   close(){
 
