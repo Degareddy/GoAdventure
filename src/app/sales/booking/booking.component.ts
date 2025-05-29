@@ -217,6 +217,11 @@ const body={
       option.itemName.toLowerCase().includes(filterValue) ||
       option.itemCode.toLowerCase().includes(filterValue)     );
   }
+  displayTripName = (code: string): string => {
+  const match = this.autoFilteredTripIdList.find(opt => opt.itemCode === code);
+  return match ? match.itemName : '';
+};
+
   onSubmit(){
     if(this.bookingForm.get('gstYes')?.value){
       this.gst=true
@@ -339,14 +344,14 @@ const body={
         Mode:"ADD",
         Company:this.userDataService.userData.company,
         Location:this.userDataService.userData.location,
-        Type:"TRIPPKG",
-        Item:this.bookingForm.get('tripId')?.value,
+        ItemTypeTmp:"TRIPPKG",
+        ItemFirstLevel:this.bookingForm.get('tripId')?.value,
         User:this.userDataService.userData.userID,
         RefNo:this.userDataService.userData.sessionID,
       }
       try {
           this.loader.start();
-              this.subSink.sink =this.masterService.GetCascadingMasterItemsList(body).subscribe((res: any) => {
+              this.subSink.sink =this.salesSerivce.GetTripDataToBooking(body).subscribe((res: any) => {
                 this.loader.stop();
                 
           

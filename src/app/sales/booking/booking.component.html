@@ -175,19 +175,19 @@
                     <mat-label>Trip Id</mat-label>
                     <input matInput type="text" placeholder="Batch Code" formControlName="tripId"  [matAutocomplete]="auto"  
                      >
-                     <mat-autocomplete #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="getTripDetails()"
+                     <mat-autocomplete [displayWith]="displayTripName" #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="getTripDetails()"
                      >
   
               <!-- Static header -->
               <div class="autocomplete-header">
-                <div class="col-code">Code</div>
-                <div class="col-name">Dates</div>
+                <!-- <div class="col-code">Code</div> -->
+                <div class="col-name">Trip Id's</div>
               </div>
             
               <!-- Options -->
               <mat-option *ngFor="let option of autoFilteredTripIdList" [value]="option.itemCode">
                 <div class="autocomplete-row">
-                  <div class="col-code">{{ option.itemCode }}</div>
+                  <!-- <div class="col-code">{{ option.itemCode }}</div> -->
                   <div class="col-name">{{ option.itemName }}</div>
                 </div>
               </mat-option>
@@ -296,6 +296,21 @@
                 </mat-form-field>
             </div>
         </div>
+  <div class="pricing-row">
+            <div class="pricing-label">AddOns</div>
+            <div class="pricing-field">
+                <mat-form-field appearance="outline">
+                    <input matInput type="number"  style="text-align: right;" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
+                    <button matSuffix mat-icon-button aria-label="Clear" 
+                            *ngIf="bookingForm.get('addOns')?.value"
+                            tabindex="-1" 
+                            (click)="bookingForm.get('addOns')?.reset()"
+                            type="button">
+                        <mat-icon class="mat-clear-icon">clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+        </div>
 
         <!-- Row 3: Discount -->
         <div class="pricing-row">
@@ -315,22 +330,7 @@
         </div>
 
         <!-- Row 4: Add-Ons -->
-        <div class="pricing-row">
-            <div class="pricing-label">AddOns</div>
-            <div class="pricing-field">
-                <mat-form-field appearance="outline">
-                    <input matInput type="number"  style="text-align: right;" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
-                    <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('addOns')?.value"
-                            tabindex="-1" 
-                            (click)="bookingForm.get('addOns')?.reset()"
-                            type="button">
-                        <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
-                </mat-form-field>
-            </div>
-        </div>
-
+      
         <!-- Row 5: Total (calculated field - readonly) -->
         <div class="pricing-row total-row">
             <div class="pricing-label">Total</div>

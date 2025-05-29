@@ -215,6 +215,10 @@ export class TripsComponent implements OnInit {
       console.log(event.data);
       // this.patchForm(event.data);
       this.modeChange();
+      this.tripForm.get('tripId')?.patchValue(event.data.tripId);
+      this.tripForm.get('tranDate')?.patchValue(event.data.tripDesc);
+      this.tripForm.get('StartDate')?.patchValue(event.data.tripDesc);
+      this.tripForm.get('endDate')?.patchValue(event.data.tripDesc);
     } 
   onSubmit(){
 
@@ -351,6 +355,7 @@ export class TripsComponent implements OnInit {
         this.tripForm.get('packageName')?.patchValue('')
         this.tripForm.get('remarks')?.patchValue('')
         this.displayMessage("","");
+        this.tripForm= this.formInit();
     }
     modeChange(){
       if(this.tripForm.get('mode')?.value === "Add"){

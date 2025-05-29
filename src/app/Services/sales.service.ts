@@ -47,6 +47,9 @@ GetPartySearchList(doc: any): Observable<any> {
       GetClientBalance(body: any): Observable<any> {
       return this.http.post<any>(environment.Url + 'sales/GetClientBalance/', body);
     }
+     GetTripDataToBooking(body: any): Observable<any> {
+      return this.http.post<any>(environment.Url + 'sales/GetTripDataToBooking/', body);
+    }
   GetPackagesList(qtnDet: any): Observable<any> {
     return this.http.post(environment.Url + 'sales/GetPackagesList', qtnDet)
   }
