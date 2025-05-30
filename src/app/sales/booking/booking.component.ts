@@ -17,6 +17,9 @@ import { Location } from '@angular/common';
 import { SalesService } from 'src/app/Services/sales.service';
 import { forkJoin, map, startWith } from 'rxjs';
 import { Router } from '@angular/router';
+import { purchaseRequestDetailsClass } from 'src/app/purchase/purchase.class';
+import { PurchaseService } from 'src/app/Services/purchase.service';
+import { MasterParams } from '../sales.class';
 
 
 interface autoComplete {
@@ -40,6 +43,8 @@ export class BookingComponent implements OnInit {
   subSink!:SubSink
   textMessageClass:string=""
   selectedPackageId!:string;
+    masterParams!: MasterParams;
+  
    selectedPackageName:string="";
     selectedPackageTypeId!:string;
      seletedPackageTypeName:string="";
@@ -66,13 +71,16 @@ export class BookingComponent implements OnInit {
   formattedGst: string='';
   formattedPayable: string='';
   formattedDiscount: string='';
-    constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService , private router: Router,
+    constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService ,
+      private purchaseService:PurchaseService, private router: Router,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
       private loader: NgxUiLoaderService, private datePipe: DatePipe,
       private masterService:MastersService,private saleService:SalesService
     ) {
     this.bookingForm=this.formInit()
     this.subSink=new SubSink()
+        this.masterParams = new MasterParams();
+    
    }
 openInvoiceEditor() {
   const url = `${window.location.origin}/invoice-editor`;
@@ -497,8 +505,16 @@ const body={
             this.displayMessage(displayMsg.EXCEPTION+ ex.message, TextClr.red);
           }
   }
-  onBookingSearch(){
-    try {
+   commonParams() {
+    return {
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      user: this.userDataService.userData.userID,
+      refNo: this.userDataService.userData.sessionID
+    }
+  }
+  openBookingSearch(){
+ try {
             if (!this.dialogOpen) {
               this.dialogOpen = true;
               const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -530,6 +546,46 @@ const body={
       this.textMessageClass = 'red';
     }
   }
+  onBookingSearch(){
+    if(this.bookingForm.get('batchNo')?.value !== ''){
+      const currentDate = new Date();
+    const firstDayOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+    const formattedFirstDayOfMonth = this.formatDate(firstDayOfMonth);
+    const formattedCurrentDate = this.formatDate(currentDate);
+      const body = {
+      ...this.commonParams(),
+      TranType: 'RECEIPT',
+      TranNo: this.bookingForm.controls['batchNo'].value || '',
+      Party: '',
+      FromDate: formattedFirstDayOfMonth,
+      ToDate: formattedCurrentDate,
+      TranStatus: 'CLOSED',
+    };
+    this.subSink.sink =  this.purchaseService.GetTranCount(body).subscribe((res: any) => {
+      if (res.status.toUpperCase() != 'FAIL' && res.status.toUpperCase() != 'ERROR') {
+        if (res && res.data && res.data.tranCount === 1) {
+          this.masterParams.tranNo = res.data.selTranNo;
+          this.searchBookingOnTran();
+        }
+        else{
+          this.openBookingSearch()
+        }  
+    }
+    else{
+      this.openBookingSearch()
+    }
+    })
+  }
+      
+    else{
+     this.openBookingSearch()
+    }
+    
+  }
 searchBookingOnTran(){
  const body={
           Company:this.userDataService.userData.company,
@@ -554,7 +610,7 @@ searchBookingOnTran(){
                    this.bookingForm.get('discOffered')?.patchValue(this.getInrFormat(res.data.discount));
                    this.bookingForm.get('total')?.patchValue(this.getInrFormat(res.data.totalAmount));
                    this.bookingForm.get('gst')?.patchValue(this.getInrFormat(res.data.taxAmount));
-                   this.bookingForm.get('Payable')?.patchValue(this.getInrFormat(res.data.netPayable));
+                   this.bookingForm.get('payable')?.patchValue(this.getInrFormat(res.data.netPayable));
                   this.clientId = res.data.client;
                 }
               });
@@ -566,9 +622,9 @@ searchBookingOnTran(){
   parchForm(data:any){
      
     this.bookingForm.get('mode')?.patchValue('Modify')
-    this.bookingForm.get('packageType')?.patchValue(data.packageType)
+    this.bookingForm.get('packageType')?.patchValue(data.packageTypeDesc)
     this.bookingForm.get('tripId')?.patchValue(data.tripId)
-    this.bookingForm.get('packageName')?.patchValue('')
+    this.bookingForm.get('packageName')?.patchValue(data.packageName)
     this.bookingForm.get('clientName')?.patchValue(data.clientName)
     this.bookingForm.get('contact')?.patchValue(data.contact)
     this.bookingForm.get('email')?.patchValue(data.email)
