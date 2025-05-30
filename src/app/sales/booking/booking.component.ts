@@ -750,10 +750,10 @@ calculateTotals() {
 // Call this method whenever any pricing field changes
 onPriceFieldChange(fieldName?: string) {
   this.calculateTotals();
-  if(fieldName === 'regularAmount'){
-    let regamount=(this.bookingForm.get('regularAmount')?.value)
-    this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat(parseFloat(regamount)) )
-  }
+  // if(fieldName === 'regularAmount'){
+  //   let regamount=(this.bookingForm.get('regularAmount')?.value)
+  //   this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat(parseFloat(regamount)) )
+  // }
 }
 onCountChnage() {
   const adults = this.bookingForm.get('adults')?.value;
