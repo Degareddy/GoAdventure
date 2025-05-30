@@ -260,6 +260,10 @@
         <b>{{ title | titlecase }}</b>
       </div>
       <div class="flex items-end space-x-1 mb-2.5">
+        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="allocate()"
+        [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value == 'CASHTRF' || receiptsForm.get('mode')!.value.toUpperCase() == 'REVERSE'">
+        <mat-icon>check_box</mat-icon> Invoice Allocate
+      </button>
         <button mat-raised-button color="primary" class="btnUp" type="button">
           <mat-icon>info</mat-icon>Details
         </button>
@@ -412,8 +416,12 @@
 </div>
       <div class="col-md-3 d-flex align-items-center">
         <mat-checkbox formControlName="recurring"></mat-checkbox> <label class="ml-2">Recurring</label>
+         <label class="ml-2">Status: {{allocStatus}}</label>
 
       </div>
+      
+      
+
     </div>
 
   </mat-card-content>

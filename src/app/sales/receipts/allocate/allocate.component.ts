@@ -110,7 +110,7 @@ checkAllocatedAmount(_t152: any) {
   }
   ];
 
-  displayedColumns: string[] = ['select','propName','blockName','unitName', 'tranNo', 'tranDate', 'dueDate', 'actAmount', 'dueAmount', 'allocatedAmount', 'balAmount', 'remarks'];
+  displayedColumns: string[] = ['select','tranNo', 'tranDate', 'dueDate', 'actAmount', 'dueAmount', 'allocatedAmount', 'balAmount', 'remarks'];
   dataSource: any = [];
   initialTotalAllocated: number = 0;
 

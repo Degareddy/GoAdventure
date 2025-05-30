@@ -19,6 +19,7 @@ import { TenantSearchComponent } from '../receipts/tenant-search/tenant-search.c
 import { Router } from '@angular/router';
 import { SearchEngineComponent } from 'src/app/general/search-engine/search-engine.component';
 import { dateFormat } from '../sales.class';
+import { AllocateComponent } from '../receipts/allocate/allocate.component';
 
 
 @Component({
@@ -36,6 +37,7 @@ balance:number=0
 textMessageClass:string="";
 tomorrow=new Date()
 selecTedClient:String=''
+allocStatus:string=''
 accountNosCmp:Item[]=[]
 // accountNosClient:Item[]=[]
 receiptmodes:Item[]=[
@@ -637,20 +639,20 @@ private subSink!: SubSink;
       rctAmount:[0],
       recurring:[false],
       providerType: [''],
-  provider: [''],
-  refNo: [''],
-  refDate: [new Date()],
-  otherRef1: [''],
-  otherRefDate1: [''],
-  otherRef2: [''],
-  status: ['Paid'],
- holder:[''], 
-accountNo:[''],
-  accountProviderType: [''],
-  accountProvider: [''],
-  CustaccountNo: [''],
-  charges:[0],
-  total:[0,{disabled: true}],
+      provider: [''],
+      refNo: [''],
+      refDate: [new Date()],
+      otherRef1: [''],
+      otherRefDate1: [''],
+      otherRef2: [''],
+      status: ['Paid'],
+      holder:[''], 
+      accountNo:[''],
+      accountProviderType: [''],
+      accountProvider: [''],
+      CustaccountNo: [''],
+      charges:[0],
+      total:[0,{disabled: true}],
     });
     }
   goBack(): void {
@@ -679,4 +681,27 @@ accountNo:[''],
   
   //     });
   // }
+  allocate() {
+    console.log(this.receiptsForm.controls['tranNo'].value);
+      const dialogRef: MatDialogRef<AllocateComponent> = this.dialog.open(AllocateComponent,
+        {
+          width: '80%', // Set the width of the dialog
+          disableClose: true,
+          data: {
+            mode: this.receiptsForm.controls['mode'].value,
+            tranNo: this.receiptsForm.controls['tranNo'].value,
+            search: 'Allocate',
+            tranType: 'RECEIPT',
+            tranAmount: this.receiptsForm.controls['rctAmount'].value,
+            allocStatus: this.allocStatus,
+            tranFor: this.receiptsForm.controls['tranFor'].value
+          },
+        }
+      );
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result.isAltered) {
+          this.onSearchCilcked();
+        }
+      });
+    }
 }

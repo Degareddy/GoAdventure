@@ -46,7 +46,7 @@ export class TripsComponent implements OnInit {
   autoFilteredPackageNames: autoComplete[] = [];
   packageNamesList:autoComplete[]=[]
   packageNames:packageNames[]=[];
-  columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 40 },
+  columnDefs: any = [
     { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "clientName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "tranNo", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
@@ -92,7 +92,9 @@ export class TripsComponent implements OnInit {
       }
       return null;
     },
-  }
+  },
+  { field: "tripDesc", headerName: "Trip Desc", sortable: true, filter: true, resizable: true, width: 80 },
+  { field: "stdCost", headerName: "Standard Cost", sortable: true, filter: true, resizable: true, width: 80 },
   ];
   rowData:any[]=[]
   title:string="Trips"
@@ -176,17 +178,63 @@ export class TripsComponent implements OnInit {
       refNo: this.userDataService.userData.sessionID
     }
   }
-  async packageNameSelected(){
+//   async packageNameSelected(){
+//     this.displayMessage('','');
+//   const body = {
+//         ...this.commonParams(),
+//         SearchFor:"TRIP",
+//         Type:this.tripForm.get('packageType')?.value,
+//         ItemFirstLevel: this.tripForm.get('packageName')?.value,
+//         FirstDate: this.formatDate.formatDate(this.tripForm.get('StartDate')?.value),
+//       }
+//       try {
+//         this.loader.start();
+//         this.subSink.sink = await this.masterService.GetTripSearchList(body).subscribe((res: any) => {
+//           this.loader.stop();
+//           if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+//             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+//             this.rowData = [];
+//           }
+//           else if(res.data.length === 1){
+//            this.rowData=res.data
+//           }
+//           else {
+//             this.rowData = res['data'];
+//             this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+//           }
+//         });
+//       }
+//       catch (ex: any) {
+//         this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+//       }
+
+// }
+  onGridReady(params: any) {
+      this.gridApi = params.api;
+      this.columnApi = params.columnApi;
+      this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+    onRowSelected(event: any) {
+      console.log(event.data);
+     this.tripForm.get('mode')?.patchValue('Modify');
+
+      // this.patchForm(event.data);
+      this.modeChange();
+      this.tripForm.get('tripId')?.patchValue( event.data.tripId);
+       this.tripForm.get('tripDesc')?.patchValue( event.data.tripDesc);
+      this.tripForm.get('StartDate')?.patchValue(this.formatDate.formatDate(event.data.startDate) );
+      this.tripForm.get('endDate')?.patchValue(this.formatDate.formatDate(event.data.endDate));
+    } 
+    getTripIdData(){
+      this.displayMessage('','');
   const body = {
         ...this.commonParams(),
-        SearchFor:"TRIP",
-        Type:this.tripForm.get('packageType')?.value,
-        ItemFirstLevel: this.tripForm.get('packageName')?.value,
-        FirstDate: this.formatDate.formatDate(this.tripForm.get('StartDate')?.value),
+        mode:this.tripForm.get('mode')?.value,
+        item:this.tripForm.get('packageName')?.value
       }
       try {
         this.loader.start();
-        this.subSink.sink = await this.masterService.GetTripSearchList(body).subscribe((res: any) => {
+        this.subSink.sink =  this.salesService.GetTripDefinitionsList(body).subscribe((res: any) => {
           this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
             this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
@@ -204,22 +252,7 @@ export class TripsComponent implements OnInit {
       catch (ex: any) {
         this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
-
-}
-  onGridReady(params: any) {
-      this.gridApi = params.api;
-      this.columnApi = params.columnApi;
-      this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
-  }
-    onRowSelected(event: any) {
-      console.log(event.data);
-      // this.patchForm(event.data);
-      this.modeChange();
-      this.tripForm.get('tripId')?.patchValue(event.data.tripId);
-      this.tripForm.get('tranDate')?.patchValue(event.data.tripDesc);
-      this.tripForm.get('StartDate')?.patchValue(event.data.tripDesc);
-      this.tripForm.get('endDate')?.patchValue(event.data.tripDesc);
-    } 
+    }
   onSubmit(){
 
     if(this.tripForm.get('StartDate')?.value > this.tripForm.get('endDate')?.value){
@@ -240,7 +273,7 @@ export class TripsComponent implements OnInit {
       StartDate:this.addOneDay.formatDate(this.tripForm.get('StartDate')?.value) ,
       EndDate: this.addOneDay.formatDate(this.tripForm.get('endDate')?.value) ,
       Remarks:this.tripForm.get('remarks')?.value,
-      stdcose:this.tripForm.get('tripRegularAmount')?.value,
+      stdcost:this.tripForm.get('tripRegularAmount')?.value,
 
    }
     try {
@@ -251,7 +284,8 @@ export class TripsComponent implements OnInit {
             if(res.status.toUpperCase() === "SUCCESS"){
               this.displayMessage(displayMsg.SUCCESS + res.message,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
-              this.packageNameSelected();
+              // this.packageNameSelected();
+              this.getTripIdData();
             }
             else{
               this.displayMessage(displayMsg.ERROR + res.message,TextClr.red);
