@@ -10,219 +10,375 @@
           <mat-icon>cloud_upload</mat-icon> Docs
         </button>
         <!-- (click)="openInvoiceEditor()" mat-raised-button color="accent" -->
-        <button mat-raised-button color="primary" class="btnUp" type="button" (click)="downloadPDF()">
+        <button
+          mat-raised-button
+          color="primary"
+          class="btnUp"
+          type="button"
+          (click)="downloadPDF()"
+        >
           <mat-icon>picture_as_pdf</mat-icon> PDF
         </button>
-  
-        <button mat-raised-button class="btnUp" type="button" >
+
+        <button mat-raised-button class="btnUp" type="button">
           <mat-icon>note_add</mat-icon> Notes
         </button>
-        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="onHelpCilcked()">
+        <button
+          mat-raised-button
+          color="accent"
+          class="btnUp"
+          type="button"
+          (click)="onHelpCilcked()"
+        >
           <mat-icon>help</mat-icon> Help
         </button>
       </div>
     </div>
   </div>
-  
-  <div class="container mx-auto p-2 bg-gray-100 rounded-sm">
 
+  <div class="container mx-auto p-2 bg-gray-100 rounded-sm">
     <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" #frmClear="ngForm">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-           
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div class="bg-white p-2 border rounded-lg shadow-md">
-            <div class="text-center text-gray-800 font-semibold">Client Details</div>
-            
-            <div class="matfield">
-              <mat-form-field appearance="outline" class="w-full mt-2">
+          <div class="text-center text-gray-800 font-semibold">
+            Client Details
+          </div>
+
+          <div class="matfield">
+            <mat-form-field appearance="outline" class="w-full mt-2">
               <mat-label>Mode</mat-label>
-              <mat-select formControlName="mode" (selectionChange)="modeChange()">
+              <mat-select
+                formControlName="mode"
+                (selectionChange)="modeChange()"
+              >
                 <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+                <mat-option *ngFor="let x of modes" [value]="x.itemCode"
+                  >{{ x.itemName }}</mat-option
+                >
               </mat-select>
             </mat-form-field>
-               <div class="matfield">
-                <mat-form-field appearance="outline" style="width: 99%;">
-                    <mat-label>Mobile</mat-label>
-                    <input matInput type="text" placeholder="Mobile No" formControlName="contact"
-                     >
-                    <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('contact')?.value"
-                    tabindex="-1" 
-                    (click)="bookingForm.get('contact')?.reset()"
-                       type="button">
-                      <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
-                    <button matSuffix mat-icon-button aria-label="Search"  [disabled]="bookingForm.get('mode')?.value !== 'Add'"
-                  (click)="onClientSearch()" type="button">
-                  <mat-icon class="mat-search-icon">search</mat-icon>
-                </button>
-                  </mat-form-field>
-                </div>
-            <mat-form-field appearance="outline" style="width: 99%;">
-                <mat-label fontsize="large">Client Name</mat-label>
-                <input matInput type="text" placeholder="Client Name" formControlName="clientName"
-                 >
-                <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('clientName')?.value"
-                tabindex="-1" 
-                (click)="bookingForm.get('clientName')?.reset()"
-                   type="button">
+            <div class="matfield">
+              <mat-form-field appearance="outline" style="width: 99%;">
+                <mat-label>Mobile</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  placeholder="Mobile No"
+                  formControlName="contact"
+                />
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  *ngIf="bookingForm.get('contact')?.value"
+                  tabindex="-1"
+                  (click)="bookingForm.get('contact')?.reset()"
+                  type="button"
+                >
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
-                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
-                  (click)="onClientSearch()" [disabled]="bookingForm.get('mode')?.value === 'Add'" type="button">
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Search"
+                  [disabled]="bookingForm.get('mode')?.value !== 'Add'"
+                  (click)="onClientSearch()"
+                  type="button"
+                >
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
               </mat-form-field>
             </div>
-         
-                <div class="matfield">
-                    <mat-form-field appearance="outline" style="width: 99%;">
-                        <mat-label>Email</mat-label>
-                        <input matInput type="text" placeholder="Email" formControlName="email" 
-                         >
-                        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('email')?.value"
-                        tabindex="-1" 
-                        (click)="bookingForm.get('email')?.reset()"
-                           type="button">
-                          <mat-icon class="mat-clear-icon">clear</mat-icon>
-                        </button>
-                        <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
-                  (click)="onClientSearch()" type="button">
-                  <mat-icon class="mat-search-icon">search</mat-icon>
+            <mat-form-field appearance="outline" style="width: 99%;">
+              <mat-label fontsize="large">Client Name</mat-label>
+              <input
+                matInput
+                type="text"
+                placeholder="Client Name"
+                formControlName="clientName"
+              />
+              <button
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                *ngIf="bookingForm.get('clientName')?.value"
+                tabindex="-1"
+                (click)="bookingForm.get('clientName')?.reset()"
+                type="button"
+              >
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button
+                matSuffix
+                mat-icon-button
+                aria-label="Search"
+                [disabled]="bookingForm.get('mode')?.value !== 'Add'"
+                (click)="onClientSearch()"
+                [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                type="button"
+              >
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="matfield">
+            <mat-form-field appearance="outline" style="width: 99%;">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                type="text"
+                placeholder="Email"
+                formControlName="email"
+              />
+              <button
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                *ngIf="bookingForm.get('email')?.value"
+                tabindex="-1"
+                (click)="bookingForm.get('email')?.reset()"
+                type="button"
+              >
+                <mat-icon class="mat-clear-icon">clear</mat-icon>
+              </button>
+              <button
+                matSuffix
+                mat-icon-button
+                aria-label="Search"
+                [disabled]="bookingForm.get('mode')?.value !== 'Add'"
+                (click)="onClientSearch()"
+                type="button"
+              >
+                <mat-icon class="mat-search-icon">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="matfield">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Adults</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  placeholder="Adults"
+                  formControlName="adults"
+                  (input)="calculateAmounts()"
+                  (blur)="onCountChnage()"
+                />
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  *ngIf="bookingForm.get('adults')?.value && bookingForm.get('adults')?.value > 0"
+                  tabindex="-1"
+                  (click)="bookingForm.get('adults')?.reset()"
+                  type="button"
+                >
+                  <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
-                      </mat-form-field>
-                    </div>
-                    <div class="matfield">
-                        <div class="form-row">
-  <mat-form-field appearance="outline" class="form-field">
-    <mat-label>Adults</mat-label>
-    <input matInput type="number" placeholder="Adults" formControlName="adults" (input)="calculateAmounts()"   (blur)="onCountChnage()">
-    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value && bookingForm.get('adults')?.value > 0"
-            tabindex="-1" 
-            (click)="bookingForm.get('adults')?.reset()"
-            type="button">
-      <mat-icon class="mat-clear-icon">clear</mat-icon>
-    </button>
-  </mat-form-field>
+              </mat-form-field>
 
-  
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>5 - 12</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  placeholder="5 - 12"
+                  formControlName="fiveToTwelve"
+                  (input)="calculateAmounts()"
+                  (blur)="onCountChnage()"
+                />
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  *ngIf="bookingForm.get('fiveToTwelve')?.value && bookingForm.get('fiveToTwelve')?.value > 0"
+                  tabindex="-1"
+                  (click)="bookingForm.get('fiveToTwelve')?.reset()"
+                  type="button"
+                >
+                  <mat-icon class="mat-clear-icon">clear</mat-icon>
+                </button>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>0-5</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  placeholder="0 - 5"
+                  formControlName="zeroToFive"
+                  (input)="calculateAmounts()"
+                  (blur)="onCountChnage()"
+                />
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  *ngIf="bookingForm.get('zeroToFive')?.value && bookingForm.get('zeroToFive')?.value > 0"
+                  tabindex="-1"
+                  (click)="bookingForm.get('zeroToFive')?.reset()"
+                  type="button"
+                >
+                  <mat-icon class="mat-clear-icon">clear</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
 
-  <mat-form-field appearance="outline" class="form-field">
-    <mat-label>5 - 12</mat-label>
-    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve" (input)="calculateAmounts()" (blur)="onCountChnage()">
-    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('fiveToTwelve')?.value && bookingForm.get('fiveToTwelve')?.value > 0"
-            tabindex="-1" 
-            (click)="bookingForm.get('fiveToTwelve')?.reset()"
-            type="button">
-      <mat-icon class="mat-clear-icon">clear</mat-icon>
-    </button>
-  </mat-form-field>
-  <mat-form-field appearance="outline" class="form-field">
-    <mat-label>0-5</mat-label>
-    <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive" (input)="calculateAmounts()" (blur)="onCountChnage()">
-    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value && bookingForm.get('zeroToFive')?.value > 0"
-            tabindex="-1" 
-            (click)="bookingForm.get('zeroToFive')?.reset()"
-            type="button">
-      <mat-icon class="mat-clear-icon">clear</mat-icon>
-    </button>
-  </mat-form-field>
-  </div>
-
-  <mat-form-field appearance="outline" class="w-full mt-2">
+            <mat-form-field appearance="outline" class="w-full mt-2">
               <mat-label>Lead Source</mat-label>
-              <mat-select formControlName="leadsource" >
+              <mat-select formControlName="leadsource">
                 <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of leadsources" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+                <mat-option *ngFor="let x of leadsources" [value]="x.itemCode"
+                  >{{ x.itemName }}</mat-option
+                >
               </mat-select>
             </mat-form-field>
-             <mat-form-field appearance="outline" class="w-full mt-2">
+            <mat-form-field appearance="outline" class="w-full mt-2">
               <mat-label>Departure Type</mat-label>
-              <mat-select formControlName="departuretype" >
+              <mat-select formControlName="departuretype">
                 <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let x of departuretypes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
+                <mat-option
+                  *ngFor="let x of departuretypes"
+                  [value]="x.itemCode"
+                  >{{ x.itemName }}</mat-option
+                >
               </mat-select>
             </mat-form-field>
-                                </div>
-                                
-                            
-                        
-                    
-                          
+          </div>
         </div>
         <div class="bg-white p-2 border rounded-lg shadow-md">
-            <div class="text-center text-gray-800 font-semibold">Package Details</div>
-            <div class="text-center text-gray-800 font-semibold">                  <mat-label></mat-label>
-            </div>
-            <div appearance="outline" class="w-full mt-2">
-            
+          <div class="text-center text-gray-800 font-semibold">
+            Package Details
+          </div>
+          <div class="text-center text-gray-800 font-semibold">
+            <mat-label></mat-label>
+          </div>
+          <div appearance="outline" class="w-full mt-2">
             <div class="matfield">
-            <mat-form-field appearance="outline" style="width: 99%;">
+              <mat-form-field appearance="outline" style="width: 99%;">
                 <mat-label>Booking No</mat-label>
-                <input matInput type="text" placeholder="Booking No" formControlName="batchNo" [disabled]="bookingForm.get('mode')?.value === 'Add'"
-                 >
-                <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('batchNo')?.value"
-                tabindex="-1" 
-                (click)="bookingForm.get('batchNo')?.reset()"
-                   type="button">
+                <input
+                  matInput
+                  type="text"
+                  placeholder="Booking No"
+                  formControlName="batchNo"
+                  [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                />
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  *ngIf="bookingForm.get('batchNo')?.value"
+                  tabindex="-1"
+                  (click)="bookingForm.get('batchNo')?.reset()"
+                  type="button"
+                >
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
-                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value === 'Add'"
-                  (click)="onBookingSearch()" type="button">
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Search"
+                  [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                  (click)="onBookingSearch()"
+                  type="button"
+                >
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
               </mat-form-field>
             </div>
             <div class="matfield">
-                <mat-form-field appearance="outline" style="width: 99%;">
-                    <mat-label>Trip Id</mat-label>
-                    <input matInput type="text" placeholder="Batch Code" formControlName="tripId"  [matAutocomplete]="auto"  
-                     >
-                     <mat-autocomplete [displayWith]="displayTripName" #auto="matAutocomplete" [panelWidth]="'600px'" autoActiveFirstOption (optionSelected)="getTripDetails()"
-                     >
-  
-              <!-- Static header -->
-              <div class="autocomplete-header">
-                <!-- <div class="col-code">Code</div> -->
-                <div class="col-name">Trip Id's</div>
-              </div>
-            
-              <!-- Options -->
-              <mat-option *ngFor="let option of autoFilteredTripIdList" [value]="option.itemCode">
-                <div class="autocomplete-row">
-                  <!-- <div class="col-code">{{ option.itemCode }}</div> -->
-                  <div class="col-name">{{ option.itemName }}</div>
-                </div>
-              </mat-option>
-            </mat-autocomplete>
-                    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('tripId')?.value"
-                    tabindex="-1" 
-                    (click)="bookingForm.get('tripId')?.reset()"
-                       type="button">
-                      <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
-                    <button matSuffix mat-icon-button aria-label="Search" 
-                      (click)="onSearchCilcked()" type="button">
-                      <mat-icon class="mat-search-icon">search</mat-icon>
-                    </button>
-                  </mat-form-field>
-                </div>
-                <div class="matfield"> 
-                           <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
-                        <mat-label>Package Type</mat-label>
-                        <input matInput type="text" [disabled]="true" placeholder="Package Type auto fill" formControlName="packageType" [value]="seletedPackageTypeName"
-                         >
-                       
-                      </mat-form-field>
+              <mat-form-field appearance="outline" style="width: 99%;">
+                <mat-label>Trip Id</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  placeholder="Batch Code"
+                  formControlName="tripId"
+                  [matAutocomplete]="auto"
+                />
+                <mat-autocomplete
+                  [displayWith]="displayTripName"
+                  #auto="matAutocomplete"
+                  [panelWidth]="'600px'"
+                  autoActiveFirstOption
+                  (optionSelected)="getTripDetails()"
+                >
+                  <!-- Static header -->
+                  <div class="autocomplete-header">
+                    <!-- <div class="col-code">Code</div> -->
+                    <div class="col-name">Trip Id's</div>
+                  </div>
+
+                  <!-- Options -->
+                  <mat-option
+                    *ngFor="let option of autoFilteredTripIdList"
+                    [value]="option.itemCode"
+                  >
+                    <div class="autocomplete-row">
+                      <!-- <div class="col-code">{{ option.itemCode }}</div> -->
+                      <div class="col-name">{{ option.itemName }}</div>
                     </div>
-                    <div class="matfield"> 
-                           <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
-                        <mat-label>Package Name</mat-label>
-                        <input matInput type="text" [disabled]="true" placeholder="Package Name auto fill" formControlName="packageName" [value]="selectedPackageName"
-                         >
-                       
-                      </mat-form-field>
-                    </div>
-               <!-- <div class="matfield">
+                  </mat-option>
+                </mat-autocomplete>
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Clear"
+                  *ngIf="bookingForm.get('tripId')?.value"
+                  tabindex="-1"
+                  (click)="bookingForm.get('tripId')?.reset()"
+                  type="button"
+                >
+                  <mat-icon class="mat-clear-icon">clear</mat-icon>
+                </button>
+                <button
+                  matSuffix
+                  mat-icon-button
+                  aria-label="Search"
+                  (click)="onSearchCilcked()"
+                  type="button"
+                >
+                  <mat-icon class="mat-search-icon">search</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div class="matfield">
+              <mat-form-field
+                appearance="outline"
+                style="width: 99%;"
+                class="mat-mode"
+              >
+                <mat-label>Package Type</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  [disabled]="true"
+                  placeholder="Package Type auto fill"
+                  formControlName="packageType"
+                  [value]="seletedPackageTypeName"
+                />
+              </mat-form-field>
+            </div>
+            <div class="matfield">
+              <mat-form-field
+                appearance="outline"
+                style="width: 99%;"
+                class="mat-mode"
+              >
+                <mat-label>Package Name</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  [disabled]="true"
+                  placeholder="Package Name auto fill"
+                  formControlName="packageName"
+                  [value]="selectedPackageName"
+                />
+              </mat-form-field>
+            </div>
+            <!-- <div class="matfield">
                     <label style="font-weight: 500;">Package Type:</label>
                     <input>
                      <mat-label>Reference Booking</mat-label>
@@ -230,14 +386,12 @@
                          >
                   </div> -->
 
-                  <!-- <div class="matfield">
+            <!-- <div class="matfield">
                     <label style="font-weight: 500;">Package Name:</label>
                     <input type="text" [value]="selectedPackageName" disabled >
                   </div> -->
 
-                  
-
-                    <!-- <div class="matfield">
+            <!-- <div class="matfield">
                       <mat-form-field appearance="outline" class="w-full mt-2">
                         <mat-label>Package Type</mat-label>
                         <mat-select formControlName="packageType" >
@@ -246,95 +400,164 @@
                         </mat-select>
                       </mat-form-field>
                         </div> -->
-                        <div class="matfield">  
-                          <mat-form-field appearance="outline" class="mat-mode">
-                            <mat-label class="mat-label-class">Tran Date</mat-label>
-                            <input matInput [matDatepicker]="picker" formControlName="tranDate" />
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                          </mat-form-field>
-                          <div class="matfield"> 
-                           <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
-                        <mat-label>Reference Booking</mat-label>
-                        <input matInput type="text"  placeholder="Website reference id" formControlName="websiteReferenceId" 
-                         >
-                        <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('websiteReferenceId')?.value"
-                        tabindex="-1" 
-                        (click)="bookingForm.get('websiteReferenceId')?.reset()"
-                           type="button">
-                          <mat-icon class="mat-clear-icon">clear</mat-icon>
-                        </button>
-                        <!-- <button matSuffix mat-icon-button aria-label="Search" 
+            <div class="matfield">
+              <mat-form-field appearance="outline" class="mat-mode">
+                <mat-label class="mat-label-class">Tran Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  formControlName="tranDate"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+              <div class="matfield">
+                <mat-form-field
+                  appearance="outline"
+                  style="width: 99%;"
+                  class="mat-mode"
+                >
+                  <mat-label>Reference Booking</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    placeholder="Website reference id"
+                    formControlName="websiteReferenceId"
+                  />
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    *ngIf="bookingForm.get('websiteReferenceId')?.value"
+                    tabindex="-1"
+                    (click)="bookingForm.get('websiteReferenceId')?.reset()"
+                    type="button"
+                  >
+                    <mat-icon class="mat-clear-icon">clear</mat-icon>
+                  </button>
+                  <!-- <button matSuffix mat-icon-button aria-label="Search" 
                           (click)="onSearchCilcked()" type="button">
                           <mat-icon class="mat-search-icon">search</mat-icon>
                         </button> -->
-                      </mat-form-field>
-                                          </div>
-
-                        </div>
-              
-        </div>
-    </div> 
-        <div class="bg-white p-2 border rounded-lg shadow-md " >
-    <div class="text-center text-gray-800 font-semibold" >Pricing</div>
-    
-    <div class="pricing-container">
-        <!-- Row 1: Regular Amount -->
-        <div class="pricing-row">
-            <div class="pricing-label">Regular</div>
-            <div class="pricing-field">
-                <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text" placeholder="Regular Amount" (mouseenter)="hoveredField='regularAmount'" (mouseleave)="hoveredField=null"  style="text-align: right;" formControlName="regularAmount" (input)="onPriceFieldChange('regularAmount')"  (blur)="onBlurFormat('regularAmount')" [value]="formattedRegularAmount">
-                    <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('regularAmount')?.value && hoveredField === 'regularAmount'"
-                            tabindex="-1" 
-                            (click)="bookingForm.get('regularAmount')?.reset()"
-                            type="button">
-                        <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
                 </mat-form-field>
+              </div>
             </div>
+          </div>
         </div>
+        <div class="bg-white p-2 border rounded-lg shadow-md">
+          <div class="text-center text-gray-800 font-semibold">Pricing</div>
 
-        <!-- Row 2: Quoted Price -->
-        <div class="pricing-row">
-            <div class="pricing-label">Quoted</div>
-            <div class="pricing-field">
+          <div class="pricing-container">
+            <!-- Row 1: Regular Amount -->
+            <div class="pricing-row">
+              <div class="pricing-label">Regular</div>
+              <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text" (mouseenter)="hoveredField='quotedPrice'" (mouseleave)="hoveredField=null"  style="text-align: right;" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()"  (blur)="onBlurFormat('quotedPrice')" [value]="formattedQuotedPrice">
-                    <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('quotedPrice')?.value && hoveredField === 'quotedPrice'"
-                            tabindex="-1" 
-                            (click)="bookingForm.get('quotedPrice')?.reset()"
-                            type="button">
-                        <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
+                  <input
+                    matInput
+                    type="text"
+                    placeholder="Regular Amount"
+                    (mouseenter)="hoveredField='regularAmount'"
+                    (mouseleave)="hoveredField=null"
+                    style="text-align: right;"
+                    formControlName="regularAmount"
+                    (input)="onPriceFieldChange('regularAmount')"
+                    (blur)="onBlurFormat('regularAmount')"
+                    [value]="formattedRegularAmount"
+                  />
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    *ngIf="bookingForm.get('regularAmount')?.value && hoveredField === 'regularAmount'"
+                    tabindex="-1"
+                    (click)="bookingForm.get('regularAmount')?.reset()"
+                    type="button"
+                  >
+                    <mat-icon class="mat-clear-icon">clear</mat-icon>
+                  </button>
                 </mat-form-field>
+              </div>
             </div>
-        </div>
-  <div class="pricing-row">
-            <div class="pricing-label">Add-Ons</div>
-            <div class="pricing-field">
-                <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text"  style="text-align: right;" (mouseenter)="hoveredField='addOns'" (mouseleave)="hoveredField=null" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
-                    <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('addOns')?.value && hoveredField === 'addOns'"
-                            tabindex="-1" 
-                            (click)="bookingForm.get('addOns')?.reset()"
-                            type="button">
-                        <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
-                </mat-form-field>
-            </div>
-        </div>
 
-        <!-- Row 3: Discount -->
-        <div class="pricing-row">
-            <div class="pricing-label">Discount</div>
-            <div class="pricing-field">
+            <!-- Row 2: Quoted Price -->
+            <div class="pricing-row">
+              <div class="pricing-label">Quoted</div>
+              <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text" [value]="formattedDiscount"  style="text-align: right;" placeholder="Discount" formControlName="discOffered" (input)="onPriceFieldChange()">
-                    <!-- <button matSuffix mat-icon-button aria-label="Clear" 
+                  <input
+                    matInput
+                    type="text"
+                    (mouseenter)="hoveredField='quotedPrice'"
+                    (mouseleave)="hoveredField=null"
+                    style="text-align: right;"
+                    placeholder="Quoted Price"
+                    formControlName="quotedPrice"
+                    (input)="onPriceFieldChange()"
+                    (blur)="onBlurFormat('quotedPrice')"
+                    [value]="formattedQuotedPrice"
+                  />
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    *ngIf="bookingForm.get('quotedPrice')?.value && hoveredField === 'quotedPrice'"
+                    tabindex="-1"
+                    (click)="bookingForm.get('quotedPrice')?.reset()"
+                    type="button"
+                  >
+                    <mat-icon class="mat-clear-icon">clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="pricing-row">
+              <div class="pricing-label">Add-Ons</div>
+              <div class="pricing-field">
+                <mat-form-field appearance="outline" class="compact-form-field">
+                  <input
+                    matInput
+                    type="text"
+                    style="text-align: right;"
+                    (mouseenter)="hoveredField='addOns'"
+                    (mouseleave)="hoveredField=null"
+                    placeholder="Add Ons"
+                    formControlName="addOns"
+                    (input)="onPriceFieldChange()"
+                  />
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    *ngIf="bookingForm.get('addOns')?.value && hoveredField === 'addOns'"
+                    tabindex="-1"
+                    (click)="bookingForm.get('addOns')?.reset()"
+                    type="button"
+                  >
+                    <mat-icon class="mat-clear-icon">clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Row 3: Discount -->
+            <div class="pricing-row">
+              <div class="pricing-label">Discount</div>
+              <div class="pricing-field">
+                <mat-form-field appearance="outline" class="compact-form-field">
+                  <input
+                    matInput
+                    type="text"
+                    [value]="formattedDiscount"
+                    style="text-align: right;"
+                    placeholder="Discount"
+                    formControlName="discOffered"
+                    (input)="onPriceFieldChange()"
+                  />
+                  <!-- <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('discOffered')?.value"
                             tabindex="-1" 
                             (click)="bookingForm.get('discOffered')?.reset()"
@@ -342,73 +565,121 @@
                         <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button> -->
                 </mat-form-field>
+              </div>
             </div>
-        </div>
 
-        <!-- Row 4: Add-Ons -->
-      
-        <!-- Row 5: Total (calculated field - readonly) -->
-        <div class="pricing-row total-row">
-            <div class="pricing-label">Total</div>
-            <div class="pricing-field">
-                <mat-form-field appearance="outline" class="compact-form-field">
-                    <input [value]="formattedTotal" style="text-align: right;" matInput type="text" placeholder="Total" formControlName="total" readonly>
-                </mat-form-field>
-            </div>
-        </div>
+            <!-- Row 4: Add-Ons -->
 
-        <!-- Row 6: GST (calculated field - readonly) -->
-        <div class="pricing-row gst-row">
-            <div class="pricing-label">GST</div>
-            <div class="pricing-field">
+            <!-- Row 5: Total (calculated field - readonly) -->
+            <div class="pricing-row total-row">
+              <div class="pricing-label">Total</div>
+              <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input [value]="formattedGst"  style="text-align: right;" matInput type="text" placeholder="GST" formControlName="gst" readonly>
+                  <input
+                    [value]="formattedTotal"
+                    style="text-align: right;"
+                    matInput
+                    type="text"
+                    placeholder="Total"
+                    formControlName="total"
+                    readonly
+                  />
                 </mat-form-field>
+              </div>
             </div>
-        </div>
 
-        <!-- Row 7: Payable (calculated field - readonly) -->
-        <div class="pricing-row payable-row">
-            <div class="pricing-label">Payable</div>
-            <div class="pricing-field">
+            <!-- Row 6: GST (calculated field - readonly) -->
+            <div class="pricing-row gst-row">
+              <div class="pricing-label">GST</div>
+              <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input  [value]="formattedPayable" style="text-align: right;" matInput type="text" placeholder="Payable" formControlName="payable" readonly>
+                  <input
+                    [value]="formattedGst"
+                    style="text-align: right;"
+                    matInput
+                    type="text"
+                    placeholder="GST"
+                    formControlName="gst"
+                    readonly
+                  />
                 </mat-form-field>
+              </div>
             </div>
+
+            <!-- Row 7: Payable (calculated field - readonly) -->
+            <div class="pricing-row payable-row">
+              <div class="pricing-label">Payable</div>
+              <div class="pricing-field">
+                <mat-form-field appearance="outline" class="compact-form-field">
+                  <input
+                    [value]="formattedPayable"
+                    style="text-align: right;"
+                    matInput
+                    type="text"
+                    placeholder="Payable"
+                    formControlName="payable"
+                    readonly
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
-</div>
-        
-    </div> 
-    <div class="row">
+      </div>
+      <div class="row">
         <div class="col-12">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Remarks</mat-label>
-            <input matInput placeholder="Remarks" formControlName="remarks" type="text">
+            <input
+              matInput
+              placeholder="Remarks"
+              formControlName="remarks"
+              type="text"
+            />
           </mat-form-field>
         </div>
       </div>
-      <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
+      <app-message-box
+        [msg]="retMessage"
+        [classtype]="textMessageClass"
+      ></app-message-box>
       <div class="flex justify-center mt-0.1">
-        <button mat-raised-button color="primary" class="btnUp" type="submit" [disabled]="!bookingForm.valid"
-          >
+        <button
+          mat-raised-button
+          color="primary"
+          class="btnUp"
+          type="submit"
+          [disabled]="!bookingForm.valid"
+        >
           <mat-icon>done</mat-icon> Apply
         </button>
-        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
+        <button
+          mat-raised-button
+          color="accent"
+          class="btnUp"
+          type="button"
+          (click)="clear()"
+        >
           <mat-icon>clear_all</mat-icon> Clear
         </button>
         <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="goBack()">
         <mat-icon>arrow_back_ios</mat-icon>go back  </button> -->
-        <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
+        <button
+          mat-raised-button
+          color="warn"
+          class="btnUp"
+          type="button"
+          (click)="close()"
+        >
           <mat-icon>cancel</mat-icon> Close
         </button>
       </div>
     </form>
   </div>
-  
-  </div>
+</div>
 
-<app-booking-chatbot 
+<app-booking-chatbot
   [bookingForm]="bookingForm"
-  (formUpdated)="onChatbotFormUpdate($event)">
+  (formUpdated)="onChatbotFormUpdate($event)"
+>
 </app-booking-chatbot>

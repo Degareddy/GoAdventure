@@ -16,6 +16,7 @@ import { EditorComponent } from './editor/editor.component';
 import { Location } from '@angular/common';
 import { SalesService } from 'src/app/Services/sales.service';
 import { forkJoin, map, startWith } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 interface autoComplete {
@@ -65,7 +66,7 @@ export class BookingComponent implements OnInit {
   formattedGst: string='';
   formattedPayable: string='';
   formattedDiscount: string='';
-    constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService,
+    constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService , private router: Router,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
       private loader: NgxUiLoaderService, private datePipe: DatePipe,
       private masterService:MastersService,private saleService:SalesService
@@ -457,6 +458,7 @@ const body={
     this.seletedPackageTypeName=''
   }
   close(){
+    this.router.navigate(['/home']);
 
   }
   onHelpCilcked(){
@@ -543,6 +545,16 @@ searchBookingOnTran(){
                 this.loader.stop();
                 if(res.status === "Success"){
                   this.parchForm(res.data);
+                 
+                  this.bookingForm.get('mode')?.patchValue('Modify');
+                  this.bookingForm.get('leadsource')?.patchValue(res.data.leadSource);
+                  this.bookingForm.get('websiteReferenceId')?.patchValue(res.data.refBooking);
+                  this.bookingForm.get('departuretype')?.patchValue(res.data.depType);
+                   this.bookingForm.get('addOns')?.patchValue(this.getInrFormat(res.data.addOns));
+                   this.bookingForm.get('discOffered')?.patchValue(this.getInrFormat(res.data.discount));
+                   this.bookingForm.get('total')?.patchValue(this.getInrFormat(res.data.totalAmount));
+                   this.bookingForm.get('gst')?.patchValue(this.getInrFormat(res.data.taxAmount));
+                   this.bookingForm.get('Payable')?.patchValue(this.getInrFormat(res.data.netPayable));
                   this.clientId = res.data.client;
                 }
               });
@@ -585,12 +597,6 @@ searchBookingOnTran(){
     maximumFractionDigits: 2,
   }).format(amount);
 }
-
-//  removeInrFormat(amount: any): string {
-//   if (typeof amount !== 'string') amount = String(amount);
-//   return amount.replace(/[^0-9.-]+/g, '').trim();
-// }
-
 
   onSearchCilcked(){
 
@@ -680,13 +686,6 @@ calculateTotals() {
   
   this.discAmount = discountAmount;
 }
-
-
-
-
-
-
-
 // Call this method whenever any pricing field changes
 onPriceFieldChange(fieldName?: string) {
   this.calculateTotals();

@@ -110,7 +110,7 @@ export class AccessGridComponent implements OnInit, OnDestroy {
       const serialNumberColumn = {
         headerName: 'S.No',
         valueGetter: 'node.rowIndex + 1',
-        width: 105,
+        width: 50,
         cellClass: 'serial-number-cell',
         sortable: false,
         filter: false,

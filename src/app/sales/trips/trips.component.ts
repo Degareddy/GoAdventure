@@ -47,7 +47,7 @@ export class TripsComponent implements OnInit {
   packageNamesList:autoComplete[]=[]
   packageNames:packageNames[]=[];
   columnDefs: any = [
-    { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+    // { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "clientName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "tranNo", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
   //   {
@@ -63,8 +63,8 @@ export class TripsComponent implements OnInit {
   //     return null;
   //   },
   // },
-  { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
-  { field: "packageName", headerName: "Package name", sortable: true, filter: true, resizable: true, width: 190 },
+  // { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
+  // { field: "packageName", headerName: "Package name", sortable: true, filter: true, resizable: true, width: 190 },
   { field: "tripId", headerName: "Trip Id", sortable: true, filter: true, resizable: true, width: 80 },
   
   {
@@ -94,7 +94,19 @@ export class TripsComponent implements OnInit {
     },
   },
   { field: "tripDesc", headerName: "Trip Desc", sortable: true, filter: true, resizable: true, width: 80 },
-  { field: "stdCost", headerName: "Standard Cost", sortable: true, filter: true, resizable: true, width: 80 },
+ {
+  field: "stdCost",
+  headerName: "Standard Cost",
+  sortable: true,
+  filter: true,
+  resizable: true,
+  width: 120,
+  valueFormatter: (params: { value: string; }) => {
+    const value = parseFloat(params.value);
+    return isNaN(value) ? '' : value.toFixed(2);
+  }
+}
+
   ];
   rowData:any[]=[]
   title:string="Trips"
@@ -170,6 +182,22 @@ export class TripsComponent implements OnInit {
   const result = this.packageNames.find((pkg: { packageId: string; }) => pkg.packageId === id);
   return result ? result.days : 0;
 }
+stdPriceChange(): void {
+  const control = this.tripForm.get('tripRegularAmount');
+  if (!control) return;
+
+  let value = parseFloat(control.value);
+  if (!isNaN(value)) {
+    control.setValue(value.toFixed(2), { emitEvent: false });
+  }
+}
+ getInrFormat(amount: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
  commonParams() {
     return {
       company: this.userDataService.userData.company,
@@ -209,6 +237,9 @@ export class TripsComponent implements OnInit {
 //       }
 
 // }
+removeInrFormat(value: any): string {
+  return (value || '').toString().replace(/[^0-9.]/g, '');
+}
   onGridReady(params: any) {
       this.gridApi = params.api;
       this.columnApi = params.columnApi;
@@ -224,6 +255,7 @@ export class TripsComponent implements OnInit {
        this.tripForm.get('tripDesc')?.patchValue( event.data.tripDesc);
       this.tripForm.get('StartDate')?.patchValue(this.formatDate.formatDate(event.data.startDate) );
       this.tripForm.get('endDate')?.patchValue(this.formatDate.formatDate(event.data.endDate));
+      this.tripForm.get('tripRegularAmount')?.patchValue(this.getInrFormat(event.data.stdCost));
     } 
     getTripIdData(){
       this.displayMessage('','');
@@ -273,7 +305,7 @@ export class TripsComponent implements OnInit {
       StartDate:this.addOneDay.formatDate(this.tripForm.get('StartDate')?.value) ,
       EndDate: this.addOneDay.formatDate(this.tripForm.get('endDate')?.value) ,
       Remarks:this.tripForm.get('remarks')?.value,
-      stdcost:this.tripForm.get('tripRegularAmount')?.value,
+      stdcost:this.removeInrFormat(this.tripForm.get('tripRegularAmount')?.value),
 
    }
     try {
