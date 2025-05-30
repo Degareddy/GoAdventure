@@ -251,6 +251,7 @@ export class TripsComponent implements OnInit {
             if(res.status.toUpperCase() === "SUCCESS"){
               this.displayMessage(displayMsg.SUCCESS + res.message,TextClr.green);
               this.tripForm.get('mode')?.patchValue("Modify")
+              this.packageNameSelected();
             }
             else{
               this.displayMessage(displayMsg.ERROR + res.message,TextClr.red);

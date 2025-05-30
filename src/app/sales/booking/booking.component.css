@@ -232,12 +232,7 @@
     flex-direction: column;
   }
 }
-.pricing-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 16px;
-}
+
 
 .pricing-row {
     display: flex;
@@ -305,4 +300,72 @@
 /* Adjust form field padding */
 .pricing-field ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
     padding: 12px 14px;
+}
+.pricing-container {
+  max-width: 160px;
+  padding: 8px;
+  border-radius: 12px;
+  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); */
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  align-items: right;
+  margin-left: auto;
+  margin-right: auto;
+  
+}
+
+.pricing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px; /* Less vertical space between rows */
+}
+
+.pricing-label {
+  flex: 0 0 40%;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.pricing-field {
+  flex: 0 0 50%;
+}
+
+.compact-form-field {
+  width: 100%;
+  margin: 0;
+}
+
+.compact-form-field .mat-form-field-wrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.compact-form-field .mat-form-field-flex {
+  height: 32px;
+  min-height: 32px;
+}
+
+.compact-form-field .mat-input-element {
+  padding: 4px 4px;
+  font-size: 9px;
+  height: 10px;
+  line-height: 10px;
+}
+
+.compact-form-field .mat-form-field-infix {
+  padding: 0px !important;
+}
+
+.total-row, .gst-row, .payable-row {
+  background-color: #f8f8f8;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.payable-row .pricing-label {
+  color: #007bff;
 }

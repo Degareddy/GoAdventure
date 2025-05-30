@@ -94,8 +94,8 @@
                         <div class="form-row">
   <mat-form-field appearance="outline" class="form-field">
     <mat-label>Adults</mat-label>
-    <input matInput type="number" placeholder="Adults" formControlName="adults">
-    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value"
+    <input matInput type="number" placeholder="Adults" formControlName="adults"  (blur)="onCountChnage()">
+    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value && bookingForm.get('adults')?.value > 0"
             tabindex="-1" 
             (click)="bookingForm.get('adults')?.reset()"
             type="button">
@@ -103,23 +103,24 @@
     </button>
   </mat-form-field>
 
+  
+
   <mat-form-field appearance="outline" class="form-field">
-    <mat-label>0-5</mat-label>
-    <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive">
-    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value"
+    <mat-label>5 - 12</mat-label>
+    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve"  (blur)="onCountChnage()">
+    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('fiveToTwelve')?.value && bookingForm.get('fiveToTwelve')?.value > 0"
             tabindex="-1" 
-            (click)="bookingForm.get('zeroToFive')?.reset()"
+            (click)="bookingForm.get('fiveToTwelve')?.reset()"
             type="button">
       <mat-icon class="mat-clear-icon">clear</mat-icon>
     </button>
   </mat-form-field>
-
   <mat-form-field appearance="outline" class="form-field">
-    <mat-label>5 - 12</mat-label>
-    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve">
-    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('fiveToTwelve')?.value"
+    <mat-label>0-5</mat-label>
+    <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive" (blur)="onCountChnage()">
+    <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value && bookingForm.get('zeroToFive')?.value > 0"
             tabindex="-1" 
-            (click)="bookingForm.get('fiveToTwelve')?.reset()"
+            (click)="bookingForm.get('zeroToFive')?.reset()"
             type="button">
       <mat-icon class="mat-clear-icon">clear</mat-icon>
     </button>
@@ -204,14 +205,36 @@
                     </button>
                   </mat-form-field>
                 </div>
-                <div class="matfield">
-  <label style="font-weight: 500;">Package Name : {{ selectedPackageName}}</label>
-  
-</div>
-<div class="matfield">
-  <label style="font-weight: 500;">Package Type : {{ seletedPackageTypeName}}</label>
-  
-</div>
+                <div class="matfield"> 
+                           <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
+                        <mat-label>Package Type</mat-label>
+                        <input matInput type="text" [disabled]="true" placeholder="Package Type auto fill" formControlName="packageType" [value]="seletedPackageTypeName"
+                         >
+                       
+                      </mat-form-field>
+                    </div>
+                    <div class="matfield"> 
+                           <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
+                        <mat-label>Package Name</mat-label>
+                        <input matInput type="text" [disabled]="true" placeholder="Package Name auto fill" formControlName="packageName" [value]="selectedPackageName"
+                         >
+                       
+                      </mat-form-field>
+                    </div>
+               <!-- <div class="matfield">
+                    <label style="font-weight: 500;">Package Type:</label>
+                    <input>
+                     <mat-label>Reference Booking</mat-label>
+                    <input matInput type="text"  placeholder="Website reference id" formControlName="websiteReferenceId" 
+                         >
+                  </div> -->
+
+                  <!-- <div class="matfield">
+                    <label style="font-weight: 500;">Package Name:</label>
+                    <input type="text" [value]="selectedPackageName" disabled >
+                  </div> -->
+
+                  
 
                     <!-- <div class="matfield">
                       <mat-form-field appearance="outline" class="w-full mt-2">
@@ -232,7 +255,7 @@
                           <div class="matfield"> 
                            <mat-form-field appearance="outline" style="width: 99%;" class="mat-mode">
                         <mat-label>Reference Booking</mat-label>
-                        <input matInput type="text" placeholder="Website reference id" formControlName="websiteReferenceId"
+                        <input matInput type="text"  placeholder="Website reference id" formControlName="websiteReferenceId" 
                          >
                         <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('websiteReferenceId')?.value"
                         tabindex="-1" 
@@ -251,15 +274,15 @@
               
         </div>
     </div> 
-        <div class="bg-white p-2 border rounded-lg shadow-md">
-    <div class="text-center text-gray-800 font-semibold">Pricing</div>
+        <div class="bg-white p-2 border rounded-lg shadow-md " >
+    <div class="text-center text-gray-800 font-semibold" >Pricing</div>
     
     <div class="pricing-container">
         <!-- Row 1: Regular Amount -->
         <div class="pricing-row">
             <div class="pricing-label">Regular</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input matInput type="number" placeholder="Regular Amount"  style="text-align: right;" formControlName="regularAmount" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('regularAmount')?.value"
@@ -276,7 +299,7 @@
         <div class="pricing-row">
             <div class="pricing-label">Quoted</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input matInput type="number"  style="text-align: right;" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('quotedPrice')?.value"
@@ -291,7 +314,7 @@
   <div class="pricing-row">
             <div class="pricing-label">AddOns</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input matInput type="number"  style="text-align: right;" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('addOns')?.value"
@@ -308,7 +331,7 @@
         <div class="pricing-row">
             <div class="pricing-label">Disc</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input matInput type="number"  style="text-align: right;" placeholder="Discount" formControlName="discOffered" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('discOffered')?.value"
@@ -327,7 +350,7 @@
         <div class="pricing-row total-row">
             <div class="pricing-label">Total</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input  style="text-align: right;" matInput type="number" placeholder="Total" formControlName="total" readonly>
                 </mat-form-field>
             </div>
@@ -337,7 +360,7 @@
         <div class="pricing-row gst-row">
             <div class="pricing-label">GST</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input  style="text-align: right;" matInput type="number" placeholder="GST" formControlName="gst" readonly>
                 </mat-form-field>
             </div>
@@ -347,7 +370,7 @@
         <div class="pricing-row payable-row">
             <div class="pricing-label">Payable</div>
             <div class="pricing-field">
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" class="compact-form-field">
                     <input  style="text-align: right;" matInput type="number" placeholder="Payable" formControlName="payable" readonly>
                 </mat-form-field>
             </div>

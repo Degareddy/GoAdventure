@@ -39,7 +39,7 @@ export class BookingComponent implements OnInit {
   selectedPackageId!:string;
    selectedPackageName:string="";
     selectedPackageTypeId!:string;
-     seletedPackageTypeName!:string;
+     seletedPackageTypeName:string="";
   packageTypes:Item[]=[]
   clientId:string='';
   dialogOpen = false;
@@ -179,6 +179,8 @@ const body={
     
   }
   ngOnInit(): void {
+    this.bookingForm.get('packageType')?.disable();
+    this.bookingForm.get('packageName')?.disable();
     this.loadLeadsources();
     this.loadDeparturetypes();
     this.loadTripList()
@@ -271,7 +273,7 @@ const body={
                   this.displayMessage(res.message,'green');
                   this.bookingForm.get('batchNo')?.patchValue(res.tranNoNew);
                   this.bookingForm.get('mode')?.patchValue('Modify');
-                  this.clientId=res.tranNoNew;
+                  // this.clientId=res.tranNoNew;
                 }
                 else{
                   this.displayMessage(res.message,'red');
@@ -301,7 +303,7 @@ const body={
       clientName:['',Validators.required],
       contact:['',Validators.required],
       email:['',Validators.required],
-      adults:['',Validators.required],
+      adults:['0',Validators.required],
       zeroToFive:['0',Validators.required],
       fiveToTwelve:['0',Validators.required],
       gst:[0,{disabled: true}],
@@ -365,7 +367,11 @@ const body={
                   this.seletedPackageTypeName=res.data.packageTypeDesc
 
             
-                  this.bookingForm.get('regularAmount')?.patchValue(res.data.stdCost);
+                  this.bookingForm.get('regularAmount')?.patchValue(res.data.stdCost * this.bookingForm.get('adults')?.value);
+                  this.bookingForm.get('quotedPrice')?.patchValue(res.data.stdCost * this.bookingForm.get('adults')?.value);
+                  this.bookingForm.get('total')?.patchValue(this.bookingForm.get('quotedPrice')?.value);
+                  this.bookingForm.get('gst')?.patchValue(this.bookingForm.get('quotedPrice')?.value * 0.05);
+                  this.bookingForm.get('payable')?.patchValue(this.bookingForm.get('gst')?.value  + this.bookingForm.get('total')?.patchValue(this.bookingForm.get('quotedPrice')?.value));
                 }
                 else{
                   this.displayMessage(res.message,'red');
@@ -544,12 +550,17 @@ searchBookingOnTran(){
       this.bookingForm.get('batchNo')?.disable();
         this.clear();
               this.bookingForm.get('mode')?.patchValue("Add")
+              this.autoFilteredTripIdList=this.tripIdList
 
     }
     else{
       this.bookingForm.get('batchNo')?.enable();
     }
   }
+  setInitialQuotedPrice() {
+  const regular = this.bookingForm.get('regularAmount')?.value || 0;
+  this.bookingForm.patchValue({ quotedPrice: regular });
+}
   // Add this method to calculate totals
 calculateTotals() {
   const regularAmount = this.bookingForm.get('regularAmount')?.value || 0;
@@ -583,5 +594,22 @@ calculateTotals() {
 // Call this method whenever any pricing field changes
 onPriceFieldChange() {
   this.calculateTotals();
+}
+onCountChnage() {
+  const adults = this.bookingForm.get('adults')?.value;
+  const zeroToFive = this.bookingForm.get('zeroToFive')?.value;
+  const fiveToTwelve = this.bookingForm.get('fiveToTwelve')?.value;
+
+  if (adults === null || adults === undefined || adults === '') {
+    this.bookingForm.get('adults')?.patchValue(0);
+  }
+
+  if (zeroToFive === null || zeroToFive === undefined || zeroToFive === '') {
+    this.bookingForm.get('zeroToFive')?.patchValue(0);
+  }
+
+  if (fiveToTwelve === null || fiveToTwelve === undefined || fiveToTwelve === '') {
+    this.bookingForm.get('fiveToTwelve')?.patchValue(0);
+  }
 }
 }

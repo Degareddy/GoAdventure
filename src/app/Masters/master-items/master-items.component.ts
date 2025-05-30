@@ -74,6 +74,8 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
   }
   onRowSelected(event: any) {
     this.onSelectedItemChanged(event.data.itemCode, "View");
+    this.mastForm.get('mode')?.patchValue('Modify');
+    this.modeChanged('Modify');
   }
   formInit() {
     return this.fb.group({
@@ -254,11 +256,14 @@ export class MasterItemsComponent implements OnInit, OnDestroy {
       this.mastForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.mastForm.controls['effectiveDate'].patchValue(new Date());
       this.mastForm.controls['selTypeItem'].disable({ emitEvent: false });
+      this.mastForm.controls['selTypeItem'].disable({ emitEvent: false });
+      this.mastForm.controls['itemCode'].enable();
       this.displayMessage("", "");
     }
     else {
       this.mastForm.controls['mode'].patchValue(event, { emitEvent: false });
       this.mastForm.controls['selTypeItem'].enable({ emitEvent: false });
+       this.mastForm.controls['itemCode'].disable({ emitEvent: false });
     }
   }
   NotesDetails(tranNo: any) {

@@ -1,167 +1,168 @@
+<div class="controls no-print">
+  <button class="btn btn-primary" (click)="printReport()">🖨️ Print Report</button>
+  <button class="btn btn-success" (click)="exportToPDF()">📄 Save as PDF</button>
+  <button class="btn btn-info" (click)="exportToExcel()">📊 Export Excel</button>
+</div>
+
 <div class="report-container" #reportContainer>
-      <div class="header">
-        <h1>Trip P&L Report</h1>
-        <p>Financial Analysis Dashboard</p>
+  <div class="header">
+    <h1>Trip P&L Report</h1>
+    <p>Financial Analysis Dashboard</p>
+  </div>
+
+  <div class="content">
+    <!-- Trip Information Section -->
+    <div class="section trip-info">
+      <div class="section-header">
+        <span>🏝️</span>
+        Trip Information
       </div>
-
-      <div class="content">
-        <!-- Trip Information Section -->
-        <div class="section trip-info">
-          <div class="section-header">
-            <span>🏝️</span>
-            Trip Information
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-item">
+            <label>🎯 Trip Name</label>
+            <div class="info-value">{{ reportData.tripInfo.tripName }}</div>
           </div>
-          <div class="section-content">
-            <div class="info-grid">
-              <div class="info-item">
-                <label>🎯 Trip Name</label>
-                <div class="info-value">{{ reportData.tripInfo.tripName }}</div>
-              </div>
-              <div class="info-item">
-                <label>📅 From Date</label>
-                <div class="info-value">{{ formatDate(reportData.tripInfo.fromDate) }}</div>
-              </div>
-              <div class="info-item">
-                <label>📅 To Date</label>
-                <div class="info-value">{{ formatDate(reportData.tripInfo.toDate) }}</div>
-              </div>
-            </div>
+          <div class="info-item">
+            <label>📅 From Date</label>
+            <div class="info-value">{{ formatDate(reportData.tripInfo.fromDate) }}</div>
           </div>
-        </div>
-
-        <!-- Revenue Section -->
-        <div class="section revenue">
-          <div class="section-header">
-            <span>💰</span>
-            Revenue Section
+          <div class="info-item">
+            <label>📅 To Date</label>
+            <div class="info-value">{{ formatDate(reportData.tripInfo.toDate) }}</div>
           </div>
-          <div class="section-content">
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Booking</th>
-                    <th>Count</th>
-                    <th>Amount (₹)</th>
-                    <th>Share (%)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let booking of reportData.revenue.bookings; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ booking.booking }}</td>
-                    <td>{{ formatNumber(booking.count) }}</td>
-                    <td class="amount-text">{{ formatCurrency(booking.amount) }}</td>
-                    <td class="percentage-text">{{ booking.share }}%</td>
-                  </tr>
-                  <tr class="total-row">
-                    <td colspan="2"><strong>TOTAL</strong></td>
-                    <td><strong>{{ formatNumber(totalCount) }}</strong></td>
-                    <td><strong>{{ formatCurrency(totalRevenue) }}</strong></td>
-                    <td><strong>100%</strong></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            <div class="info-grid" style="margin-top: 20px;">
-              <div class="info-item">
-                <label>💵 Total Revenue</label>
-                <div class="info-value amount-text">{{ formatCurrency(totalRevenue) }}</div>
-              </div>
-              <div class="info-item">
-                <label>📊 GST (%)</label>
-                <div class="info-value percentage-text">{{ reportData.revenue.gstPercent }}%</div>
-              </div>
-              <div class="info-item">
-                <label>💎 Net Revenue</label>
-                <div class="info-value amount-text">{{ formatCurrency(netRevenue) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cost Section -->
-        <div class="section cost">
-          <div class="section-header">
-            <span>💸</span>
-            Cost (Expense) Section - OUTGO
-          </div>
-          <div class="section-content">
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Key Expense Head</th>
-                    <th>Amount (₹)</th>
-                    <th>% Share</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let cost of reportData.costs; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ cost.expenseHead }}</td>
-                    <td class="amount-text">{{ formatCurrency(cost.amount) }}</td>
-                    <td class="percentage-text">{{ cost.share }}%</td>
-                  </tr>
-                  <tr class="total-row">
-                    <td colspan="2"><strong>TOTAL OUTGO</strong></td>
-                    <td><strong>{{ formatCurrency(totalOutgo) }}</strong></td>
-                    <td><strong>100%</strong></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            <div class="info-grid" style="margin-top: 20px;">
-              <div class="info-item">
-                <label>💸 Total Outgo</label>
-                <div class="info-value amount-text">{{ formatCurrency(totalOutgo) }}</div>
-              </div>
-              <div class="info-item">
-                <label>📊 GST on Outgo</label>
-                <div class="info-value amount-text">{{ formatCurrency(gstOnOutgo) }}</div>
-              </div>
-              <div class="info-item">
-                <label>💰 Total Cost (Inc. GST)</label>
-                <div class="info-value amount-text">{{ formatCurrency(totalCostIncGst) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Summary Section -->
-        <div class="section summary">
-          <div class="section-header">
-            <span>📈</span>
-            Financial Summary
-          </div>
-          <div class="section-content">
-            <div class="summary-cards">
-              <div class="summary-card profit-card">
-                <h3>💎 Net Profit</h3>
-                <div class="amount" [class.negative-amount]="netProfit < 0">{{ formatCurrency(netProfit) }}</div>
-              </div>
-              <div class="summary-card revenue-card">
-                <h3>👥 Per Head Revenue</h3>
-                <div class="amount">{{ formatCurrency(perHeadRevenue) }}</div>
-              </div>
-              <div class="summary-card margin-card">
-                <h3>📊 Profit Margin</h3>
-                <div class="amount">{{ profitMargin.toFixed(1) }}%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Export Section -->
-        <div class="export-section no-print">
-          <h3 style="color: white; margin-bottom: 20px;">📤 Export Options</h3>
-          <button class="export-btn" (click)="exportToPDF()">📄 Export to PDF</button>
-          <button class="export-btn" (click)="exportToExcel()">📊 Export to Excel</button>
-          <button class="export-btn" (click)="printReport()">🖨️ Print Report</button>
         </div>
       </div>
     </div>
+
+    <!-- Revenue Section -->
+    <div class="section revenue">
+      <div class="section-header">
+        <span>💰</span>
+        Revenue Section
+      </div>
+      <div class="section-content">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Booking</th>
+                <th>Count</th>
+                <th style="text-align: right;">Amount (₹)</th>
+                <th style="text-align: center;">Share (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let booking of reportData.revenue.bookings; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ booking.booking }}</td>
+                <td>{{ formatNumber(booking.count) }}</td>
+                <td class="amount-text">{{ formatCurrency(booking.amount) }}</td>
+                <td class="percentage-text">{{ booking.share }}%</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="2"><strong>TOTAL</strong></td>
+                <td><strong>{{ formatNumber(totalCount) }}</strong></td>
+                <td><strong>{{ formatCurrency(totalRevenue) }}</strong></td>
+                <td><strong>100%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <label>💵 Total Revenue</label>
+            <div class="info-value amount-text">{{ formatCurrency(totalRevenue) }}</div>
+          </div>
+          <div class="info-item">
+            <label>📊 GST (%)</label>
+            <div class="info-value percentage-text">{{ reportData.revenue.gstPercent }}%</div>
+          </div>
+          <div class="info-item">
+            <label>💎 Net Revenue</label>
+            <div class="info-value amount-text">{{ formatCurrency(netRevenue) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost Section -->
+    <div class="section cost">
+      <div class="section-header">
+        <span>💸</span>
+        Cost (Expense) Section - OUTGO
+      </div>
+      <div class="section-content">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Key Expense Head</th>
+                <th style="text-align: right;">Amount (₹)</th>
+                <th style="text-align: center;">% Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cost of reportData.costs; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ cost.expenseHead }}</td>
+                <td class="amount-text">{{ formatCurrency(cost.amount) }}</td>
+                <td class="percentage-text">{{ cost.share }}%</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="2"><strong>TOTAL OUTGO</strong></td>
+                <td><strong>{{ formatCurrency(totalOutgo) }}</strong></td>
+                <td><strong>100%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <label>💸 Total Outgo</label>
+            <div class="info-value amount-text">{{ formatCurrency(totalOutgo) }}</div>
+          </div>
+          <div class="info-item">
+            <label>📊 GST on Outgo</label>
+            <div class="info-value amount-text">{{ formatCurrency(gstOnOutgo) }}</div>
+          </div>
+          <div class="info-item">
+            <label>💰 Total Cost (Inc. GST)</label>
+            <div class="info-value amount-text">{{ formatCurrency(totalCostIncGst) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="section summary">
+      <div class="section-header">
+        <span>📈</span>
+        Financial Summary
+      </div>
+      <div class="section-content">
+        <div class="summary-cards">
+          <div class="summary-card profit-card">
+            <h3>💎 Net Profit</h3>
+            <div class="amount" [class.negative-amount]="netProfit < 0">
+              {{ formatCurrency(netProfit) }}
+            </div>
+          </div>
+          <div class="summary-card revenue-card">
+            <h3>👥 Per Head Revenue</h3>
+            <div class="amount">{{ formatCurrency(perHeadRevenue) }}</div>
+          </div>
+          <div class="summary-card margin-card">
+            <h3>📊 Profit Margin</h3>
+            <div class="amount">{{ profitMargin }}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

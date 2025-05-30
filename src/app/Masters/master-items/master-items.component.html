@@ -48,7 +48,7 @@
       <div class="col-3">
         <mat-form-field appearance="outline" class="mat-mode">
           <mat-label class="mat-label-class">Item Code</mat-label>
-          <input matInput placeholder="Item Code" formControlName="itemCode" type="text" id="itemCode"
+          <input matInput placeholder="Item Code" formControlName="itemCode" type="text" id="itemCode" [disabled]="mastForm.get('mode')?.value !== 'ADD'"
             [matTooltipPosition]="'right'"
             [matTooltip]="mastForm.get('itemCode')!.invalid && (mastForm.get('itemCode')!.dirty || mastForm.get('itemCode')!.touched) ? 'Only alpha numeric are allowed' : 'ItemCode'">
         </mat-form-field>
