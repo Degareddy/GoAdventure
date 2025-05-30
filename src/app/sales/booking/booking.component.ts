@@ -56,6 +56,7 @@ export class BookingComponent implements OnInit {
   departuretypes:Item[]=[]
   stdCost:number=0;
   selectdPackageNameId!:string;
+  selectedTripId:string=''
   tripIdList:autoComplete[]=[]
   autoFilteredTripIdList: autoComplete[] = [];
   hoveredField: string | null = null;
@@ -255,7 +256,7 @@ const body={
       TranNo: this.bookingForm.get('batchNo')?.value,
       TranDate: this.bookingForm.get('tranDate')?.value,
       PackageType: this.selectedPackageId,
-      TripId: this.bookingForm.get('tripId')?.value,
+      TripId: this.selectedTripId,
       DepType:this.bookingForm.get('departuretype')?.value,
       LeadSource:this.bookingForm.get('leadsource')?.value,
       Client: this.clientId,
@@ -423,6 +424,7 @@ const body={
                   this.selectedPackageName=res.data.packageName
                   this.selectedPackageTypeId=res.data.packageType
                   this.seletedPackageTypeName=res.data.packageTypeDesc
+                  this.selectedTripId=res.data.tripId
                   this.stdCost=res.data.stdCost
                   this.calculateAmounts();
                   
@@ -709,6 +711,7 @@ searchBookingOnTran(){
 }
   // Add this method to calculate totals
 calculateTotals() {
+  
   const getValue = (field: string): number => {
     const raw = this.bookingForm.get(field)?.value;
     const cleaned = this.removeInrFormat(raw);
@@ -718,28 +721,27 @@ calculateTotals() {
 
   const regularAmount = getValue('regularAmount');
   const quotedPrice = getValue('quotedPrice');
-  const discount = getValue('discOffered');
+  // const discount = getValue('discOffered');
   const addOns = getValue('addOns');
 
-  const discountedPrice = quotedPrice - discount;
+  const discountedPrice = regularAmount - quotedPrice;
   const total = quotedPrice + addOns;
   const gst = Math.ceil(parseFloat((total * 0.05).toFixed(2)));
   const payable = parseFloat((total + gst).toFixed(2));
-  const discountAmount = parseFloat((regularAmount - quotedPrice).toFixed(2));
+  const discountAmount = (regularAmount - quotedPrice);
 
   // Set raw numeric values
   this.bookingForm.patchValue({
-    total,
-    gst,
-    payable,
+    total: total,
+    gst: gst,
+    payable: payable,
     discOffered: discountAmount,
-    regularAmount,
-    quotedPrice,
+    regularAmount: regularAmount,
+    quotedPrice: quotedPrice,
   });
 
   // Set formatted values for display only
   this.formattedTotal = this.getInrFormat(total);
-  this.formattedGst = this.getInrFormat(Math.ceil(parseFloat(this.getInrFormat(gst))));
   this.formattedPayable = this.getInrFormat(payable);
   this.formattedDiscount = this.getInrFormat(discountAmount);
   
@@ -749,7 +751,7 @@ calculateTotals() {
 onPriceFieldChange(fieldName?: string) {
   this.calculateTotals();
   if(fieldName === 'regularAmount'){
-    let regamount=this.removeInrFormat(this.bookingForm.get('regularAmount')?.value)
+    let regamount=(this.bookingForm.get('regularAmount')?.value)
     this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat(parseFloat(regamount)) )
   }
 }
@@ -810,6 +812,10 @@ onBlurFormat(fieldName: string) {
     this.formattedRegularAmount = formatted;
     // this.onBlurFormat('quotedPrice')
   }
+  if(fieldName === 'addOns'){
+    this.formattedTotal = formatted;
+  }
+  
 }
 
 formatNumberWithCommas(value: number): string {

@@ -508,6 +508,7 @@
                     *ngIf="bookingForm.get('quotedPrice')?.value && hoveredField === 'quotedPrice'"
                     tabindex="-1"
                     (click)="bookingForm.get('quotedPrice')?.reset()"
+                    
                     type="button"
                   >
                     <mat-icon class="mat-clear-icon">clear</mat-icon>
@@ -528,6 +529,7 @@
                     placeholder="Add Ons"
                     formControlName="addOns"
                     (input)="onPriceFieldChange()"
+                    (blur)="onBlurFormat('addOns')"
                   />
                   <button
                     matSuffix
@@ -556,7 +558,6 @@
                     style="text-align: right;"
                     placeholder="Discount"
                     formControlName="discOffered"
-                    (input)="onPriceFieldChange()"
                   />
                   <!-- <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('discOffered')?.value"
