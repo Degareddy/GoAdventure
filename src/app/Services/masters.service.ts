@@ -40,6 +40,9 @@ export class MastersService {
   updateMasterItemDetails(mastItem: MasterItems): Observable<any> {
     return this.http.post(environment.Url + 'MasterItems/UpdateMasterItemsDetails/', mastItem)
   }
+   GetSearchClients(mastItem: any): Observable<any> {
+    return this.http.post(environment.Url + 'MasterItems/GetSearchClients/', mastItem)
+  }
 
   getLoggerInfo(masParams: MasterParams): Observable<any> {
     return this.http.post(environment.Url + 'admin/GetLoggerInformation/', masParams)

@@ -40,23 +40,7 @@
                 <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline" style="width: 99%;">
-                <mat-label fontsize="large">Client Name</mat-label>
-                <input matInput type="text" placeholder="Client Name" formControlName="clientName"
-                 >
-                <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('clientName')?.value"
-                tabindex="-1" 
-                (click)="bookingForm.get('clientName')?.reset()"
-                   type="button">
-                  <mat-icon class="mat-clear-icon">clear</mat-icon>
-                </button>
-                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
-                  (click)="onBookingSearch()" [disabled]="bookingForm.get('mode')?.value === 'Add'" type="button">
-                  <mat-icon class="mat-search-icon">search</mat-icon>
-                </button>
-              </mat-form-field>
-            </div>
-            <div class="matfield">
+               <div class="matfield">
                 <mat-form-field appearance="outline" style="width: 99%;">
                     <mat-label>Mobile</mat-label>
                     <input matInput type="text" placeholder="Mobile No" formControlName="contact"
@@ -68,11 +52,28 @@
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
                     <button matSuffix mat-icon-button aria-label="Search"  [disabled]="bookingForm.get('mode')?.value !== 'Add'"
-                  (click)="onBookingSearch()" type="button">
+                  (click)="onClientSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
                   </mat-form-field>
                 </div>
+            <mat-form-field appearance="outline" style="width: 99%;">
+                <mat-label fontsize="large">Client Name</mat-label>
+                <input matInput type="text" placeholder="Client Name" formControlName="clientName"
+                 >
+                <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('clientName')?.value"
+                tabindex="-1" 
+                (click)="bookingForm.get('clientName')?.reset()"
+                   type="button">
+                  <mat-icon class="mat-clear-icon">clear</mat-icon>
+                </button>
+                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
+                  (click)="onClientSearch()" [disabled]="bookingForm.get('mode')?.value === 'Add'" type="button">
+                  <mat-icon class="mat-search-icon">search</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+         
                 <div class="matfield">
                     <mat-form-field appearance="outline" style="width: 99%;">
                         <mat-label>Email</mat-label>
@@ -85,7 +86,7 @@
                           <mat-icon class="mat-clear-icon">clear</mat-icon>
                         </button>
                         <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
-                  (click)="onBookingSearch()" type="button">
+                  (click)="onClientSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
                       </mat-form-field>
@@ -283,9 +284,9 @@
             <div class="pricing-label">Regular</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text" placeholder="Regular Amount"  style="text-align: right;" formControlName="regularAmount" (input)="onPriceFieldChange()"  (blur)="onBlurFormat('regularAmount')" [value]="formattedRegularAmount">
+                    <input matInput type="text" placeholder="Regular Amount" (mouseenter)="hoveredField='regularAmount'" (mouseleave)="hoveredField=null"  style="text-align: right;" formControlName="regularAmount" (input)="onPriceFieldChange('regularAmount')"  (blur)="onBlurFormat('regularAmount')" [value]="formattedRegularAmount">
                     <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('regularAmount')?.value"
+                            *ngIf="bookingForm.get('regularAmount')?.value && hoveredField === 'regularAmount'"
                             tabindex="-1" 
                             (click)="bookingForm.get('regularAmount')?.reset()"
                             type="button">
@@ -300,9 +301,9 @@
             <div class="pricing-label">Quoted</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text"  style="text-align: right;" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()"  (blur)="onBlurFormat('quotedPrice')" [value]="formattedQuotedPrice">
+                    <input matInput type="text" (mouseenter)="hoveredField='quotedPrice'" (mouseleave)="hoveredField=null"  style="text-align: right;" placeholder="Quoted Price" formControlName="quotedPrice" (input)="onPriceFieldChange()"  (blur)="onBlurFormat('quotedPrice')" [value]="formattedQuotedPrice">
                     <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('quotedPrice')?.value"
+                            *ngIf="bookingForm.get('quotedPrice')?.value && hoveredField === 'quotedPrice'"
                             tabindex="-1" 
                             (click)="bookingForm.get('quotedPrice')?.reset()"
                             type="button">
@@ -312,12 +313,12 @@
             </div>
         </div>
   <div class="pricing-row">
-            <div class="pricing-label">AddOns</div>
+            <div class="pricing-label">Add-Ons</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
-                    <input matInput type="text"  style="text-align: right;" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
+                    <input matInput type="text"  style="text-align: right;" (mouseenter)="hoveredField='addOns'" (mouseleave)="hoveredField=null" placeholder="Add Ons" formControlName="addOns" (input)="onPriceFieldChange()">
                     <button matSuffix mat-icon-button aria-label="Clear" 
-                            *ngIf="bookingForm.get('addOns')?.value"
+                            *ngIf="bookingForm.get('addOns')?.value && hoveredField === 'addOns'"
                             tabindex="-1" 
                             (click)="bookingForm.get('addOns')?.reset()"
                             type="button">
@@ -329,17 +330,17 @@
 
         <!-- Row 3: Discount -->
         <div class="pricing-row">
-            <div class="pricing-label">Disc</div>
+            <div class="pricing-label">Discount</div>
             <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
                     <input matInput type="text" [value]="formattedDiscount"  style="text-align: right;" placeholder="Discount" formControlName="discOffered" (input)="onPriceFieldChange()">
-                    <button matSuffix mat-icon-button aria-label="Clear" 
+                    <!-- <button matSuffix mat-icon-button aria-label="Clear" 
                             *ngIf="bookingForm.get('discOffered')?.value"
                             tabindex="-1" 
                             (click)="bookingForm.get('discOffered')?.reset()"
                             type="button">
                         <mat-icon class="mat-clear-icon">clear</mat-icon>
-                    </button>
+                    </button> -->
                 </mat-form-field>
             </div>
         </div>

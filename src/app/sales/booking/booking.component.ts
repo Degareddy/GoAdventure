@@ -49,6 +49,7 @@ export class BookingComponent implements OnInit {
   selectdPackageNameId!:string;
   tripIdList:autoComplete[]=[]
   autoFilteredTripIdList: autoComplete[] = [];
+  hoveredField: string | null = null;
   modes:Item[]=[
     {itemCode:'Add',itemName:'Add'},
     {itemCode:'Modify',itemName:'Modify'},
@@ -126,9 +127,9 @@ const body={
         "type": ""
     }
     try {
-            this.subSink.sink = this.masterService.getSpecificMasterItems(body).subscribe((reslt: any) => {
-              if (reslt && reslt.data && reslt.status.toUpperCase() === AccessSettings.SUCCESS) {
-                this.departuretypes = reslt.data;
+            this.subSink.sink = this.masterService.getSpecificMasterItems(body).subscribe((res: any) => {
+              if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.departuretypes = res.data;
                 if(this.departuretypes.length == 1){
                   this.bookingForm.get('departuretype')?.patchValue(this.departuretypes[0].itemCode) 
                 }
@@ -136,7 +137,7 @@ const body={
               }
               else {
                 this.leadsources = [];
-                this.displayMessage(reslt.message, TextClr.red);
+                this.displayMessage(res.message, TextClr.red);
     
               }
             });
@@ -162,9 +163,9 @@ const body={
         "type": ""
     }
     try {
-            this.subSink.sink = this.masterService.getSpecificMasterItems(body).subscribe((reslt: any) => {
-              if (reslt && reslt.data && reslt.status.toUpperCase() === AccessSettings.SUCCESS) {
-                this.leadsources = reslt.data;
+            this.subSink.sink = this.masterService.getSpecificMasterItems(body).subscribe((res: any) => {
+              if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.leadsources = res.data;
                 if(this.leadsources.length == 1){
                   this.bookingForm.get('leadsource')?.patchValue(this.leadsources[0].itemCode) 
                 }
@@ -172,7 +173,7 @@ const body={
               }
               else {
                 this.leadsources = [];
-                this.displayMessage(reslt.message, TextClr.red);
+                this.displayMessage(res.message, TextClr.red);
     
               }
             });
@@ -437,6 +438,36 @@ const body={
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
+  onClientSearch(){
+    const body={
+      ...this.commomParams(),
+      ClientType:'Customer',
+      Name:this.bookingForm.get('clientName')?.value, 
+      Mobile:this.bookingForm.get('contact')?.value, 
+      Email:this.bookingForm.get('email')?.value, 
+    }
+    this.loader.start();
+    try{
+    this.subSink.sink = this.masterService.GetSearchClients(body).subscribe((res: any) => {
+      this.loader.stop();
+              if (res && res.data && res.status.toUpperCase() === AccessSettings.SUCCESS) {
+                this.displayMessage(res.message, TextClr.green);
+                this.bookingForm.get('clientName')?.patchValue(res.data[0].name)
+                this.bookingForm.get('contact')?.patchValue(res.data[0].mobile)
+                this.bookingForm.get('email')?.patchValue(res.data[0].email)
+                this.bookingForm.get('leadsource')?.patchValue('OLDCLIENTS')
+                this.clientId=res.data.code
+              }
+              else {
+                this.displayMessage(res.message, TextClr.red);
+    
+              }
+            });
+          }
+          catch (ex: any) {
+            this.displayMessage(displayMsg.EXCEPTION+ ex.message, TextClr.red);
+          }
+  }
   onBookingSearch(){
     try {
             if (!this.dialogOpen) {
@@ -630,8 +661,12 @@ calculateTotals() {
 
 
 // Call this method whenever any pricing field changes
-onPriceFieldChange() {
+onPriceFieldChange(fieldName?: string) {
   this.calculateTotals();
+  if(fieldName === 'regularAmount'){
+    let regamount=this.removeInrFormat(this.bookingForm.get('regularAmount')?.value)
+    this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat(parseFloat(regamount)) )
+  }
 }
 onCountChnage() {
   const adults = this.bookingForm.get('adults')?.value;
@@ -688,7 +723,7 @@ onBlurFormat(fieldName: string) {
   }
   if(fieldName === 'regularAmount'){
     this.formattedRegularAmount = formatted;
-    this.onBlurFormat('quotedPrice')
+    // this.onBlurFormat('quotedPrice')
   }
 }
 
