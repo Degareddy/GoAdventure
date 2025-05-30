@@ -367,11 +367,14 @@ const body={
                   this.seletedPackageTypeName=res.data.packageTypeDesc
 
             
-                  this.bookingForm.get('regularAmount')?.patchValue(res.data.stdCost * this.bookingForm.get('adults')?.value);
-                  this.bookingForm.get('quotedPrice')?.patchValue(res.data.stdCost * this.bookingForm.get('adults')?.value);
-                  this.bookingForm.get('total')?.patchValue(this.bookingForm.get('quotedPrice')?.value);
-                  this.bookingForm.get('gst')?.patchValue(this.bookingForm.get('quotedPrice')?.value * 0.05);
-                  this.bookingForm.get('payable')?.patchValue(this.bookingForm.get('gst')?.value  + this.bookingForm.get('total')?.patchValue(this.bookingForm.get('quotedPrice')?.value));
+                  this.bookingForm.get('regularAmount')?.patchValue((res.data.stdCost * this.bookingForm.get('adults')?.value).toFixed(2));
+                  this.bookingForm.get('quotedPrice')?.patchValue((res.data.stdCost * this.bookingForm.get('adults')?.value).toFixed(2));
+                  this.bookingForm.get('total')?.patchValue(parseFloat((this.bookingForm.get('quotedPrice')?.value)).toFixed(2));
+                  // const quotedPrice = (this.bookingForm.get('quotedPrice')?.value).toFixed(2) || 0;
+                  const gst = parseFloat((parseFloat(this.bookingForm.get('quotedPrice')?.value) * 0.05).toFixed(2));
+                  const payable = (parseFloat(this.bookingForm.get('quotedPrice')?.value) + parseFloat(this.bookingForm.get('quotedPrice')?.value)).toFixed(2);
+                  this.bookingForm.get('gst')?.patchValue(gst);
+                  this.bookingForm.get('payable')?.patchValue((parseFloat(this.bookingForm.get('gst')?.value)  + parseFloat(this.bookingForm.get('total')?.value)).toFixed(2));
                 }
                 else{
                   this.displayMessage(res.message,'red');
@@ -567,28 +570,32 @@ calculateTotals() {
   const quotedPrice = this.bookingForm.get('quotedPrice')?.value || 0;
   const discount = this.bookingForm.get('discOffered')?.value || 0;
   const addOns = this.bookingForm.get('addOns')?.value || 0;
-  
+
   // Apply discount to quoted price (discount is between regular and quoted price)
   const discountedPrice = quotedPrice - discount;
-  
+
   // Calculate total (discounted price + addons)
   const total = quotedPrice + addOns;
-  
+
   // Calculate GST on quoted price (5% as per your current rate)
   const gst = total * 0.05;
-  
+
   // Calculate payable amount (total + GST)
   const payable = total + gst;
-  
-  // Update form controls
+
+  // Update form controls with values rounded to 2 decimal places
   this.bookingForm.patchValue({
-    total: total,
-    gst: gst,
-    payable: payable,
+    total: total.toFixed(2),
+    gst: gst.toFixed(2),
+    payable: payable.toFixed(2),
   });
-  this.bookingForm.get('discOffered')?.patchValue(regularAmount - quotedPrice);
-  this.discAmount=regularAmount - quotedPrice
+
+  // Update discount and store in variable
+  const discountAmount = regularAmount - quotedPrice;
+  this.bookingForm.get('discOffered')?.patchValue(discountAmount);
+  this.discAmount = discountAmount;
 }
+
 
 
 // Call this method whenever any pricing field changes

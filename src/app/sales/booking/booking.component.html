@@ -50,7 +50,7 @@
                    type="button">
                   <mat-icon class="mat-clear-icon">clear</mat-icon>
                 </button>
-                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
                   (click)="onBookingSearch()" [disabled]="bookingForm.get('mode')?.value === 'Add'" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
@@ -58,8 +58,8 @@
             </div>
             <div class="matfield">
                 <mat-form-field appearance="outline" style="width: 99%;">
-                    <mat-label>Contact</mat-label>
-                    <input matInput type="text" placeholder="Contact No" formControlName="contact"
+                    <mat-label>Mobile</mat-label>
+                    <input matInput type="text" placeholder="Mobile No" formControlName="contact"
                      >
                     <button matSuffix mat-icon-button aria-label="Clear"  *ngIf="bookingForm.get('contact')?.value"
                     tabindex="-1" 
@@ -67,7 +67,7 @@
                        type="button">
                       <mat-icon class="mat-clear-icon">clear</mat-icon>
                     </button>
-                    <button matSuffix mat-icon-button aria-label="Search"  [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                    <button matSuffix mat-icon-button aria-label="Search"  [disabled]="bookingForm.get('mode')?.value !== 'Add'"
                   (click)="onBookingSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
@@ -84,7 +84,7 @@
                            type="button">
                           <mat-icon class="mat-clear-icon">clear</mat-icon>
                         </button>
-                        <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value === 'Add'"
+                        <button matSuffix mat-icon-button aria-label="Search" [disabled]="bookingForm.get('mode')?.value !== 'Add'"
                   (click)="onBookingSearch()" type="button">
                   <mat-icon class="mat-search-icon">search</mat-icon>
                 </button>
