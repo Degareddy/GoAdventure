@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Item } from 'src/app/general/Interface/interface';
 import { QuotationComponent } from '../quotation/quotation.component';
 import { UserDataService } from 'src/app/Services/user-data.service';
@@ -49,9 +49,9 @@ export class BookingComponent implements OnInit {
     selectedPackageTypeId!:string;
      seletedPackageTypeName:string="";
   packageTypes:Item[]=[]
+  status:string=""
   clientId:string='';
   dialogOpen = false;
-  gst:boolean=false
   leadsources:Item[]=[]
   departuretypes:Item[]=[]
   stdCost:number=0;
@@ -246,12 +246,8 @@ const body={
 };
 
   onSubmit(){
-    if(this.bookingForm.get('gstYes')?.value){
-      this.gst=true
-    }
-    else{
-      this.gst=false
-    }
+   
+    
     const body={
       Mode: this.bookingForm.get('mode')?.value,
       Company:this.userDataService.userData.company,
@@ -311,32 +307,44 @@ const body={
     }
   }
   formInit() {
-    return this.fb.group({
-      mode:['View'],
-      batchNo:[''],
-      packageType:['',{disabled: true}],
-      tripId:['',Validators.required],
-      packageName:['',{disabled: true}],
-      clientName:['',Validators.required],
-      contact:['',Validators.required],
-      email:['',Validators.required],
-      adults:['0',Validators.required],
-      zeroToFive:['0',Validators.required],
-      fiveToTwelve:['0',Validators.required],
-      gst:[0,{disabled: true}],
-      remarks:[''],
-      payable:[0,{disabled: true}],
-      regularAmount:[0],
-      discOffered:[0,{disabled: true}],
-      quotedPrice:[0],
-      addOns:[0],
-      total:[0,{disabled: true}],
-      tranDate:[new Date()],
-      departuretype:['',Validators.required],
-      leadsource:['',Validators.required],
-      websiteReferenceId:['']
-    })
-  }
+  return this.fb.group(
+    {
+      mode: ['View'],
+      batchNo: [''],
+      packageType: [{ value: '', disabled: true }],
+      tripId: ['', Validators.required],
+      packageName: [{ value: '', disabled: true }],
+      clientName: ['', Validators.required],
+      contact: [''],
+      email: [''],
+      adults: ['0', Validators.required],
+      zeroToFive: ['0', Validators.required],
+      fiveToTwelve: ['0', Validators.required],
+      gst: [{ value: 0, disabled: true }],
+      remarks: [''],
+      payable: [{ value: 0, disabled: true }],
+      regularAmount: [0],
+      discOffered: [{ value: 0, disabled: true }],
+      quotedPrice: [0],
+      addOns: [0],
+      total: [{ value: 0, disabled: true }],
+      tranDate: [new Date()],
+      departuretype: ['', Validators.required],
+      leadsource: ['', Validators.required],
+      websiteReferenceId: ['']
+    },
+    {
+      validators: this.atLeastOneContactOrEmailValidator // ✅ add validators here
+    }
+  );
+}
+
+  atLeastOneContactOrEmailValidator(formGroup: FormGroup): ValidationErrors | null {
+  const contact = formGroup.get('contact')?.value?.trim();
+  const email = formGroup.get('email')?.value?.trim();
+  return contact || email ? null : { atLeastOne: true };
+}
+
   calculateAmounts(){
     
     if(this.bookingForm.get('departuretype')?.value === 'GD'){
@@ -361,9 +369,9 @@ const body={
       // const quotedPrice = (this.bookingForm.get('quotedPrice')?.value).toFixed(2) || 0;
       const quotedPriceRaw = this.bookingForm.get('quotedPrice')?.value;
       const quotedPrice = parseFloat(this.removeInrFormat(quotedPriceRaw));
-      const gst = parseFloat((quotedPrice * 0.05).toFixed(2));
+      const gst = Math.ceil(parseFloat((quotedPrice * 0.05).toFixed(2)));
       const payable = (parseFloat(this.bookingForm.get('quotedPrice')?.value) + parseFloat(this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value)));
-      this.bookingForm.get('gst')?.patchValue(this.getInrFormat(gst));
+      this.bookingForm.get('gst')?.patchValue(this.getInrFormat(Math.ceil(gst)) );
       this.bookingForm.get('payable')?.patchValue(this.getInrFormat(payable));
 
     }
@@ -464,6 +472,7 @@ const body={
     this.selectedPackageName=''
     this.selectedPackageTypeId=''
     this.seletedPackageTypeName=''
+    this.autoFilteredTripIdList=this.tripIdList
   }
   close(){
     this.router.navigate(['/home']);
@@ -609,9 +618,10 @@ searchBookingOnTran(){
                    this.bookingForm.get('addOns')?.patchValue(this.getInrFormat(res.data.addOns));
                    this.bookingForm.get('discOffered')?.patchValue(this.getInrFormat(res.data.discount));
                    this.bookingForm.get('total')?.patchValue(this.getInrFormat(res.data.totalAmount));
-                   this.bookingForm.get('gst')?.patchValue(this.getInrFormat(res.data.taxAmount));
+                   this.bookingForm.get('gst')?.patchValue(this.getInrFormat(Math.ceil(res.data.taxAmount)));
                    this.bookingForm.get('payable')?.patchValue(this.getInrFormat(res.data.netPayable));
                   this.clientId = res.data.client;
+                  this.status = res.data.bkgStatus;
                 }
               });
             }
@@ -638,14 +648,7 @@ searchBookingOnTran(){
     this.bookingForm.get('addOns')?.patchValue(data.addOns)
     this.bookingForm.get('tranDate')?.patchValue(this.formatDate(new Date(data.tranDate)))
     this.selectedClientId = data.client
-    if(data.applyGST){
-      this.bookingForm.get('gstYes')?.patchValue(true)
-      this.bookingForm.get('gstYes')?.patchValue(false)
-    }
-    else{
-         this.bookingForm.get('gstYes')?.patchValue(false)
-      this.bookingForm.get('gstYes')?.patchValue(true)
-    }
+   
   }
  getInrFormat(amount: number): string {
   return new Intl.NumberFormat('en-IN', {
@@ -720,7 +723,7 @@ calculateTotals() {
 
   const discountedPrice = quotedPrice - discount;
   const total = quotedPrice + addOns;
-  const gst = parseFloat((total * 0.05).toFixed(2));
+  const gst = Math.ceil(parseFloat((total * 0.05).toFixed(2)));
   const payable = parseFloat((total + gst).toFixed(2));
   const discountAmount = parseFloat((regularAmount - quotedPrice).toFixed(2));
 
@@ -736,7 +739,7 @@ calculateTotals() {
 
   // Set formatted values for display only
   this.formattedTotal = this.getInrFormat(total);
-  this.formattedGst = this.getInrFormat(gst);
+  this.formattedGst = this.getInrFormat(Math.ceil(parseFloat(this.getInrFormat(gst))));
   this.formattedPayable = this.getInrFormat(payable);
   this.formattedDiscount = this.getInrFormat(discountAmount);
   

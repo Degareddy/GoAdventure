@@ -236,7 +236,7 @@
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-full mt-2">
               <mat-label>Departure Type</mat-label>
-              <mat-select formControlName="departuretype">
+              <mat-select formControlName="departuretype" (selectionChange)="calculateAmounts()">
                 <mat-option value="">--Select--</mat-option>
                 <mat-option
                   *ngFor="let x of departuretypes"
@@ -444,6 +444,7 @@
                         </button> -->
                 </mat-form-field>
               </div>
+              <mat-label>Status:{{status}}</mat-label>
             </div>
           </div>
         </div>
@@ -608,7 +609,7 @@
 
             <!-- Row 7: Payable (calculated field - readonly) -->
             <div class="pricing-row payable-row">
-              <div class="pricing-label">Payable</div>
+              <div class="pricing-label">Net Amount</div>
               <div class="pricing-field">
                 <mat-form-field appearance="outline" class="compact-form-field">
                   <input
