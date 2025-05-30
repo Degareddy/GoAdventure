@@ -57,6 +57,10 @@ export class BookingComponent implements OnInit {
     {itemCode:'View',itemName:'View'},
 
   ]
+  formattedTotal: string='';
+  formattedGst: string='';
+  formattedPayable: string='';
+  formattedDiscount: string='';
     constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
       private loader: NgxUiLoaderService, private datePipe: DatePipe,
@@ -367,14 +371,16 @@ const body={
                   this.seletedPackageTypeName=res.data.packageTypeDesc
 
             
-                  this.bookingForm.get('regularAmount')?.patchValue(this.getInrFormat((res.data.stdCost * this.bookingForm.get('adults')?.value).toFixed(2)));
-                  this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat((res.data.stdCost * this.bookingForm.get('adults')?.value).toFixed(2)));
-                  this.bookingForm.get('total')?.patchValue(this.getInrFormat((this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value))));
+                  this.bookingForm.get('regularAmount')?.patchValue(this.getInrFormat((res.data.stdCost * this.bookingForm.get('adults')?.value)));
+                  this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat((res.data.stdCost * this.bookingForm.get('adults')?.value)));
+                  this.bookingForm.get('total')?.patchValue(this.getInrFormat(parseFloat(this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value))));
                   // const quotedPrice = (this.bookingForm.get('quotedPrice')?.value).toFixed(2) || 0;
-                  const gst = (this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value) * 0.05).toFixed(2);
+                  const quotedPriceRaw = this.bookingForm.get('quotedPrice')?.value;
+                  const quotedPrice = parseFloat(this.removeInrFormat(quotedPriceRaw));
+                  const gst = parseFloat((quotedPrice * 0.05).toFixed(2));
                   const payable = (parseFloat(this.bookingForm.get('quotedPrice')?.value) + this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value));
                   this.bookingForm.get('gst')?.patchValue(this.getInrFormat(gst));
-                  this.bookingForm.get('payable')?.patchValue(this.getInrFormat((this.removeInrFormat(this.bookingForm.get('gst')?.value)  + this.removeInrFormat(this.bookingForm.get('total')?.value))));
+                  this.bookingForm.get('payable')?.patchValue(this.getInrFormat(parseFloat(this.removeInrFormat(this.bookingForm.get('gst')?.value)  + this.removeInrFormat(this.bookingForm.get('total')?.value))));
                 }
                 else{
                   this.displayMessage(res.message,'red');
@@ -515,24 +521,18 @@ searchBookingOnTran(){
       this.bookingForm.get('gstYes')?.patchValue(true)
     }
   }
-  getInrFormat(amount:any):any{
-    const formatted = new Intl.NumberFormat('en-IN', {
-          style: 'currency',
-          currency: 'INR',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }).format(amount);
-        return formatted;
-  }
- removeInrFormat(amount: any): number {
-  if (!amount) return 0;
-
-  // Convert to string, remove ₹, commas, spaces, etc., then parse to float
-  const cleaned = amount.toString().replace(/[^0-9.-]/g, '');
-  console.log(cleaned)
-  return parseFloat(cleaned);
-
+ getInrFormat(amount: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 }
+
+//  removeInrFormat(amount: any): string {
+//   if (typeof amount !== 'string') amount = String(amount);
+//   return amount.replace(/[^0-9.-]+/g, '').trim();
+// }
+
 
   onSearchCilcked(){
 
@@ -573,6 +573,7 @@ searchBookingOnTran(){
         this.clear();
               this.bookingForm.get('mode')?.patchValue("Add")
               this.autoFilteredTripIdList=this.tripIdList
+      this.bookingForm.get('adults')?.patchValue(1)
 
     }
     else{
@@ -585,35 +586,46 @@ searchBookingOnTran(){
 }
   // Add this method to calculate totals
 calculateTotals() {
-  const regularAmount = this.bookingForm.get('regularAmount')?.value || 0;
-  const quotedPrice = this.bookingForm.get('quotedPrice')?.value || 0;
-  const discount = this.bookingForm.get('discOffered')?.value || 0;
-  const addOns = this.bookingForm.get('addOns')?.value || 0;
+  const getValue = (field: string): number => {
+    const raw = this.bookingForm.get(field)?.value;
+    const cleaned = this.removeInrFormat(raw);
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  };
 
-  // Apply discount to quoted price (discount is between regular and quoted price)
+  const regularAmount = getValue('regularAmount');
+  const quotedPrice = getValue('quotedPrice');
+  const discount = getValue('discOffered');
+  const addOns = getValue('addOns');
+
   const discountedPrice = quotedPrice - discount;
-
-  // Calculate total (discounted price + addons)
   const total = quotedPrice + addOns;
+  const gst = parseFloat((total * 0.05).toFixed(2));
+  const payable = parseFloat((total + gst).toFixed(2));
+  const discountAmount = parseFloat((regularAmount - quotedPrice).toFixed(2));
 
-  // Calculate GST on quoted price (5% as per your current rate)
-  const gst = total * 0.05;
-
-  // Calculate payable amount (total + GST)
-  const payable = total + gst;
-
-  // Update form controls with values rounded to 2 decimal places
+  // Set raw numeric values
   this.bookingForm.patchValue({
-    total: total.toFixed(2),
-    gst: gst.toFixed(2),
-    payable: payable.toFixed(2),
+    total,
+    gst,
+    payable,
+    discOffered: discountAmount,
+    regularAmount,
+    quotedPrice,
   });
 
-  // Update discount and store in variable
-  const discountAmount = regularAmount - quotedPrice;
-  this.bookingForm.get('discOffered')?.patchValue(discountAmount);
+  // Set formatted values for display only
+  this.formattedTotal = this.getInrFormat(total);
+  this.formattedGst = this.getInrFormat(gst);
+  this.formattedPayable = this.getInrFormat(payable);
+  this.formattedDiscount = this.getInrFormat(discountAmount);
+  
   this.discAmount = discountAmount;
 }
+
+
+
+
 
 
 
@@ -638,4 +650,53 @@ onCountChnage() {
     this.bookingForm.get('fiveToTwelve')?.patchValue(0);
   }
 }
+formattedRegularAmount = '';
+formattedQuotedPrice = '';
+
+onInputFormat(event: Event, fieldName: string) {
+  this.onPriceFieldChange()
+  const input = event.target as HTMLInputElement;
+  const rawValue = this.removeInrFormat(input.value);
+  const numericValue = parseFloat(rawValue);
+
+  // Update form with raw numeric value
+  this.bookingForm.get(fieldName)?.setValue(isNaN(numericValue) ? 0 : numericValue);
+
+  // Update formatted display value
+  const formatted = this.formatNumberWithCommas(numericValue);
+  if (fieldName === 'regularAmount') {
+    this.formattedRegularAmount = formatted;
+  } else if (fieldName === 'quotedPrice') {
+    this.formattedQuotedPrice = formatted;
+  }
+
+  this.calculateTotals(); // Optional: recalculate on input
+}
+
+
+
+removeInrFormat(value: any): string {
+  return (value || '').toString().replace(/[^0-9.]/g, '');
+}
+onBlurFormat(fieldName: string) {
+  const value = this.bookingForm.get(fieldName)?.value || 0;
+  const formatted = this.formatNumberWithCommas(value);
+
+  if (fieldName === 'quotedPrice') {
+    this.formattedQuotedPrice = formatted;
+    this.onBlurFormat('regularAmount');
+  }
+  if(fieldName === 'regularAmount'){
+    this.formattedRegularAmount = formatted;
+    this.onBlurFormat('quotedPrice')
+  }
+}
+
+formatNumberWithCommas(value: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value);
+}
+
 }
