@@ -48,7 +48,6 @@ import { PackageNamesComponent } from './package-names/package-names.component';
 import { ReceiptsPaymentsComponent } from './receipts-payments/receipts-payments.component';
 import { EditorComponent } from './booking/editor/editor.component';
 import { BookingChatbotComponent } from './booking/booking-chatbot/booking-chatbot.component';
-import { TripProfitAndLossComponent } from './trip-profit-and-loss/trip-profit-and-loss.component';
 
 
 
@@ -92,7 +91,6 @@ import { TripProfitAndLossComponent } from './trip-profit-and-loss/trip-profit-a
     ReceiptsPaymentsComponent,
     EditorComponent,
     BookingChatbotComponent,
-    TripProfitAndLossComponent
   ],
   imports: [
     MatButtonToggleModule,
