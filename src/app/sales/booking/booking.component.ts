@@ -31,6 +31,8 @@ interface autoComplete {
 export class BookingComponent implements OnInit {
   bookingForm!:FormGroup
   discAmount:number=0;
+  zeroToFiceCost:number=0;
+  fiveToTwelevCost:number=0;
   retMessage:string=""
       screenName:string=localStorage.getItem('previousScreen')||''
     selectedClientId!:string
@@ -46,6 +48,7 @@ export class BookingComponent implements OnInit {
   gst:boolean=false
   leadsources:Item[]=[]
   departuretypes:Item[]=[]
+  stdCost:number=0;
   selectdPackageNameId!:string;
   tripIdList:autoComplete[]=[]
   autoFilteredTripIdList: autoComplete[] = [];
@@ -325,6 +328,39 @@ const body={
       websiteReferenceId:['']
     })
   }
+  calculateAmounts(){
+    
+    if(this.bookingForm.get('departuretype')?.value === 'GD'){
+      if(this.bookingForm.get('zeroToFive')?.value.trim !== ''){
+          this.zeroToFiceCost = ((this.stdCost * 0.5))
+      }
+      else{
+                this.zeroToFiceCost = 0
+
+      }
+      if( this.bookingForm.get('fiveToTwelve')?.value.trim !== ''){
+        this.fiveToTwelevCost = ((this.stdCost * 0.8))
+      }
+      else{
+        this.fiveToTwelevCost = 0
+      }
+     
+     
+      this.bookingForm.get('regularAmount')?.patchValue(this.getInrFormat((this.stdCost * this.bookingForm.get('adults')?.value) + ((this.zeroToFiceCost) *  parseFloat(this.bookingForm.get('zeroToFive')?.value)) +((this.fiveToTwelevCost) *  parseFloat(this.bookingForm.get('fiveToTwelve')?.value))));
+      this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat((this.stdCost * this.bookingForm.get('adults')?.value) + ((this.zeroToFiceCost) *  parseFloat(this.bookingForm.get('zeroToFive')?.value)) +((this.fiveToTwelevCost) *  parseFloat(this.bookingForm.get('fiveToTwelve')?.value))));
+      this.bookingForm.get('total')?.patchValue(this.getInrFormat(parseFloat(this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value))));
+      // const quotedPrice = (this.bookingForm.get('quotedPrice')?.value).toFixed(2) || 0;
+      const quotedPriceRaw = this.bookingForm.get('quotedPrice')?.value;
+      const quotedPrice = parseFloat(this.removeInrFormat(quotedPriceRaw));
+      const gst = parseFloat((quotedPrice * 0.05).toFixed(2));
+      const payable = (parseFloat(this.bookingForm.get('quotedPrice')?.value) + parseFloat(this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value)));
+      this.bookingForm.get('gst')?.patchValue(this.getInrFormat(gst));
+      this.bookingForm.get('payable')?.patchValue(this.getInrFormat(payable));
+
+    }
+    
+
+  }
   loadTripList(){
         const body={
           Mode:'View',
@@ -370,18 +406,9 @@ const body={
                   this.selectedPackageName=res.data.packageName
                   this.selectedPackageTypeId=res.data.packageType
                   this.seletedPackageTypeName=res.data.packageTypeDesc
-
-            
-                  this.bookingForm.get('regularAmount')?.patchValue(this.getInrFormat((res.data.stdCost * this.bookingForm.get('adults')?.value)));
-                  this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat((res.data.stdCost * this.bookingForm.get('adults')?.value)));
-                  this.bookingForm.get('total')?.patchValue(this.getInrFormat(parseFloat(this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value))));
-                  // const quotedPrice = (this.bookingForm.get('quotedPrice')?.value).toFixed(2) || 0;
-                  const quotedPriceRaw = this.bookingForm.get('quotedPrice')?.value;
-                  const quotedPrice = parseFloat(this.removeInrFormat(quotedPriceRaw));
-                  const gst = parseFloat((quotedPrice * 0.05).toFixed(2));
-                  const payable = (parseFloat(this.bookingForm.get('quotedPrice')?.value) + this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value));
-                  this.bookingForm.get('gst')?.patchValue(this.getInrFormat(gst));
-                  this.bookingForm.get('payable')?.patchValue(this.getInrFormat(parseFloat(this.removeInrFormat(this.bookingForm.get('gst')?.value)  + this.removeInrFormat(this.bookingForm.get('total')?.value))));
+                  this.stdCost=res.data.stdCost
+                  this.calculateAmounts();
+                  
                 }
                 else{
                   this.displayMessage(res.message,'red');

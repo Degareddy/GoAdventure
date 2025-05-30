@@ -95,7 +95,7 @@
                         <div class="form-row">
   <mat-form-field appearance="outline" class="form-field">
     <mat-label>Adults</mat-label>
-    <input matInput type="number" placeholder="Adults" formControlName="adults"  (blur)="onCountChnage()">
+    <input matInput type="number" placeholder="Adults" formControlName="adults" (input)="calculateAmounts()"   (blur)="onCountChnage()">
     <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('adults')?.value && bookingForm.get('adults')?.value > 0"
             tabindex="-1" 
             (click)="bookingForm.get('adults')?.reset()"
@@ -108,7 +108,7 @@
 
   <mat-form-field appearance="outline" class="form-field">
     <mat-label>5 - 12</mat-label>
-    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve"  (blur)="onCountChnage()">
+    <input matInput type="number" placeholder="5 - 12" formControlName="fiveToTwelve" (input)="calculateAmounts()" (blur)="onCountChnage()">
     <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('fiveToTwelve')?.value && bookingForm.get('fiveToTwelve')?.value > 0"
             tabindex="-1" 
             (click)="bookingForm.get('fiveToTwelve')?.reset()"
@@ -118,7 +118,7 @@
   </mat-form-field>
   <mat-form-field appearance="outline" class="form-field">
     <mat-label>0-5</mat-label>
-    <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive" (blur)="onCountChnage()">
+    <input matInput type="number" placeholder="0 - 5" formControlName="zeroToFive" (input)="calculateAmounts()" (blur)="onCountChnage()">
     <button matSuffix mat-icon-button aria-label="Clear" *ngIf="bookingForm.get('zeroToFive')?.value && bookingForm.get('zeroToFive')?.value > 0"
             tabindex="-1" 
             (click)="bookingForm.get('zeroToFive')?.reset()"
