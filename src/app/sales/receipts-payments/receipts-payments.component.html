@@ -247,11 +247,6 @@
 
  -->
 
-
-
-
-
-
 <div class="large-form">
   <div class="container mx-auto p-0.1 bg-blue-400 shadow rounded">
     <div class="flex justify-between items-center mb-0.1 h-8">
@@ -260,10 +255,16 @@
         <b>{{ title | titlecase }}</b>
       </div>
       <div class="flex items-end space-x-1 mb-2.5">
-        <button mat-raised-button color="accent" class="btnUp" type="button" (click)="allocate()"
-        [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value == 'CASHTRF' || receiptsForm.get('mode')!.value.toUpperCase() == 'REVERSE'">
-        <mat-icon>check_box</mat-icon> Invoice Allocate
-      </button>
+        <button
+          mat-raised-button
+          color="accent"
+          class="btnUp"
+          type="button"
+          (click)="allocate()"
+          [disabled]="receiptsForm.get('mode')!.value == 'Add' || receiptsForm.invalid || receiptsForm.get('tranFor')!.value == 'CASHTRF' || receiptsForm.get('mode')!.value.toUpperCase() == 'REVERSE'"
+        >
+          <mat-icon>check_box</mat-icon> Allocate
+        </button>
         <button mat-raised-button color="primary" class="btnUp" type="button">
           <mat-icon>info</mat-icon>Details
         </button>
@@ -283,19 +284,35 @@
       <div class="form-wrapper">
         <!-- Row 1: Receipt Info -->
         <mat-card class="form-wrapper">
-  <mat-card-content>
-
-    <!-- Row 1: Transaction Info -->
-    <div class="row myCustomClass">
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tran Type</mat-label>
-          <mat-select formControlName="rctType" >
-            <mat-option value="">--Select--</mat-option>
-            <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <!-- <mat-form-field appearance="outline" class="w-full">
+          <mat-card-content>
+            <!-- Row 1: Transaction Info -->
+            <div class="row myCustomClass">
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Mode</mat-label>
+                  <mat-select
+                    formControlName="mode"
+                    (selectionChange)="modeChange(receiptsForm.controls['mode'].value)"
+                  >
+                    <mat-option *ngFor="let x of modes" [value]="x.itemCode"
+                      >{{ x.itemName }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Tran Type</mat-label>
+                  <mat-select formControlName="rctType">
+                    <mat-option value="">--Select--</mat-option>
+                    <mat-option
+                      *ngFor="let x of rctTypeList"
+                      [value]="x.itemCode"
+                      >{{ x.itemName }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+                <!-- <mat-form-field appearance="outline" class="w-full">
           <mat-label>Receipt Type</mat-label>
 
           <mat-select formControlName="receiptmode" (selectionChange)="receiptTypeChange($event.value)">
@@ -303,191 +320,278 @@
             <mat-option *ngFor="let x of receiptmodes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field> -->
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Mode</mat-label>
-          <mat-select formControlName="mode" (selectionChange)="modeChange(receiptsForm.controls['mode'].value)">
-            <mat-option *ngFor="let x of modes" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tran Date</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" (dateChange)="tranDateChanged()" />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tran No</mat-label>
-          <input matInput type="text" placeholder="Tran No" formControlName="tranNo" [disabled]="receiptsForm.get('mode')!.value == 'Add'" />
-          <button matSuffix mat-icon-button *ngIf="receiptsForm.get('tranNo')!.value" (click)="receiptsForm.get('tranNo')?.setValue('')" type="button">
-            <mat-icon>clear</mat-icon>
-          </button>
-          <button matSuffix mat-icon-button [disabled]="receiptsForm.get('mode')!.value == 'Add'" (click)="onSearchCilcked()" type="button">
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-    </div>
+              </div>
 
-    <!-- Row 2: Client Info -->
-    <div class="row myCustomClass">
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Client Type</mat-label>
-          <mat-select formControlName="clientType">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option *ngFor="let x of filteredItemsClientType" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Client Name</mat-label>
-          <input matInput type="text" placeholder="Client Name" formControlName="clientName" />
-          <button matSuffix mat-icon-button *ngIf="receiptsForm.get('clientName')!.value" (click)="receiptsForm.get('clientName')?.setValue('')" type="button">
-            <mat-icon>clear</mat-icon>
-          </button>
-          <button matSuffix mat-icon-button [disabled]="receiptsForm.get('mode')!.value == 'View'" (click)="onSearchClientName()" type="button">
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tran For</mat-label>
-          <mat-select formControlName="tranFor" (selectionChange)="onSelectionChangeClientType()">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option *ngFor="let x of filteredItemsTranFor" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Pay Mode</mat-label>
-          <mat-select formControlName="rctMode" (selectionChange)="PayModeChanged()">
-            <mat-option value="">--Select--</mat-option>
-            <mat-option *ngFor="let x of filteredpayMode" [value]="x.itemCode">{{ x.itemName }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="col-md-3">
-        <!-- <mat-form-field appearance="outline" class="w-full">
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Tran Date</mat-label>
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    formControlName="tranDate"
+                    [max]="tomorrow"
+                    (dateChange)="tranDateChanged()"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Tran No</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    placeholder="Tran No"
+                    formControlName="tranNo"
+                    [disabled]="receiptsForm.get('mode')?.value  === 'Add'"
+                  />
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    *ngIf="receiptsForm.get('tranNo')!.value"
+                    (click)="receiptsForm.get('tranNo')?.setValue('')"
+                    type="button"
+                  >
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    [disabled]="receiptsForm.get('mode')!.value == 'Add'"
+                    (click)="onSearchCilcked()"
+                    type="button"
+                  >
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Row 2: Client Info -->
+            <div class="row myCustomClass">
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Client Type</mat-label>
+                  <mat-select formControlName="clientType">
+                    <mat-option value="">--Select--</mat-option>
+                    <mat-option
+                      *ngFor="let x of filteredItemsClientType"
+                      [value]="x.itemCode"
+                      >{{ x.itemName }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Client Name</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    placeholder="Client Name"
+                    formControlName="clientName"
+                  />
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    *ngIf="receiptsForm.get('clientName')!.value"
+                    (click)="receiptsForm.get('clientName')?.setValue('')"
+                    type="button"
+                  >
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                  <button
+                    matSuffix
+                    mat-icon-button
+                    [disabled]="receiptsForm.get('mode')!.value == 'View'"
+                    (click)="onSearchClientName()"
+                    type="button"
+                  >
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Tran For</mat-label>
+                  <mat-select
+                    formControlName="tranFor"
+                    (selectionChange)="onSelectionChangeClientType()"
+                  >
+                    <mat-option value="">--Select--</mat-option>
+                    <mat-option
+                      *ngFor="let x of filteredItemsTranFor"
+                      [value]="x.itemCode"
+                      >{{ x.itemName }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Pay Mode</mat-label>
+                  <mat-select
+                    formControlName="rctMode"
+                    (selectionChange)="PayModeChanged()"
+                  >
+                    <mat-option value="">--Select--</mat-option>
+                    <mat-option
+                      *ngFor="let x of filteredpayMode"
+                      [value]="x.itemCode"
+                      >{{ x.itemName }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <!-- <mat-form-field appearance="outline" class="w-full">
           <mat-label>Tran Type</mat-label>
           <mat-select formControlName="rctType" (selectionChange)="onSelectionChangeClientType()">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of rctTypeList" [value]="x.itemCode">{{ x.itemName }}</mat-option>
           </mat-select>
         </mat-form-field> -->
-      </div>
-    </div>
+              </div>
+            </div>
 
-    <!-- Row 3: Pay Info -->
-    <div class="row myCustomClass">
-      
-     <div class="col-md-3">
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Tran Amount</mat-label>
-    <input matInput placeholder="Amount" class="right-align-input" 
-           formControlName="rctAmount" type="number" />
-  </mat-form-field>
-</div>
-
-<div class="col-md-3">
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Charges</mat-label>
-    <input matInput placeholder="Charges" class="right-align-input" 
-           formControlName="charges" type="number" />
-  </mat-form-field>
-</div>
-
-<div class="col-md-3">
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Total</mat-label>
-    <input matInput placeholder="Total" class="right-align-input" 
-           formControlName="total" type="text" 
-           [value]="receiptsForm.get('total')?.value | currency:'INR':'symbol':'1.2-2'" 
-           readonly />
-  </mat-form-field>
-</div>
-      <div class="col-md-3 d-flex align-items-center">
-        <mat-checkbox formControlName="recurring"></mat-checkbox> <label class="ml-2">Recurring</label>
-         <label class="ml-2">Status: {{allocStatus}}</label>
-
-      </div>
-      
-      
-
-    </div>
-
-  </mat-card-content>
-</mat-card>
-
+            <!-- Row 3: Pay Info -->
+            <div class="row myCustomClass">
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Tran Amount</mat-label>
+                  <input
+                    matInput
+                    placeholder="Amount"
+                    class="right-align-input"
+                    formControlName="rctAmount"
+                    type="text"
+                    (input)="onNumberFieldChange($event, 'rctAmount')"
+                    (focus)="onNumberFieldFocus($event)"
+                    (blur)="onNumberFieldBlur($event, 'rctAmount')"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Charges</mat-label>
+                  <input
+                    matInput
+                    placeholder="Charges"
+                    class="right-align-input"
+                    formControlName="charges"
+                    type="text"
+                    (input)="onNumberFieldChange($event, 'charges')"
+                    (focus)="onNumberFieldFocus($event)"
+                    (blur)="onNumberFieldBlur($event, 'charges')"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Total</mat-label>
+                  <input
+                    matInput
+                    placeholder="Total"
+                    class="right-align-input"
+                    formControlName="total"
+                    type="text"
+                    readonly
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-3 d-flex align-items-center">
+                <mat-checkbox formControlName="recurring"></mat-checkbox>
+                <label class="ml-2">Recurring</label>
+                <label class="ml-2">Status: {{allocStatus}}</label>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
 
         <!-- Row 4: Side-by-Side Cards -->
         <div class="row mb-0">
           <!-- Provider Card -->
           <div class="col-md-6">
             <mat-card class="mat-elevation-z3">
-              <mat-card-title class="titleCard">Provider Info</mat-card-title>
+              <mat-card-title class="titleCard"
+                >Customer Account Info</mat-card-title
+              >
               <mat-card-content>
                 <div class="row">
                   <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Provider Type</mat-label>
-              <mat-select formControlName="providerType" (selectionChange)="banktypeChange('provider','providerType')">
-                                                      <mat-option value="">--Select--</mat-option>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Provider Type</mat-label>
+                      <mat-select
+                        formControlName="providerType"
+                        (selectionChange)="banktypeChange('provider','providerType')"
+                      >
+                        <mat-option value="">--Select--</mat-option>
 
-                <mat-option *ngFor="let item of providerTypes" [value]="item.itemCode">{{ item.itemName }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Provider</mat-label>
-              <mat-select formControlName="provider">
-                <mat-option *ngFor="let item of clinentProviders" [value]="item.itemCode">{{ item.itemName }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Holder</mat-label>
-              <input matInput formControlName="holder" />
-            </mat-form-field>
-          </div>
-          <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Account No</mat-label>
-              <input matInput formControlName="CustaccountNo" />
-            </mat-form-field>
-          </div>
-         <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Ref No</mat-label>
-              <input matInput formControlName="refNo" />
-            </mat-form-field>
-          </div>
-          <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Ref Date</mat-label>
-              <input matInput [matDatepicker]="refDate" formControlName="refDate" />
-              <mat-datepicker-toggle matSuffix [for]="refDate"></mat-datepicker-toggle>
-              <mat-datepicker #refDate></mat-datepicker>
-            </mat-form-field>
-          </div>
+                        <mat-option
+                          *ngFor="let item of providerTypes"
+                          [value]="item.itemCode"
+                          >{{ item.itemName }}</mat-option
+                        >
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Provider</mat-label>
+                      <mat-select formControlName="provider">
+                        <mat-option
+                          *ngFor="let item of clinentProviders"
+                          [value]="item.itemCode"
+                          >{{ item.itemName }}</mat-option
+                        >
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Holder</mat-label>
+                      <input matInput formControlName="holder" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Account No</mat-label>
+                      <input matInput formControlName="CustaccountNo" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Ref No</mat-label>
+                      <input matInput formControlName="refNo" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Ref Date</mat-label>
+                      <input
+                        matInput
+                        [matDatepicker]="refDate"
+                        formControlName="refDate"
+                      />
+                      <mat-datepicker-toggle
+                        matSuffix
+                        [for]="refDate"
+                      ></mat-datepicker-toggle>
+                      <mat-datepicker #refDate></mat-datepicker>
+                    </mat-form-field>
+                  </div>
 
-          <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Other Ref 1</mat-label>
-              <input matInput formControlName="otherRef1" />
-            </mat-form-field>
-          </div>
-          <!-- <div class="col-6">
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Other Ref 1</mat-label>
+                      <input matInput formControlName="otherRef1" />
+                    </mat-form-field>
+                  </div>
+                  <!-- <div class="col-6">
             <mat-form-field appearance="outline">
               <mat-label>Other Ref 1 Date</mat-label>
               <input matInput [matDatepicker]="otherRefDate1" formControlName="otherRefDate1" />
@@ -496,20 +600,24 @@
             </mat-form-field>
           </div> -->
 
-          <div class="col-6">
-            <mat-form-field appearance="outline">
-              <mat-label>Other Ref 2</mat-label>
-              <input matInput formControlName="otherRef2" />
-            </mat-form-field>
-          </div>
-          <div class="col-12">
-            <mat-form-field appearance="outline">
-              <mat-label>Status</mat-label>
-              <mat-select formControlName="status">
-                <mat-option *ngFor="let status of statusList" [value]="status.itemCode">{{ status.itemName }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+                  <div class="col-6">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Other Ref 2</mat-label>
+                      <input matInput formControlName="otherRef2" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Status</mat-label>
+                      <mat-select formControlName="status">
+                        <mat-option
+                          *ngFor="let status of statusList"
+                          [value]="status.itemCode"
+                          >{{ status.itemName }}</mat-option
+                        >
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
                 </div>
               </mat-card-content>
             </mat-card>
@@ -524,9 +632,16 @@
                   <div class="col-12">
                     <mat-form-field appearance="outline" class="w-full">
                       <mat-label>Provider Type</mat-label>
-                      <mat-select formControlName="accountProviderType" (selectionChange)="banktypeChange('accountProvider','accountProviderType')">
-                                        <mat-option value="">--Select--</mat-option>
-                        <mat-option *ngFor="let item of providerTypes" [value]="item.itemCode">{{ item.itemName }}</mat-option>
+                      <mat-select
+                        formControlName="accountProviderType"
+                        (selectionChange)="banktypeChange('accountProvider','accountProviderType')"
+                      >
+                        <mat-option value="">--Select--</mat-option>
+                        <mat-option
+                          *ngFor="let item of providerTypes"
+                          [value]="item.itemCode"
+                          >{{ item.itemName }}</mat-option
+                        >
                       </mat-select>
                     </mat-form-field>
                   </div>
@@ -534,45 +649,74 @@
                     <mat-form-field appearance="outline" class="w-full">
                       <mat-label>Provider</mat-label>
 
-                      <mat-select formControlName="accountProvider" (selectionChange)="loadBankAccountNumber()">
-                                                              <mat-option value="">--Select--</mat-option>
+                      <mat-select
+                        formControlName="accountProvider"
+                        (selectionChange)="loadBankAccountNumber()"
+                      >
+                        <mat-option value="">--Select--</mat-option>
 
-                        <mat-option *ngFor="let item of companyProviders" [value]="item.itemCode">{{ item.itemName }}</mat-option>
+                        <mat-option
+                          *ngFor="let item of companyProviders"
+                          [value]="item.itemCode"
+                          >{{ item.itemName }}</mat-option
+                        >
                       </mat-select>
                     </mat-form-field>
                   </div>
-                   <div class="col-12">
+                  <div class="col-12">
                     <mat-form-field appearance="outline" class="w-full">
-                       <mat-label>Account No</mat-label>
-              <mat-select formControlName="CustaccountNo">
-                <mat-option value="">--Select--</mat-option>
-                <mat-option *ngFor="let item of accountNosCmp" [value]="item.itemCode">{{ item.itemName }}</mat-option>
-              </mat-select>
+                      <mat-label>Account No</mat-label>
+                      <mat-select formControlName="CustaccountNo">
+                        <mat-option value="">--Select--</mat-option>
+                        <mat-option
+                          *ngFor="let item of accountNosCmp"
+                          [value]="item.itemCode"
+                          >{{ item.itemName }}</mat-option
+                        >
+                      </mat-select>
                     </mat-form-field>
                   </div>
                 </div>
               </mat-card-content>
               <div class="flex justify-center mt-0.1">
-      <button mat-raised-button color="primary" class="btnUp" type="submit"
-        [disabled]="isSubmitBtn()">
-        <mat-icon>done</mat-icon> Apply
-        
-      </button>
-      <button mat-raised-button color="accent" class="btnUp" type="button" (click)="clear()">
-        <mat-icon>clear_all</mat-icon> Clear
-      </button>
-      <button mat-raised-button color="warn" class="btnUp" type="button" (click)="close()">
-        <mat-icon>cancel</mat-icon> Close
-      </button>
- <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="goBack()">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="btnUp"
+                  type="submit"
+                  [disabled]="isSubmitBtn()"
+                >
+                  <mat-icon>done</mat-icon> Apply
+                </button>
+                <button
+                  mat-raised-button
+                  color="accent"
+                  class="btnUp"
+                  type="button"
+                  (click)="clear()"
+                >
+                  <mat-icon>clear_all</mat-icon> Clear
+                </button>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  class="btnUp"
+                  type="button"
+                  (click)="close()"
+                >
+                  <mat-icon>cancel</mat-icon> Close
+                </button>
+                <!-- <button mat-raised-button color="accent" class="btnUp" type="button" (click)="goBack()">
         <mat-icon>arrow_back_ios</mat-icon>go back </button>     -->
-      </div>
+              </div>
             </mat-card>
           </div>
         </div>
       </div>
     </form>
-        <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
-
+    <app-message-box
+      [msg]="retMessage"
+      [classtype]="textMessageClass"
+    ></app-message-box>
   </div>
 </div>

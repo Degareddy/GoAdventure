@@ -393,7 +393,16 @@ private subSink!: SubSink;
     
         });
     }
-  modeChange(mode:string){}
+  modeChange(mode:string){
+    if(this.receiptsForm.get('mode')?.value === 'Add'){
+      this.receiptsForm=this.formInit();
+      this.receiptsForm.get('tranNo')?.disable()
+      this.receiptsForm.get('mode')?.patchValue('Add');
+    }
+    else{
+      this.receiptsForm.get('tranNo')?.enable();
+    }
+  }
   clear(){
     this.receiptsForm = this.formInit()
   }
@@ -401,7 +410,38 @@ private subSink!: SubSink;
         this.router.navigateByUrl('/home');
 
   }
-  PayModeChanged(){}
+  PayModeChanged(){
+    if(this.receiptsForm.get('rctMode')?.value === 'CASH'){
+    this.receiptsForm.get('providerType')?.disable();
+    this.receiptsForm.get('holder')?.disable();
+    this.receiptsForm.get('CustaccountNo')?.disable();
+    this.receiptsForm.get('refNo')?.disable();
+    this.receiptsForm.get('refDate')?.disable();
+    this.receiptsForm.get('otherRef1')?.disable();
+    this.receiptsForm.get('otherRef2')?.disable();
+    this.receiptsForm.get('status')?.disable();
+    this.receiptsForm.get('accountProviderType')?.disable();
+    this.receiptsForm.get('accountProvider')?.disable();
+    this.receiptsForm.get('CustaccountNo')?.disable();
+    this.receiptsForm.get('provider')?.disable();
+       this.receiptsForm.get('provider')?.disable();
+}
+else{
+    this.receiptsForm.get('providerType')?.enable();
+    this.receiptsForm.get('holder')?.enable();
+    this.receiptsForm.get('CustaccountNo')?.enable();
+    this.receiptsForm.get('refNo')?.enable();
+    this.receiptsForm.get('refDate')?.enable();
+    this.receiptsForm.get('otherRef1')?.enable();
+    this.receiptsForm.get('otherRef2')?.enable();
+    this.receiptsForm.get('status')?.enable();
+    this.receiptsForm.get('accountProviderType')?.enable();
+    this.receiptsForm.get('accountProvider')?.enable();
+    this.receiptsForm.get('CustaccountNo')?.enable();
+    this.receiptsForm.get('provider')?.enable();
+       this.receiptsForm.get('provider')?.enable();
+}
+  }
   onSelectionChangetranType(){
     if(this.receiptsForm.get('rctType')?.value===''){
       this.submitButton=true
@@ -443,18 +483,19 @@ private subSink!: SubSink;
     }
     return false;
   }
-  calculateTotal() {
-    const amount = Number(this.receiptsForm.get('rctAmount')?.value) || 0;
-    const charges = Number(this.receiptsForm.get('charges')?.value) || 0;
-    const total = amount + charges;
+  // calculateTotal() {
+  //   const amount = Number(this.receiptsForm.get('rctAmount')?.value) || 0;
+  //   const charges = Number(this.receiptsForm.get('charges')?.value) || 0;
+  //   const total = amount + charges;
     
-    this.receiptsForm.get('total')?.setValue(total);
-  }
+  //   this.receiptsForm.get('total')?.setValue(total);
+  // }
 
   // Format number for display only
   formatNumber(value: number): string {
     return new Intl.NumberFormat('en-IN').format(value);
   }
+  
   onSelectionChangeClientType(){}
   onSearchClientName(){
     
@@ -681,6 +722,7 @@ private subSink!: SubSink;
   
   //     });
   // }
+
   allocate() {
     console.log(this.receiptsForm.controls['tranNo'].value);
       const dialogRef: MatDialogRef<AllocateComponent> = this.dialog.open(AllocateComponent,
@@ -704,4 +746,87 @@ private subSink!: SubSink;
         }
       });
     }
+   // Unified method for handling input changes
+onNumberFieldChange(event: any, fieldName: string): void {
+  const value = event.target.value;
+  // Remove all commas and non-numeric characters except decimal point
+  const numericValue = value.replace(/[^0-9.]/g, '');
+  
+  // Update form control with raw numeric value
+  this.receiptsForm.get(fieldName)?.setValue(numericValue, { emitEvent: false });
+  
+  // Format and display with commas
+  const formattedValue = this.addCommasToNumber(numericValue);
+  event.target.value = formattedValue;
+  
+  // Calculate total if rctAmount or charges changed
+  if (fieldName === 'rctAmount' || fieldName === 'charges') {
+    this.calculateTotal();
+  }
+}
+
+// Unified method for handling focus (remove commas for editing)
+onNumberFieldFocus(event: any): void {
+  const value = event.target.value;
+  // Remove commas to show raw number for editing
+  const numericValue = value.replace(/,/g, '');
+  event.target.value = numericValue;
+}
+
+// Unified method for handling blur (add commas back)
+onNumberFieldBlur(event: any, fieldName: string): void {
+  const value = event.target.value;
+  
+  if (value) {
+    // Ensure it's a valid number
+    const numericValue = parseFloat(value.replace(/[^0-9.]/g, ''));
+    
+    if (!isNaN(numericValue)) {
+      // Update form control with clean numeric value
+      this.receiptsForm.get(fieldName)?.setValue(numericValue.toString(), { emitEvent: false });
+      
+      // Format and display with commas
+      const formattedValue = this.addCommasToNumber(numericValue.toString());
+      event.target.value = formattedValue;
+    }
+  }
+  
+  // Calculate total after blur
+  if (fieldName === 'rctAmount' || fieldName === 'charges') {
+    this.calculateTotal();
+  }
+}
+
+// Helper method to add commas to numbers
+addCommasToNumber(value: string): string {
+  if (!value) return '';
+  
+  const parts = value.split('.');
+  const integerPart = parts[0];
+  const decimalPart = parts[1];
+  
+  // Add commas to integer part
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  
+  // Return with decimal part if exists
+  return decimalPart !== undefined ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+}
+
+// Method to calculate total
+calculateTotal(): void {
+  const rctAmount = parseFloat(this.receiptsForm.get('rctAmount')?.value || '0');
+  const charges = parseFloat(this.receiptsForm.get('charges')?.value || '0');
+  
+  const total = rctAmount + charges;
+  
+  // Update total field with formatted value
+  this.receiptsForm.get('total')?.setValue(total.toString(), { emitEvent: false });
+  
+  // Update the display value with commas
+  const totalField = document.querySelector('input[formControlName="total"]') as HTMLInputElement;
+  if (totalField) {
+    totalField.value = this.addCommasToNumber(total.toFixed(2));
+  }
+
+}
 }
