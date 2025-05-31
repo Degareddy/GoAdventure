@@ -159,7 +159,9 @@ private subSink!: SubSink;
         User:this.userDataService.userData.userID,
         RefNo:this.userDataService.userData.sessionID
       }
+      this.loader.start();
       this.subSink.sink = this.saleService.UpdateReceiptsAndPayments(body).subscribe((res: any) => {
+         this.loader.stop();
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
            this.receiptsForm.get('mode')?.patchValue('Modify');
            this.receiptsForm.get('tranNo')?.patchValue(res.tranNoNew);
@@ -663,7 +665,7 @@ else{
     this.receiptsForm.get('rctMode')?.patchValue(data.payMode);
     this.receiptsForm.get('rctAmount')?.patchValue(this.getInrFormat(data.tranAmount));
     this.receiptsForm.get('recurring')?.patchValue(data.isRecurring);
-    this.receiptsForm.get('providerType')?.patchValue('');
+    this.receiptsForm.get('providerType')?.patchValue(data.clientBankType);
     this.banktypeChange('provider','providerType')
     this.receiptsForm.get('provider')?.patchValue(data.clientBank);
     this.receiptsForm.get('provider')?.patchValue(data.clientBank);
@@ -674,7 +676,7 @@ else{
     this.receiptsForm.get('status')?.patchValue(data.clientTranStatus);
     this.receiptsForm.get('holder')?.patchValue(data.clientAccName);
     this.receiptsForm.get('accountNo')?.patchValue("Modify");
-    this.receiptsForm.get('accountProviderType')?.patchValue('');
+    this.receiptsForm.get('accountProviderType')?.patchValue(data.txnBankType);
     this.banktypeChange('accountProvider','accountProviderType');
     this.receiptsForm.get('accountProvider')?.patchValue(data.txnBank);
     this.loadBankAccountNumber()
@@ -684,6 +686,7 @@ else{
     this.receiptsForm.get('total')?.patchValue(this.getInrFormat(data.paidAmt));
     // this.receiptsForm.get('mode')?.patchValue(data.charges);
     this.selecTedClient=data.client
+    this.allocStatus=data.tranStatus
   }
   tranDateChanged(){}
   formInit() {
