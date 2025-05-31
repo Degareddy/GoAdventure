@@ -167,7 +167,7 @@ GetPartySearchList(doc: any): Observable<any> {
   }
 
   UpdatePaymentReceiptAllocationDetails(body: any): Observable<any> {
-    return this.http.post(environment.Url + 'sales/UpdatePaymentReceiptAllocationDetails', body)
+    return this.http.post(environment.Url + 'sales/UpdateAllocationDetails', body)
   }
 
   GetUserCashBalance(body: any): Observable<any> {

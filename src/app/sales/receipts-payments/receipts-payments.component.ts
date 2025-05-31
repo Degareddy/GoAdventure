@@ -143,7 +143,7 @@ private subSink!: SubSink;
         OtherRefDate:new Date(),
         ClientTranStatus:this.receiptsForm.get('status')?.value,
         TxnBank:this.receiptsForm.get('accountProvider')?.value,
-        TxnAccount:this.receiptsForm.get('accountNo')?.value,
+        TxnAccount:this.receiptsForm.get('cmpAccountNo')?.value,
         TxnDate:this.receiptsForm.get('tranDate')?.value,
         TxnStatus:'',
         TranFor:this.receiptsForm.get('tranFor')?.value,
@@ -535,10 +535,13 @@ else{
               // }
               //  else {
                 if (!this.dialogOpen) {
+                      
+
                   const dialogRef: MatDialogRef<TenantSearchComponent> = this.dialog.open(TenantSearchComponent, {
                     width: '90%',
                     disableClose: true,
                     data: {
+
                       PartyName: this.receiptsForm.controls['clientName'].value,
                       PartyType: this.receiptsForm.controls['clientType'].value.toUpperCase(),
                       search: this.receiptsForm.controls['clientType'].value + ' Search',
@@ -550,6 +553,8 @@ else{
                   });
                   this.dialogOpen = true;
                   dialogRef.afterClosed().subscribe((result) => {
+                        
+
                     console.log(result);
                     this.selecTedClient = result.code;
                     this.receiptsForm.controls['clientName'].patchValue(result.partyName);
@@ -567,6 +572,7 @@ else{
         }
   }
   loadClientBal(){
+    
     const body=  {
     company: this.userDataService.userData.company,
     location:  this.userDataService.userData.location,
@@ -631,6 +637,7 @@ else{
     this.subSink.sink = this.saleService.GetReceiptPaymentsDetails(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.displayMessage(res.message,TextClr.green);
+            this.patchForm(res.data);
           }
           else {
             this.displayMessage(res.message + " for types list!", TextClr.red);
@@ -638,7 +645,12 @@ else{
     
         });
     }
-  
+  getInrFormat(amount: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
   patchForm(data:any){
     this.receiptsForm.get('mode')?.patchValue("Modify");
     // this.receiptsForm.get('receiptmode')?.patchValue(data.);
@@ -648,22 +660,30 @@ else{
     this.receiptsForm.get('clientName')?.patchValue(data.clientName);
     this.receiptsForm.get('tranFor')?.patchValue(data.tranFor);
     this.receiptsForm.get('rctType')?.patchValue(data.tranType);
-    this.receiptsForm.get('rctAmount')?.patchValue(data.tranAmount);
+    this.receiptsForm.get('rctMode')?.patchValue(data.payMode);
+    this.receiptsForm.get('rctAmount')?.patchValue(this.getInrFormat(data.tranAmount));
     this.receiptsForm.get('recurring')?.patchValue(data.isRecurring);
     this.receiptsForm.get('providerType')?.patchValue('');
-    this.receiptsForm.get('refNo')?.patchValue("Modify");
-    this.receiptsForm.get('refDate')?.patchValue("Modify");
-    this.receiptsForm.get('otherRef1')?.patchValue("Modify");
-    this.receiptsForm.get('otherRefDate1')?.patchValue("Modify");
-    this.receiptsForm.get('otherRef2')?.patchValue("Modify");
-    this.receiptsForm.get('status')?.patchValue("Modify");
-    this.receiptsForm.get('holder')?.patchValue("Modify");
+    this.banktypeChange('provider','providerType')
+    this.receiptsForm.get('provider')?.patchValue(data.clientBank);
+    this.receiptsForm.get('provider')?.patchValue(data.clientBank);
+    this.receiptsForm.get('refNo')?.patchValue(data.clientBankRefNo);
+    this.receiptsForm.get('refDate')?.patchValue(this.dateFormat.formatDate(data.clientBankRefDate));
+    this.receiptsForm.get('otherRef2')?.patchValue(data.otherFirstRefNo);
+    this.receiptsForm.get('otherRef1')?.patchValue(data.otherSecondRefNo);
+    this.receiptsForm.get('status')?.patchValue(data.clientTranStatus);
+    this.receiptsForm.get('holder')?.patchValue(data.clientAccName);
     this.receiptsForm.get('accountNo')?.patchValue("Modify");
     this.receiptsForm.get('accountProviderType')?.patchValue('');
-    this.receiptsForm.get('CustaccountNo')?.patchValue("Modify");
-    this.receiptsForm.get('charges')?.patchValue("Modify");
-    this.receiptsForm.get('total')?.patchValue("Modify");
-    this.receiptsForm.get('mode')?.patchValue("Modify");
+    this.banktypeChange('accountProvider','accountProviderType');
+    this.receiptsForm.get('accountProvider')?.patchValue(data.txnBank);
+    this.loadBankAccountNumber()
+     this.receiptsForm.get('cmpAccountNo')?.patchValue(data.txnAccount);
+    this.receiptsForm.get('CustaccountNo')?.patchValue(data.clientAccount);
+    this.receiptsForm.get('charges')?.patchValue(this.getInrFormat(data.charges));
+    this.receiptsForm.get('total')?.patchValue(this.getInrFormat(data.paidAmt));
+    // this.receiptsForm.get('mode')?.patchValue(data.charges);
+    this.selecTedClient=data.client
   }
   tranDateChanged(){}
   formInit() {
@@ -694,6 +714,7 @@ else{
       CustaccountNo: [''],
       charges:[0],
       total:[0,{disabled: true}],
+      cmpAccountNo:['']
     });
     }
   goBack(): void {
