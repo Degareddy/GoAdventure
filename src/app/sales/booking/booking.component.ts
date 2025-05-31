@@ -71,7 +71,7 @@ export class BookingComponent implements OnInit {
   formattedTotal: string='';
   formattedGst: string='';
   formattedPayable: string='';
-  formattedDiscount: string='';
+  formattedDiscount: string='0.00';
     constructor(private fb:FormBuilder,private location: Location,private salesSerivce:SalesService ,
       private purchaseService:PurchaseService, private router: Router,
       public dialog: MatDialog,private userDataService:UserDataService,private invService:InventoryService,
@@ -202,27 +202,27 @@ const body={
     this.loadLeadsources();
     this.loadDeparturetypes();
     this.loadTripList()
-    this.bookingForm.get('regularAmount')?.valueChanges.subscribe((regularAmount: number) => {
-    if (regularAmount != null) {
-      const discount = this.bookingForm.get('discOffered')?.value; // 10% discount
-      const quotedPrice = regularAmount - discount;
+  //   this.bookingForm.get('regularAmount')?.valueChanges.subscribe((regularAmount: number) => {
+  // //   if (regularAmount != null) {
+  // //     const discount = this.bookingForm.get('discOffered')?.value; // 10% discount
+  // //     const quotedPrice = regularAmount - discount;
 
-      this.bookingForm.patchValue({
-        discOffered: discount,
-        quotedPrice: quotedPrice
-      });
-    }
-  });
-  this.bookingForm.get('discOffered')?.valueChanges.subscribe((discOffered: number) => {
-    if (discOffered != null) {
-      const regPrice = this.bookingForm.get('regularAmount')?.value; // 10% discount
-      const quotedPrice =regPrice - discOffered;
+  // //     this.bookingForm.patchValue({
+  // //       discOffered: discount,
+  // //       quotedPrice: quotedPrice
+  // //     });
+  // //   }
+  // // });
+  // this.bookingForm.get('discOffered')?.valueChanges.subscribe((discOffered: number) => {
+  //   if (discOffered != null) {
+  //     const regPrice = this.bookingForm.get('regularAmount')?.value; // 10% discount
+  //     const quotedPrice =regPrice - discOffered;
 
-      this.bookingForm.patchValue({
-        quotedPrice: quotedPrice
-      });
-    }
-  });
+  //     this.bookingForm.patchValue({
+  //       quotedPrice: quotedPrice
+  //     });
+  //   }
+  // });
   this.bookingForm.get('tripId')!.valueChanges
     .pipe(
       startWith(''),
@@ -247,7 +247,11 @@ const body={
 };
 
   onSubmit(){
-   
+    
+    let disc=0.00
+   if(this.bookingForm.get('discOffered')?.value !== ''){
+    disc=this.bookingForm.get('discOffered')?.value;
+   }
     
     const body={
       Mode: this.bookingForm.get('mode')?.value,
@@ -256,6 +260,7 @@ const body={
       TranNo: this.bookingForm.get('batchNo')?.value,
       TranDate: this.bookingForm.get('tranDate')?.value,
       PackageType: this.selectedPackageId,
+      package: this.selectedPackageId,
       TripId: this.selectedTripId,
       DepType:this.bookingForm.get('departuretype')?.value,
       LeadSource:this.bookingForm.get('leadsource')?.value,
@@ -266,13 +271,13 @@ const body={
       AdultsCnt: this.bookingForm.get('adults')?.value,
       AgeUptoYrs5: this.bookingForm.get('zeroToFive')?.value,
       AgeYrs6to12: this.bookingForm.get('fiveToTwelve')?.value,
-      PkgValue:this.bookingForm.get('regularAmount')?.value,
-      ActualPrice:this.bookingForm.get('quotedPrice')?.value,
-      AddOns: this.bookingForm.get('addOns')?.value,
-      Discount: this.bookingForm.get('discOffered')?.value,
-      TotalAmount: this.bookingForm.get('total')?.value,
-      TaxAmount:this.bookingForm.get('gst')?.value,
-      NetPayable:this.bookingForm.get('payable')?.value,
+      PkgValue:this.removeInrFormat(this.bookingForm.get('regularAmount')?.value ),
+      ActualPrice:this.removeInrFormat(this.bookingForm.get('quotedPrice')?.value),
+      AddOns: (this.bookingForm.get('addOns')?.value),
+      Discount: disc,
+      TotalAmount: this.removeInrFormat(this.bookingForm.get('total')?.value),
+      TaxAmount:this.removeInrFormat(this.bookingForm.get('gst')?.value),
+      NetPayable:this.removeInrFormat(this.bookingForm.get('payable')?.value),
       Remarks: this.bookingForm.get('remarks')?.value,
       RefBooking: this.bookingForm.get('websiteReferenceId')?.value,
       User:this.userDataService.userData.userID,
@@ -414,6 +419,7 @@ const body={
         User:this.userDataService.userData.userID,
         RefNo:this.userDataService.userData.sessionID,
       }
+      this.selectedTripId=this.bookingForm.get('tripId')?.value
       try {
           this.loader.start();
               this.subSink.sink =this.salesSerivce.GetTripDataToBooking(body).subscribe((res: any) => {
@@ -424,7 +430,6 @@ const body={
                   this.selectedPackageName=res.data.packageName
                   this.selectedPackageTypeId=res.data.packageType
                   this.seletedPackageTypeName=res.data.packageTypeDesc
-                  this.selectedTripId=res.data.tripId
                   this.stdCost=res.data.stdCost
                   this.calculateAmounts();
                   
@@ -710,46 +715,37 @@ searchBookingOnTran(){
   this.bookingForm.patchValue({ quotedPrice: regular });
 }
   // Add this method to calculate totals
-calculateTotals() {
-  
+calculateTotals(fieldName?: string) {
   const getValue = (field: string): number => {
+    
     const raw = this.bookingForm.get(field)?.value;
     const cleaned = this.removeInrFormat(raw);
     const parsed = parseFloat(cleaned);
     return isNaN(parsed) ? 0 : parsed;
   };
-
+if(fieldName === 'regularAmount'){
+  this.bookingForm.patchValue({ quotedPrice: getValue('regularAmount') });
+}
   const regularAmount = getValue('regularAmount');
   const quotedPrice = getValue('quotedPrice');
-  // const discount = getValue('discOffered');
   const addOns = getValue('addOns');
 
-  const discountedPrice = regularAmount - quotedPrice;
+  const discountAmount = regularAmount - quotedPrice;
   const total = quotedPrice + addOns;
-  const gst = Math.ceil(parseFloat((total * 0.05).toFixed(2)));
-  const payable = parseFloat((total + gst).toFixed(2));
-  const discountAmount = (regularAmount - quotedPrice);
+  const gst = Math.ceil(total * 0.05);
+  const payable = total + gst;
 
-  // Set raw numeric values
   this.bookingForm.patchValue({
+    discOffered: discountAmount,
     total: total,
     gst: gst,
-    payable: payable,
-    discOffered: discountAmount,
-    regularAmount: regularAmount,
-    quotedPrice: quotedPrice,
+    payable: payable
   });
-
-  // Set formatted values for display only
-  this.formattedTotal = this.getInrFormat(total);
-  this.formattedPayable = this.getInrFormat(payable);
-  this.formattedDiscount = this.getInrFormat(discountAmount);
-  
-  this.discAmount = discountAmount;
 }
+
 // Call this method whenever any pricing field changes
 onPriceFieldChange(fieldName?: string) {
-  this.calculateTotals();
+  this.calculateTotals(fieldName);
   if(fieldName === 'regularAmount'){
     let regamount=(this.bookingForm.get('regularAmount')?.value)
     this.bookingForm.get('quotedPrice')?.patchValue(this.getInrFormat(parseFloat(regamount)) )
@@ -774,6 +770,7 @@ onCountChnage() {
 }
 formattedRegularAmount = '';
 formattedQuotedPrice = '';
+formattedAddons = '';
 
 onInputFormat(event: Event, fieldName: string) {
   this.onPriceFieldChange()
@@ -798,22 +795,25 @@ onInputFormat(event: Event, fieldName: string) {
 
 
 removeInrFormat(value: any): string {
+  
   return (value || '').toString().replace(/[^0-9.]/g, '');
 }
+
+
 onBlurFormat(fieldName: string) {
   const value = this.bookingForm.get(fieldName)?.value || 0;
   const formatted = this.formatNumberWithCommas(value);
 
   if (fieldName === 'quotedPrice') {
     this.formattedQuotedPrice = formatted;
-    this.onBlurFormat('regularAmount');
+    // this.onBlurFormat('regularAmount');
   }
   if(fieldName === 'regularAmount'){
     this.formattedRegularAmount = formatted;
     // this.onBlurFormat('quotedPrice')
   }
   if(fieldName === 'addOns'){
-    this.formattedTotal = formatted;
+    this.formattedAddons = formatted;
   }
   
 }

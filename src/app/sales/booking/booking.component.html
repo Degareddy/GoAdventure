@@ -337,7 +337,7 @@
                   matSuffix
                   mat-icon-button
                   aria-label="Search"
-                  (click)="onSearchCilcked()"
+                  (click)="getTripDetails()"
                   type="button"
                 >
                   <mat-icon class="mat-search-icon">search</mat-icon>
@@ -466,7 +466,6 @@
                     style="text-align: right;"
                     formControlName="regularAmount"
                     (input)="onPriceFieldChange('regularAmount')"
-                    (blur)="onBlurFormat('regularAmount')"
                     [value]="formattedRegularAmount"
                   />
                   <button
@@ -497,7 +496,7 @@
                     style="text-align: right;"
                     placeholder="Quoted Price"
                     formControlName="quotedPrice"
-                    (input)="onPriceFieldChange()"
+                    (input)="onPriceFieldChange('quotedPrice')"
                     (blur)="onBlurFormat('quotedPrice')"
                     [value]="formattedQuotedPrice"
                   />
@@ -528,7 +527,9 @@
                     (mouseleave)="hoveredField=null"
                     placeholder="Add Ons"
                     formControlName="addOns"
-                    (input)="onPriceFieldChange()"
+                    (input)="onPriceFieldChange('addOns')"
+                     (blur)="onBlurFormat('addOns')"
+                     [value]="formattedAddons"
                   />
                   <button
                     matSuffix
@@ -553,12 +554,12 @@
                   <input
                     matInput
                     type="text"
-                    [value]="formattedDiscount"
                     style="text-align: right;"
                     placeholder="Discount"
                     formControlName="discOffered"
-                  />
-                  <!-- <button matSuffix mat-icon-button aria-label="Clear" 
+                    />
+                    <!-- <button matSuffix mat-icon-button aria-label="Clear" 
+                    [value]="formattedDiscount"
                             *ngIf="bookingForm.get('discOffered')?.value"
                             tabindex="-1" 
                             (click)="bookingForm.get('discOffered')?.reset()"
