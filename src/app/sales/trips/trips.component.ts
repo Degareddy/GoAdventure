@@ -47,25 +47,9 @@ export class TripsComponent implements OnInit {
   packageNamesList:autoComplete[]=[]
   packageNames:packageNames[]=[];
   columnDefs: any = [
-    // { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "clientName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "tranNo", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
-  //   {
-  //   field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
-  //   valueFormatter: function (params: any) {
-  //     if (params.value) {
-  //       const date = new Date(params.value);
-  //       const day = date.getDate().toString().padStart(2, '0');
-  //       const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  //       const year = date.getFullYear();
-  //       return `${day}-${month}-${year}`;
-  //     }
-  //     return null;
-  //   },
-  // },
-  // { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
-  // { field: "packageName", headerName: "Package name", sortable: true, filter: true, resizable: true, width: 190 },
-  { field: "tripId", headerName: "Trip Id", sortable: true, filter: true, resizable: true, width: 80 },
+    { field: "tripId", headerName: "Trip Id", sortable: true, filter: true, resizable: true, width: 80 },
   
   {
     field: "startDate", headerName: "Start Date", sortable: true, filter: true, resizable: true, width: 120,

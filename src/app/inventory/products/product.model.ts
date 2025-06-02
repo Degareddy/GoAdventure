@@ -3,7 +3,7 @@ export class Product {
   defWHNo!: string;
   displayName!: string;
   effDate!: string;
-  groupName!: string;
+  GroupCode!: string;
   hsCode!: string;
   isPerishable!: boolean;
   location!: string;

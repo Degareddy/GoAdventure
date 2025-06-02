@@ -51,7 +51,19 @@ packageTypes:Item[]=[]
   afterDisc:number=0;
 
   
-  columnDefs: any = [{ field: "slNo", headerName: "S.No", width: 80 },
+  columnDefs: any = [
+  ];
+  constructor(protected mastService: MastersService, private salesService:SalesService,private userDataService: UserDataService,protected masterService: MastersService,
+    private fb: FormBuilder, private datePipe: DatePipe,
+    private dialogRef: MatDialogRef<SearchEngineComponent>,
+    private loaderService: NgxUiLoaderService,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
+    this.masterParams = new MasterParams();
+    this.tranSearchForm = this.formInit();
+    this.subSink = new SubSink();
+    if(this.data.search === "Booking Search"|| this.data.search  == 'Trip Search'){
+      this.columnDefs=[
+        { field: "slNo", headerName: "S.No", width: 80 },
     { field: "packageTypeName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "clientName", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
     { field: "tranNo", headerName: "Package Type", sortable: true, filter: true, resizable: true, width: 90, hide: true },
@@ -98,17 +110,33 @@ packageTypes:Item[]=[]
       return null;
     },
   }
-  ];
-  constructor(protected mastService: MastersService, private salesService:SalesService,private userDataService: UserDataService,protected masterService: MastersService,
-    private fb: FormBuilder, private datePipe: DatePipe,
-    private dialogRef: MatDialogRef<SearchEngineComponent>,
-    private loaderService: NgxUiLoaderService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.masterParams = new MasterParams();
-    this.tranSearchForm = this.formInit();
-    this.subSink = new SubSink();
+      ]
+    }
+    else{
+      this.columnDefs=[
+        { field: "slNo", headerName: "S.No", width: 60 },
+   { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 90,},
+    {
+    field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+  
+    
+ 
+  
+      ]
+    }
   }
-
+  
   ngAfterViewInit(): void {
     this.loader = this.loaderService;
   }
@@ -244,6 +272,7 @@ this.columnDefs= [{ field: "slNo", headerName: "S.No", width: 80 },
   },
 ]
 }
+this.search();
   }
   bookingSearch(){
         this.displayMessage("Please Wait ...Loading",'')
@@ -374,50 +403,7 @@ onRowSelected(event: any) {
         this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
     }
-    
-    else if(this.data.search  == 'Opening Balance Search' || this.data.search  == 'Receipt/Payment Search'){
-      let searchFor:string='';
-      if(this.data.search  == 'Opening Balance Search'){
-        searchFor='OPNBAL'
-      }
-      else if(this.data.search  == 'Receipt/Payment Search'){
-        searchFor='RCTPMT'
-      }
-         const body = {
-      SearchFor:searchFor,
-      TranNo:this.tranSearchForm.get('batchNo')?.value,
-      FirstPara:'Customer',
-      SecondPara:this.tranSearchForm.get('clientName')?.value,
-      ThirdPara:this.tranSearchForm.get('phoneNo')?.value,
-      FourthPara:this.tranSearchForm.get('email')?.value,
-      FirstDate:this.tranSearchForm.get('fromDate')?.value,
-      SecondDate:this.tranSearchForm.get('toDate')?.value,
-        ...this.commonParams(),
-      }
-      try {
-        this.loader.start();
-        this.subSink.sink = await this.masterService.GetTranSearch(body).subscribe((res: any) => {
-          this.loader.stop();
-          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
-            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
-            this.rowData = [];
-          }
-          else if(res.data.length === 1){
-           this.rowData=res.data
-          }
-          else {
-            this.rowData = res['data'];
-            this.calculateTotal(this.rowData);
-            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
-          }
-        });
-      }
-      catch (ex: any) {
-        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
-      }
-    }
-    else {
-      
+    else if(this.data.search  == 'Trip Search'){
       const body = {
         ...this.commonParams(),
         SearchFor:"TRIP",
@@ -447,12 +433,132 @@ onRowSelected(event: any) {
       catch (ex: any) {
         this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
       }
-
+    }
+    
+    else{
+      let searchFor:string='';
+      let customer:string='VENDOR';
+      if(this.data.search  == 'Opening Balance Search'){
+        searchFor='OPNBAL'
+         const body = {
+      SearchFor:searchFor,
+      TranNo:this.tranSearchForm.get('batchNo')?.value,
+      FirstPara:customer,
+      SecondPara:this.tranSearchForm.get('clientName')?.value,
+      ThirdPara:this.tranSearchForm.get('phoneNo')?.value,
+      FourthPara:this.tranSearchForm.get('email')?.value,
+      FirstDate:this.tranSearchForm.get('fromDate')?.value,
+      SecondDate:this.tranSearchForm.get('toDate')?.value,
+        ...this.commonParams(),
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink = await this.masterService.GetTranSearch(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.calculateTotal(this.rowData);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
+      }
+      else if(this.data.search  == 'Receipt/Payment Search'){
+        searchFor='RCTPMT'
+        customer='CUSTOMER'
+         const body = {
+      SearchFor:searchFor,
+      TranNo:this.tranSearchForm.get('batchNo')?.value,
+      FirstPara:customer,
+      SecondPara:this.tranSearchForm.get('clientName')?.value,
+      ThirdPara:this.tranSearchForm.get('phoneNo')?.value,
+      FourthPara:this.tranSearchForm.get('email')?.value,
+      FirstDate:this.tranSearchForm.get('fromDate')?.value,
+      SecondDate:this.tranSearchForm.get('toDate')?.value,
+        ...this.commonParams(),
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink = await this.masterService.GetTranSearch(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.calculateTotal(this.rowData);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
+      }
+      else if(this.data.search  == 'Supplier Invoice Search'){
+        searchFor='SUPINV'
+         customer=this.tranSearchForm.get('clientName')?.value
+      }
+      else if(this.data.search  == 'Purchase-Order Search'){
+        searchFor='PURCHASE'
+        customer=this.tranSearchForm.get('clientName')?.value
+      }
+      else if(this.data.search == 'GRN Search'){
+        searchFor='GRN'
+         customer=this.tranSearchForm.get('clientName')?.value
+      }
+         const body = {
+      SearchFor:searchFor,
+      TranNo:this.tranSearchForm.get('batchNo')?.value,
+      FirstPara:customer,
+      SecondPara:'',
+      ThirdPara:'',
+      FourthPara:'',
+      FirstDate:this.tranSearchForm.get('fromDate')?.value,
+      SecondDate:this.tranSearchForm.get('toDate')?.value,
+        ...this.commonParams(),
+      }
+      try {
+        this.loader.start();
+        this.subSink.sink = await this.masterService.GetTranSearch(body).subscribe((res: any) => {
+          this.loader.stop();
+          if (res.status.toUpperCase() === AccessSettings.FAIL || res.status.toUpperCase() === AccessSettings.ERROR) {
+            this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+            this.rowData = [];
+          }
+          else if(res.data.length === 1){
+           this.rowData=res.data
+          }
+          else {
+            this.rowData = res['data'];
+            this.calculateTotal(this.rowData);
+            this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+          }
+        });
+      }
+      catch (ex: any) {
+        this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+      }
     }
     
     
+    
   }
-
+ 
   calculateTotal(data: any) {
     this.totalAmount = data.reduce((sum: number, item: any) => {
       return sum + (item?.tranAmount || 0);

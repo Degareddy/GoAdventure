@@ -35,7 +35,7 @@
           </mat-select>
         </mat-form-field>
       </div>
-      <div class="col-3">
+      <!-- <div class="col-3">
         <mat-form-field appearance="outline">
           <mat-label>Group</mat-label>
           <mat-select formControlName="typeName">
@@ -43,7 +43,7 @@
             <mat-option *ngFor="let y of typeNamesList" [value]="y.itemCode">{{y.itemName}}</mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
+      </div> -->
       <div class="col-3">
         <mat-form-field appearance="outline" class="mat-date">
           <mat-label class="mat-label-class">Group Type</mat-label>
@@ -108,4 +108,19 @@
       </button>
     </div>
   </form>
+  <div style="margin-top: -30px;">
+      <app-access-grid
+        [columnDefs]="columnDefs"
+        [rowData]="rowData"
+        [exportPDF]="true"
+        [exportExcel]="true"
+        [globalSearch]="true"
+        (gridReady)="onGridReady($event)"
+        (cellClicked)="onRowSelected($event)"
+        [gridHeight]="'240px'"
+        [paginationPageSize]="25"
+        [showToolPanel]="true"
+        [showRecordCount]="true"
+      ></app-access-grid>
+    </div>
 </div>

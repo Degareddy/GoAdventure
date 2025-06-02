@@ -199,13 +199,7 @@ export class LinkUnitComponent implements OnInit, OnDestroy {
       this.subSink.sink = forkJoin([property$]).subscribe(
         ([propRes]: any) => {
           this.loader.stop();
-          this.props = propRes['data'];
-          if (this.props.length === 1) {
-            this.linkUnitForm.controls['property'].patchValue(this.props[0].itemCode);
-            this.linkUnitForm.controls['unit'].patchValue("ALL");
-            this.linkUnitForm.controls['block'].patchValue("ALL");
-            this.onSelectedPropertyChanged();
-          }
+         
         },
         error => {
           this.displayMessage("Error: " + error.message, "red");

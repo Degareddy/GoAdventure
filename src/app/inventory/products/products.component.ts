@@ -189,7 +189,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
-          return;
         }
         if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
           this.productList = res2.data;
@@ -197,7 +196,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage(displayMsg.ERROR + "Product list empty!", TextClr.red);
-          return;
         }
 
         if (res3.status.toUpperCase() === AccessSettings.SUCCESS) {
@@ -206,7 +204,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage(displayMsg.ERROR + "Vat list empty!", TextClr.red);
-          return;
         }
 
         if (res4.status.toUpperCase() === AccessSettings.SUCCESS) {
@@ -215,7 +212,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage(displayMsg.ERROR + "UOM list empty!", TextClr.red);
-          return;
         }
 
         if (res5.status.toUpperCase() === AccessSettings.SUCCESS) {
@@ -224,7 +220,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage(displayMsg.ERROR + "Warehouse list empty!", TextClr.red);
-          return;
         }
 
         if (res6.status.toUpperCase() === AccessSettings.SUCCESS) {
@@ -233,7 +228,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
         }
         else {
           this.displayMessage(displayMsg.ERROR + "Group list empty!", TextClr.red);
-          return;
         }
         if (this.productList) {
           this.filteredProductList = this.productForm.get('productGroup')!.valueChanges.pipe(
@@ -442,7 +436,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   prepareProductCls() {
     this.productCls.mode = this.productForm.get('mode')!.value;
-    this.productCls.groupName = this.productForm.get('productGroup')!.value;
+    this.productCls.GroupCode = this.productForm.get('productGroup')!.value;
     const reorder = this.productForm.get('reOrderQuantity')!.value;
     if (typeof reorder === 'string') {
       this.productCls.reOrdQty = reorder.replace(/,/g, '');
@@ -464,7 +458,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.productCls.isPerishable = this.productForm.get('isPerishable')!.value;
     this.productCls.displayName = this.productForm.get('displayName')!.value;
     this.productCls.hsCode = this.productForm.get('hsCode')!.value;
-    this.productCls.groupName = this.productForm.get('productGroups')!.value;
+    this.productCls.GroupCode = this.productForm.get('productGroups')!.value;
     this.productCls.user = this.userDataService.userData.userID;
     this.productCls.refNo = this.userDataService.userData.sessionID;
     this.productCls.company = this.userDataService.userData.company;

@@ -59,7 +59,8 @@
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-date">
           <mat-label class="mat-label-class">Tran Date</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow" />
+          <input matInput [matDatepicker]="picker" formControlName="tranDate" [max]="tomorrow"
+          (dateChange)="onDateChange($event.value)" />
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
@@ -91,14 +92,14 @@
         </mat-form-field>
       </div>
       <div class="col-2 myCustomClass">
-        <mat-checkbox formControlName="inclusiveVAT">Inclusive VAT</mat-checkbox>
+        <mat-checkbox formControlName="inclusiveVAT">Inclusive GST</mat-checkbox>
       </div>
       <div class="col-2 myCustomClass" >
-        <mat-checkbox  formControlName="applyVAT"  >Apply VAT</mat-checkbox>
+        <mat-checkbox  formControlName="applyVAT"  >Apply GST</mat-checkbox>
       </div>
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-date">
-          <mat-label class="mat-label-class">VAT Year</mat-label>
+          <mat-label class="mat-label-class">GST Year</mat-label>
           <mat-select formControlName="vatYear">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of yearList" [value]="x.itemCode">{{x.itemCode}}</mat-option>
@@ -107,7 +108,7 @@
       </div>
       <div class="col-2">
         <mat-form-field appearance="outline" class="mat-date">
-          <mat-label class="mat-label-class">VAT Month</mat-label>
+          <mat-label class="mat-label-class">GST Month</mat-label>
           <mat-select formControlName="vatMonth">
             <mat-option value="">--Select--</mat-option>
             <mat-option *ngFor="let x of monthlist" [value]="x.itemCode">{{x.itemName}}</mat-option>

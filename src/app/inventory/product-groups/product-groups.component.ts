@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InventoryService } from 'src/app/Services/inventory.service';
 import { MastersService } from 'src/app/Services/masters.service';
-import { MasterParams } from 'src/app/sales/sales.class';
+import { dateFormat, MasterParams } from 'src/app/sales/sales.class';
 import { ProductGroup } from '../inventory.class';
 import { SubSink } from 'subsink';
 import { AppHelpComponent } from 'src/app/layouts/app-help/app-help.component';
@@ -16,6 +16,8 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { AccessSettings } from 'src/app/utils/access';
 import { displayMsg, Items, Mode, ScreenId, TextClr } from 'src/app/utils/enums';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-product-groups',
   templateUrl: './product-groups.component.html',
@@ -30,21 +32,52 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
   modes: Item[] = [];
   typeNamesList: Item[] = [];
   selTypeItemsList: Item[] = [];
+  formatDate!:dateFormat
   masterParams!: MasterParams;
+    private gridApi!: GridApi;
+          public gridOptions!: GridOptions;
+    dialogOpen = false;
   itemStatus!: string;
   @Input() max: any;
+ columnDefs: any = [
+   { field: "groupCode", headerName: "Group Code", sortable: true, filter: true, resizable: true, width: 90 },
+   { field: "groupName", headerName: "Group Name", sortable: true, filter: true, resizable: true, width: 80 },
+    { field: "groupType", headerName: "Group Type", sortable: true, filter: true, resizable: true, width: 90 },
+  
+  {
+    field: "effectiveDate", headerName: "Effective Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+  
+  { field: "groupStatus", headerName: "Trip Desc", sortable: true, filter: true, resizable: true, width: 80 },
+ 
+
+  ];
+    rowData:any[]=[];
   tomorrow = new Date();
   private subSink!: SubSink;
   private newMsg: string = "";
+    private columnApi!: ColumnApi;
+  
   private prodGroupCls: ProductGroup;
   constructor(protected masterService: MastersService, private router: Router,
     public dialog: MatDialog, private loader: NgxUiLoaderService,
-    protected fb: FormBuilder, private userDataService: UserDataService,
+    protected fb: FormBuilder, private userDataService: UserDataService,private datePipe: DatePipe,
     protected invService: InventoryService) {
     this.masterParams = new MasterParams();
     this.productGroupForm = this.formInit();
     this.prodGroupCls = new ProductGroup();
     this.subSink = new SubSink();
+    this.formatDate = new dateFormat(datePipe);
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -75,21 +108,50 @@ export class ProductGroupsComponent implements OnInit, OnDestroy {
          this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
       }
     });
-    this.masterParams.item = Items.PRODUCTGROUP;
+    // this.masterParams.item = Items.PRODUCTGROUP;
 
-    this.subSink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: getResponse) => {
-      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-        this.typeNamesList = res['data'];
-      }
-      else{
-      this.displayMessage(displayMsg.ERROR + "Types list empty!", TextClr.red);
+    // this.subSink.sink = this.masterService.GetMasterItemsList(this.masterParams).subscribe((res: getResponse) => {
+    //   if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+    //     this.typeNamesList = res['data'];
+    //   }
+    //   else{
+    //   this.displayMessage(displayMsg.ERROR + "Types list empty!", TextClr.red);
 
-      }
+    //   }
 
-    });
+    // });
     this.productGroupForm.get('typeName')!.valueChanges.subscribe((value) => {
       this.onSelectedTypeChanged(value, this.productGroupForm.get('mode')!.value);
     });
+    this.loadProductGroups()
+  }
+  loadProductGroups(){
+    this.displayMessage("", "");
+    this.rowData = [];
+    const body={
+      user: this.userDataService.userData.userID,
+      company: this.userDataService.userData.company,
+      location: this.userDataService.userData.location,
+      refNo: this.userDataService.userData.sessionID
+    }
+    try{
+
+      this.loader.start();
+      this.subSink.sink = this.invService.GetProductGroupsList(body).subscribe((res: any) => {
+        this.loader.stop();
+        if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.rowData = res.data;
+          this.displayMessage(displayMsg.SUCCESS + res.message, TextClr.green);
+        }
+        else{
+          this.displayMessage(displayMsg.ERROR + res.message, TextClr.red);
+          this.rowData = [];
+        }
+      })
+    }
+    catch (ex:any) {
+      this.displayMessage(displayMsg.ERROR + ex.message, TextClr.red);
+    }
   }
 private displayMessage(message: string, cssClass: string) {
 			this.retMessage = message;
@@ -155,6 +217,7 @@ private displayMessage(message: string, cssClass: string) {
           if (this.productGroupForm.controls['mode'].value.toUpperCase() == Mode.Add) {
             this.productGroupForm.controls['mode'].patchValue('Modify');
             this.displayMessage(displayMsg.SUCCESS+result.message,TextClr.green)
+            this.loadProductGroups()
           }
           this.newMsg = result.message;
           if (result.tranNoNew) {
@@ -234,4 +297,23 @@ private displayMessage(message: string, cssClass: string) {
       }
     });
   }
+  onGridReady(params: any) {
+      this.gridApi = params.api;
+      this.columnApi = params.columnApi;
+      this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+    onRowSelected(event: any) {
+      console.log(event.data);
+      // this.onSelectedTypeChanged(event.data.groupCode, this.productGroupForm.get('mode')!.value);
+     this.productGroupForm.get('mode')?.patchValue('Modify');
+     this.productGroupForm.get('groupType')?.patchValue(event.data.groupType);
+      this.productGroupForm.get('groupCode')?.patchValue(event.data.groupCode);
+      this.productGroupForm.get('groupName')?.patchValue(event.data.groupName);
+
+      this.productGroupForm.get('notes')?.patchValue(event.data.notes);
+      this.itemStatus = event.data.groupStatus;
+      this.productGroupForm.get('effectiveDate')?.patchValue(this.formatDate.formatDate(event.data.effectiveDate));
+      // this.patchForm(event.data);
+      
+    }
 }

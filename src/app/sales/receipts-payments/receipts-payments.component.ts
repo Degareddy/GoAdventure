@@ -101,11 +101,11 @@ private subSink!: SubSink;
         if (res.status.toUpperCase() === 'SUCCESS') {
           this.modes = res['data'];
         } else {
-          this.displayMessage("Modes list empty!", 'red');
+          // this.displayMessage("Modes list empty!", 'red');
         }
       });
     } catch (ex: any) {
-      this.displayMessage("Error " + ex.message, 'red');
+      // this.displayMessage("Error " + ex.message, 'red');
     }
     this.loadData();
    combineLatest([
@@ -299,25 +299,25 @@ private subSink!: SubSink;
          if (res1.status.toUpperCase() === 'SUCCESS') {
            this.filteredpayMode = res1.data;
          } else {
-           this.displayMessage('Error: Paymode list empty!', 'red');
+          //  this.displayMessage('Error: Paymode list empty!', 'red');
          }
  
          if (res2.status.toUpperCase() === 'SUCCESS') {
           //  this.currency = res2.data;
          } else {
-           this.displayMessage('Error: Currency list empty!', 'red');
+          //  this.displayMessage('Error: Currency list empty!', 'red');
          }
  
          if (res3.status.toUpperCase() === 'SUCCESS') {
            this.bank = res3.data;
          } else {
-           this.displayMessage('Error: Bank list empty!', 'red');
+          //  this.displayMessage('Error: Bank list empty!', 'red');
          }
          if (res4.status.toUpperCase() === 'SUCCESS') {
            this.tranFor = res4.data;
            this.filteredItemsTranFor = res4.data;
          } else {
-           this.displayMessage('Error: Transaction for list empty!', 'red');
+          //  this.displayMessage('Error: Transaction for list empty!', 'red');
          }
          // this.bank = res3.data;
          // this.overHeadsLsit = res4.data;
@@ -382,7 +382,7 @@ private subSink!: SubSink;
     }
     this.subSink.sink = this.masterService.GetMasterItemsList(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-            this.displayMessage(res.message,TextClr.green);
+            // this.displayMessage(res.message,TextClr.green);
             this.providerTypes = res['data'];
             if (this.providerTypes.length === 1) {
               this.receiptsForm.get('typeName')!.patchValue(this.providerTypes[0].itemCode);
@@ -390,7 +390,7 @@ private subSink!: SubSink;
             }
           }
           else {
-            this.displayMessage(res.message + " for types list!", TextClr.red);
+            // this.displayMessage(res.message + " for types list!", TextClr.red);
           }
     
         });
@@ -586,7 +586,8 @@ else{
     this.subSink.sink = this.saleService.GetClientBalance(body).subscribe((res: any) => {
           if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.balance = res.data.balance;
-           this.receiptsForm.get('rctAmount')?.patchValue(this.balance);
+           this.receiptsForm.get('rctAmount')?.patchValue(this.getInrFormat(this.balance));
+           this.receiptsForm.get('total')?.patchValue(this.getInrFormat(this.balance));
           }
           else {
             this.displayMessage(res.message + " for types list!", TextClr.red);

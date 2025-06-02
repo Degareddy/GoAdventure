@@ -238,6 +238,7 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
     this.authorizedOn = "";
   }
 
+
   purchaseOrderData(masterParams: MasterParams, mode: string) {
     try {
       this.loader.start();
@@ -321,6 +322,7 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.retVal === 0) {
         if (res && res.data && res.data.tranCount === 1) {
+          
           this.masterParams.tranNo = res.data.selTranNo;
           this.purchaseOrderData(this.masterParams, this.purhdrForm.controls['mode'].value);
         }
@@ -348,7 +350,7 @@ export class PurchaseOrderComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         this.detdialogOpen = false;
         if (result != true && result != undefined) {
-          this.masterParams.tranNo = result;
+          this.masterParams.tranNo = result.tranNo;
           this.purchaseOrderData(this.masterParams, this.purhdrForm.controls['mode'].value);
         }
       });

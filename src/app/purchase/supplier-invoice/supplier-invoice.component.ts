@@ -33,6 +33,9 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
   @ViewChild('overlay') overlay!: SideOverlayComponent;
   @Input() max: any;
   tomorrow = new Date();
+   selectedFullMonth = '';
+  selectedYear = 0;
+  selectedMonthYear = '';
   supinvForm!: FormGroup;
   retMessage: string = "";
   newMessage: string = "";
@@ -119,6 +122,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
 
   // }
   ngOnInit(): void {
+    this.onDateChange(new Date())
     this.loadData();
     this.supinvForm.get('inclusiveVAT')?.valueChanges.subscribe(value => {
       if (value) {
@@ -129,6 +133,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
         this.supinvForm.get('applyVAT')?.enable();
       }
     });
+    this.supinvForm.get('mode')?.patchValue('Add')
   }
   loadData() {
     this.masterParams.langId = this.userDataService.userData.langId;;
@@ -156,6 +161,9 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
     this.subSink.sink = this.masterService.GetMasterItemsList(curbody).subscribe((res: any) => {
       if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
         this.currencyList = res['data'];
+      if(this.currencyList.length == 1){
+        this.supinvForm.get('currency')?.setValue(this.currencyList[0].itemCode);
+      }
       } else {
         this.displayMessage(displayMsg.ERROR + "Currency list empty!", TextClr.red);
       }
@@ -169,6 +177,51 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
   private displayMessage(message: string, cssClass: string) {
     this.retMessage = message;
     this.textMessageClass = cssClass;
+  }
+  
+  // Date change function
+  onDateChange(selectedDate: Date | null): void {
+    if (selectedDate) {
+      // Get full month name and year
+      this.selectedFullMonth = this.getFullMonthName(selectedDate);
+      this.selectedYear = selectedDate.getFullYear();
+      this.selectedMonthYear = `${this.selectedFullMonth} ${this.selectedYear}`;
+          this.supinvForm.get('vatYear')?.patchValue(this.selectedYear);
+
+      console.log('Selected Date:', selectedDate);
+      console.log('Full Month:', this.selectedFullMonth);
+      console.log('Year:', this.selectedYear);
+      console.log('Month & Year:', this.selectedMonthYear);
+    }
+  }
+
+  // Helper function to get full month name
+  getFullMonthName(date: Date): string {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    this.supinvForm.get('vatMonth')?.patchValue(monthNames[date.getMonth()]);
+    return monthNames[date.getMonth()];
+  }
+
+  // Alternative method using Intl.DateTimeFormat for localization
+  getFormattedMonthYear(date: Date): string {
+    return new Intl.DateTimeFormat('en-US', { 
+      month: 'long', 
+      year: 'numeric' 
+    }).format(date);
+  }
+
+  // Get month and year separately using Intl
+  getLocalizedDateParts(date: Date): { month: string; year: string } {
+    const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
+    const yearFormatter = new Intl.DateTimeFormat('en-US', { year: 'numeric' });
+    
+    return {
+      month: monthFormatter.format(date),
+      year: yearFormatter.format(date)
+    };
   }
 
   searcInvoice() {
@@ -215,7 +268,7 @@ export class SupplierInvoiceComponent implements OnInit, OnDestroy {
       dialogRef.afterClosed().subscribe(result => {
         this.dialogOpen = false;
         if (result != true && result != undefined) {
-          this.masterParams.tranNo = result;
+          this.masterParams.tranNo = result.tranNo;
           this.getSupplierInvoive(this.masterParams, this.supinvForm.get('mode')?.value);
         }
       });

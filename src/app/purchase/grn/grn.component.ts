@@ -226,11 +226,11 @@ export class GrnComponent implements OnInit, OnDestroy {
     }
     this.subSink.sink = this.purchaseService.GetTranCount(body).subscribe((res: any) => {
       if (res.status.toUpperCase() != "FAIL" && res.status.toUpperCase() != "ERROR" && res.status.toUpperCase() != "FAILED") {
-        // if (res && res.data && res.data.tranCount === 1) {
-        //   this.masterParams.tranNo = res.data.selTranNo;
-        //   this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
-        // }
-        // else {
+        if (res && res.data && res.data.tranCount === 1) {
+          this.masterParams.tranNo = res.data.selTranNo;
+          this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
+        }
+        else {
           if (!this.dialogOpen) {
             const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
               width: '90%',
@@ -240,13 +240,13 @@ export class GrnComponent implements OnInit, OnDestroy {
             dialogRef.afterClosed().subscribe(result => {
               if (result != true && result != undefined) {
                 this.dialogOpen = false;
-                this.masterParams.tranNo = result;
+                this.masterParams.tranNo = result.tranNo;
                 this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
               }
             });
           }
 
-        // }
+        }
       } else {
         if (!this.dialogOpen) {
           const dialogRef: MatDialogRef<SearchEngineComponent> = this.dialog.open(SearchEngineComponent, {
@@ -257,7 +257,7 @@ export class GrnComponent implements OnInit, OnDestroy {
           dialogRef.afterClosed().subscribe(result => {
             if (result != true && result != undefined) {
               this.dialogOpen = false;
-              this.masterParams.tranNo = result;
+              this.masterParams.tranNo = result.tranNo;
               this.getGRNData(this.masterParams, this.grnForm.controls['mode'].value);
             }
           });
@@ -276,7 +276,7 @@ export class GrnComponent implements OnInit, OnDestroy {
       tranNo: res['data'].tranNo,
       tranDate: res['data'].tranDate,
       pONo: res['data'].poNo,
-      supplier: res['data'].suppName,
+      supplier: res['data'].supplierName,
       currency: res['data'].currency,
       exchRate: res['data'].exchRate.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }),
       isVatable: res['data'].isVatable,
@@ -448,7 +448,7 @@ export class GrnComponent implements OnInit, OnDestroy {
               disableClose: true,
               data: {
                 tranNum: this.grnForm.controls['pONo'].value, party: this.grnForm.controls['supplier'].value,
-                search: 'Authorized PO Search', TranType: "POAUTHORIZED"
+                search: 'Purchase-Order Search', TranType: "POAUTHORIZED"
               }
             });
             dialogRef.afterClosed().subscribe(result => {

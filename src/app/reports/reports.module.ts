@@ -8,12 +8,14 @@ import { CashBalancesComponent } from './cash-balances/cash-balances.component';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
+import { TripPLComponent } from '../sales/tripl-pl/tripl-pl.component';
 
 @NgModule({
   declarations: [
     TranRegisterComponent,
     PlreportsComponent,
-    CashBalancesComponent
+    CashBalancesComponent,
+    TripPLComponent
   ],
   imports: [
     CommonModule,

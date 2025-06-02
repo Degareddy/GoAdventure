@@ -52,7 +52,12 @@ GetProductLocations(body: any): Observable<SaveApiResponse> {
   updateProductLocations(body: any): Observable<SaveApiResponse> {
     return this.http.post<SaveApiResponse>(environment.Url + 'inventory/UpdateProductLocations/', body)
   }
-
+ GetProductGroupsList(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/GetProductGroupsList/', body)
+  }
+   GetWarehousesList(body: any): Observable<SaveApiResponse> {
+    return this.http.post<SaveApiResponse>(environment.Url + 'inventory/GetWarehousesList/', body)
+  }
   GetStockTransfer(body: any): Observable<getTransactionDetailsResp> {
     return this.http.post<getTransactionDetailsResp>(environment.Url + 'inventory/GetStockTransfer/', body)
   }

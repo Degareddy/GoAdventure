@@ -1,0 +1,184 @@
+<div id="trip-pl-report" class="trip-pl-container">
+        <div class="header">
+            <h1>Trip Profit & Loss Report</h1>
+            <div class="trip-details">
+                <p><strong>Trip:</strong> GoKarna</p>
+                <p><strong>Date:</strong> March 15-20, 2024</p>
+                <p><strong>Duration:</strong> 5 days</p>
+                <p><strong>Participants:</strong> 12 people</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button (click)="downloadPDF()" class="generate-btn no-print">
+                Generate P&L Image
+            </button>
+            <button (click)="generateExcel()" class="download-btn no-print" id="downloadBtn" >
+                Download Image
+            </button>
+        </div>
+
+        <div class="main-content">
+            <!-- Income Section -->
+            <div class="section-card">
+                <h2 class="section-title">INCOME</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Booking</th>
+                            <th>Count</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Amount Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Client Consultation</td>
+                            <td>8</td>
+                            <td class="amount-cell positive-amount">₹2,50,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                            <td class="amount-cell positive-amount">₹2,50,000</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Workshop Registration</td>
+                            <td>12</td>
+                            <td class="amount-cell positive-amount">₹1,20,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                            <td class="amount-cell positive-amount">₹1,20,000</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Speaking Fee</td>
+                            <td>2</td>
+                            <td class="amount-cell positive-amount">₹80,000</td>
+                            <td><span class="status-pending">Pending</span></td>
+                            <td class="amount-cell positive-amount">₹60,000</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Expense Reimbursement</td>
+                            <td>1</td>
+                            <td class="amount-cell positive-amount">₹30,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                            <td class="amount-cell positive-amount">₹30,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Net Revenue:</span>
+                        <span>₹4,60,000</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>GST (5%):</span>
+                        <span>₹23,000</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Revenue:</span>
+                        <span>₹4,83,000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses Section -->
+            <div class="section-card">
+                <h2 class="section-title">EXPENSES</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Key Expense Head</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Flight Tickets</td>
+                            <td class="amount-cell negative-amount">₹1,35,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Hotel Accommodation</td>
+                            <td class="amount-cell negative-amount">₹90,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Local Transportation</td>
+                            <td class="amount-cell negative-amount">₹25,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Meals & Dining</td>
+                            <td class="amount-cell negative-amount">₹42,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Conference Registration</td>
+                            <td class="amount-cell negative-amount">₹30,000</td>
+                            <td><span class="status-paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Miscellaneous</td>
+                            <td class="amount-cell negative-amount">₹18,000</td>
+                            <td><span class="status-pending">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Total Outgo:</span>
+                        <span>₹3,40,000</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>GST on Outgo:</span>
+                        <span>₹17,000</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Cost Including GST:</span>
+                        <span>₹3,57,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Summary -->
+        <div class="final-summary">
+            <h2>Financial Summary</h2>
+            <div class="final-metrics">
+                <div class="metric-card profit">
+                    <div class="metric-label">Profit (Net)</div>
+                    <div class="metric-value">₹1,26,000</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Per Head Revenue Realised</div>
+                    <div class="metric-value">₹40,250</div>
+                </div>
+                <div class="metric-card margin">
+                    <div class="metric-label">Margin</div>
+                    <div class="metric-value">26.1%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Canvas for Image Generation -->
+        <canvas #canvasRef  id="plCanvas" class="hidden" width="1000" height="1400"></canvas>
+        
+        <!-- Generated Image Display -->
+        <div id="imageContainer" class="image-container hidden">
+            <h3>Generated P&L Image</h3>
+            <img id="generatedImage" alt="Trip P&L Report" class="generated-image">
+        </div>
+    </div>

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { MastersService } from 'src/app/Services/masters.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { InventoryService } from 'src/app/Services/inventory.service';
-import { MasterParams } from 'src/app/sales/sales.class';
+import { dateFormat, MasterParams } from 'src/app/sales/sales.class';
 import { forkJoin } from 'rxjs';
 import { SubSink } from 'subsink';
 import { ToastrService } from 'ngx-toastr';
@@ -18,6 +18,8 @@ import { NotesComponent } from 'src/app/general/notes/notes.component';
 import { LogComponent } from 'src/app/general/log/log.component';
 import { displayMsg, Items, Mode, ScreenId, TextClr } from 'src/app/utils/enums';
 import { AccessSettings } from 'src/app/utils/access';
+import { ColumnApi, GridApi, GridOptions } from 'ag-grid-community';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-warehouse',
   templateUrl: './warehouse.component.html',
@@ -34,23 +36,55 @@ export class WarehouseComponent implements OnInit, OnDestroy {
   textMessageClass!: string;
   modeIndex!: number;
   private subSink: SubSink;
+      private gridApi!: GridApi;
+            public gridOptions!: GridOptions;
+      dialogOpen = false;
   masterParams!: MasterParams;
   modes: Item[] = [];
   wareHouseList: Item[] = [];
+  rowData:any[] = [];
+ columnDefs: any = [
+   { field: "whid", headerName: "Id", sortable: true, filter: true, resizable: true, width: 90 },
+   { field: "whName", headerName: "Name", sortable: true, filter: true, resizable: true, width: 80 },
+    { field: "whStatus", headerName: "Status", sortable: true, filter: true, resizable: true, width: 90 },
+  
+  {
+    field: "effectiveDate", headerName: "Effective Date", sortable: true, filter: true, resizable: true, width: 120,
+    valueFormatter: function (params: any) {
+      if (params.value) {
+        const date = new Date(params.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    },
+  },
+  
+  { field: "isDefaultisDefault", headerName: "Default", sortable: true, filter: true, resizable: true, width: 80 },
+ 
+
+  ];
+  dateFormat!:dateFormat
+  
   selMode!: string;
   whousecls: Warehouse;
   @Input() max: any;
+      private columnApi!: ColumnApi;
+  
   tomorrow = new Date();
   @ViewChild('frmClear') public wrhFrm !: NgForm;
   constructor(private fb: FormBuilder,
     public dialog: MatDialog,
-    protected router: Router, private userDataService: UserDataService,
+    protected router: Router, private userDataService: UserDataService,private DatePipe:DatePipe,
     private loader: NgxUiLoaderService,
     protected invService: InventoryService) {
     this.warehouseForm = this.formInit();
     this.masterParams = new MasterParams();
     this.subSink = new SubSink();
     this.whousecls = new Warehouse();
+    this.dateFormat=new dateFormat(DatePipe);
   }
   ngOnDestroy(): void {
     this.subSink.unsubscribe();
@@ -79,6 +113,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     this.warehouseForm.get('list')!.valueChanges.subscribe((value) => {
       this.onWarehouseChanged(value, this.warehouseForm.get('mode')!.value);
     });
+    this.loadWareHouseList()
   }
   modeChange(event: string) {
     if (event.toUpperCase() === Mode.Add) {
@@ -160,12 +195,12 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     };
     try {
       const service1 = this.invService.getModesList(this.masterParams);
-      const service2 = this.invService.GetMasterItemsList(body);
-      this.subSink.sink = forkJoin([service1, service2]).subscribe(
+      // const service2 = this.invService.GetMasterItemsList(body);
+      this.subSink.sink = forkJoin([service1]).subscribe(
         (results: any[]) => {
           this.loader.stop();
           const res1 = results[0];
-          const res2 = results[1];
+          // const res2 = results[1];
 
           if (res1.status.toUpperCase() === AccessSettings.SUCCESS) {
             this.modes = res1.data;
@@ -174,13 +209,13 @@ export class WarehouseComponent implements OnInit, OnDestroy {
           else {
             this.displayMessage(displayMsg.ERROR + "Modes list empty!", TextClr.red);
           }
-          if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
-            this.wareHouseList = res2.data;
+          // if (res2.status.toUpperCase() === AccessSettings.SUCCESS) {
+          //   this.wareHouseList = res2.data;
 
-          }
-          else {
-            this.displayMessage(displayMsg.ERROR + "Warehouse list empty!", TextClr.red);
-          }
+          // }
+          // else {
+          //   this.displayMessage(displayMsg.ERROR + "Warehouse list empty!", TextClr.red);
+          // }
 
         },
         (error: any) => {
@@ -194,27 +229,50 @@ export class WarehouseComponent implements OnInit, OnDestroy {
     }
 
   }
+  loadWareHouseList() {
+    const body={
+      mode:this.warehouseForm.get('mode')?.value,
+      ...this.commonParams()
+    }
+    try{
 
-  getWarehousesList() {
-    const body: getPayload = {
-      ...this.commonParams(),
-      item: Items.WAREHOUSE
-    };
-    const service = this.invService.GetMasterItemsList(body);
-    this.subSink.sink = service.subscribe((results: any) => {
-      this.loader.stop();
-      const res = results[0];
-      if (res.status.toUpperCase() === AccessSettings.SUCCESS) {
-        this.wareHouseList = res.data;
-      }
-    },
-      (error: any) => {
+      this.loader.start();
+      this.subSink.sink = this.invService.GetWarehousesList(body).subscribe((results: any) => {
         this.loader.stop();
-        this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
-      }
-    );
-
+        if (results.status.toUpperCase() === AccessSettings.SUCCESS) {
+          this.rowData = results.data;
+          this.displayMessage(displayMsg.SUCCESS + results.message, TextClr.green);
+        }
+        else{
+          this.displayMessage(displayMsg.ERROR + results.message, TextClr.red);
+        }
+      })
+    }catch(ex:any){
+      this.displayMessage(displayMsg.EXCEPTION + ex.message, TextClr.red);
+    }
+    
   }
+
+  // getWarehousesList() {
+  //   const body: getPayload = {
+  //     ...this.commonParams(),
+  //     item: Items.WAREHOUSE
+  //   };
+  //   const service = this.invService.GetMasterItemsList(body);
+  //   this.subSink.sink = service.subscribe((results: any) => {
+  //     this.loader.stop();
+  //     const res = results[0];
+  //     if (res?.status.toUpperCase() === AccessSettings.SUCCESS) {
+  //       this.wareHouseList = res.data;
+  //     }
+  //   },
+  //     (error: any) => {
+  //       this.loader.stop();
+  //       this.displayMessage(displayMsg.ERROR + error.message, TextClr.red);
+  //     }
+  //   );
+
+  // }
   prepareCls() {
     this.whousecls.mode = this.warehouseForm.controls['mode'].value;
     this.whousecls.company = this.userDataService.userData.company;
@@ -238,6 +296,7 @@ export class WarehouseComponent implements OnInit, OnDestroy {
         this.subSink.sink = this.invService.saveWarehouse(this.whousecls).subscribe((res: SaveApiResponse) => {
           this.loader.stop();
           if (res.retVal > 100 && res.retVal < 200) {
+            this.loadWareHouseList();
             this.wareHouseList.push({ itemCode: res.tranNoNew, itemName: this.warehouseForm.get('whName')!.value })
             if (this.warehouseForm.controls['mode'].value.toUpperCase() == Mode.Add) {
               this.warehouseForm.controls['mode'].patchValue('Modify');
@@ -317,5 +376,20 @@ export class WarehouseComponent implements OnInit, OnDestroy {
       }
     });
   }
+  onGridReady(params: any) {
+      this.gridApi = params.api;
+      this.columnApi = params.columnApi;
+      this.gridApi.addEventListener('rowClicked', this.onRowSelected.bind(this));
+  }
+    onRowSelected(event: any) {
+      console.log(event.data);
+    this.warehouseForm.get('mode')?.setValue('Modify');
+    this.warehouseForm.get('effectiveDate')?.setValue(this.dateFormat.formatDate(event.data.effectiveDate));
+    this.warehouseForm.get('whid')?.setValue(event.data.whid);
+    this.warehouseForm.get('whName')?.setValue(event.data.whName);
+    this.warehouseForm.get('isDefault')?.setValue(event.data.isDefault);
+    this.warehouseForm.get('notes')?.setValue(event.data.notes);
+    this.whStatus= event.data.whStatus;
+    }
 }
 

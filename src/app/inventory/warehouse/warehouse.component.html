@@ -35,7 +35,7 @@
           </mat-form-field>
         </div>
 
-        <div class="col-3">
+        <!-- <div class="col-3">
           <mat-form-field appearance="outline">
             <mat-label>Warehouse List</mat-label>
             <mat-select formControlName="list">
@@ -43,7 +43,7 @@
               <mat-option *ngFor="let x of wareHouseList" [value]="x.itemCode">{{x.itemName}}</mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
+        </div> -->
         <div class="col-3">
           <mat-form-field appearance="outline" class="mat-date">
             <mat-label class="mat-label-class">Date</mat-label>
@@ -52,10 +52,6 @@
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
         </div>
-
-      </div>
-
-      <div class="row justify-content-center">
         <div class="col-3">
           <mat-form-field appearance="outline">
             <mat-label class="mat-label-class">Warehouse Code</mat-label>
@@ -71,13 +67,15 @@
           </mat-form-field>
         </div>
 
-        <div class="col-3 myCustomClass">
-          <mat-checkbox formControlName="isDefault" [labelPosition]="labelPosition">Default</mat-checkbox>
-        </div>
       </div>
 
-      <div class="row justify-content-center myCustomClass">
-        <div class="col-6">
+      <div class="row justify-content-center">
+        
+
+        <div class="col-3 myCustomClass">
+          <mat-checkbox formControlName="isDefault" [labelPosition]="labelPosition">Default</mat-checkbox>
+          </div>
+          <div class="col-6">
           <mat-form-field appearance="outline" aria-colspan="2" style="width: 100%;">
             <mat-label class="mat-label-class">Notes</mat-label>
             <input matInput placeholder="Notes" formControlName="notes" type="text" />
@@ -86,6 +84,10 @@
         <div class="col-3 ">
           <mat-label>Status:&nbsp;</mat-label><b class="data">{{whStatus | uppercase}}</b>
         </div>
+      </div>
+
+      <div class="row justify-content-center myCustomClass">
+        
       </div>
 
       <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
@@ -105,5 +107,20 @@
         </button>
       </div>
     </form>
+    <div style="margin-top: -30px;">
+      <app-access-grid
+        [columnDefs]="columnDefs"
+        [rowData]="rowData"
+        [exportPDF]="true"
+        [exportExcel]="true"
+        [globalSearch]="true"
+        (gridReady)="onGridReady($event)"
+        (cellClicked)="onRowSelected($event)"
+        [gridHeight]="'240px'"
+        [paginationPageSize]="25"
+        [showToolPanel]="true"
+        [showRecordCount]="true"
+      ></app-access-grid>
+    </div>
   </div>
 </section>

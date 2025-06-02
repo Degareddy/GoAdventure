@@ -8,7 +8,7 @@
 
 <div class="p-4 bg-zinc-100 container rounded-sm">
   <form [formGroup]="tranSearchForm">
-    <div *ngIf=" searchName == 'Receipt/Payment Search'">
+    <div *ngIf=" searchName != 'Opening Balance Search' && searchName != 'Booking Search' && searchName != 'Trip Search'">
     <div class="row  justify-content-center" style="margin-top: 8px;">
         <div class="col-4">
               <mat-form-field appearance="outline" class="mat-mode">

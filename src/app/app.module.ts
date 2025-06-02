@@ -72,7 +72,6 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     SalesModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    
     NgMultiSelectDropDownModule.forRoot(),
     ToastrModule.forRoot({
       preventDuplicates: true,
