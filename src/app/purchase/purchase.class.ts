@@ -338,6 +338,7 @@ export class itemCharges {
   public refNo!:string
   public mode!:string
   public user!:string;
+  public propCode!: string;
 }
 
 export class commonCharges {

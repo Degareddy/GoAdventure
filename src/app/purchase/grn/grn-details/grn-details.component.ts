@@ -45,6 +45,9 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
   public gridOptions!: GridOptions;
   pageSizes = [25, 50, 100, 250, 500];
   pageSize = 25;
+  grnslNo: string = "";
+  prodCode: string = "";
+  prodName: string = "";
   public exportTmp: boolean = true;
   public excelName: string = "";
   autoHeight: boolean = true;
@@ -278,7 +281,7 @@ export class GrnDetailsComponent implements OnInit, OnDestroy {
         this.loader.start();
         this.subSink.sink = this.purchaseService.updateGrnDetails(this.grnDetailsCls).subscribe((res: any) => {
           this.loader.stop();
-          if (res.status.toUpperCase() === "FAIL" || res.status.toUpperCase() === "ERROR") {
+          if (res.status.toUpperCase() === "FAILED" || res.status.toUpperCase() === "ERROR") {
             this.retMessage = res.message;
             this.textMessageClass = 'red';
           }

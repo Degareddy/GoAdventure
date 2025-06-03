@@ -151,7 +151,7 @@
     </ng-template>
     <!-- <mat-card > -->
 
-      <app-item-charges *ngIf="selectedTabIndex === 1" [data]="data"></app-item-charges>
+      <app-item-charges *ngIf="selectedTabIndex === 1" [data]="data" [GRNSLNO]="slNum" [prodCode]="productCode" [prodName]="grnDetailsForm.get('product')?.value" ></app-item-charges>
     <!-- </mat-card> -->
   </mat-tab>
   <mat-tab class="mat-tab" label="Customer Details">

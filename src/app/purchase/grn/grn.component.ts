@@ -452,9 +452,10 @@ export class GrnComponent implements OnInit, OnDestroy {
               }
             });
             dialogRef.afterClosed().subscribe(result => {
+              console.log(result);
               if (result != true && result != undefined) {
-                this.grnForm.controls['pONo'].patchValue(result);
-                this.masterParams.tranNo = result;
+                this.grnForm.controls['pONo'].patchValue(result.tranNo);
+                this.masterParams.tranNo = result.tranNo;
                 this.getPurchaseOrderData(this.masterParams);
                 // this.getGRNData(this.masterParams);
               }
@@ -475,8 +476,8 @@ export class GrnComponent implements OnInit, OnDestroy {
           });
           dialogRef.afterClosed().subscribe(result => {
             if (result != true && result != undefined) {
-              this.grnForm.controls['pONo'].patchValue(result);
-              this.masterParams.tranNo = result;
+              this.grnForm.controls['pONo'].patchValue(result.tranNo);
+              this.masterParams.tranNo = result.tranNo;
               this.getPurchaseOrderData(this.masterParams);
               // this.getGRNData(this.masterParams);
             }

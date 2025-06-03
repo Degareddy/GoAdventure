@@ -185,7 +185,7 @@
     <app-message-box [msg]="retMessage" [classtype]="textMessageClass"></app-message-box>
     <div class="btnAlignment">
       <button mat-raised-button color="primary" type="submit" class=btnUp
-        [disabled]="supinvForm.get('mode')!.value === 'View' || supinvForm.invalid || tranStatus.toUpperCase() ==='AUTHORIZED'"><mat-icon>done</mat-icon>Apply</button>
+        [disabled]="supinvForm.get('mode')!.value === 'View' || supinvForm.invalid || tranStatus ==='Authorize'"><mat-icon>done</mat-icon>Apply</button>
       <button mat-raised-button color="accent" class="btnUp" type="button"
         (click)="clear()"><mat-icon>clear_all</mat-icon>Clear</button>
       <button mat-raised-button color="warn" class="btnUp" type="button"

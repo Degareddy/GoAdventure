@@ -188,21 +188,20 @@ export class CommonChargesComponent implements OnInit, OnDestroy {
         this.masterItemsList = res['data'];
       }
     })
-    const service1 = this.purService.GetTranItemsList(this.masterParams);
+    // const service1 = this.purService.GetTranItemsList(this.masterParams);
     const service2 = this.invService.GetMasterItemsList(curbody);
-    this.subSink.sink = forkJoin([service1, service2]).subscribe((results: any[]) => {
+    this.subSink.sink = forkJoin([ service2]).subscribe((results: any[]) => {
       this.loader.stop();
-      const res1 = results[0];
-      const res2 = results[1];
-      if (res1.status.toUpperCase() === "SUCCESS") {
-        this.grndata = res1.data;
-        const responseArray = res1.data;
-        const formattedObjectsArray = responseArray.map((item: any) => ({
-          slNo: item.slNo,
-          name: `${item.slNo}-${item.prodCode}-${item.prodName}`
-        }));
-        this.grnItems = formattedObjectsArray;
-      }
+      const res2 = results[0];
+      // if (res1.status.toUpperCase() === "SUCCESS") {
+      //   this.grndata = res1.data;
+      //   const responseArray = res1.data;
+      //   const formattedObjectsArray = responseArray.map((item: any) => ({
+      //     slNo: item.slNo,
+      //     name: `${item.slNo}-${item.prodCode}-${item.prodName}`
+      //   }));
+      //   this.grnItems = formattedObjectsArray;
+      // }
       if (res2.status.toUpperCase() === "SUCCESS") {
         this.currencyList = res2.data;
       }

@@ -114,7 +114,7 @@ packageTypes:Item[]=[]
     }
     else{
       this.columnDefs=[
-        { field: "slNo", headerName: "S.No", width: 60 },
+       { field: "clientName", headerName: "Vendor Name", sortable: true, filter: true, resizable: true, width: 90,},
    { field: "tranNo", headerName: "Tran No", sortable: true, filter: true, resizable: true, width: 90,},
     {
     field: "tranDate", headerName: "Tran Date", sortable: true, filter: true, resizable: true, width: 120,
@@ -513,7 +513,7 @@ onRowSelected(event: any) {
         searchFor='SUPINV'
          customer=this.tranSearchForm.get('clientName')?.value
       }
-      else if(this.data.search  == 'Purchase-Order Search'){
+      else if(this.data.search  == 'Purchase-Order Search' || this.data.TranType === 'POAUTHORIZED'){
         searchFor='PURCHASE'
         customer=this.tranSearchForm.get('clientName')?.value
       }

@@ -19,7 +19,10 @@ import { UserDataService } from 'src/app/Services/user-data.service';
   styleUrls: ['./item-charges.component.css']
 })
 export class ItemChargesComponent implements OnInit, OnDestroy {
-  @Input() data!: { mode: string, tranNum: string, status: string, vat: boolean };
+  @Input() data!: { mode: string, tranNum: string, status: string, vat: boolean, };
+  @Input() GRNSLNO!: number;
+  @Input() prodCode!: string;
+  @Input() prodName!: string;
   itemChargeForm!: FormGroup;
   public dialogOpen: boolean = false;
   rowData: any = [];
@@ -185,6 +188,8 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.itemChargeForm.get('gRNSlNo')?.patchValue(this.GRNSLNO);
+    this.itemChargeForm.get('prodCode')?.patchValue(this.prodName);
     this.masterParams.tranType = "GRN";
     this.masterParams.langId = this.userDataService.userData.langId;;
     this.masterParams.company = this.userDataService.userData.company;
@@ -207,21 +212,11 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
         this.masterItemsList = res['data'];
       }
     })
-    const service1 = this.purService.GetTranItemsList(this.masterParams);
     const service2 = this.invService.GetMasterItemsList(curbody);
-    this.subSink.sink = forkJoin([service1, service2]).subscribe((results: any[]) => {
+    this.subSink.sink = forkJoin([ service2]).subscribe((results: any[]) => {
         this.loader.stop();
-        const res1 = results[0];
-        const res2 = results[1];
-        if (res1.status.toUpperCase() === "SUCCESS") {
-          this.grndata = res1.data;
-          const responseArray = res1.data;
-          const formattedObjectsArray = responseArray.map((item: any) => ({
-            slNo: item.slNo,
-            name: `${item.slNo}-${item.prodCode}-${item.prodName}`
-          }));
-          this.grnItems = formattedObjectsArray;
-        }
+        const res2 = results[0];
+       
         if (res2.status.toUpperCase() === "SUCCESS") {
           this.currencyList = res2.data;
         }
@@ -230,6 +225,16 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
         this.loader.stop();
       }
     );
+    this.loadGrnItemCharges()
+    this.grnItemChange(this.itemChargeForm.controls['gRNSlNo'].value);
+
+  }
+  loadGrnItemCharges(){
+    const body={
+      ...this.commonParams(),
+      tranNo: this.data.tranNum,
+      langId: this.userDataService.userData.langId,
+    }
   }
   prepareChargeCls() {
     const formValue = this.itemChargeForm.value;
@@ -252,6 +257,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
     this.itemChargeCls.refNo = this.userDataService.userData.sessionID;
     this.itemChargeCls.mode = this.data.mode;
     this.itemChargeCls.user = this.userDataService.userData.userID;
+    this.itemChargeCls.prodCode = this.prodCode;
   }
   Submit() {
     this.retMessage = "";
@@ -281,10 +287,7 @@ export class ItemChargesComponent implements OnInit, OnDestroy {
     this.retMessage="";
     this.textMessageClass="";
     this.rowData=[];
-    const foundItem = this.grndata.find(item => item.slNo === event);
-    this.itemChargeForm.controls['gRNSlNo'].patchValue(foundItem.slNo);
-    this.itemChargeForm.controls['prodCode'].patchValue(foundItem.prodName);
-    this.itemChargeCls.prodCode = foundItem.prodCode;
+   
     const body = {
       rowNo: event,
       ...this.commonParams(),
